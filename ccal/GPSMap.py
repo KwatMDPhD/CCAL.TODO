@@ -926,7 +926,7 @@ class GPSMap:
 
         _check_node_x_element(node_x_predicting_element)
 
-        predicting_elements = node_x_predicting_element.columns
+        predicting_elements = node_x_predicting_element.columns.tolist()
 
         if w_or_h == "w":
 
@@ -1171,7 +1171,7 @@ class GPSMap:
 
         for i in range(n_iteration):
 
-            if not i % n_per_print:
+            if i % n_per_print == 0:
 
                 print("\t{}/{} ...".format(i + 1, n_iteration))
 

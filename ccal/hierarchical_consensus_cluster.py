@@ -63,7 +63,7 @@ def hierarchical_consensus_cluster(
 
     for clustering in range(n_clustering):
 
-        if not clustering % n_per_print:
+        if clustering % n_per_print == 0:
 
             print("\t(K={}) {}/{} ...".format(k, clustering + 1, n_clustering))
 

@@ -178,7 +178,7 @@ class VariantHDF5:
 
                     for i, line in enumerate(vcf_gz_file):
 
-                        if not i % n_per_print:
+                        if i % n_per_print == 0:
 
                             print("\t{:,}/{:,} ...".format(i + 1, n))
 

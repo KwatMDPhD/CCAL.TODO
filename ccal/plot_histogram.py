@@ -46,6 +46,7 @@ def plot_histogram(
                 "x": series,
                 "histnorm": histnorm,
                 "marker": {"color": color},
+                "opacity": 0.8,
             }
         )
 

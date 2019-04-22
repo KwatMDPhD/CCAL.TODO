@@ -26,7 +26,7 @@ def _make_context_matrix(
 
     for i, (index, series) in enumerate(dataframe.iterrows()):
 
-        if not i % n_per_print:
+        if i % n_per_print == 0:
 
             print("({}/{}) {} ...".format(i + 1, n, index))
 

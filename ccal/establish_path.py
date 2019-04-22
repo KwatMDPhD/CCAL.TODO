@@ -20,7 +20,7 @@ def establish_path(path, path_type):
 
     missing_directory_paths = []
 
-    while not isdir(directory_path):
+    while directory_path != "" and not isdir(directory_path):
 
         missing_directory_paths.append(directory_path)
 
