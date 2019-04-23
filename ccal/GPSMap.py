@@ -170,31 +170,17 @@ def _plot(
             "legendgroup": node_name,
             "x": node_x_dimension[:, 0],
             "y": node_x_dimension[:, 1],
-            "text": nodes,
-            "mode": "markers",
+            "text": arange(len(nodes)),
+            "mode": "markers+text",
             "marker": {
                 "size": 32,
                 "color": node_color,
                 "line": {"width": 2.4, "color": node_color_accent},
             },
+            "textfont": {"size": 16, "color": node_color_accent},
             "opacity": node_opacity,
         }
     )
-
-    layout["annotations"] = [
-        {
-            "x": x,
-            "y": y,
-            "text": node,
-            "font": {"size": 16, "color": node_color},
-            "bgcolor": node_color_accent,
-            "arrowhead": 2,
-            "arrowsize": 0.8,
-            "arrowcolor": node_color_accent,
-            "clicktoshow": "onoff",
-        }
-        for node, (x, y) in zip(nodes, node_x_dimension)
-    ]
 
     if grid_values is not None:
 

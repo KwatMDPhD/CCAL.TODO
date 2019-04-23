@@ -1,4 +1,4 @@
-from numpy import nonzero, unique
+from numpy import asarray, nonzero, unique
 
 from .cast_object_to_builtin import cast_object_to_builtin
 from .make_colorscale_from_colors import make_colorscale_from_colors
@@ -100,6 +100,8 @@ def plot_heat_map(
 
         if row_annotation is not None:
 
+            row_annotation = asarray(row_annotation)
+
             if row_annotation_colors is None:
 
                 row_annotation_colors = pick_colors(row_annotation)
@@ -139,6 +141,8 @@ def plot_heat_map(
                     )
 
         if column_annotation is not None:
+
+            row_annotation = asarray(row_annotation)
 
             if column_annotation_colors is None:
 
