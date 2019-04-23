@@ -51,7 +51,7 @@ def pick_colors(data):
             "#f032e6",
         )
 
-        if False and n_color <= len(curated_colors):
+        if n_color <= len(curated_colors):
 
             return curated_colors[:n_color]
 
