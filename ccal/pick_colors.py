@@ -1,9 +1,11 @@
 from matplotlib.colors import to_hex
-from numpy import asarray, isnan, unique
+from numpy import asarray, unique
 from seaborn import husl_palette
 
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
+
+from .check_nd_array_for_bad import check_nd_array_for_bad
 
 
 def pick_colors(data):
@@ -18,7 +20,7 @@ def pick_colors(data):
 
         data = asarray(data)
 
-        n_color = unique(data[~isnan(data)]).size
+        n_color = unique(data[~check_nd_array_for_bad(data, raise_for_bad=False)]).size
 
         curated_colors = (
             "#20d9ba",

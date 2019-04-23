@@ -6,7 +6,6 @@ from numpy import (
     diag,
     exp,
     full,
-    isnan,
     linspace,
     mean,
     nan,
@@ -203,7 +202,9 @@ def _plot(
             }
         )
 
-        grid_labels_unique = unique(grid_labels[~isnan(grid_labels)]).astype(int)
+        grid_labels_unique = unique(
+            grid_labels[~check_nd_array_for_bad(grid_labels, raise_for_bad=False)]
+        ).astype(int)
 
         for label in grid_labels_unique:
 

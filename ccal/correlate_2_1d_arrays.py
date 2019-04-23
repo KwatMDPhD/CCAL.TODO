@@ -1,6 +1,5 @@
-from numpy import full, nan
+from numpy import full, nan, isnan
 from numpy.random import seed, shuffle
-from pandas import isna
 from sklearn.linear_model import LinearRegression
 
 from .compute_empirical_p_value import compute_empirical_p_value
@@ -60,7 +59,7 @@ def correlate_2_1d_arrays(
 
         r2_p_value_str = "R^2={:.3f}".format(r2)
 
-        if not isna(p_value):
+        if not isnan(p_value):
 
             r2_p_value_str = "{} & P-Value={:.3e}".format(r2_p_value_str, p_value)
 
