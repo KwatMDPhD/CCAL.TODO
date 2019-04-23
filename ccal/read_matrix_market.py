@@ -18,9 +18,9 @@ def read_matrix_market(
 
     if dataframe.index.has_duplicates:
 
-        print("Index duplicated. Merging duplicates with max ...")
+        print("Index duplicated. Merging duplicates with median ...")
 
-        dataframe = dataframe.groupby(level=0).max()
+        dataframe = dataframe.groupby(level=0).median()
 
     dataframe.sort_index(inplace=True)
 
@@ -28,9 +28,9 @@ def read_matrix_market(
 
     if dataframe.columns.has_duplicates:
 
-        print("Column duplicated. Merging duplicates with max ...")
+        print("Column duplicated. Merging duplicates with median ...")
 
-        dataframe = dataframe.T.groupby(level=0).max().T
+        dataframe = dataframe.T.groupby(level=0).median().T
 
     dataframe.sort_index(axis=1, inplace=True)
 
