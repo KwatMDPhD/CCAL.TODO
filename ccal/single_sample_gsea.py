@@ -28,8 +28,6 @@ def single_sample_gsea(
         dtype=int,
     )
 
-    return
-
     if not in_.any():
 
         print("Gene scores did not have any of the gene-set genes.")
