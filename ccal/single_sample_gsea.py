@@ -1,4 +1,4 @@
-from numpy import absolute, asarray, in1d
+from numpy import absolute, asarray, nan
 
 from .plot_and_save import plot_and_save
 
@@ -16,31 +16,35 @@ def single_sample_gsea(
     html_file_path=None,
 ):
 
-    gene_score_no_na_sorted = gene_score.dropna().sort_values(ascending=False)
+    gene_score_no_na_sorted = gene_score  # .dropna().sort_values(ascending=False)
 
-    in_ = in1d(
-        gene_score_no_na_sorted.index, gene_set_genes.dropna(), assume_unique=True
+    gene_set_genes = {gene_set_gene: None for gene_set_gene in gene_set_genes}
+
+    in_ = asarray(
+        [
+            gene_score_gene in gene_set_genes
+            for gene_score_gene in gene_score_no_na_sorted.index.values
+        ],
+        dtype=int,
     )
 
-    in_sum = in_.sum()
+    return
 
-    if in_sum == 0:
+    if not in_.any():
 
         print("Gene scores did not have any of the gene-set genes.")
 
-        return
+        return nan
 
     gene_score_sorted_values = gene_score_no_na_sorted.values
 
-    gene_score_sorted_values_absolute = absolute(gene_score_sorted_values)
+    hit = absolute(gene_score_sorted_values) * in_
 
-    in_int = in_.astype(int)
+    hit /= hit.sum()
 
-    hit = (
-        gene_score_sorted_values_absolute * in_int
-    ) / gene_score_sorted_values_absolute[in_].sum()
+    miss = 1.0 - in_
 
-    miss = (1 - in_int) / (in_.size - in_sum)
+    miss /= miss.sum()
 
     y = hit - miss
 

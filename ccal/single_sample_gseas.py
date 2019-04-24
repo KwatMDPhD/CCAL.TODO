@@ -8,7 +8,7 @@ from .split_dataframe import split_dataframe
 
 def _single_sample_gseas(gene_x_sample, gene_sets, statistic):
 
-    print("Running single-sample GSEA with {} gene sets ...".format(gene_sets.shape[0]))
+    # print("Running single-sample GSEA with {} gene sets ...".format(gene_sets.shape[0]))
 
     score__gene_set_x_sample = full((gene_sets.shape[0], gene_x_sample.shape[1]), nan)
 
