@@ -1,4 +1,4 @@
-from numpy import full, nan, isnan
+from numpy import full, isnan, nan
 from numpy.random import seed, shuffle
 from sklearn.linear_model import LinearRegression
 

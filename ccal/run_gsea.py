@@ -5,10 +5,10 @@ from numpy.random import choice
 from pandas import Series
 
 from .compute_empirical_p_value import compute_empirical_p_value
-from .single_sample_gsea import single_sample_gsea
+from .run_single_sample_gsea import run_single_sample_gsea
 
 
-def gsea(
+def run_gsea(
     gene_x_sample,
     phenotypes,
     genes,
@@ -19,23 +19,29 @@ def gsea(
     plot=True,
     title="GSEA Mountain Plot",
     gene_score_name="Gene Score",
-    annotation_text_font_size=16,
-    annotation_text_width=88,
-    annotation_text_yshift=64,
+    annotation_text_font_size=10,
+    annotation_text_width=100,
+    annotation_text_yshift=50,
     html_file_path=None,
 ):
 
     print("Computing gene scores ...")
 
-    gene_score = Series(
-        gene_x_sample.apply(function, axis=1, args=(asarray(phenotypes),)),
-        index=gene_x_sample.index,
+    gene_score_no_na_sorted = (
+        Series(
+            gene_x_sample.apply(function, axis=1, args=(asarray(phenotypes),)),
+            index=gene_x_sample.index,
+        )
+        .dropna()
+        .sort_values(ascending=False)
     )
+
+    print(gene_score_no_na_sorted)
 
     print("Computing gene set enrichment for {} ...".format(genes.name))
 
-    score = single_sample_gsea(
-        gene_score,
+    gsea_score = run_single_sample_gsea(
+        gene_score_no_na_sorted,
         genes,
         statistic=statistic,
         plot=plot,
@@ -73,7 +79,7 @@ def gsea(
                     replace=False,
                 )
 
-            permutation_scores[i] = single_sample_gsea(
+            permutation_scores[i] = run_single_sample_gsea(
                 Series(
                     permuting__gene_x_sample.apply(
                         function, axis=1, args=(permuting__phenotypes,)
@@ -86,8 +92,8 @@ def gsea(
             )
 
         p_value = min(
-            compute_empirical_p_value(score, permutation_scores, "<"),
-            compute_empirical_p_value(score, permutation_scores, ">"),
+            compute_empirical_p_value(gsea_score, permutation_scores, "<"),
+            compute_empirical_p_value(gsea_score, permutation_scores, ">"),
         )
 
-    return score, p_value
+    return gsea_score, p_value
