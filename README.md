@@ -17,5 +17,3 @@ pip install .
 When you encounter a problem, please [submitting an issue](https://github.com/KwatME/ccal/issues/new).
 
 When you want to improve the code, please fork it and open a pull request when ready.
-
-Thank you :)
