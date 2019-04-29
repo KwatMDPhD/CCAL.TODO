@@ -186,4 +186,4 @@ from .write_gps_map import write_gps_map
 from .write_json import write_json
 
 VERSION = "1.1.0"
-print("CCAL version {} @ {}".format(VERSION, abspath(__file__)))
+print("kraft version {} @ {}".format(VERSION, abspath(__file__)))
