@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-name = "analyze"
+name = "kraft"
 
 setup(
     name=name,
