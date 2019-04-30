@@ -1,5 +1,3 @@
-from os.path import abspath
-
 from .add_conda_to_path import add_conda_to_path
 from .ALMOST_ZERO import ALMOST_ZERO
 from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
@@ -52,6 +50,7 @@ from .fit_skew_t_pdf_on_1d_array import fit_skew_t_pdf_on_1d_array
 from .fit_skew_t_pdf_on_each_dataframe_row import fit_skew_t_pdf_on_each_dataframe_row
 from .flatten_nested_iterable import flatten_nested_iterable
 from .Genome import Genome
+from .get_chromosome_size_from_fasta_gz import get_chromosome_size_from_fasta_gz
 from .get_colormap_colors import get_colormap_colors
 from .get_conda_environments import get_conda_environments
 from .get_conda_prefix import get_conda_prefix
@@ -109,6 +108,8 @@ from .make_reflecting_grid import make_reflecting_grid
 from .make_summary_match_panel import make_summary_match_panel
 from .make_variant_dict_consistent import make_variant_dict_consistent
 from .make_variant_dict_from_vcf_row import make_variant_dict_from_vcf_row
+from .make_variant_n_from_vcf_file_path import make_variant_n_from_vcf_file_path
+from .make_variant_n_from_vcf_row import make_variant_n_from_vcf_row
 from .map_objects_to_ints import map_objects_to_ints
 from .merge_2_dicts_with_function import merge_2_dicts_with_function
 from .mf_by_multiple_V_and_H import mf_by_multiple_V_and_H
@@ -184,6 +185,3 @@ from .VCF_ANN_FIELDS import VCF_ANN_FIELDS
 from .VCF_COLUMNS import VCF_COLUMNS
 from .write_gps_map import write_gps_map
 from .write_json import write_json
-
-VERSION = "1.1.0"
-print("kraft version {} @ {}".format(VERSION, abspath(__file__)))
