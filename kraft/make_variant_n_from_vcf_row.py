@@ -1,4 +1,5 @@
-from kraft import VCF_COLUMNS, get_vcf_info_ann
+from .VCF_COLUMNS import VCF_COLUMNS
+from .get_vcf_info_ann import get_vcf_info_ann
 
 
 def make_variant_n_from_vcf_row(vcf_row):

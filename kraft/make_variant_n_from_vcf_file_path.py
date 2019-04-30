@@ -1,7 +1,7 @@
 from pandas import read_csv, value_counts
 
-from kraft import VCF_COLUMNS, flatten_nested_iterable
-
+from .VCF_COLUMNS import VCF_COLUMNS
+from .flatten_nested_iterable import flatten_nested_iterable
 from .make_variant_n_from_vcf_row import make_variant_n_from_vcf_row
 
 
