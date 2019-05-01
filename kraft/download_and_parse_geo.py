@@ -16,8 +16,26 @@ def download_and_parse_geo(geo_id, directory_path):
         "id_x_sample": None,
         "id_gene_symbol": None,
         "gene_x_sample": None,
-        "information_x_sample": None,
+        "information_x_sample": gse.phenotype_data.T,
     }
+
+    print(
+        "information_x_sample.shape: {}".format(geo_dict["information_x_sample"].shape)
+    )
+
+    empty_samples = tuple(
+        sample_id for sample_id, gsm in gse.gsms.items() if gsm.table.empty
+    )
+
+    if 0 < len(empty_samples):
+
+        print(
+            "Sample(s) ({}) are empty (check for any linked or additional supplementary file in the GEO website.)".format(
+                empty_samples
+            )
+        )
+
+        return geo_dict
 
     values = []
 
@@ -26,14 +44,6 @@ def download_and_parse_geo(geo_id, directory_path):
         print("{} ...".format(sample_id))
 
         sample_table = gsm.table
-
-        if sample_table.empty:
-
-            raise ValueError(
-                "Sample {} has an empty table (check for any linked or additional supplementary file in the GEO website.)".format(
-                    gsm.name
-                )
-            )
 
         sample_table.columns = sample_table.columns.str.lower().str.replace(" ", "_")
 
@@ -136,13 +146,5 @@ def download_and_parse_geo(geo_id, directory_path):
                     ", ".join(platform_table.columns)
                 )
             )
-
-        geo_dict["information_x_sample"] = gse.phenotype_data.T
-
-        print(
-            "information_x_sample.shape: {}".format(
-                geo_dict["information_x_sample"].shape
-            )
-        )
 
     return geo_dict
