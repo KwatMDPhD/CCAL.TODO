@@ -27,7 +27,7 @@ def pick_colors(data):
             "#ff1968",
             "#ffe119",
             "#3cb44b",
-            "#4e41d8",
+            "#4e40d8",
             "#ffa400",
             "#aaffc3",
             "#800000",
