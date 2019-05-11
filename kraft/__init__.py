@@ -39,6 +39,7 @@ from .count_gene_impacts_from_variant_dicts import count_gene_impacts_from_varia
 from .DATA_DIRECTORY_PATH import DATA_DIRECTORY_PATH
 from .download_and_parse_geo import download_and_parse_geo
 from .download_url import download_url
+from .download_url_and_extract import download_url_and_extract
 from .drop_dataframe_slice import drop_dataframe_slice
 from .drop_dataframe_slice_greedily import drop_dataframe_slice_greedily
 from .echo_or_print_str import echo_or_print_str
