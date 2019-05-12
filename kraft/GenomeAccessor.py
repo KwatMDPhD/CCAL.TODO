@@ -2,11 +2,11 @@ from pandas import read_csv
 from tables import NoSuchNodeError
 
 from .count_gene_impacts_from_variant_dicts import count_gene_impacts_from_variant_dicts
-from .FeatureHDF5 import FeatureHDF5
-from .VariantHDF5 import VariantHDF5
+from .FeatureAccessor import FeatureAccessor
+from .VariantAccessor import VariantAccessor
 
 
-class Genome:
+class GenomeAccessor:
     def __init__(
         self,
         reference_fasta_gz_file_path,
@@ -28,13 +28,13 @@ class Genome:
 
         self.reference_gff3_gz_file_path = reference_gff3_gz_file_path
 
-        self.reference_gene_hdf5 = FeatureHDF5(
+        self.reference_gene_hdf5 = FeatureAccessor(
             self.reference_gff3_gz_file_path, reset=reset
         )
 
         self.vcf_gz_file_path = vcf_gz_file_path
 
-        self.variant_hdf5 = VariantHDF5(self.vcf_gz_file_path, reset=reset)
+        self.variant_hdf5 = VariantAccessor(self.vcf_gz_file_path, reset=reset)
 
     def explore_genome_by_variant(self, variant_id):
 
@@ -81,9 +81,7 @@ class Genome:
             if len(gene_dicts) == 1:
 
                 print(
-                    "VariantHDF5 does not have gene {}, so using gene region (from FeatureHDF5) to get variants ...".format(
-                        gene
-                    )
+                    f"{self.__class__.__name__} does not have gene {gene}, so using gene region (from FeatureAccessor) to get variants ..."
                 )
 
                 try:

@@ -46,11 +46,11 @@ from .echo_or_print_str import echo_or_print_str
 from .establish_path import establish_path
 from .estimate_kernel_density import estimate_kernel_density
 from .exit_ import exit_
-from .FeatureHDF5 import FeatureHDF5
+from .FeatureAccessor import FeatureAccessor
 from .fit_skew_t_pdf_on_1d_array import fit_skew_t_pdf_on_1d_array
 from .fit_skew_t_pdf_on_each_dataframe_row import fit_skew_t_pdf_on_each_dataframe_row
 from .flatten_nested_iterable import flatten_nested_iterable
-from .Genome import Genome
+from .GenomeAccessor import GenomeAccessor
 from .get_chromosome_size_from_fasta_gz import get_chromosome_size_from_fasta_gz
 from .get_colormap_colors import get_colormap_colors
 from .get_conda_environments import get_conda_environments
@@ -181,7 +181,7 @@ from .untitle_str import untitle_str
 from .update_H_by_multiplicative_update import update_H_by_multiplicative_update
 from .update_variant_dict import update_variant_dict
 from .update_W_by_multiplicative_update import update_W_by_multiplicative_update
-from .VariantHDF5 import VariantHDF5
+from .VariantAccessor import VariantAccessor
 from .VCF_ANN_FIELDS import VCF_ANN_FIELDS
 from .VCF_COLUMNS import VCF_COLUMNS
 from .write_gps_map import write_gps_map
