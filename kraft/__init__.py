@@ -59,7 +59,6 @@ from .get_gff3_attribute import get_gff3_attribute
 from .get_git_versions import get_git_versions
 from .get_intersections_between_2_1d_arrays import get_intersections_between_2_1d_arrays
 from .get_machine import get_machine
-from .get_name_within_function import get_name_within_function
 from .get_shell_environment import get_shell_environment
 from .get_triangulation_edges_from_point_x_dimension import (
     get_triangulation_edges_from_point_x_dimension,
@@ -133,6 +132,7 @@ from .plot_context import plot_context
 from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_scatter_and_annotate import plot_scatter_and_annotate
+from .print_function_information import print_function_information
 from .process_feature_x_sample import process_feature_x_sample
 from .RANDOM_SEED import RANDOM_SEED
 from .read_firebrowse_copynumber_gistic2 import read_firebrowse_copynumber_gistic2
