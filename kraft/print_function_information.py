@@ -7,7 +7,7 @@ def print_function_information():
 
     try:
 
-        arguments = (f"{k} = {v}" for k, v in frame_info[0].f_locals.items())
+        arguments = (f"{k} = {v}" for k, v in sorted(frame_info[0].f_locals.items()))
 
         separater = "\n    "
 
