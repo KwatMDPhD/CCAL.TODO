@@ -1,4 +1,4 @@
-from .VCF_ANN_FIELDS import VCF_ANN_FIELDS
+from .VCF_ANN_KEYS import VCF_ANN_KEYS
 from .VCF_COLUMNS import VCF_COLUMNS
 
 
@@ -27,7 +27,7 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
                     variant_dict["ANN"][ann_index] = {
                         ann_field: ann_values[ann_field_index + 1]
-                        for ann_field_index, ann_field in enumerate(VCF_ANN_FIELDS[1:])
+                        for ann_field_index, ann_field in enumerate(VCF_ANN_KEYS[1:])
                     }
 
             else:

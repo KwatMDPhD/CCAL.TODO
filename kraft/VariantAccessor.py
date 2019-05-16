@@ -218,7 +218,7 @@ class VariantAccessor:
 
                                     gene_chrom[info_ann_field_value_0] = chrom
 
-                        cursor["GT"] = get_vcf_sample_format(format_, sample, "GT")
+                        cursor["GT"] = get_vcf_sample_format(format_, "GT", sample)
 
                         cursor.append()
 

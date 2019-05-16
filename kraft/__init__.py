@@ -1,5 +1,14 @@
-from .add_conda_to_path import add_conda_to_path
 from .ALMOST_ZERO import ALMOST_ZERO
+from .CODON_AMINO_ACID import CODON_AMINO_ACID
+from .DATA_DIRECTORY_PATH import DATA_DIRECTORY_PATH
+from .FeatureAccessor import FeatureAccessor
+from .GPSMap import GPSMap
+from .NONE_STRS import NONE_STRS
+from .RANDOM_SEED import RANDOM_SEED
+from .VCF_ANN_KEYS import VCF_ANN_KEYS
+from .VCF_COLUMNS import VCF_COLUMNS
+from .VariantAccessor import VariantAccessor
+from .add_conda_to_path import add_conda_to_path
 from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
 from .apply_function_on_2_2d_arrays_slices import apply_function_on_2_2d_arrays_slices
 from .apply_function_on_2_dataframes_slices import apply_function_on_2_dataframes_slices
@@ -9,34 +18,22 @@ from .check_nd_array_for_bad import check_nd_array_for_bad
 from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
 from .clip_nd_array_by_standard_deviation import clip_nd_array_by_standard_deviation
 from .cluster_2d_array import cluster_2d_array
-from .cluster_clustering_x_element_and_compute_ccc import (
-    cluster_clustering_x_element_and_compute_ccc,
-)
-from .CODON_AMINO_ACID import CODON_AMINO_ACID
+from .cluster_clustering_x_element_and_compute_ccc import cluster_clustering_x_element_and_compute_ccc
 from .compute_1d_array_context import compute_1d_array_context
 from .compute_1d_array_entropy import compute_1d_array_entropy
 from .compute_bandwidths import compute_bandwidths
-from .compute_correlation_distance_between_2_1d_arrays import (
-    compute_correlation_distance_between_2_1d_arrays,
-)
+from .compute_correlation_distance_between_2_1d_arrays import compute_correlation_distance_between_2_1d_arrays
 from .compute_empirical_p_value import compute_empirical_p_value
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
-from .compute_information_coefficient_between_2_1d_arrays import (
-    compute_information_coefficient_between_2_1d_arrays,
-)
-from .compute_information_distance_between_2_1d_arrays import (
-    compute_information_distance_between_2_1d_arrays,
-)
+from .compute_information_coefficient_between_2_1d_arrays import compute_information_coefficient_between_2_1d_arrays
+from .compute_information_distance_between_2_1d_arrays import compute_information_distance_between_2_1d_arrays
 from .compute_joint_probabilities import compute_joint_probabilities
-from .compute_kullback_leibler_divergence_between_2_pdfs import (
-    compute_kullback_leibler_divergence_between_2_pdfs,
-)
+from .compute_kullback_leibler_divergence_between_2_pdfs import compute_kullback_leibler_divergence_between_2_pdfs
 from .compute_matrix_norm import compute_matrix_norm
 from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
 from .compute_posterior_probabilities import compute_posterior_probabilities
 from .correlate_2_1d_arrays import correlate_2_1d_arrays
 from .count_gene_impacts_from_variant_dicts import count_gene_impacts_from_variant_dicts
-from .DATA_DIRECTORY_PATH import DATA_DIRECTORY_PATH
 from .download_and_parse_geo import download_and_parse_geo
 from .download_url import download_url
 from .download_url_and_extract import download_url_and_extract
@@ -46,7 +43,6 @@ from .echo_or_print_str import echo_or_print_str
 from .establish_path import establish_path
 from .estimate_kernel_density import estimate_kernel_density
 from .exit_ import exit_
-from .FeatureAccessor import FeatureAccessor
 from .fit_skew_t_pdf_on_1d_array import fit_skew_t_pdf_on_1d_array
 from .fit_skew_t_pdf_on_each_dataframe_row import fit_skew_t_pdf_on_each_dataframe_row
 from .flatten_nested_iterable import flatten_nested_iterable
@@ -59,28 +55,18 @@ from .get_gff3_attribute import get_gff3_attribute
 from .get_git_versions import get_git_versions
 from .get_intersections_between_2_1d_arrays import get_intersections_between_2_1d_arrays
 from .get_machine import get_machine
+from .get_sequence_from_fasta_or_fasta_gz import get_sequence_from_fasta_or_fasta_gz
 from .get_shell_environment import get_shell_environment
-from .get_triangulation_edges_from_point_x_dimension import (
-    get_triangulation_edges_from_point_x_dimension,
-)
+from .get_triangulation_edges_from_point_x_dimension import get_triangulation_edges_from_point_x_dimension
 from .get_variant_start_and_end_positions import get_variant_start_and_end_positions
-from .get_vcf_allelic_frequencies import get_vcf_allelic_frequencies
+from .get_variants_from_vcf_or_vcf_gz import get_variants_from_vcf_or_vcf_gz
 from .get_vcf_genotype import get_vcf_genotype
 from .get_vcf_info import get_vcf_info
 from .get_vcf_info_ann import get_vcf_info_ann
-from .get_vcf_population_allelic_frequencies import (
-    get_vcf_population_allelic_frequencies,
-)
 from .get_vcf_sample_format import get_vcf_sample_format
-from .get_vcf_variants_by_region import get_vcf_variants_by_region
-from .GPSMap import GPSMap
-from .group_and_apply_function_on_each_group_in_iterable import (
-    group_and_apply_function_on_each_group_in_iterable,
-)
+from .group_and_apply_function_on_each_group_in_iterable import group_and_apply_function_on_each_group_in_iterable
 from .hierarchical_consensus_cluster import hierarchical_consensus_cluster
-from .hierarchical_consensus_cluster_with_ks import (
-    hierarchical_consensus_cluster_with_ks,
-)
+from .hierarchical_consensus_cluster_with_ks import hierarchical_consensus_cluster_with_ks
 from .infer import infer
 from .infer_assuming_independence import infer_assuming_independence
 from .initialize_logger import initialize_logger
@@ -93,9 +79,7 @@ from .is_str_version import is_str_version
 from .is_valid_conda_directory_path import is_valid_conda_directory_path
 from .log_and_return_response import log_and_return_response
 from .log_nd_array import log_nd_array
-from .make_binary_dataframe_from_categorical_series import (
-    make_binary_dataframe_from_categorical_series,
-)
+from .make_binary_dataframe_from_categorical_series import make_binary_dataframe_from_categorical_series
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_context_matrix import make_context_matrix
 from .make_gitkeep import make_gitkeep
@@ -116,7 +100,6 @@ from .mf_by_multiplicative_update import mf_by_multiplicative_update
 from .mf_consensus_cluster import mf_consensus_cluster
 from .mf_consensus_cluster_with_ks import mf_consensus_cluster_with_ks
 from .nmf_by_sklearn import nmf_by_sklearn
-from .NONE_STRS import NONE_STRS
 from .normalize_cell_line_names import normalize_cell_line_names
 from .normalize_contig import normalize_contig
 from .normalize_file_name import normalize_file_name
@@ -134,23 +117,18 @@ from .plot_histogram import plot_histogram
 from .plot_scatter_and_annotate import plot_scatter_and_annotate
 from .print_function_information import print_function_information
 from .process_feature_x_sample import process_feature_x_sample
-from .RANDOM_SEED import RANDOM_SEED
 from .read_firebrowse_copynumber_gistic2 import read_firebrowse_copynumber_gistic2
-from .read_firebrowse_correlate_copynumber_vs_mrnaseq import (
-    read_firebrowse_correlate_copynumber_vs_mrnaseq,
-)
+from .read_firebrowse_correlate_copynumber_vs_mrnaseq import read_firebrowse_correlate_copynumber_vs_mrnaseq
 from .read_firebrowse_mutsignozzlereport2cv import read_firebrowse_mutsignozzlereport2cv
 from .read_gff3 import read_gff3
 from .read_gmt import read_gmt
 from .read_gps_map import read_gps_map
 from .read_json import read_json
 from .read_matrix_market import read_matrix_market
-from .read_where_and_map_column_name_on_hdf5_table import (
-    read_where_and_map_column_name_on_hdf5_table,
-)
-from .rescale_x_y_coordiantes_in_polar_coordiante import (
-    rescale_x_y_coordiantes_in_polar_coordiante,
-)
+from .read_where_and_map_column_name_on_hdf5_table import read_where_and_map_column_name_on_hdf5_table
+from .read_yaml import read_yaml
+from .remove_path import remove_path
+from .rescale_x_y_coordiantes_in_polar_coordiante import rescale_x_y_coordiantes_in_polar_coordiante
 from .reverse_complement_dna_sequence import reverse_complement_dna_sequence
 from .reverse_transcribe_rna_sequence import reverse_transcribe_rna_sequence
 from .run_command import run_command
@@ -159,9 +137,7 @@ from .run_single_sample_gsea import run_single_sample_gsea
 from .run_single_sample_gseas import run_single_sample_gseas
 from .sample_from_each_series_value import sample_from_each_series_value
 from .scale_point_x_dimension_dimension import scale_point_x_dimension_dimension
-from .select_and_group_feature_x_tcga_sample_by_sample_type import (
-    select_and_group_feature_x_tcga_sample_by_sample_type,
-)
+from .select_and_group_feature_x_tcga_sample_by_sample_type import select_and_group_feature_x_tcga_sample_by_sample_type
 from .select_gene_symbol import select_gene_symbol
 from .select_series_indices import select_series_indices
 from .shuffle_each_2d_array_slice import shuffle_each_2d_array_slice
@@ -178,10 +154,8 @@ from .transcribe_dna_sequence import transcribe_dna_sequence
 from .translate_nucleotide_sequence import translate_nucleotide_sequence
 from .untitle_str import untitle_str
 from .update_H_by_multiplicative_update import update_H_by_multiplicative_update
-from .update_variant_dict import update_variant_dict
 from .update_W_by_multiplicative_update import update_W_by_multiplicative_update
-from .VariantAccessor import VariantAccessor
-from .VCF_ANN_FIELDS import VCF_ANN_FIELDS
-from .VCF_COLUMNS import VCF_COLUMNS
+from .update_variant_dict import update_variant_dict
 from .write_gps_map import write_gps_map
 from .write_json import write_json
+from .write_yaml import write_yaml

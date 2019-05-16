@@ -1,9 +1,5 @@
 from .get_variant_start_and_end_positions import get_variant_start_and_end_positions
-from .get_vcf_allelic_frequencies import get_vcf_allelic_frequencies
 from .get_vcf_genotype import get_vcf_genotype
-from .get_vcf_population_allelic_frequencies import (
-    get_vcf_population_allelic_frequencies,
-)
 
 
 def update_variant_dict(variant_dict):
@@ -20,13 +16,11 @@ def update_variant_dict(variant_dict):
 
     variant_dict["end_position"] = end_position
 
-    caf = variant_dict.get("CAF")
+    if "CAF" in variant_dict:
 
-    if caf:
-
-        variant_dict[
-            "population_allelic_frequencies"
-        ] = get_vcf_population_allelic_frequencies(caf)
+        variant_dict["population_allelic_frequencies"] = [
+            float(caf_) for caf_ in variant_dict["CAF"].split(sep=",")
+        ]
 
     for sample_dict in variant_dict["sample"].values():
 
@@ -36,6 +30,7 @@ def update_variant_dict(variant_dict):
 
         if "AD" in sample_dict and "DP" in sample_dict:
 
-            sample_dict["allelic_frequency"] = get_vcf_allelic_frequencies(
-                sample_dict["AD"], sample_dict["DP"]
-            )
+            sample_dict["allelic_frequency"] = [
+                int(ad_) / int(sample_dict["DP"])
+                for ad_ in sample_dict["AD"].split(sep=",")
+            ]

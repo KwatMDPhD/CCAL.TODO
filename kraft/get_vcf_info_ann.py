@@ -1,17 +1,13 @@
 from .get_vcf_info import get_vcf_info
-from .VCF_ANN_FIELDS import VCF_ANN_FIELDS
+from .VCF_ANN_KEYS import VCF_ANN_KEYS
 
 
-def get_vcf_info_ann(info, field, n_ann=None):
+def get_vcf_info_ann(info, key, n_ann=None):
 
     ann = get_vcf_info(info, "ANN")
 
-    if ann:
+    if ann is not None:
 
-        field_index = VCF_ANN_FIELDS.index(field)
+        i = VCF_ANN_KEYS.index(key)
 
-        return [ann_.split(sep="|")[field_index] for ann_ in ann.split(sep=",")[:n_ann]]
-
-    else:
-
-        return []
+        return tuple(ann_.split(sep="|")[i] for ann_ in ann.split(sep=",")[:n_ann])

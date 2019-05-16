@@ -1,11 +1,11 @@
-def get_vcf_info(info, field):
+def get_vcf_info(info, key):
 
     for info_ in info.split(sep=";"):
 
         if "=" in info_:
 
-            info_field, info_value = info_.split(sep="=")
+            info_key, info_value = info_.split(sep="=")
 
-            if info_field == field:
+            if info_key == key:
 
                 return info_value

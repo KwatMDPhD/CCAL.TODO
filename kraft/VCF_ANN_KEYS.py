@@ -1,4 +1,4 @@
-VCF_ANN_FIELDS = (
+VCF_ANN_KEYS = (
     "ALT",
     "effect",
     "impact",
