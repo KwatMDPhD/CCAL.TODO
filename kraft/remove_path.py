@@ -1,16 +1,14 @@
-from os import remove
-from os.path import exists, isdir
-from shutil import rmtree
+from os.path import exists
+
+from .run_command import run_command
 
 
 def remove_path(path):
 
-    if isdir(path):
+    if exists(path):
 
-        rmtree(path)
+        run_command("rm --recursive --force path")
 
-    elif exists(path):
+    else:
 
-        remove(path)
-
-    print(f"Removed {path}.")
+        print(f"{path} does not exist for removal.")
