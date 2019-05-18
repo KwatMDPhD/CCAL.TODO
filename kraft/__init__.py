@@ -50,6 +50,7 @@ from .FeatureAccessor import FeatureAccessor
 from .fit_skew_t_pdf_on_1d_array import fit_skew_t_pdf_on_1d_array
 from .fit_skew_t_pdf_on_each_dataframe_row import fit_skew_t_pdf_on_each_dataframe_row
 from .flatten_nested_iterable import flatten_nested_iterable
+from .get_child_paths import get_child_paths
 from .get_chromosome_size_from_fasta_gz import get_chromosome_size_from_fasta_gz
 from .get_colormap_colors import get_colormap_colors
 from .get_conda_environments import get_conda_environments

@@ -20,8 +20,6 @@ def echo_or_print_str(
 
         fg = choice(("green", "yellow", "blue", "magenta", "cyan", "white"))
 
-        bg = "black"
-
     try:
 
         secho(
