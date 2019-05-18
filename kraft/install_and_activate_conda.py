@@ -4,7 +4,7 @@ from urllib.parse import urljoin
 from .add_conda_to_path import add_conda_to_path
 from .download_url import download_url
 from .get_machine import get_machine
-from .is_valid_conda_directory_path import is_valid_conda_directory_path
+from .is_conda_directory_path import is_conda_directory_path
 from .run_command import run_command
 
 
@@ -12,7 +12,7 @@ def install_and_activate_conda(
     conda_directory_path, pip_installs=None, conda_installs=None
 ):
 
-    if not is_valid_conda_directory_path(conda_directory_path):
+    if not is_conda_directory_path(conda_directory_path):
 
         conda_script_file_name_template = "Miniconda3-latest-{}-x86_64.sh"
 

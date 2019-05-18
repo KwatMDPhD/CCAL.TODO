@@ -84,11 +84,11 @@ from .infer_assuming_independence import infer_assuming_independence
 from .initialize_logger import initialize_logger
 from .install_and_activate_conda import install_and_activate_conda
 from .install_python_libraries import install_python_libraries
+from .is_conda_directory_path import is_conda_directory_path
 from .is_in_git_repository import is_in_git_repository
 from .is_program import is_program
 from .is_sorted_nd_array import is_sorted_nd_array
 from .is_str_version import is_str_version
-from .is_valid_conda_directory_path import is_valid_conda_directory_path
 from .log_and_return_response import log_and_return_response
 from .log_nd_array import log_nd_array
 from .make_binary_dataframe_from_categorical_series import (
