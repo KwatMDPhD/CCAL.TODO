@@ -131,6 +131,7 @@ from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_scatter_and_annotate import plot_scatter_and_annotate
 from .print_function_information import print_function_information
+from .print_header_in_terminal import print_header_in_terminal
 from .process_feature_x_sample import process_feature_x_sample
 from .RANDOM_SEED import RANDOM_SEED
 from .read_firebrowse_copynumber_gistic2 import read_firebrowse_copynumber_gistic2

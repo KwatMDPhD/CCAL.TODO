@@ -1,11 +1,9 @@
 from subprocess import PIPE, run
 
 
-def run_command(command, print_command=True):
+def run_command(command):
 
-    if print_command:
-
-        print(command)
+    print(command)
 
     return run(
         command,

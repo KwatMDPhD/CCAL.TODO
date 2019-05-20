@@ -7,11 +7,7 @@ def is_program(program_name):
 
     try:
 
-        return bool(
-            run_command(
-                "type {}".format(program_name), print_command=False
-            ).stdout.strip()
-        )
+        return bool(run_command(f"type {program_name}").stdout.strip())
 
     except CalledProcessError:
 
