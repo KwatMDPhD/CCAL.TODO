@@ -48,7 +48,7 @@ element_marker_size = 16
 
 grid_label_opacity_without_annotation = 0.64
 
-grid_label_opacity_with_annotation = 0.32
+grid_label_opacity_with_annotation = 0.24
 
 
 def _check_node_x_element(node_x_element):
@@ -232,7 +232,7 @@ def _plot(
 
     element_marker_line = {"width": 1, "color": node_color}
 
-    element_opacity = 0.88
+    element_opacity = 0.8
 
     if annotation_x_element is not None:
 

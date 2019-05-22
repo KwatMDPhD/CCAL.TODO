@@ -17,6 +17,15 @@ def select_series_indices(
     html_file_path=None,
 ):
 
+    if (
+        threshold is None
+        and n is None
+        and fraction is None
+        and standard_deviation is None
+    ):
+
+        raise ValueError("threshold, n, fraction, and standard_deviation are all None.")
+
     series_no_na_sorted = series.dropna().sort_values()
 
     if series_no_na_sorted.empty:
