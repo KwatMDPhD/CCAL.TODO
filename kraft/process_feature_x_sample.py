@@ -93,11 +93,7 @@ def process_feature_x_sample(
 
                 min_n_not_na_unique_value = feature_x_sample.shape[drop_axis]
 
-        print(
-            "Dropping slice (drop_axis={} & max_na={} & min_n_not_na_unique_value={}) ...".format(
-                drop_axis, max_na, min_n_not_na_unique_value
-            )
-        )
+        print("Dropping slice ...")
 
         shape_before_drop = feature_x_sample.shape
 
@@ -105,6 +101,7 @@ def process_feature_x_sample(
 
             feature_x_sample = drop_dataframe_slice_greedily(
                 feature_x_sample,
+                drop_axis,
                 max_na=max_na,
                 min_n_not_na_unique_value=min_n_not_na_unique_value,
             )

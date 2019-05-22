@@ -2,16 +2,18 @@ from .drop_dataframe_slice import drop_dataframe_slice
 
 
 def drop_dataframe_slice_greedily(
-    dataframe, max_na=None, min_n_not_na_unique_value=None
+    dataframe, axis, max_na=None, min_n_not_na_unique_value=None
 ):
 
-    modular_shift = int(dataframe.shape[1] < dataframe.shape[0])
+    shape_before = dataframe.shape
 
-    for i in range(dataframe.size):
+    if axis is None:
 
-        shape_before = dataframe.shape
+        axis = int(dataframe.shape[0] < dataframe.shape[1])
 
-        axis = (i + modular_shift) % 2
+    check_for_return = False
+
+    while True:
 
         dataframe = drop_dataframe_slice(
             dataframe,
@@ -22,8 +24,14 @@ def drop_dataframe_slice_greedily(
 
         shape_after = dataframe.shape
 
-        print("Shape: {} =(drop axis {})=> {}".format(shape_before, axis, shape_after))
-
-        if 0 < i and shape_before == shape_after:
+        if check_for_return and shape_before == shape_after:
 
             return dataframe
+
+        else:
+
+            shape_before = shape_after
+
+            axis = (axis + 1) % 2
+
+            check_for_return = True

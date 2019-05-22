@@ -15,7 +15,9 @@ def clean_and_write_dataframe_to_tsv(dataframe, index_name, tsv_file_path):
 
     dataframe = dataframe.fillna(nan)
 
-    dataframe = drop_dataframe_slice_greedily(dataframe, min_n_not_na_unique_value=1)
+    dataframe = drop_dataframe_slice_greedily(
+        dataframe, None, min_n_not_na_unique_value=1
+    )
 
     dataframe = dataframe.sort_index().sort_index(axis=1)
 

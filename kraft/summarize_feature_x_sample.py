@@ -1,3 +1,4 @@
+from numpy import nanmax, nanmin
 from numpy.random import choice
 from pandas import Series
 
@@ -10,16 +11,16 @@ def summarize_feature_x_sample(
     feature_x_sample_alias="Feature-x-Sample",
     feature_x_sample_value_name="Value",
     plot=True,
-    plot_heat_map_max_size=640000,
-    plot_histogram_max_size=64000,
-    plot_rug_max_size=6400,
+    plot_heat_map_max_size=160000,
+    plot_histogram_max_size=16000,
+    plot_rug_max_size=1600,
 ):
 
     print("Shape: {}".format(feature_x_sample.shape))
 
-    print("Min: {}".format(feature_x_sample.values.min()))
+    print("(not-nan) Min: {}".format(nanmin(feature_x_sample.values)))
 
-    print("Max: {}".format(feature_x_sample.values.max()))
+    print("(not-nan) Max: {}".format(nanmax(feature_x_sample.values)))
 
     for axis in (0, 1):
 
