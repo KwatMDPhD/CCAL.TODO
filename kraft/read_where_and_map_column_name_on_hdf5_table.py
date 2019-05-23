@@ -3,7 +3,7 @@ from numpy import floating, integer, ndarray
 
 def read_where_and_map_column_name_on_hdf5_table(hdf5_table, query):
 
-    print("Reading {} where {} ...".format(hdf5_table.name, query))
+    print(f"Reading {hdf5_table.name} where {query} ...")
 
     columns = hdf5_table.colnames
 

@@ -16,11 +16,11 @@ def compute_posterior_probabilities(probabilities, plot=True, names=None):
 
         if names is None:
 
-            names = tuple("Axis-{} Variable".format(i) for i in range(n_dimension))
+            names = tuple(f"Axis-{i} Variable" for i in range(n_dimension))
 
         plot_heat_map(
             DataFrame(rot90(p_tv__ntvs)),
-            title="P({} | {})".format(names[1], names[0]),
+            title=f"P({names[1]} | {names[0]})",
             xaxis_title=names[0],
             yaxis_title=names[1],
         )

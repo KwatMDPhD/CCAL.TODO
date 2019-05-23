@@ -8,7 +8,7 @@ def establish_path(path, path_type):
 
         if path.endswith("/"):
 
-            raise ValueError("File path {} should not end with '/'.".format(path))
+            raise ValueError(f"File path {path} should not end with '/'.")
 
     elif path_type == "directory":
 
@@ -30,4 +30,4 @@ def establish_path(path, path_type):
 
         mkdir(directory_path)
 
-        print("Created directory {}.".format(directory_path))
+        print(f"Created directory {directory_path}.")

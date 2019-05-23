@@ -41,9 +41,9 @@ def apply_function_on_2_dataframes_slices(
 
     else:
 
-        comparison.to_csv("{}.tsv".format(file_path_prefix), sep="\t")
+        comparison.to_csv(f"{file_path_prefix}.tsv", sep="\t")
 
-        html_file_path = "{}.html".format(file_path_prefix)
+        html_file_path = f"{file_path_prefix}.html"
 
     plot_heat_map(
         comparison.iloc[

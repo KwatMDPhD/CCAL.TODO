@@ -101,7 +101,7 @@ def run_single_sample_gsea(
         {
             "yaxis": "y2",
             "type": "scatter",
-            "name": "Peak ({:.3f})".format(gsea_score),
+            "name": f"Peak ({gsea_score:.3f})",
             "x": (grid[peek_index],),
             "y": (cumsum[peek_index],),
             "mode": "markers",
@@ -158,7 +158,7 @@ def run_single_sample_gsea(
             "y": 0,
             "yref": "y2",
             "clicktoshow": "onoff",
-            "text": "<b>{}</b>".format(str_),
+            "text": f"<b>{str_}</b>",
             "showarrow": False,
             "font": {"size": annotation_text_font_size},
             "textangle": -90,

@@ -66,8 +66,7 @@ def title_str(str_):
     ):
 
         str_ = str_.replace(
-            " {} ".format(lowercase_character.title()),
-            " {} ".format(lowercase_character),
+            f" {lowercase_character.title()} ", f" {lowercase_character} "
         )
 
     return " ".join(sub_str.strip() for sub_str in str_.split())

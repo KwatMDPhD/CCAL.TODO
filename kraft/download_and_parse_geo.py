@@ -4,13 +4,13 @@ from pandas import DataFrame, concat, isna
 
 def download_and_parse_geo(geo_id, directory_path):
 
-    print("Downloading {} into {} ...".format(geo_id, directory_path))
+    print(f"Downloading {geo_id} into {directory_path} ...")
 
     gse = GEOparse.get_GEO(geo=geo_id, destdir=directory_path)
 
-    print("Title: {}".format(gse.get_metadata_attribute("title")))
+    print(f"Title: {gse.get_metadata_attribute('title')}")
 
-    print("N sample: {}".format(len(gse.get_metadata_attribute("sample_id"))))
+    print(f"N sample: {len(gse.get_metadata_attribute('sample_id'))}")
 
     geo_dict = {
         "id_x_sample": None,
@@ -19,9 +19,7 @@ def download_and_parse_geo(geo_id, directory_path):
         "information_x_sample": gse.phenotype_data.T,
     }
 
-    print(
-        "information_x_sample.shape: {}".format(geo_dict["information_x_sample"].shape)
-    )
+    print(f"information_x_sample.shape: {geo_dict['information_x_sample'].shape}")
 
     empty_samples = tuple(
         sample_id for sample_id, gsm in gse.gsms.items() if gsm.table.empty
@@ -30,9 +28,7 @@ def download_and_parse_geo(geo_id, directory_path):
     if 0 < len(empty_samples):
 
         print(
-            "Sample(s) ({}) are empty (check for any linked or additional supplementary file in the GEO website.)".format(
-                empty_samples
-            )
+            f"Sample(s) ({empty_samples}) are empty (check for any linked or additional supplementary file in the GEO website.)"
         )
 
         return geo_dict
@@ -41,7 +37,7 @@ def download_and_parse_geo(geo_id, directory_path):
 
     for sample_id, gsm in gse.gsms.items():
 
-        print("{} ...".format(sample_id))
+        print(f"{sample_id} ...")
 
         sample_table = gsm.table
 
@@ -54,20 +50,20 @@ def download_and_parse_geo(geo_id, directory_path):
         if isinstance(sample_values, DataFrame):
 
             sample_values.columns = (
-                "{} ({})".format(sample_id, column) for column in sample_values.columns
+                f"{sample_id} ({column})" for column in sample_values.columns
             )
 
         values.append(sample_values)
 
     geo_dict["id_x_sample"] = concat(values, axis=1).sort_index().sort_index(axis=1)
 
-    print("id_x_sample.shape: {}".format(geo_dict["id_x_sample"].shape))
+    print(f"id_x_sample.shape: {geo_dict['id_x_sample'].shape}")
 
     id_gene_symbol = None
 
     for platform_id, gpl in gse.gpls.items():
 
-        print("{} ...".format(platform_id))
+        print(f"{platform_id} ...")
 
         platform_table = gpl.table
 
@@ -115,13 +111,9 @@ def download_and_parse_geo(geo_id, directory_path):
 
             geo_dict["id_gene_symbol"] = id_gene_symbol
 
-            print("id_gene_symbol.shape:{}".format(id_gene_symbol.shape))
+            print(f"id_gene_symbol.shape: {id_gene_symbol.shape}")
 
-            print(
-                "N valid gene_symbol: {}".format(
-                    (id_gene_symbol != "NO GENE NAME").sum()
-                )
-            )
+            print(f"N valid gene_symbol: {(id_gene_symbol != 'NO GENE NAME').sum()}")
 
             gene_x_sample = geo_dict["id_x_sample"].copy()
 
@@ -137,14 +129,12 @@ def download_and_parse_geo(geo_id, directory_path):
 
             geo_dict["gene_x_sample"] = gene_x_sample.sort_index().sort_index(axis=1)
 
-            print("gene_x_sample.shape: {}".format(geo_dict["gene_x_sample"].shape))
+            print(f"gene_x_sample.shape: {geo_dict['gene_x_sample'].shape}")
 
         else:
 
             print(
-                "\tgene_symbol is not a GPL column ({}); IDs may be already gene symbols.".format(
-                    ", ".join(platform_table.columns)
-                )
+                f"\tgene_symbol is not a GPL column ({', '.join(platform_table.columns)}); IDs may be already gene symbols."
             )
 
     return geo_dict

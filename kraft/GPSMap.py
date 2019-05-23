@@ -324,13 +324,11 @@ def _plot(
                         sector_radian * i, sector_radian * (i + 1), num=16
                     )
 
-                    path = "M {} {}".format(x, y)
+                    path = f"M {x} {y}"
 
                     for x_, y_ in zip(cos(sector_radians), sin(sector_radians)):
 
-                        path += " L {} {}".format(
-                            x + x_ * marker_size_factor, y + y_ * marker_size_factor
-                        )
+                        path += " L {x + x_ * marker_size_factor} {y + y_ * marker_size_factor}"
 
                     path += " Z"
 
@@ -549,7 +547,7 @@ class GPSMap:
                         cluster_2d_array(self.w_distance__node_x_node, 0),
                         cluster_2d_array(self.w_distance__node_x_node, 1),
                     ],
-                    title="{0}-{0} Distance in W".format(self.node_name),
+                    title=f"{self.node_name}-{self.node_name} Distance in W",
                     xaxis_title=self.node_name,
                     yaxis_title=self.node_name,
                 )
@@ -586,7 +584,7 @@ class GPSMap:
                         cluster_2d_array(self.h_distance__node_x_node, 0),
                         cluster_2d_array(self.h_distance__node_x_node, 1),
                     ],
-                    title="{0}-{0} Distance in H".format(self.node_name),
+                    title=f"{self.node_name}-{self.node_name} Distance in H",
                     xaxis_title=self.node_name,
                     yaxis_title=self.node_name,
                 )
@@ -617,7 +615,7 @@ class GPSMap:
                         cluster_2d_array(self.distance__node_x_node, 0),
                         cluster_2d_array(self.distance__node_x_node, 1),
                     ],
-                    title="{0}-{0} Distance in W and H".format(self.node_name),
+                    title=f"{self.node_name}-{self.node_name} Distance in W and H",
                     xaxis_title=self.node_name,
                     yaxis_title=self.node_name,
                 )
@@ -973,7 +971,7 @@ class GPSMap:
                     c=support_vector_parameter_c,
                     tol=1e-8,
                 ),
-                name="Predicted {} Label".format(element_name),
+                name=f"Predicted {element_name} Label",
                 index=predicting_elements,
             )
 
@@ -1001,7 +999,7 @@ class GPSMap:
 
         if title is None:
 
-            title = "{} (predicted)".format(w_or_h.title())
+            title = f"{w_or_h.title()} (predicted)"
 
         _plot(
             self.nodes,
@@ -1160,7 +1158,7 @@ class GPSMap:
 
             if i % n_per_print == 0:
 
-                print("\t{}/{} ...".format(i + 1, n_iteration))
+                print(f"\t{i + 1}/{n_iteration} ...")
 
             r__node_x_dimension = self.node_x_dimension.copy()
 
@@ -1217,9 +1215,7 @@ class GPSMap:
 
                 if print_acceptance:
 
-                    print(
-                        "\t\t{:.3e} =(accept)=> {:.3e} ...".format(fitness, r__fitness)
-                    )
+                    print(f"\t\t{fitness:.3e} =(accept)=> {r__fitness:.3e} ...")
 
                 self.node_x_dimension = r__node_x_dimension
 

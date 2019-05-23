@@ -17,11 +17,11 @@ def compute_joint_probabilities(variables, n_grid=64, plot=True, names=None):
 
         if names is None:
 
-            names = tuple("Variable {}".format(i) for i in range(n_dimension))
+            names = tuple(f"Variable {i}" for i in range(n_dimension))
 
         plot_heat_map(
             DataFrame(rot90(probabilities)),
-            title="P({}, {})".format(names[0], names[1]),
+            title=f"P({names[0]}, {names[1]})",
             xaxis_title=names[0],
             yaxis_title=names[1],
         )

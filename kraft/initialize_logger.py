@@ -10,7 +10,7 @@ def initialize_logger(name):
     logger.setLevel(10)
 
     file_handler = FileHandler(
-        join("/", "tmp", "{}.{:%Y:%m:%d:%H:%M:%S}.log".format(name, datetime.now()))
+        join("/", "tmp", f"{name}.{datetime.now():%Y:%m:%d:%H:%M:%S}.log")
     )
 
     file_handler.setFormatter(
@@ -25,6 +25,6 @@ def initialize_logger(name):
 
     logger.addHandler(stream_handler)
 
-    logger.info("Initialized logger {}.".format(name))
+    logger.info(f"Initialized logger {name}.")
 
     return logger

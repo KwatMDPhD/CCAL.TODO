@@ -36,9 +36,7 @@ def hierarchical_consensus_cluster(
     if distance__element_x_element is None:
 
         print(
-            "Computing distance__element_x_element distance with {} ...".format(
-                distance_function
-            )
+            f"Computing distance__element_x_element distance with {distance_function} ..."
         )
 
         distance__element_x_element = DataFrame(
@@ -53,7 +51,7 @@ def hierarchical_consensus_cluster(
                 join(directory_path, "distance.element_x_element.tsv"), sep="\t"
             )
 
-    print("HCC K={} ...".format(k))
+    print(f"HCC K={k} ...")
 
     clustering_x_element = full((n_clustering, dataframe.index.size), nan)
 
@@ -65,7 +63,7 @@ def hierarchical_consensus_cluster(
 
         if clustering % n_per_print == 0:
 
-            print("\t(K={}) {}/{} ...".format(k, clustering + 1, n_clustering))
+            print(f"\t(K={k}) {clustering + 1}/{n_clustering} ...")
 
         random_elements_with_repeat = randint(
             0, high=dataframe.index.size, size=dataframe.index.size
@@ -93,7 +91,7 @@ def hierarchical_consensus_cluster(
     cluster_x_element = make_binary_dataframe_from_categorical_series(element_cluster)
 
     cluster_x_element.index = Index(
-        ("Cluster{}".format(i) for i in cluster_x_element.index),
+        (f"Cluster{i}" for i in cluster_x_element.index),
         name=cluster_x_element.index.name,
     )
 
@@ -141,7 +139,7 @@ def hierarchical_consensus_cluster(
 
         plot_heat_map(
             dataframe,
-            title="HCC K={}".format(k),
+            title=f"HCC K={k}",
             xaxis_title=dataframe.columns.name,
             yaxis_title=dataframe.index.name,
             html_file_path=html_file_path,

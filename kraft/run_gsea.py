@@ -38,7 +38,7 @@ def run_gsea(
 
     print(gene_score_no_na_sorted)
 
-    print("Computing gene set enrichment for {} ...".format(genes.name))
+    print(f"Computing gene set enrichment for {genes.name} ...")
 
     gsea_score = run_single_sample_gsea(
         gene_score_no_na_sorted,

@@ -9,7 +9,7 @@ def select_and_group_feature_x_tcga_sample_by_sample_type(
         :, feature_x_tcga_sample.columns.str[13:15] == sample_type
     ]
 
-    print("{}: sample_type_selected".format(sample_type_selected.shape))
+    print(f"{sample_type_selected.shape}: sample_type_selected")
 
     duplicated = sample_type_selected.columns.str[:12].duplicated(keep=False)
 
@@ -20,9 +20,7 @@ def select_and_group_feature_x_tcga_sample_by_sample_type(
     ]
 
     print(
-        "{}: sample_type_selected_not_duplicated".format(
-            sample_type_selected_not_duplicated.shape
-        )
+        f"{sample_type_selected_not_duplicated.shape}: sample_type_selected_not_duplicated"
     )
 
     sample_type_selected_duplicated = sample_type_selected.loc[:, duplicated]
@@ -30,9 +28,7 @@ def select_and_group_feature_x_tcga_sample_by_sample_type(
     if sample_type_selected_duplicated.size:
 
         print(
-            "{}: sample_type_selected_duplicated".format(
-                sample_type_selected_duplicated.shape
-            )
+            f"{sample_type_selected_duplicated.shape}: sample_type_selected_duplicated"
         )
 
         sample_type_selected_duplicated = sample_type_selected_duplicated.groupby(

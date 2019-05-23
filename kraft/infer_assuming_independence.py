@@ -36,18 +36,14 @@ def infer_assuming_independence(
 
     if names is None:
 
-        names = tuple("Variable {}".format(i) for i in range(n_dimension))
+        names = tuple(f"Variable {i}" for i in range(n_dimension))
 
     if plot:
 
         plot_and_save(
             {
                 "layout": {
-                    "title": {
-                        "text": "P({} = {} = {}) = {}".format(
-                            names[-1], target, t, p_tvt
-                        )
-                    },
+                    "title": {"text": f"P({names[-1]} = {target} = {t}) = {p_tvt}"},
                     "xaxis": {"title": names[-1]},
                     "yaxis": {"title": "Probability"},
                 },
@@ -94,9 +90,7 @@ def infer_assuming_independence(
 
         plot_heat_map(
             DataFrame(rot90(p_tvt__ntvs)),
-            title="P({} = {} = {} | {}, {})".format(
-                names[-1], target, t, names[0], names[1]
-            ),
+            title=f"P({names[-1]} = {target} = {t} | {names[0]}, {names[1]})",
             xaxis_title=names[0],
             yaxis_title=names[1],
         )

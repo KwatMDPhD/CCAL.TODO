@@ -7,7 +7,7 @@ def sample_from_each_series_value(series, n_per_value=None, random_seed=RANDOM_S
 
         n_per_value = series.value_counts().min()
 
-        print("n_per_value = {}".format(n_per_value))
+        print(f"n_per_value = {n_per_value}")
 
     indices_selected = []
 
@@ -24,9 +24,7 @@ def sample_from_each_series_value(series, n_per_value=None, random_seed=RANDOM_S
         else:
 
             print(
-                "Not sampling {}, which appears less than {} times.".format(
-                    group_name, n_per_value
-                )
+                f"Not sampling {group_name}, which appears less than {n_per_value} times."
             )
 
     return series[indices_selected]

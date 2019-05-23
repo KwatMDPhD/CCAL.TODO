@@ -38,13 +38,13 @@ def plot_bubble_map(
                 "xaxis": {
                     "tickvals": arange(dataframe_size.shape[1]),
                     "ticktext": dataframe_size.columns,
-                    "title": "{} ({})".format(xaxis_title, dataframe_size.shape[1]),
+                    "title": f"{xaxis_title} ({dataframe_size.shape[1]})",
                     **axis_template,
                 },
                 "yaxis": {
                     "tickvals": arange(dataframe_size.shape[0]),
                     "ticktext": dataframe_size.index[::-1],
-                    "title": "{} ({})".format(yaxis_title, dataframe_size.shape[0]),
+                    "title": f"{yaxis_title} ({dataframe_size.shape[0]})",
                     **axis_template,
                 },
             },

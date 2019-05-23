@@ -57,15 +57,15 @@ def correlate_2_1d_arrays(
 
     if plot:
 
-        r2_p_value_str = "R^2={:.3f}".format(r2)
+        r2_p_value_str = f"R^2={r2:.3f}"
 
         if not isnan(p_value):
 
-            r2_p_value_str = "{} & P-Value={:.3e}".format(r2_p_value_str, p_value)
+            r2_p_value_str = f"{r2_p_value_str} & P-Value={p_value:.3e}"
 
         if title:
 
-            title = "{}\n{}".format(title, r2_p_value_str)
+            title = f"{title}\n{r2_p_value_str}"
 
         else:
 

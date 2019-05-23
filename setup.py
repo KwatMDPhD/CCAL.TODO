@@ -5,7 +5,7 @@ name = "kraft"
 setup(
     name=name,
     version="0.0.1",
-    url="https://github.com/KwatME/{}".format(name),
+    url=f"https://github.com/KwatME/{name}",
     author="Kwat Medetgul-Ernar",
     author_email="kwatme8@gmail.com",
     packages=find_packages(),

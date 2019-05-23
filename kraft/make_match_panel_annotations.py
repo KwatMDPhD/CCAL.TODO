@@ -13,7 +13,7 @@ def make_match_panel_annotations(score_moe_p_value_fdr):
 
         annotations["Score(\u0394)"] = score_moe_p_value_fdr[
             ["Score", "0.95 MoE"]
-        ].apply(lambda score_moe: "{:.2f}({:.2f})".format(*score_moe), axis=1)
+        ].apply(lambda score_moe: f"{score_moe[0]:.2f}({score_moe[1]:.2f})", axis=1)
 
     if not score_moe_p_value_fdr["P-Value"].isna().all():
 

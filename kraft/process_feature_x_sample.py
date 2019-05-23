@@ -31,11 +31,11 @@ def process_feature_x_sample(
 
     if feature_x_sample.index.has_duplicates:
 
-        raise ValueError("{} duplicated.".format(feature_x_sample.index.name))
+        raise ValueError(f"{feature_x_sample.index.name} duplicated.")
 
     elif feature_x_sample.columns.has_duplicates:
 
-        raise ValueError("{} duplicated.".format(feature_x_sample.columns.name))
+        raise ValueError(f"{feature_x_sample.columns.name} duplicated.")
 
     shape_before_drop = feature_x_sample.shape
 
@@ -43,27 +43,21 @@ def process_feature_x_sample(
 
         features_to_drop = feature_x_sample.index & set(features_to_drop)
 
-        print(
-            "Dropping {}: {} ...".format(feature_x_sample.index.name, features_to_drop)
-        )
+        print(f"Dropping {feature_x_sample.index.name}: {features_to_drop} ...")
 
         feature_x_sample.drop(features_to_drop, inplace=True)
 
-        print("Shape: {}".format(feature_x_sample.shape))
+        print(f"Shape: {feature_x_sample.shape}")
 
     if samples_to_drop is not None:
 
         samples_to_drop = feature_x_sample.columns & set(samples_to_drop)
 
-        print(
-            "Dropping {}: {} ...".format(
-                feature_x_sample.columns.name, features_to_drop
-            )
-        )
+        print(f"Dropping {feature_x_sample.columns.name}: {features_to_drop} ...")
 
         feature_x_sample.drop(samples_to_drop, axis=1, inplace=True)
 
-        print("Shape: {}".format(feature_x_sample.shape))
+        print(f"Shape: {feature_x_sample.shape}")
 
     if feature_x_sample.shape != shape_before_drop:
 
@@ -73,7 +67,7 @@ def process_feature_x_sample(
 
     if nanize is not None:
 
-        print("NANizing <= {} ...".format(nanize))
+        print(f"NANizing <= {nanize} ...")
 
         feature_x_sample[feature_x_sample <= nanize] = nan
 
@@ -124,9 +118,7 @@ def process_feature_x_sample(
     if log_base is not None:
 
         print(
-            "Logging (shift_as_necessary_to_achieve_min_before_logging={} & log_base={}) ...".format(
-                shift_as_necessary_to_achieve_min_before_logging, log_base
-            )
+            f"Logging (shift_as_necessary_to_achieve_min_before_logging={shift_as_necessary_to_achieve_min_before_logging} & log_base={log_base}) ..."
         )
 
         feature_x_sample = DataFrame(
@@ -146,11 +138,7 @@ def process_feature_x_sample(
 
     if normalization_method is not None:
 
-        print(
-            "Axis-{} {} normalizing ...".format(
-                normalization_axis, normalization_method
-            )
-        )
+        print(f"Axis-{normalization_axis} {normalization_method} normalizing ...")
 
         feature_x_sample = normalize_series_or_dataframe(
             feature_x_sample, normalization_axis, normalization_method
@@ -162,13 +150,13 @@ def process_feature_x_sample(
 
     if clip_min is not None:
 
-        print("|-{} clipping  ...".format(clip_min))
+        print(f"|-{clip_min} clipping  ...")
 
         feature_x_sample.clip(lower=clip_min, inplace=True)
 
     if clip_max is not None:
 
-        print("{}-| clipping  ...".format(clip_max))
+        print(f"{clip_max}-| clipping  ...")
 
         feature_x_sample.clip(upper=clip_max, inplace=True)
 

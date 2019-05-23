@@ -27,7 +27,7 @@ def mf_consensus_cluster(
     directory_path=None,
 ):
 
-    print("MFCC K={} ...".format(k))
+    print(f"MFCC K={k} ...")
 
     clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
 
@@ -47,7 +47,7 @@ def mf_consensus_cluster(
 
         if clustering % n_per_print == 0:
 
-            print("\t(K={}) {}/{} ...".format(k, clustering + 1, n_clustering))
+            print(f"\t(K={k}) {clustering + 1}/{n_clustering} ...")
 
         w, h, e = mf_function(
             dataframe.values,
@@ -64,7 +64,7 @@ def mf_consensus_cluster(
 
             e_0 = e
 
-            factors = Index(("Factor{}".format(i) for i in range(k)), name="Factor")
+            factors = Index((f"Factor{i}" for i in range(k)), name="Factor")
 
             w_0 = DataFrame(w_0, index=dataframe.index, columns=factors)
 
@@ -92,7 +92,7 @@ def mf_consensus_cluster(
 
                 plot_heat_map(
                     w_0.iloc[cluster_2d_array(w_0.values, 0)],
-                    title="MF K={} W".format(k),
+                    title=f"MF K={k} W",
                     xaxis_title=w_0.columns.name,
                     yaxis_title=w_0.index.name,
                     html_file_path=html_file_path,
@@ -114,7 +114,7 @@ def mf_consensus_cluster(
 
                 plot_heat_map(
                     h_0.iloc[:, cluster_2d_array(h_0.values, 1)],
-                    title="MF K={} H".format(k),
+                    title=f"MF K={k} H",
                     xaxis_title=h_0.columns.name,
                     yaxis_title=h_0.index.name,
                     html_file_path=html_file_path,
@@ -164,7 +164,7 @@ def mf_consensus_cluster(
             dataframe,
             row_annotation=w_element_cluster_sorted,
             column_annotation=h_element_cluster_sorted,
-            title="MFCC K={}".format(k),
+            title=f"MFCC K={k}",
             xaxis_title=dataframe.columns.name,
             yaxis_title=dataframe.index.name,
             html_file_path=html_file_path,

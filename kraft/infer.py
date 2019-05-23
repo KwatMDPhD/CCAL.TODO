@@ -29,7 +29,7 @@ def infer(variables, n_grid=64, target="max", plot=True, names=None):
 
     p_tv__ntvs = compute_posterior_probabilities(p_vs, plot=plot, names=names)
 
-    if target is "max":
+    if target == "max":
 
         t_index_grid = _get_target_index_grid(p_tv__ntvs, argmax)
 
@@ -47,18 +47,14 @@ def infer(variables, n_grid=64, target="max", plot=True, names=None):
 
         if names is None:
 
-            names = tuple("Variable {}".format(i) for i in range(n_dimension))
+            names = tuple(f"Variable {i}" for i in range(n_dimension))
 
         if n_dimension == 2:
 
             plot_and_save(
                 {
                     "layout": {
-                        "title": {
-                            "text": "P({} = {} | {})".format(
-                                names[-1], target, names[0]
-                            )
-                        },
+                        "title": {"text": f"P({names[-1]} = {target} | {names[0]})"},
                         "xaxis": {"title": names[0]},
                         "yaxis": {"title": "Probability"},
                     },
@@ -78,9 +74,7 @@ def infer(variables, n_grid=64, target="max", plot=True, names=None):
 
             plot_heat_map(
                 DataFrame(rot90(p_tvt__ntvs)),
-                title="P({} = {} | {}, {})".format(
-                    names[-1], target, names[0], names[1]
-                ),
+                title=f"P({names[-1]} = {target} | {names[0]}, {names[1]})",
                 xaxis_title=names[0],
                 yaxis_title=names[1],
             )

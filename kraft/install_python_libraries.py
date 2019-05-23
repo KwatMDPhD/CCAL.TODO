@@ -12,8 +12,8 @@ def install_python_libraries(libraries):
 
         if library not in libraries_installed:
 
-            run_command("pip install {}".format(library))
+            run_command(f"pip install {library}")
 
         else:
 
-            print("{} is already installed.".format(library))
+            print(f"{library} is already installed.")

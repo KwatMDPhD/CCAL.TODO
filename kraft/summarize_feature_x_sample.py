@@ -16,11 +16,11 @@ def summarize_feature_x_sample(
     plot_rug_max_size=1600,
 ):
 
-    print("Shape: {}".format(feature_x_sample.shape))
+    print(f"Shape: {feature_x_sample.shape}")
 
-    print("(not-nan) Min: {}".format(nanmin(feature_x_sample.values)))
+    print(f"(not-nan) Min: {nanmin(feature_x_sample.values)}")
 
-    print("(not-nan) Max: {}".format(nanmax(feature_x_sample.values)))
+    print(f"(not-nan) Max: {nanmax(feature_x_sample.values)}")
 
     for axis in (0, 1):
 
@@ -38,11 +38,7 @@ def summarize_feature_x_sample(
 
         if n_extreme * 2 < n_unique_value_count.shape[0]:
 
-            print(
-                "Axis {} Top and Bottom {} Number of Unique Values:".format(
-                    axis, n_extreme
-                )
-            )
+            print(f"Axis {axis} Top and Bottom {n_extreme} Number of Unique Values:")
 
             print(
                 n_unique_value_count.iloc[
@@ -52,7 +48,7 @@ def summarize_feature_x_sample(
 
         else:
 
-            print("Axis {} Number of Unique Values:".format(axis))
+            print(f"Axis {axis} Number of Unique Values:")
 
             print(n_unique_value_count)
 
@@ -71,7 +67,7 @@ def summarize_feature_x_sample(
 
         if plot_histogram_max_size < feature_x_sample_not_na_values.size:
 
-            print("Sampling random {:,} values ...".format(plot_histogram_max_size))
+            print(f"Sampling random {plot_histogram_max_size:,} values ...")
 
             feature_x_sample_not_na_values = choice(
                 feature_x_sample_not_na_values,
@@ -84,7 +80,7 @@ def summarize_feature_x_sample(
         plot_histogram(
             (Series(feature_x_sample_not_na_values),),
             plot_rug=feature_x_sample_not_na_values.size < plot_rug_max_size,
-            title="{}<br>Histogram of {}".format(feature_x_sample_alias, value_name),
+            title=f"{feature_x_sample_alias}<br>Histogram of {value_name}",
             xaxis_title=value_name,
         )
 
@@ -92,7 +88,7 @@ def summarize_feature_x_sample(
 
     n_na = isna__feature_x_sample.values.sum()
 
-    print("N NA: {} ({:.2f}%)".format(n_na, n_na / feature_x_sample.size * 100))
+    print(f"N NA: {n_na} ({n_na / feature_x_sample.size * 100:.2f}%)")
 
     if n_na and plot and isna__feature_x_sample.size < plot_histogram_max_size:
 
@@ -101,6 +97,6 @@ def summarize_feature_x_sample(
         plot_histogram(
             (isna__feature_x_sample.sum(axis=1), isna__feature_x_sample.sum()),
             plot_rug=max(isna__feature_x_sample.shape) < plot_rug_max_size,
-            title="{}<br>Histogram of {} ".format(feature_x_sample_alias, value_name),
+            title=f"{feature_x_sample_alias}<br>Histogram of {value_name} ",
             xaxis_title=value_name,
         )
