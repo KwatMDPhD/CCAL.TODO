@@ -1,4 +1,4 @@
-from plotly.io import write_image
+# from plotly.io import write_image
 from plotly.offline import iplot
 from plotly.offline import plot as offline_plot
 from plotly.plotly import plot as plotly_plot
@@ -24,9 +24,9 @@ def plot_and_save(figure, html_file_path, plotly_html_file_path=None):
             figure, filename=html_file_path, auto_open=False, config=config
         )
 
-        write_image(
-            figure, html_file_path.replace(".html", ".svg"), width=880, height=880
-        )
+        # write_image(
+        #     figure, html_file_path.replace(".html", ".svg"), width=880, height=880
+        # )
 
     if plotly_html_file_path is not None:
 

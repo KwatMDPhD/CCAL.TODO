@@ -6,7 +6,7 @@ from .plot_and_save import plot_and_save
 def select_series_indices(
     series,
     direction,
-    threshold=None,
+    thresholds=None,
     n=None,
     fraction=None,
     standard_deviation=None,
@@ -16,15 +16,6 @@ def select_series_indices(
     yaxis=None,
     html_file_path=None,
 ):
-
-    if (
-        threshold is None
-        and n is None
-        and fraction is None
-        and standard_deviation is None
-    ):
-
-        raise ValueError("threshold, n, fraction, and standard_deviation are all None.")
 
     series_no_na_sorted = series.dropna().sort_values()
 
@@ -54,7 +45,7 @@ def select_series_indices(
 
     if direction == "<":
 
-        if threshold is None:
+        if thresholds is None:
 
             if n is not None:
 
@@ -71,11 +62,19 @@ def select_series_indices(
                     - series_no_na_sorted.std() * standard_deviation
                 )
 
+            else:
+
+                threshold = None
+
+        else:
+
+            threshold = thresholds[0]
+
         is_selected = series_no_na_sorted <= threshold
 
     elif direction == ">":
 
-        if threshold is None:
+        if thresholds is None:
 
             if n is not None:
 
@@ -92,36 +91,46 @@ def select_series_indices(
                     + series_no_na_sorted.std() * standard_deviation
                 )
 
+            else:
+
+                threshold = None
+
+        else:
+
+            threshold = thresholds[0]
+
         is_selected = threshold <= series_no_na_sorted
 
     elif direction == "<>":
 
-        if n is not None:
+        if thresholds is None:
 
-            threshold_low = series_no_na_sorted.iloc[n]
+            if n is not None:
 
-            threshold_high = series_no_na_sorted.iloc[-n]
+                thresholds = (series_no_na_sorted.iloc[n], series_no_na_sorted.iloc[-n])
 
-        elif fraction is not None:
+            elif fraction is not None:
 
-            threshold_low = series_no_na_sorted.quantile(fraction)
+                thresholds = (
+                    series_no_na_sorted.quantile(fraction),
+                    series_no_na_sorted.quantile(1 - fraction),
+                )
 
-            threshold_high = series_no_na_sorted.quantile(1 - fraction)
+            elif standard_deviation is not None:
 
-        elif standard_deviation is not None:
+                thresholds = (
+                    series_no_na_sorted.mean()
+                    - series_no_na_sorted.std() * standard_deviation,
+                    series_no_na_sorted.mean()
+                    + series_no_na_sorted.std() * standard_deviation,
+                )
 
-            threshold_low = (
-                series_no_na_sorted.mean()
-                - series_no_na_sorted.std() * standard_deviation
-            )
+            else:
 
-            threshold_high = (
-                series_no_na_sorted.mean()
-                + series_no_na_sorted.std() * standard_deviation
-            )
+                thresholds = (None, None)
 
-        is_selected = (series_no_na_sorted <= threshold_low) | (
-            threshold_high <= series_no_na_sorted
+        is_selected = (series_no_na_sorted <= thresholds[0]) | (
+            thresholds[1] <= series_no_na_sorted
         )
 
     if plot:

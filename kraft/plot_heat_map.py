@@ -25,8 +25,6 @@ def plot_heat_map(
     title=None,
     xaxis_title=None,
     yaxis_title=None,
-    x_ticks=None,
-    y_ticks=None,
     html_file_path=None,
 ):
 
@@ -44,15 +42,13 @@ def plot_heat_map(
         "title": {"text": title},
         "xaxis": {
             "title": f"{xaxis_title} ({dataframe.shape[1]})",
-            "ticks": x_ticks,
-            "showticklabels": x_ticks,
+            "tickangle": 90,
             **heat_map_axis_template,
         },
         "xaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
         "yaxis": {
             "title": f"{yaxis_title} ({dataframe.shape[0]})",
-            "ticks": y_ticks,
-            "showticklabels": y_ticks,
+            "tickangle": 0,
             **heat_map_axis_template,
         },
         "yaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
