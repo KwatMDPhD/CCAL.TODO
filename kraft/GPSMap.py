@@ -328,7 +328,7 @@ def _plot(
 
                     for x_, y_ in zip(cos(sector_radians), sin(sector_radians)):
 
-                        path += " L {x + x_ * marker_size_factor} {y + y_ * marker_size_factor}"
+                        path += f" L {x + x_ * marker_size_factor} {y + y_ * marker_size_factor}"
 
                     path += " Z"
 
