@@ -117,6 +117,7 @@ def _plot(
     label_colors,
     grid_label_opacity,
     annotation_x_element,
+    annotation_types,
     annotation_std_maxs,
     layout_size,
     title,
@@ -250,7 +251,13 @@ def _plot(
                 [elements.index(element) for element in element_value.index]
             ]
 
-            data_type = get_data_type(element_value)
+            if annotation_types is not None:
+
+                data_type = annotation_types[i]
+
+            else:
+
+                data_type = get_data_type(element_value)
 
             if data_type in ("binary", "categorical"):
 
@@ -659,6 +666,7 @@ class GPSMap:
         w_or_h,
         grid_label_opacity=None,
         annotation_x_element=None,
+        annotation_types=None,
         annotation_std_maxs=None,
         elements_to_be_emphasized=None,
         element_marker_size=element_marker_size,
@@ -731,6 +739,7 @@ class GPSMap:
             label_colors,
             grid_label_opacity,
             annotation_x_element,
+            annotation_types,
             annotation_std_maxs,
             layout_size,
             title,

@@ -222,6 +222,8 @@ def make_match_panel(
     score_ascending=False,
     plot=True,
     cluster_within_category=True,
+    target_type=None,
+    data_type=None,
     plot_std=None,
     title=None,
     layout_side_margin=196,
@@ -340,14 +342,6 @@ def make_match_panel(
 
     target_to_plot = target.copy()
 
-    if get_data_type(target_to_plot) == "continuous":
-
-        target_to_plot = normalize_series_or_dataframe(target_to_plot, None, "-0-")
-
-        if plot_std is not None:
-
-            target_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
-
     if (
         cluster_within_category
         and is_sorted_nd_array(target_to_plot.values)
@@ -367,6 +361,14 @@ def make_match_panel(
         ]
 
         target_to_plot = target_to_plot[data_to_plot.columns]
+
+    if get_data_type(target_to_plot) == "continuous":
+
+        target_to_plot = normalize_series_or_dataframe(target_to_plot, None, "-0-")
+
+        if plot_std is not None:
+
+            target_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
 
     if get_data_type(data_to_plot) == "continuous":
 
