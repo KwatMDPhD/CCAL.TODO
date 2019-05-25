@@ -14,6 +14,7 @@ def make_summary_match_panel(
     plot_only_shared_by_target_and_all_data=False,
     target_ascending=True,
     score_ascending=False,
+    target_type=None,
     plot_std=None,
     title=None,
     layout_side_margin=196,
@@ -33,7 +34,11 @@ def make_summary_match_panel(
 
     target_to_plot = target.copy()
 
-    if get_data_type(target_to_plot) == "continuous":
+    if target_type is None:
+
+        target_type = get_data_type(target_to_plot)
+
+    if target_type == "continuous":
 
         target_to_plot = normalize_series_or_dataframe(target_to_plot, None, "-0-")
 
@@ -103,7 +108,9 @@ def make_summary_match_panel(
 
         data_to_plot = data_to_plot.loc[score_moe_p_value_fdr_to_plot.index]
 
-        if get_data_type(data_to_plot) == "continuous":
+        data_type = data_dict.get("type", get_data_type(data_to_plot))
+
+        if data_type == "continuous":
 
             data_to_plot = normalize_series_or_dataframe(data_to_plot, 1, "-0-")
 

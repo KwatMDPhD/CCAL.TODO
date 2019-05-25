@@ -1,14 +1,25 @@
-from setuptools import find_packages, setup
+from distutils.core import setup
+from os.path import join
 
-name = "kraft"
+from kraft import get_child_paths
+
+NAME = "kraft"
+
+VERSION = "0.0.2"
+
+URL = "https://github.com/KwatME/kraft"
 
 setup(
-    name=name,
-    version="0.0.1",
-    url=f"https://github.com/KwatME/{name}",
+    name=NAME,
+    version=VERSION,
+    url=URL,
     author="Kwat Medetgul-Ernar",
     author_email="kwatme8@gmail.com",
-    packages=find_packages(),
+    license="LICENSE",
     python_requires=">=3.6",
-    package_data={name: ["data"]},
+    install_requires=(),
+    packages=(NAME,),
+    package_data={
+        NAME: tuple(join("data", path) for path in get_child_paths(join(NAME, "data")))
+    },
 )

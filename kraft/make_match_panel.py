@@ -362,7 +362,11 @@ def make_match_panel(
 
         target_to_plot = target_to_plot[data_to_plot.columns]
 
-    if get_data_type(target_to_plot) == "continuous":
+    if target_type is None:
+
+        target_type = get_data_type(target_to_plot)
+
+    if target_type == "continuous":
 
         target_to_plot = normalize_series_or_dataframe(target_to_plot, None, "-0-")
 
@@ -370,7 +374,11 @@ def make_match_panel(
 
             target_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
 
-    if get_data_type(data_to_plot) == "continuous":
+    if data_type is None:
+
+        data_type = get_data_type(data_to_plot)
+
+    if data_type == "continuous":
 
         data_to_plot = normalize_series_or_dataframe(data_to_plot, 1, "-0-")
 
