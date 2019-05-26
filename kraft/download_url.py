@@ -10,8 +10,8 @@ def download_url(url, directory_path):
 
     print(f"{url} =(download)=> {file_path} ...")
 
-    with open(file_path, "wb") as file:
+    with open(file_path, "wb") as io:
 
-        file.write(get(url, allow_redirects=True).content)
+        io.write(get(url, allow_redirects=True).content)
 
     return file_path

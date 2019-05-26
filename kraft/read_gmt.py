@@ -8,9 +8,9 @@ def read_gmt(gmt_file_path):
 
     lines = []
 
-    with open(gmt_file_path) as gmt_file:
+    with open(gmt_file_path) as io:
 
-        for line in gmt_file:
+        for line in io:
 
             split = line.strip().split(sep="\t")
 
