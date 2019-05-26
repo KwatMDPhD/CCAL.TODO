@@ -1,8 +1,6 @@
 from distutils.core import setup
 from os.path import join
 
-from kraft import get_child_paths
-
 NAME = "kraft"
 
 VERSION = "0.0.2"
@@ -20,6 +18,9 @@ setup(
     install_requires=(),
     packages=(NAME,),
     package_data={
-        NAME: tuple(join("data", path) for path in get_child_paths(join(NAME, "data")))
+        NAME: tuple(
+            join("data", path)
+            for path in ("cell_line_name_best_cell_line_name.tsv", "hgnc.tsv")
+        )
     },
 )
