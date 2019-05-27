@@ -25,50 +25,51 @@ def compute_information_coefficient_between_2_1d_arrays(
 
         return nan
 
-    else:
+    dx = (_1d_array_0.max() - _1d_array_0.min()) / (n_grid - 1)
+    print(f"dx = {dx}")
 
-        pearson_correlation_abs = abs(pearson_correlation)
+    dy = (_1d_array_1.max() - _1d_array_1.min()) / (n_grid - 1)
+    print(f"dy = {dy}")
 
-        bandwidth_x = mass.bcv(_1d_array_0)[0] * (1 - pearson_correlation_abs * 0.75)
+    pearson_correlation_abs = abs(pearson_correlation)
 
-        bandwidth_y = mass.bcv(_1d_array_1)[0] * (1 - pearson_correlation_abs * 0.75)
+    bandwidth_x = mass.bcv(_1d_array_0)[0] * (1 - pearson_correlation_abs * 0.75)
 
-        fxy = (
-            asarray(
-                mass.kde2d(
-                    _1d_array_0,
-                    _1d_array_1,
-                    asarray((bandwidth_x, bandwidth_y)),
-                    n=asarray((n_grid,)),
-                )[2]
-            )
-            + eps
-        )
+    bandwidth_y = mass.bcv(_1d_array_1)[0] * (1 - pearson_correlation_abs * 0.75)
 
-        dx = (_1d_array_0.max() - _1d_array_0.min()) / (n_grid - 1)
+    fxy = asarray(
+        mass.kde2d(
+            _1d_array_0,
+            _1d_array_1,
+            asarray((bandwidth_x, bandwidth_y)),
+            n=asarray((n_grid,)),
+        )[2]
+    )
 
-        dy = (_1d_array_1.max() - _1d_array_1.min()) / (n_grid - 1)
+    fxy += eps
 
-        pxy = fxy / (fxy.sum() * dx * dy)
+    pxy = fxy / (fxy.sum() * dx * dy)
+    # pxy = fxy
+    print(f"P(x,y) min = {pxy.min()}")
+    print(f"P(x,y) max = {pxy.max()}")
+    print(f"P(x,y) sum = {pxy.sum()}")
 
-        px = pxy.sum(axis=1) * dy
+    px = pxy.sum(axis=1) * dy
 
-        py = pxy.sum(axis=0) * dx
+    py = pxy.sum(axis=0) * dx
 
-        mi = (
-            (
-                pxy * log(pxy / (asarray((px,) * n_grid).T * asarray((py,) * n_grid)))
-            ).sum()
-            * dx
-            * dy
-        )
+    mi = (
+        (pxy * log(pxy / (asarray((px,) * n_grid).T * asarray((py,) * n_grid)))).sum()
+        * dx
+        * dy
+    )
 
-        # hxy = - (pxy * log(pxy)).sum() * dx * dy
+    # hxy = - (pxy * log(pxy)).sum() * dx * dy
 
-        # hx = -(px * log(px)).sum() * dx
+    # hx = -(px * log(px)).sum() * dx
 
-        # hy = -(py * log(py)).sum() * dy
+    # hy = -(py * log(py)).sum() * dy
 
-        # mi = hx + hy - hxy
+    # mi = hx + hy - hxy
 
-        return sign(pearson_correlation) * sqrt(1 - exp(-2 * mi))
+    return sign(pearson_correlation) * sqrt(1 - exp(-2 * mi))
