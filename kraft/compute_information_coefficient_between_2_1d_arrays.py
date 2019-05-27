@@ -49,7 +49,6 @@ def compute_information_coefficient_between_2_1d_arrays(
     fxy += eps
 
     pxy = fxy / (fxy.sum() * dx * dy)
-    # pxy = fxy
     print(f"P(x,y) min = {pxy.min()}")
     print(f"P(x,y) max = {pxy.max()}")
     print(f"P(x,y) sum = {pxy.sum()}")
