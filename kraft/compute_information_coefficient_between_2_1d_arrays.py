@@ -1,19 +1,11 @@
-import rpy2.robjects as ro
-from numpy import asarray, exp, finfo, isnan, log, nan, sign, sqrt, unique
-from rpy2.robjects.numpy2ri import numpy2ri
-from rpy2.robjects.packages import importr
+from fastkde.fastKDE import pdf
+from numpy import full, exp, finfo, isnan, log, nan, sign, sqrt, unique
 from scipy.stats import pearsonr
 
 eps = finfo(float).eps
 
-ro.conversion.py2ri = numpy2ri
 
-mass = importr("MASS")
-
-
-def compute_information_coefficient_between_2_1d_arrays(
-    _1d_array_0, _1d_array_1, n_grid=24
-):
+def compute_information_coefficient_between_2_1d_arrays(_1d_array_0, _1d_array_1):
 
     pearson_correlation = pearsonr(_1d_array_0, _1d_array_1)[0]
 
@@ -25,43 +17,41 @@ def compute_information_coefficient_between_2_1d_arrays(
 
         return nan
 
-    dx = (_1d_array_0.max() - _1d_array_0.min()) / (n_grid - 1)
-    print(f"dx = {dx}")
-
-    dy = (_1d_array_1.max() - _1d_array_1.min()) / (n_grid - 1)
-    print(f"dy = {dy}")
-
-    pearson_correlation_abs = abs(pearson_correlation)
-
-    bandwidth_x = mass.bcv(_1d_array_0)[0] * (1 - pearson_correlation_abs * 0.75)
-
-    bandwidth_y = mass.bcv(_1d_array_1)[0] * (1 - pearson_correlation_abs * 0.75)
-
-    fxy = asarray(
-        mass.kde2d(
-            _1d_array_0,
-            _1d_array_1,
-            asarray((bandwidth_x, bandwidth_y)),
-            n=asarray((n_grid,)),
-        )[2]
-    )
+    fxy, (x_axis, y_axis) = pdf(_1d_array_0, _1d_array_1, axisExpansionFactor=2)
 
     fxy += eps
+    # print(f"F(x,y) min = {fxy.min()}")
+    # print(f"F(x,y) max = {fxy.max()}")
+    # print(f"F(x,y) sum = {fxy.sum()}")
+
+    dx = x_axis[1] - x_axis[0]
+    # print(f"dx = {dx}")
+
+    dy = y_axis[1] - y_axis[0]
+    # print(f"dy = {dy}")
 
     pxy = fxy / (fxy.sum() * dx * dy)
-    print(f"P(x,y) min = {pxy.min()}")
-    print(f"P(x,y) max = {pxy.max()}")
-    print(f"P(x,y) sum = {pxy.sum()}")
+    # print(f"P(x,y) min = {pxy.min()}")
+    # print(f"P(x,y) max = {pxy.max()}")
+    # print(f"P(x,y) sum = {pxy.sum()}")
 
     px = pxy.sum(axis=1) * dy
+    # print(f"P(x) min = {px.min()}")
+    # print(f"P(x) max = {px.max()}")
+    # print(f"P(x) sum = {px.sum()}")
 
     py = pxy.sum(axis=0) * dx
+    # print(f"P(y) min = {py.min()}")
+    # print(f"P(y) max = {py.max()}")
+    # print(f"P(y) sum = {py.sum()}")
 
-    mi = (
-        (pxy * log(pxy / (asarray((px,) * n_grid).T * asarray((py,) * n_grid)))).sum()
-        * dx
-        * dy
-    )
+    pxpy = full(py.size, px).T * full(px.size, py)
+    # print(f"P(x)P(y) min = {pxpy.min()}")
+    # print(f"P(x)P(y) max = {pxpy.max()}")
+    # print(f"P(x)P(y) sum = {pxpy.sum()}")
+
+    mi = (pxy * log(pxy / pxpy)).sum() * dx * dy
+    # print(f"MI = {mi}")
 
     # hxy = - (pxy * log(pxy)).sum() * dx * dy
 
