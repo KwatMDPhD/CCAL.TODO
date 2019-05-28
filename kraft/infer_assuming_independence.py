@@ -3,7 +3,7 @@ from pandas import DataFrame
 
 from .estimate_kernel_density import estimate_kernel_density
 from .infer import infer
-from .make_mesh_grid_and_ravel import make_mesh_grid_and_ravel
+from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
 
@@ -72,14 +72,15 @@ def infer_assuming_independence(
 
     p_tvt__ntvs = full((n_grid,) * n_ntv, nan)
 
-    mesh_index_grid_raveled = make_mesh_grid_and_ravel(
+    mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
         (0,) * n_ntv, (n_grid - 1,) * n_ntv, (n_grid,) * n_ntv
     )
 
     for i in range(n_grid ** n_ntv):
 
         indices = tuple(
-            [mesh_index_grid_raveled[ntv_i][i].astype(int)] for ntv_i in range(n_ntv)
+            [make_mesh_grid_point_x_dimension[i][ntv_i].astype(int)]
+            for ntv_i in range(n_ntv)
         )
 
         p_tvt__ntvs[indices] = product(

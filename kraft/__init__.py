@@ -15,7 +15,7 @@ from .cluster_clustering_x_element_and_compute_ccc import (
 from .CODON_AMINO_ACID import CODON_AMINO_ACID
 from .compute_1d_array_context import compute_1d_array_context
 from .compute_1d_array_entropy import compute_1d_array_entropy
-from .compute_bandwidths import compute_bandwidths
+from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
 from .compute_correlation_distance_between_2_1d_arrays import (
     compute_correlation_distance_between_2_1d_arrays,
 )
@@ -23,9 +23,6 @@ from .compute_empirical_p_value import compute_empirical_p_value
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
 from .compute_information_coefficient_between_2_1d_arrays import (
     compute_information_coefficient_between_2_1d_arrays,
-)
-from .compute_information_coefficient_between_2_1d_arrays_ import (
-    compute_information_coefficient_between_2_1d_arrays_,
 )
 from .compute_information_distance_between_2_1d_arrays import (
     compute_information_distance_between_2_1d_arrays,
@@ -103,7 +100,7 @@ from .make_gitkeep import make_gitkeep
 from .make_match_panel import make_match_panel
 from .make_match_panel_annotations import make_match_panel_annotations
 from .make_match_panels import make_match_panels
-from .make_mesh_grid_and_ravel import make_mesh_grid_and_ravel
+from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .make_reflecting_grid import make_reflecting_grid
 from .make_summary_match_panel import make_summary_match_panel
 from .make_variant_dict_consistent import make_variant_dict_consistent

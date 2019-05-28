@@ -25,7 +25,7 @@ from .apply_function_on_2_2d_arrays_slices import apply_function_on_2_2d_arrays_
 from .check_nd_array_for_bad import check_nd_array_for_bad
 from .clip_nd_array_by_standard_deviation import clip_nd_array_by_standard_deviation
 from .cluster_2d_array import cluster_2d_array
-from .compute_bandwidths import compute_bandwidths
+from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
 from .compute_information_distance_between_2_1d_arrays import (
     compute_information_distance_between_2_1d_arrays,
 )
@@ -791,7 +791,14 @@ class GPSMap:
 
         label_grid_probabilities = {}
 
-        global_bandwidths = compute_bandwidths(element_x_dimension.T) * bandwidth_factor
+        global_bandwidths = asarray(
+            (
+                compute_1d_array_bandwidth(element_x_dimension[:, 0]),
+                compute_1d_array_bandwidth(element_x_dimension[:, 1]),
+            )
+        )
+
+        global_bandwidths *= bandwidth_factor
 
         n_dimension = element_x_dimension.shape[1]
 

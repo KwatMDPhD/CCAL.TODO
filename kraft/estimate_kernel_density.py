@@ -1,6 +1,6 @@
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
-from .make_mesh_grid_and_ravel import make_mesh_grid_and_ravel
+from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 
 
 def estimate_kernel_density(
@@ -9,7 +9,7 @@ def estimate_kernel_density(
 
     n_dimension = len(variables)
 
-    kde_multivariate = KDEMultivariate(variables, "c" * n_dimension, bw=bandwidths)
+    kdemultivariate = KDEMultivariate(variables, "c" * n_dimension, bw=bandwidths)
 
     if mins is None:
 
@@ -21,6 +21,6 @@ def estimate_kernel_density(
 
     n_grids = (n_grid,) * n_dimension
 
-    return kde_multivariate.pdf(make_mesh_grid_and_ravel(mins, maxs, n_grids)).reshape(
-        n_grids
-    )
+    return kdemultivariate.pdf(
+        make_mesh_grid_point_x_dimension(mins, maxs, n_grids)
+    ).reshape(n_grids)
