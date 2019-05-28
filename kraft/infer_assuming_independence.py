@@ -73,14 +73,13 @@ def infer_assuming_independence(
     p_tvt__ntvs = full((n_grid,) * n_ntv, nan)
 
     mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
-        (0,) * n_ntv, (n_grid - 1,) * n_ntv, (n_grid,) * n_ntv
+        linspace(0, n_grid, num=n_grid, endpoint=False, dtype=int) for i in range(n_ntv)
     )
 
     for i in range(n_grid ** n_ntv):
 
         indices = tuple(
-            [make_mesh_grid_point_x_dimension[i][ntv_i].astype(int)]
-            for ntv_i in range(n_ntv)
+            [mesh_grid_point_x_dimension[i][ntv_i]] for ntv_i in range(n_ntv)
         )
 
         p_tvt__ntvs[indices] = product(

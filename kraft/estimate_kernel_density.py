@@ -1,3 +1,4 @@
+from numpy import linspace
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
@@ -22,5 +23,10 @@ def estimate_kernel_density(
     n_grids = (n_grid,) * n_dimension
 
     return kdemultivariate.pdf(
-        make_mesh_grid_point_x_dimension(mins, maxs, n_grids)
+        make_mesh_grid_point_x_dimension(
+            (
+                linspace(min, max, num=n_grid)
+                for (min, max, n_grid) in zip(mins, maxs, n_grids)
+            )
+        )
     ).reshape(n_grids)
