@@ -1,32 +1,36 @@
-from numpy import linspace
-from statsmodels.nonparametric.kernel_density import KDEMultivariate
-
+from KDEpy import FFTKDE
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
+from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
+from .ALMOST_ZERO import ALMOST_ZERO
+from .make_1d_array_grid import make_1d_array_grid
 
 
 def estimate_kernel_density(
-    variables, bandwidths=None, mins=None, maxs=None, n_grid=64
+    observation_x_dimension, bandwidths=None, fraction_grid_extension=1 / 3, n_grid=64
 ):
 
-    n_dimension = len(variables)
+    if bandwidths is None:
 
-    kdemultivariate = KDEMultivariate(variables, "c" * n_dimension, bw=bandwidths)
-
-    if mins is None:
-
-        mins = tuple(variable.min() for variable in variables)
-
-    if maxs is None:
-
-        maxs = tuple(variable.max() for variable in variables)
-
-    n_grids = (n_grid,) * n_dimension
-
-    return kdemultivariate.pdf(
-        make_mesh_grid_point_x_dimension(
-            (
-                linspace(min, max, num=n_grid)
-                for (min, max, n_grid) in zip(mins, maxs, n_grids)
-            )
+        bandwidths = tuple(
+            compute_1d_array_bandwidth(observation_x_dimension[:, i])
+            for i in range(observation_x_dimension.shape[1])
         )
-    ).reshape(n_grids)
+
+    mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
+        tuple(
+            make_1d_array_grid(
+                observation_x_dimension[:, i], fraction_grid_extension, n_grid
+            )
+            for i in range(observation_x_dimension.shape[1])
+        )
+    )
+
+    mesh_grid_point_density = (
+        (
+            FFTKDE(bw=bandwidths)
+            .fit(observation_x_dimension)
+            .evaluate(mesh_grid_point_x_dimension)
+        )
+    ).clip(min=ALMOST_ZERO)
+
+    return mesh_grid_point_x_dimension, mesh_grid_point_density
