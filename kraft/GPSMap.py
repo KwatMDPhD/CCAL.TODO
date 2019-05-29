@@ -29,7 +29,7 @@ from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
 from .compute_information_distance_between_2_1d_arrays import (
     compute_information_distance_between_2_1d_arrays,
 )
-from .estimate_density import estimate_density
+from .compute_joint_probability import compute_joint_probability
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
 from .get_triangulation_edges_from_point_x_dimension import (
@@ -794,7 +794,7 @@ class GPSMap:
 
         label_grid_probabilities = {}
 
-        global_bandwidths = (
+        dimension_bandwidths = (
             asarray(
                 (
                     compute_1d_array_bandwidth(element_x_dimension[:, 0]),
@@ -806,31 +806,29 @@ class GPSMap:
 
         n_dimension = element_x_dimension.shape[1]
 
-        grid_mins = (0 - grid_extension,) * n_dimension
+        dimension_grid_mins = (0 - grid_extension,) * n_dimension
 
-        grid_maxs = (1 + grid_extension,) * n_dimension
+        dimension_grid_maxs = (1 + grid_extension,) * n_dimension
 
-        fraction_grid_extensions = (0,) * n_dimension
+        dimension_fraction_grid_extensions = (0,) * n_dimension
 
-        n_grids = (self.n_grid,) * n_dimension
+        dimension_n_grids = (self.n_grid,) * n_dimension
 
         for label in element_label.sort_values().unique():
 
-            density = rot90(
+            label_grid_probabilities[label] = rot90(
                 unmesh(
-                    *estimate_density(
+                    *compute_joint_probability(
                         element_x_dimension[element_label == label],
-                        bandwidths=global_bandwidths,
-                        grid_mins=grid_mins,
-                        grid_maxs=grid_maxs,
-                        fraction_grid_extensions=fraction_grid_extensions,
-                        n_grids=n_grids,
+                        dimension_bandwidths=dimension_bandwidths,
+                        dimension_grid_mins=dimension_grid_mins,
+                        dimension_grid_maxs=dimension_grid_maxs,
+                        dimension_fraction_grid_extensions=dimension_fraction_grid_extensions,
+                        dimension_n_grids=dimension_n_grids,
                         plot=False,
                     )
                 )[1]
             )
-
-            label_grid_probabilities[label] = density / density.sum()
 
         shape = (self.n_grid,) * n_dimension
 

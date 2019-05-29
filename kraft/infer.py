@@ -1,11 +1,11 @@
 from numpy import absolute, apply_along_axis, arange, argmax, linspace
 from pandas import DataFrame
-from .unmesh import unmesh
 
 from .compute_posterior_probability import compute_posterior_probability
+from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
-from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
+from .unmesh import unmesh
 
 
 def _get_target_index_grid(nd_array, function):
@@ -57,17 +57,19 @@ def infer(
 
     if plot:
 
-        if names is None:
+        if dimension_names is None:
 
-            names = tuple(f"Variable {i}" for i in range(n_dimension))
+            dimension_names = tuple(f"Variable {i}" for i in range(n_dimension))
 
         if n_dimension == 2:
 
             plot_and_save(
                 {
                     "layout": {
-                        "title": {"text": f"P({names[-1]} = {target} | {names[0]})"},
-                        "xaxis": {"title": names[0]},
+                        "title": {
+                            "text": f"P({dimension_names[1]} = {target} | {dimension_names[0]})"
+                        },
+                        "xaxis": {"title": dimension_names[0]},
                         "yaxis": {"title": "Probability"},
                     },
                     "data": [
@@ -86,9 +88,9 @@ def infer(
 
             plot_heat_map(
                 DataFrame(p_tvt__ntvs),
-                title=f"P({names[2]} = {target} | {names[0]}, {names[1]})",
-                xaxis_title=names[1],
-                yaxis_title=names[0],
+                title=f"P({dimension_names[2]} = {target} | {dimension_names[0]}, {dimension_names[1]})",
+                xaxis_title=dimension_names[1],
+                yaxis_title=dimension_names[0],
             )
 
     return p_tv__ntvs, p_tvt__ntvs

@@ -1,11 +1,13 @@
-from numpy import unique
+from numpy import asarray, unique
 
 
 def unmesh(mesh_grid_point_x_dimension, mesh_grid_point_value):
 
-    dimension_grids = tuple(
-        unique(mesh_grid_point_x_dimension[:, i])
-        for i in range(mesh_grid_point_x_dimension.shape[1])
+    dimension_grids = asarray(
+        tuple(
+            unique(mesh_grid_point_x_dimension[:, i])
+            for i in range(mesh_grid_point_x_dimension.shape[1])
+        )
     )
 
     return (

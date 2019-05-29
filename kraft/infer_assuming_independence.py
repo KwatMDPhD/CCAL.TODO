@@ -1,13 +1,13 @@
 from numpy import absolute, full, linspace, nan, product, rot90
 from pandas import DataFrame
-from .unmesh import unmesh
 
-from .estimate_density import estimate_density
+from .estimate_kernel_density import estimate_kernel_density
 from .infer import infer
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
+from .N_GRID import N_GRID
 from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
-from .N_GRID import N_GRID
+from .unmesh import unmesh
 
 
 def infer_assuming_independence(
@@ -19,7 +19,7 @@ def infer_assuming_independence(
     n_ntv = n_dimension - 1
 
     kd_tv = unmesh(
-        estimate_density(observation_x_dimension[:, -1].reshape(-1, 1)),
+        estimate_kernel_density(observation_x_dimension[:, -1].reshape(-1, 1)),
         n_grid=n_grid,
     )[1]
 
