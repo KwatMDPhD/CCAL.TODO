@@ -43,12 +43,15 @@ from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
 from .scale_point_x_dimension_dimension import scale_point_x_dimension_dimension
 from .train_and_classify import train_and_classify
+from .unmesh import unmesh
 
 element_marker_size = 16
 
 grid_label_opacity_without_annotation = 0.64
 
 grid_label_opacity_with_annotation = 0.24
+
+grid_extension = 1 / 1e3
 
 
 def _check_node_x_element(node_x_element):
@@ -184,9 +187,9 @@ def _plot(
 
     if grid_values is not None:
 
-        x = linspace(0, 1, num=grid_values.shape[1])
+        x = linspace(0 - grid_extension, 1 + grid_extension, num=grid_values.shape[1])
 
-        y = linspace(0, 1, num=grid_values.shape[0])
+        y = linspace(0 - grid_extension, 1 + grid_extension, num=grid_values.shape[0])
 
         data.append(
             {
@@ -776,9 +779,9 @@ class GPSMap:
 
         self.mask_grid = full((self.n_grid,) * 2, nan)
 
-        x_grid_for_j = linspace(0, 1, num=self.n_grid)
+        x_grid_for_j = linspace(0 - grid_extension, 1 + grid_extension, num=self.n_grid)
 
-        y_grid_for_i = linspace(1, 0, num=self.n_grid)
+        y_grid_for_i = linspace(1 + grid_extension, 0 - grid_extension, num=self.n_grid)
 
         for i in range(self.n_grid):
 
@@ -791,34 +794,43 @@ class GPSMap:
 
         label_grid_probabilities = {}
 
-        global_bandwidths = asarray(
-            (
-                compute_1d_array_bandwidth(element_x_dimension[:, 0]),
-                compute_1d_array_bandwidth(element_x_dimension[:, 1]),
+        global_bandwidths = (
+            asarray(
+                (
+                    compute_1d_array_bandwidth(element_x_dimension[:, 0]),
+                    compute_1d_array_bandwidth(element_x_dimension[:, 1]),
+                )
             )
+            * bandwidth_factor
         )
-
-        global_bandwidths *= bandwidth_factor
 
         n_dimension = element_x_dimension.shape[1]
 
-        mins = (0,) * n_dimension
+        grid_mins = (0 - grid_extension,) * n_dimension
 
-        maxs = (1,) * n_dimension
+        grid_maxs = (1 + grid_extension,) * n_dimension
+
+        fraction_grid_extensions = (0,) * n_dimension
+
+        n_grids = (self.n_grid,) * n_dimension
 
         for label in element_label.sort_values().unique():
 
-            kernel_density = rot90(
-                estimate_kernel_density(
-                    element_x_dimension[element_label == label].T,
-                    bandwidths=global_bandwidths,
-                    mins=mins,
-                    maxs=maxs,
-                    n_grid=self.n_grid,
-                )
+            density = rot90(
+                unmesh(
+                    *estimate_kernel_density(
+                        element_x_dimension[element_label == label],
+                        bandwidths=global_bandwidths,
+                        grid_mins=grid_mins,
+                        grid_maxs=grid_maxs,
+                        fraction_grid_extensions=fraction_grid_extensions,
+                        n_grids=n_grids,
+                        plot=False,
+                    )
+                )[1]
             )
 
-            label_grid_probabilities[label] = kernel_density / kernel_density.sum()
+            label_grid_probabilities[label] = density / density.sum()
 
         shape = (self.n_grid,) * n_dimension
 

@@ -36,9 +36,7 @@ def compute_information_coefficient_between_2_1d_arrays(x, y, n_grid=64):
             FFTKDE(bw=(x_bw, y_bw))
             .fit(asarray((x, y)).T)
             .evaluate(make_mesh_grid_point_x_dimension((x_grid, y_grid)))
-        )
-        .reshape(n_grid, n_grid)
-        .T
+        ).reshape(n_grid, n_grid)
     ).clip(min=ALMOST_ZERO)
 
     dx = x_grid[1] - x_grid[0]

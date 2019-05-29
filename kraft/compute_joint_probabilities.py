@@ -1,29 +1,24 @@
-from numpy import rot90
-from pandas import DataFrame
-
 from .estimate_kernel_density import estimate_kernel_density
-from .plot_heat_map import plot_heat_map
+from .plot_2d_mesh_grid import plot_2d_mesh_grid
 
 
-def compute_joint_probabilities(variables, n_grid=64, plot=True, names=None):
+def compute_joint_probabilities(observation_x_dimension, plot=True, names=None):
 
-    kernel_density = estimate_kernel_density(variables, n_grid=n_grid)
+    mesh_grid_point_x_dimension, mesh_grid_point_density = estimate_kernel_density(
+        observation_x_dimension
+    )
 
-    probabilities = kernel_density / kernel_density.sum()
+    mesh_grid_point_probability = (
+        mesh_grid_point_density / mesh_grid_point_density.sum()
+    )
 
-    n_dimension = len(variables)
+    if plot and observation_x_dimension.shape[1] == 2:
 
-    if plot and n_dimension == 2:
-
-        if names is None:
-
-            names = tuple(f"Variable {i}" for i in range(n_dimension))
-
-        plot_heat_map(
-            DataFrame(rot90(probabilities)),
-            title=f"P({names[0]}, {names[1]})",
-            xaxis_title=names[0],
-            yaxis_title=names[1],
+        plot_2d_mesh_grid(
+            mesh_grid_point_x_dimension,
+            mesh_grid_point_probability,
+            title_template="P({}, {})",
+            names=names,
         )
 
-    return probabilities
+    return mesh_grid_point_x_dimension, mesh_grid_point_probability
