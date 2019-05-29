@@ -1,4 +1,4 @@
-from numpy import absolute, full, linspace, nan, product, rot90
+from numpy import absolute, full, linspace, nan, product
 from pandas import DataFrame
 
 from .estimate_kernel_density import estimate_kernel_density

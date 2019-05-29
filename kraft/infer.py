@@ -1,14 +1,12 @@
-from numpy import absolute, apply_along_axis, arange, argmax, linspace
-from pandas import DataFrame
+from numpy import absolute, apply_along_axis, argmax, linspace, asarray
 
+from .plot_mesh_grid import plot_mesh_grid
 from .compute_posterior_probability import compute_posterior_probability
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
-from .plot_and_save import plot_and_save
-from .plot_heat_map import plot_heat_map
 from .unmesh import unmesh
 
 
-def _get_target_index_grid(nd_array, function):
+def _get_target_mesh_grid_point_x_dimension(nd_array, function):
 
     return tuple(
         make_mesh_grid_point_x_dimension(
@@ -26,71 +24,55 @@ def _get_target_index_grid(nd_array, function):
     ) + (apply_along_axis(function, -1, nd_array).ravel(),)
 
 
-def infer(
-    observation_x_dimension, n_grids=None, target="max", plot=True, dimension_names=None
-):
+def infer(observation_x_dimension, target="max", plot=True, dimension_names=None):
 
     n_dimension = observation_x_dimension.shape[1]
 
-    dimension_grids, p_tv__ntvs = unmesh(
-        compute_posterior_probability(
-            observation_x_dimension,
-            n_grids=n_grids,
-            plot=plot,
-            dimension_names=dimension_names,
-        )
+    mesh_grid_point_x_dimensiona, mesh_grid_point_posterior_probability = compute_posterior_probability(
+        observation_x_dimension, plot=plot, dimension_names=dimension_names
+    )
+
+    dimension_grids, posterior_probability = unmesh(
+        mesh_grid_point_x_dimensiona, mesh_grid_point_posterior_probability
     )
 
     if target == "max":
 
-        t_index_grid = _get_target_index_grid(p_tv__ntvs, argmax)
+        target_mesh_grid_point_x_dimension = _get_target_mesh_grid_point_x_dimension(
+            posterior_probability, argmax
+        )
 
     else:
 
-        t_grid = dimension_grids[-1]
+        i = absolute(dimension_grids[-1] - target).argmin()
 
-        t_i = absolute(t_grid - target).argmin()
+        target_mesh_grid_point_x_dimension = _get_target_mesh_grid_point_x_dimension(
+            posterior_probability, lambda _: i
+        )
 
-        t_index_grid = _get_target_index_grid(p_tv__ntvs, lambda _: t_i)
+    mesh_grid_point_YYY = posterior_probability[target_mesh_grid_point_x_dimension]
 
-    p_tvt__ntvs = p_tv__ntvs[t_index_grid].reshape(n_grids[:-1])
+    mesh_grid_point_x_XXX = make_mesh_grid_point_x_dimension(dimension_grids[:-1])
 
     if plot:
 
-        if dimension_names is None:
-
-            dimension_names = tuple(f"Variable {i}" for i in range(n_dimension))
-
         if n_dimension == 2:
 
-            plot_and_save(
-                {
-                    "layout": {
-                        "title": {
-                            "text": f"P({dimension_names[1]} = {target} | {dimension_names[0]})"
-                        },
-                        "xaxis": {"title": dimension_names[0]},
-                        "yaxis": {"title": "Probability"},
-                    },
-                    "data": [
-                        {
-                            "type": "scatter",
-                            "x": arange(n_grid),
-                            "y": p_tvt__ntvs,
-                            "marker": {"color": "#20d9ba"},
-                        }
-                    ],
-                },
-                None,
-            )
+            title = f"P({dimension_names[1]} = {target} | {dimension_names[0]})"
 
         elif n_dimension == 3:
 
-            plot_heat_map(
-                DataFrame(p_tvt__ntvs),
-                title=f"P({dimension_names[2]} = {target} | {dimension_names[0]}, {dimension_names[1]})",
-                xaxis_title=dimension_names[1],
-                yaxis_title=dimension_names[0],
-            )
+            title = f"P({dimension_names[2]} = {target} | {dimension_names[0]}, {dimension_names[1]})"
 
-    return p_tv__ntvs, p_tvt__ntvs
+        else:
+
+            title = None
+
+        plot_mesh_grid(
+            mesh_grid_point_x_XXX,
+            mesh_grid_point_YYY,
+            title=title,
+            dimension_names=dimension_names,
+        )
+
+    return posterior_probability  # , p_tvt__ntvs
