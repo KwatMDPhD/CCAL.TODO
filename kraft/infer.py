@@ -1,33 +1,45 @@
-from numpy import absolute, apply_along_axis, arange, argmax, linspace, meshgrid, rot90
+from numpy import absolute, apply_along_axis, arange, argmax, linspace
 from pandas import DataFrame
+from .unmesh import unmesh
 
-from .compute_joint_probabilities import compute_joint_probabilities
-from .compute_posterior_probabilities import compute_posterior_probabilities
+from .compute_posterior_probability import compute_posterior_probability
 from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
+from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 
 
 def _get_target_index_grid(nd_array, function):
 
     return tuple(
-        meshgrid_.astype(int).ravel()
-        for meshgrid_ in meshgrid(
-            *(
-                linspace(0, nd_array.shape[i] - 1, num=nd_array.shape[i])
+        make_mesh_grid_point_x_dimension(
+            (
+                linspace(
+                    0,
+                    nd_array.shape[i],
+                    num=nd_array.shape[i],
+                    endpoint=False,
+                    dtype=int,
+                )
                 for i in range(nd_array.ndim - 1)
-            ),
-            indexing="ij",
+            )
+        ).T
+    ) + (apply_along_axis(function, -1, nd_array).ravel(),)
+
+
+def infer(
+    observation_x_dimension, n_grids=None, target="max", plot=True, dimension_names=None
+):
+
+    n_dimension = observation_x_dimension.shape[1]
+
+    dimension_grids, p_tv__ntvs = unmesh(
+        compute_posterior_probability(
+            observation_x_dimension,
+            n_grids=n_grids,
+            plot=plot,
+            dimension_names=dimension_names,
         )
-    ) + (apply_along_axis(function, nd_array.ndim - 1, nd_array).ravel(),)
-
-
-def infer(variables, n_grid=64, target="max", plot=True, names=None):
-
-    n_dimension = len(variables)
-
-    p_vs = compute_joint_probabilities(variables, n_grid=n_grid, plot=plot, names=names)
-
-    p_tv__ntvs = compute_posterior_probabilities(p_vs, plot=plot, names=names)
+    )
 
     if target == "max":
 
@@ -35,13 +47,13 @@ def infer(variables, n_grid=64, target="max", plot=True, names=None):
 
     else:
 
-        t_grid = linspace(variables[-1].min(), variables[-1].max(), num=n_grid)
+        t_grid = dimension_grids[-1]
 
         t_i = absolute(t_grid - target).argmin()
 
         t_index_grid = _get_target_index_grid(p_tv__ntvs, lambda _: t_i)
 
-    p_tvt__ntvs = p_tv__ntvs[t_index_grid].reshape((n_grid,) * (n_dimension - 1))
+    p_tvt__ntvs = p_tv__ntvs[t_index_grid].reshape(n_grids[:-1])
 
     if plot:
 
@@ -73,10 +85,10 @@ def infer(variables, n_grid=64, target="max", plot=True, names=None):
         elif n_dimension == 3:
 
             plot_heat_map(
-                DataFrame(rot90(p_tvt__ntvs)),
-                title=f"P({names[-1]} = {target} | {names[0]}, {names[1]})",
-                xaxis_title=names[0],
-                yaxis_title=names[1],
+                DataFrame(p_tvt__ntvs),
+                title=f"P({names[2]} = {target} | {names[0]}, {names[1]})",
+                xaxis_title=names[1],
+                yaxis_title=names[0],
             )
 
     return p_tv__ntvs, p_tvt__ntvs

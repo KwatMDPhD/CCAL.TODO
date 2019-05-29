@@ -1,26 +1,35 @@
 from numpy import absolute, full, linspace, nan, product, rot90
 from pandas import DataFrame
+from .unmesh import unmesh
 
-from .estimate_kernel_density import estimate_kernel_density
+from .estimate_density import estimate_density
 from .infer import infer
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
+from .N_GRID import N_GRID
 
 
 def infer_assuming_independence(
-    variables, n_grid=64, target="max", plot=True, names=None
+    observation_x_dimension, n_grid=N_GRID, target="max", plot=True, names=None
 ):
 
-    n_dimension = len(variables)
+    n_dimension = observation_x_dimension.shape[1]
 
     n_ntv = n_dimension - 1
 
-    kd_tv = estimate_kernel_density((variables[-1],), n_grid=n_grid)
+    kd_tv = unmesh(
+        estimate_density(observation_x_dimension[:, -1].reshape(-1, 1)),
+        n_grid=n_grid,
+    )[1]
 
     p_tv = kd_tv / kd_tv.sum()
 
-    grid_tv = linspace(variables[-1].min(), variables[-1].max(), num=n_grid)
+    grid_tv = linspace(
+        observation_x_dimension[:, -1].min(),
+        observation_x_dimension[:, -1].max(),
+        num=n_grid,
+    )
 
     if target == "max":
 
@@ -89,10 +98,10 @@ def infer_assuming_independence(
     if plot and n_dimension == 3:
 
         plot_heat_map(
-            DataFrame(rot90(p_tvt__ntvs)),
-            title=f"P({names[-1]} = {target} = {t} | {names[0]}, {names[1]})",
-            xaxis_title=names[0],
-            yaxis_title=names[1],
+            DataFrame(p_tvt__ntvs),
+            title=f"P({names[2]} = {target} = {t} | {names[0]}, {names[1]})",
+            xaxis_title=names[1],
+            yaxis_title=names[0],
         )
 
     return None, p_tvt__ntvs

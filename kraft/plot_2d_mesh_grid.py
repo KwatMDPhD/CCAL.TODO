@@ -8,16 +8,16 @@ def plot_2d_mesh_grid(
     mesh_grid_point_x_dimension,
     mesh_grid_point_value,
     title_template="f({}, {})",
-    names=None,
+    dimension_names=None,
 ):
 
     (dimension_0_grid, dimension_1_grid), _2d_array = unmesh(
         mesh_grid_point_x_dimension, mesh_grid_point_value
     )
 
-    if names is None:
+    if dimension_names is None:
 
-        names = ("Variable 0", "Variable 1")
+        dimension_names = ("Dimension 0 Variable", "Dimension 1 Variable")
 
     plot_heat_map(
         DataFrame(
@@ -25,7 +25,7 @@ def plot_2d_mesh_grid(
             index=(f"*{i:.3f}" for i in dimension_0_grid),
             columns=(f"*{i:.3f}" for i in dimension_1_grid),
         ),
-        title=title_template.format(*names),
-        xaxis_title=names[1],
-        yaxis_title=names[0],
+        title=title_template.format(*dimension_names),
+        xaxis_title=dimension_names[1],
+        yaxis_title=dimension_names[0],
     )

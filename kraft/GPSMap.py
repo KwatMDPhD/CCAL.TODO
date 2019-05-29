@@ -29,7 +29,7 @@ from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
 from .compute_information_distance_between_2_1d_arrays import (
     compute_information_distance_between_2_1d_arrays,
 )
-from .estimate_kernel_density import estimate_kernel_density
+from .estimate_density import estimate_density
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
 from .get_triangulation_edges_from_point_x_dimension import (
@@ -818,7 +818,7 @@ class GPSMap:
 
             density = rot90(
                 unmesh(
-                    *estimate_kernel_density(
+                    *estimate_density(
                         element_x_dimension[element_label == label],
                         bandwidths=global_bandwidths,
                         grid_mins=grid_mins,
