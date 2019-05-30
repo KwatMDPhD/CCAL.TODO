@@ -46,8 +46,8 @@ def plot_mesh_grid(
         plot_heat_map(
             DataFrame(
                 value,
-                index=(f"{i:.2f} *" for i in dimension_grids[0]),
-                columns=(f"* {i:.2f}" for i in dimension_grids[1]),
+                index=(f"{i:.3f} *" for i in dimension_grids[0]),
+                columns=(f"* {i:.3f}" for i in dimension_grids[1]),
             ),
             title=title,
             xaxis_title=dimension_names[1],

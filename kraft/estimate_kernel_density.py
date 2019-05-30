@@ -12,6 +12,7 @@ from .plot_mesh_grid import plot_mesh_grid
 def estimate_kernel_density(
     observation_x_dimension,
     dimension_bandwidths=None,
+    dimension_bandwidth_factors=None,
     dimension_grid_mins=None,
     dimension_grid_maxs=None,
     dimension_fraction_grid_extensions=None,
@@ -28,6 +29,10 @@ def estimate_kernel_density(
             compute_1d_array_bandwidth(observation_x_dimension[:, i])
             for i in range(n_dimension)
         )
+
+    if dimension_bandwidth_factors is None:
+
+        dimension_bandwidth_factors = (1,) * n_dimension
 
     if dimension_grid_mins is None:
 

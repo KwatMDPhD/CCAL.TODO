@@ -20,7 +20,7 @@ def compute_joint_probability(
         dimension_grid_maxs=dimension_grid_maxs,
         dimension_fraction_grid_extensions=dimension_fraction_grid_extensions,
         dimension_n_grids=dimension_n_grids,
-        plot=plot,
+        plot=False,
         dimension_names=dimension_names,
     )
 
