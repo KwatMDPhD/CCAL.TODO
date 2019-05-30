@@ -14,7 +14,7 @@ def compute_joint_probability(
 
     mesh_grid_point_x_dimension, mesh_grid_point_kernel_density = estimate_kernel_density(
         observation_x_dimension,
-        plot=False,
+        plot=plot,
         dimension_names=dimension_names,
         **estimate_kernel_density_keyword_arguments,
     )

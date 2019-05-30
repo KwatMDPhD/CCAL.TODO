@@ -24,10 +24,10 @@ def compute_information_coefficient_between_2_1d_arrays(
     (x_grid, y_grid), pxy = unmesh(
         *compute_joint_probability(
             asarray((x, y)).T,
+            plot=False,
             dimension_bandwidth_factors=(1 - abs(r) * 2 / 3,) * 2,
             dimension_fraction_grid_extensions=(fraction_grid_extension,) * 2,
             dimension_n_grids=(n_grid,) * 2,
-            plot=False,
         )
     )
 

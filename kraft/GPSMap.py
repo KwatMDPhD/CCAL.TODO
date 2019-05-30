@@ -795,16 +795,13 @@ class GPSMap:
         label_grid_probabilities = {}
 
         dimension_bandwidths = (
-            asarray(
-                (
-                    compute_1d_array_bandwidth(element_x_dimension[:, 0]),
-                    compute_1d_array_bandwidth(element_x_dimension[:, 1]),
-                )
-            )
-            * bandwidth_factor
+            compute_1d_array_bandwidth(element_x_dimension[:, 0]),
+            compute_1d_array_bandwidth(element_x_dimension[:, 1]),
         )
 
         n_dimension = element_x_dimension.shape[1]
+
+        dimension_bandwidth_factors = (bandwidth_factor,) * n_dimension
 
         dimension_grid_mins = (0 - grid_extension,) * n_dimension
 
@@ -820,21 +817,20 @@ class GPSMap:
                 unmesh(
                     *compute_joint_probability(
                         element_x_dimension[element_label == label],
+                        plot=False,
                         dimension_bandwidths=dimension_bandwidths,
+                        dimension_bandwidth_factors=dimension_bandwidth_factors,
                         dimension_grid_mins=dimension_grid_mins,
                         dimension_grid_maxs=dimension_grid_maxs,
                         dimension_fraction_grid_extensions=dimension_fraction_grid_extensions,
                         dimension_n_grids=dimension_n_grids,
-                        plot=False,
                     )
                 )[1]
             )
 
-        shape = (self.n_grid,) * n_dimension
+        grid_values = full(dimension_n_grids, nan)
 
-        grid_values = full(shape, nan)
-
-        grid_labels = full(shape, nan)
+        grid_labels = full(dimension_n_grids, nan)
 
         for i in range(self.n_grid):
 

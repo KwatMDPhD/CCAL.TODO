@@ -59,6 +59,7 @@ from .get_chromosome_size_from_fasta_gz import get_chromosome_size_from_fasta_gz
 from .get_colormap_colors import get_colormap_colors
 from .get_conda_environments import get_conda_environments
 from .get_conda_prefix import get_conda_prefix
+from .get_d_dimensions import get_d_dimensions
 from .get_data_type import get_data_type
 from .get_gff3_attribute import get_gff3_attribute
 from .get_git_versions import get_git_versions
