@@ -30,9 +30,12 @@ def estimate_kernel_density(
             for i in range(n_dimension)
         )
 
-    if dimension_bandwidth_factors is None:
+    if dimension_bandwidth_factors is not None:
 
-        dimension_bandwidth_factors = (1,) * n_dimension
+        dimension_bandwidths = tuple(
+            dimension_bandwidths[i] * dimension_bandwidth_factors[i]
+            for i in range(n_dimension)
+        )
 
     if dimension_grid_mins is None:
 
