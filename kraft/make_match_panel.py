@@ -419,6 +419,7 @@ def make_match_panel(
             "yaxis": "y2",
             "type": "heatmap",
             "z": target_to_plot.to_frame().T,
+            "x": target_to_plot.index,
             "colorscale": make_colorscale_from_colors(pick_colors(target_to_plot)),
             "showscale": False,
         },
