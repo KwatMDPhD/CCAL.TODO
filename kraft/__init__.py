@@ -24,9 +24,6 @@ from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_
 from .compute_information_coefficient_between_2_1d_arrays import (
     compute_information_coefficient_between_2_1d_arrays,
 )
-from .compute_information_coefficient_between_2_1d_arrays_r import (
-    compute_information_coefficient_between_2_1d_arrays_r,
-)
 from .compute_information_distance_between_2_1d_arrays import (
     compute_information_distance_between_2_1d_arrays,
 )
