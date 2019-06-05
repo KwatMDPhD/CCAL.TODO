@@ -8,11 +8,12 @@ from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .check_nd_array_for_bad import check_nd_array_for_bad
 from .cluster_2d_array import cluster_2d_array
-from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
-from .compute_information_coefficient_between_2_1d_arrays import (
-    compute_information_coefficient_between_2_1d_arrays,
-)
-from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
+from .compute_empirical_p_values_and_fdrs import \
+    compute_empirical_p_values_and_fdrs
+from .compute_information_coefficient_between_2_1d_arrays import \
+    compute_information_coefficient_between_2_1d_arrays
+from .compute_normal_pdf_margin_of_error import \
+    compute_normal_pdf_margin_of_error
 from .get_data_type import get_data_type
 from .is_sorted_nd_array import is_sorted_nd_array
 from .make_colorscale_from_colors import make_colorscale_from_colors
@@ -344,6 +345,7 @@ def make_match_panel(
 
     if (
         cluster_within_category
+        and not target_to_plot.isna().any()
         and is_sorted_nd_array(target_to_plot.values)
         and (1 < target_to_plot.value_counts()).all()
     ):
