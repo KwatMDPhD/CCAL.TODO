@@ -14,7 +14,6 @@ setup(
     url=URL,
     author="Kwat Medetgul-Ernar",
     author_email="kwatme8@gmail.com",
-    license="LICENSE",
     python_requires=">=3.7",
     install_requires=(
         "numpy",
