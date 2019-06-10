@@ -4,7 +4,7 @@ from setuptools import setup
 
 NAME = "kraft"
 
-VERSION = "0.0.2"
+VERSION = "0.0.3"
 
 URL = f"https://github.com/KwatME/{NAME}"
 
