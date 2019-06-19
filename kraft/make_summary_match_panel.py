@@ -88,7 +88,9 @@ def make_summary_match_panel(
             "type": "heatmap",
             "z": target_to_plot.to_frame().T,
             "x": target_to_plot.index,
-            "colorscale": make_colorscale_from_colors(pick_colors(target_to_plot)),
+            "colorscale": make_colorscale_from_colors(
+                pick_colors(target_to_plot, data_type=target_type)
+            ),
             "showscale": False,
         }
     ]
@@ -109,7 +111,13 @@ def make_summary_match_panel(
 
         data_to_plot = data_to_plot.loc[score_moe_p_value_fdr_to_plot.index]
 
-        data_type = data_dict.get("type", get_data_type(data_to_plot))
+        if data_dict["type"] is None:
+
+            data_type = get_data_type(data_to_plot)
+
+        else:
+
+            data_type = data_dict["type"]
 
         if data_type == "continuous":
 
@@ -146,7 +154,9 @@ def make_summary_match_panel(
                 "z": data_to_plot.values[::-1],
                 "x": data_to_plot.columns,
                 "y": data_to_plot.index[::-1],
-                "colorscale": make_colorscale_from_colors(pick_colors(data_to_plot)),
+                "colorscale": make_colorscale_from_colors(
+                    pick_colors(data_to_plot, data_type=data_type)
+                ),
                 "showscale": False,
             }
         )

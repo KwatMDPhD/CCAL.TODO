@@ -421,7 +421,9 @@ def make_match_panel(
             "type": "heatmap",
             "z": target_to_plot.to_frame().T,
             "x": target_to_plot.index,
-            "colorscale": make_colorscale_from_colors(pick_colors(target_to_plot)),
+            "colorscale": make_colorscale_from_colors(
+                pick_colors(target_to_plot, data_type=target_type)
+            ),
             "showscale": False,
         },
         {
@@ -430,7 +432,9 @@ def make_match_panel(
             "z": data_to_plot.iloc[::-1],
             "x": data_to_plot.columns,
             "y": data_to_plot.index[::-1],
-            "colorscale": make_colorscale_from_colors(pick_colors(data_to_plot)),
+            "colorscale": make_colorscale_from_colors(
+                pick_colors(data_to_plot, data_type=data_type)
+            ),
             "showscale": False,
         },
     ]

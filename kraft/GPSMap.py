@@ -288,7 +288,9 @@ def _plot(
 
                 element_x_dimension_ = element_x_dimension_[sorted_indices]
 
-            colorscale = make_colorscale_from_colors(pick_colors(element_value))
+            colorscale = make_colorscale_from_colors(
+                pick_colors(element_value, data_type=data_type)
+            )
 
             if 1 == annotation_x_element.shape[0]:
 

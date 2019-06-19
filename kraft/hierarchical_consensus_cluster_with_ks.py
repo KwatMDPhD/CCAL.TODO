@@ -18,7 +18,7 @@ def hierarchical_consensus_cluster_with_ks(
     axis,
     n_job=1,
     distance__element_x_element=None,
-    distance_function="euclidean",
+    distance_function="correlation",
     n_clustering=10,
     random_seed=RANDOM_SEED,
     linkage_method="ward",

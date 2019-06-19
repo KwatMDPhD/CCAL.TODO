@@ -7,9 +7,11 @@ from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
 
 
-def pick_colors(data):
+def pick_colors(data, data_type=None):
 
-    data_type = get_data_type(data)
+    if data_type is None:
+
+        data_type = get_data_type(data)
 
     if data_type == "binary":
 

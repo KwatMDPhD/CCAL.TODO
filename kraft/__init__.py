@@ -16,9 +16,6 @@ from .CODON_AMINO_ACID import CODON_AMINO_ACID
 from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
 from .compute_1d_array_context import compute_1d_array_context
 from .compute_1d_array_entropy import compute_1d_array_entropy
-from .compute_correlation_distance_between_2_1d_arrays import (
-    compute_correlation_distance_between_2_1d_arrays,
-)
 from .compute_empirical_p_value import compute_empirical_p_value
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
 from .compute_information_coefficient_between_2_1d_arrays import (
