@@ -2,7 +2,11 @@ from .drop_dataframe_slice import drop_dataframe_slice
 
 
 def drop_dataframe_slice_greedily(
-    dataframe, axis, max_na=None, min_n_not_na_unique_value=None
+    dataframe,
+    axis,
+    max_na=None,
+    min_n_not_na_value=None,
+    min_n_not_na_unique_value=None,
 ):
 
     shape_before = dataframe.shape
@@ -19,6 +23,7 @@ def drop_dataframe_slice_greedily(
             dataframe,
             axis,
             max_na=max_na,
+            min_n_not_na_value=min_n_not_na_value,
             min_n_not_na_unique_value=min_n_not_na_unique_value,
         )
 

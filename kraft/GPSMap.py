@@ -299,7 +299,10 @@ def _plot(
                         "showlegend": False,
                         "x": element_x_dimension_[:, 0],
                         "y": element_x_dimension_[:, 1],
-                        "text": element_value.index,
+                        "text": tuple(
+                            f"{element}<br>{value:.2f}"
+                            for element, value in element_value.items()
+                        ),
                         "mode": "markers",
                         "marker": {
                             "size": element_marker_size,

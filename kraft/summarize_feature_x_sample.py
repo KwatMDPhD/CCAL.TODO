@@ -11,9 +11,9 @@ def summarize_feature_x_sample(
     feature_x_sample_alias="Feature-x-Sample",
     feature_x_sample_value_name="Value",
     plot=True,
-    plot_heat_map_max_size=160000,
-    plot_histogram_max_size=16000,
-    plot_rug_max_size=1600,
+    plot_heat_map_max_size=1000000,
+    plot_histogram_max_size=1000000,
+    plot_rug_max_size=1000,
 ):
 
     print(f"Shape: {feature_x_sample.shape}")
@@ -21,36 +21,6 @@ def summarize_feature_x_sample(
     print(f"(not-nan) Min: {nanmin(feature_x_sample.values)}")
 
     print(f"(not-nan) Max: {nanmax(feature_x_sample.values)}")
-
-    for axis in (0, 1):
-
-        n_unique_value_count = feature_x_sample.apply(
-            lambda series: series.unique().size, axis=axis
-        ).value_counts()
-
-        n_unique_value_count.index.name = "N Unique"
-
-        n_unique_value_count.name = "Count"
-
-        n_unique_value_count = n_unique_value_count.to_frame()
-
-        n_extreme = 8
-
-        if n_extreme * 2 < n_unique_value_count.shape[0]:
-
-            print(f"Axis {axis} Top and Bottom {n_extreme} Number of Unique Values:")
-
-            print(
-                n_unique_value_count.iloc[
-                    list(range(n_extreme)) + list(range(-n_extreme, 0))
-                ]
-            )
-
-        else:
-
-            print(f"Axis {axis} Number of Unique Values:")
-
-            print(n_unique_value_count)
 
     if plot:
 
@@ -67,7 +37,9 @@ def summarize_feature_x_sample(
 
         if plot_histogram_max_size < feature_x_sample_not_na_values.size:
 
-            print(f"Sampling random {plot_histogram_max_size:,} values ...")
+            print(
+                f"Sampling random {plot_histogram_max_size:,} values for histogram ..."
+            )
 
             feature_x_sample_not_na_values = choice(
                 feature_x_sample_not_na_values,

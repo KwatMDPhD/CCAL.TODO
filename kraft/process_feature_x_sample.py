@@ -15,6 +15,7 @@ def process_feature_x_sample(
     nanize=None,
     drop_axis=None,
     max_na=None,
+    min_n_not_na_value=None,
     min_n_not_na_unique_value=None,
     shift_as_necessary_to_achieve_min_before_logging=None,
     log_base=None,
@@ -75,17 +76,11 @@ def process_feature_x_sample(
             feature_x_sample, **summarize_feature_x_sample_keyword_arguments
         )
 
-    if max_na is not None or min_n_not_na_unique_value is not None:
-
-        if min_n_not_na_unique_value == "max":
-
-            if drop_axis is None:
-
-                min_n_not_na_unique_value = min(feature_x_sample.shape)
-
-            else:
-
-                min_n_not_na_unique_value = feature_x_sample.shape[drop_axis]
+    if (
+        max_na is not None
+        or min_n_not_na_value is not None
+        or min_n_not_na_unique_value is not None
+    ):
 
         print("Dropping slice ...")
 
@@ -97,6 +92,7 @@ def process_feature_x_sample(
                 feature_x_sample,
                 drop_axis,
                 max_na=max_na,
+                min_n_not_na_value=min_n_not_na_value,
                 min_n_not_na_unique_value=min_n_not_na_unique_value,
             )
 
@@ -106,6 +102,7 @@ def process_feature_x_sample(
                 feature_x_sample,
                 drop_axis,
                 max_na=max_na,
+                min_n_not_na_value=min_n_not_na_value,
                 min_n_not_na_unique_value=min_n_not_na_unique_value,
             )
 
@@ -118,7 +115,7 @@ def process_feature_x_sample(
     if log_base is not None:
 
         print(
-            f"Logging (shift_as_necessary_to_achieve_min_before_logging={shift_as_necessary_to_achieve_min_before_logging} & log_base={log_base}) ..."
+            f"Logging (shift_as_necessary_to_achieve_min_before_logging={shift_as_necessary_to_achieve_min_before_logging}, log_base={log_base}) ..."
         )
 
         feature_x_sample = DataFrame(

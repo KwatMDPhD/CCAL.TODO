@@ -1,7 +1,13 @@
 from numpy import full
 
 
-def drop_dataframe_slice(dataframe, axis, max_na=None, min_n_not_na_unique_value=None):
+def drop_dataframe_slice(
+    dataframe,
+    axis,
+    max_na=None,
+    min_n_not_na_value=None,
+    min_n_not_na_unique_value=None,
+):
 
     shape_before = dataframe.shape
 
@@ -23,6 +29,13 @@ def drop_dataframe_slice(dataframe, axis, max_na=None, min_n_not_na_unique_value
             lambda series: max_n_na < series.isna().sum(), axis=axis_for_applying
         )
 
+    if min_n_not_na_value is not None:
+
+        dropped |= dataframe.apply(
+            lambda series: series[~series.isna()].size < min_n_not_na_value,
+            axis=axis_for_applying,
+        )
+
     if min_n_not_na_unique_value is not None:
 
         dropped |= dataframe.apply(
@@ -40,7 +53,7 @@ def drop_dataframe_slice(dataframe, axis, max_na=None, min_n_not_na_unique_value
         dataframe = dataframe.loc[:, ~dropped]
 
     print(
-        f"Shape: {shape_before} =(drop: axis={axis} & max_na={max_na} & min_n_not_na_unique_value={min_n_not_na_unique_value})=> {dataframe.shape}"
+        f"Shape: {shape_before} =(drop: axis={axis}, max_na={max_na}, min_n_not_na_value={min_n_not_na_value}, min_n_not_na_unique_value={min_n_not_na_unique_value})=> {dataframe.shape}"
     )
 
     return dataframe
