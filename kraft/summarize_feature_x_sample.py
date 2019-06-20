@@ -18,9 +18,9 @@ def summarize_feature_x_sample(
 
     print(f"Shape: {feature_x_sample.shape}")
 
-    print(f"(not-nan) Min: {nanmin(feature_x_sample.values)}")
+    print(f"Min (not-nan): {nanmin(feature_x_sample.values)}")
 
-    print(f"(not-nan) Max: {nanmax(feature_x_sample.values)}")
+    print(f"Max (not-nan): {nanmax(feature_x_sample.values)}")
 
     if plot:
 

@@ -49,7 +49,7 @@ element_marker_size = 16
 
 grid_label_opacity_without_annotation = 0.64
 
-grid_label_opacity_with_annotation = 0.24
+grid_label_opacity_with_annotation = 0.5
 
 grid_extension = 1 / 1e3
 
@@ -122,6 +122,7 @@ def _plot(
     annotation_x_element,
     annotation_types,
     annotation_std_maxs,
+    annotation_colorscales,
     layout_size,
     title,
     html_file_path,
@@ -288,9 +289,15 @@ def _plot(
 
                 element_x_dimension_ = element_x_dimension_[sorted_indices]
 
-            colorscale = make_colorscale_from_colors(
-                pick_colors(element_value, data_type=data_type)
-            )
+            if annotation_colorscales is None:
+
+                colorscale = make_colorscale_from_colors(
+                    pick_colors(element_value, data_type=data_type)
+                )
+
+            else:
+
+                colorscale = annotation_colorscales[i]
 
             if 1 == annotation_x_element.shape[0]:
 
@@ -676,6 +683,7 @@ class GPSMap:
         annotation_x_element=None,
         annotation_types=None,
         annotation_std_maxs=None,
+        annotation_colorscales=None,
         elements_to_be_emphasized=None,
         element_marker_size=element_marker_size,
         layout_size=880,
@@ -749,6 +757,7 @@ class GPSMap:
             annotation_x_element,
             annotation_types,
             annotation_std_maxs,
+            annotation_colorscales,
             layout_size,
             title,
             html_file_path,
@@ -931,6 +940,7 @@ class GPSMap:
         annotation_x_element=None,
         annotation_types=None,
         annotation_std_maxs=None,
+        annotation_colorscales=None,
         element_marker_size=element_marker_size,
         layout_size=880,
         title=None,
@@ -1045,6 +1055,7 @@ class GPSMap:
             annotation_x_element,
             annotation_types,
             annotation_std_maxs,
+            annotation_colorscales,
             layout_size,
             title,
             html_file_path,
