@@ -27,7 +27,6 @@ setup(
         "plotly",
         "GEOparse",
         "click",
-        "pyyaml",
     ),
     packages=(NAME,),
     package_data={

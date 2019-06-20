@@ -149,7 +149,6 @@ from .read_matrix_market import read_matrix_market
 from .read_where_and_map_column_name_on_hdf5_table import (
     read_where_and_map_column_name_on_hdf5_table,
 )
-from .read_yaml import read_yaml
 from .remove_path import remove_path
 from .rescale_x_y_coordiantes_in_polar_coordiante import (
     rescale_x_y_coordiantes_in_polar_coordiante,
@@ -189,4 +188,3 @@ from .VCF_ANN_KEYS import VCF_ANN_KEYS
 from .VCF_COLUMNS import VCF_COLUMNS
 from .write_gps_map import write_gps_map
 from .write_json import write_json
-from .write_yaml import write_yaml
