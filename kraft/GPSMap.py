@@ -124,6 +124,7 @@ def _plot(
     annotation_std_maxs,
     annotation_colorscales,
     layout_size,
+    highlight_binary,
     title,
     html_file_path,
 ):
@@ -265,7 +266,7 @@ def _plot(
 
             if data_type in ("binary", "categorical"):
 
-                element_value = element_value.rank(method="dense")
+                element_value = element_value.rank(method="dense") - 1
 
             elif data_type == "continuous":
 
@@ -325,6 +326,23 @@ def _plot(
                         "hoverinfo": "text",
                     }
                 )
+
+                if highlight_binary and data_type == "binary":
+
+                    layout["annotations"] = [
+                        {
+                            "x": element_x_dimension_[i, 0],
+                            "y": element_x_dimension_[i, 1],
+                            "text": f"<b>{element_value.index[i]}</b>",
+                            "font": {"size": 16},
+                            "arrowhead": 2,
+                            "arrowwidth": 2,
+                            "arrowcolor": "#c93756",
+                            "standoff": 16,
+                            "clicktoshow": "onoff",
+                        }
+                        for i in element_value.values.nonzero()[0]
+                    ]
 
             else:
 
@@ -687,6 +705,7 @@ class GPSMap:
         elements_to_be_emphasized=None,
         element_marker_size=element_marker_size,
         layout_size=880,
+        highlight_binary=False,
         title=None,
         html_file_path=None,
     ):
@@ -759,6 +778,7 @@ class GPSMap:
             annotation_std_maxs,
             annotation_colorscales,
             layout_size,
+            highlight_binary,
             title,
             html_file_path,
         )
@@ -943,6 +963,7 @@ class GPSMap:
         annotation_colorscales=None,
         element_marker_size=element_marker_size,
         layout_size=880,
+        highlight_binary=False,
         title=None,
         html_file_path=None,
     ):
@@ -1057,6 +1078,7 @@ class GPSMap:
             annotation_std_maxs,
             annotation_colorscales,
             layout_size,
+            highlight_binary,
             title,
             html_file_path,
         )
