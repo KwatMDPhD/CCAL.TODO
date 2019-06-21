@@ -25,6 +25,8 @@ def plot_heat_map(
     title=None,
     xaxis_title=None,
     yaxis_title=None,
+    show_xaxis_ticks=True,
+    show_yaxis_ticks=True,
     html_file_path=None,
 ):
 
@@ -53,6 +55,14 @@ def plot_heat_map(
         },
         "yaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
     }
+
+    if not show_xaxis_ticks:
+
+        layout["xaxis"].update({"ticks": "", "showticklabels": False})
+
+    if not show_yaxis_ticks:
+
+        layout["yaxis"].update({"ticks": "", "showticklabels": False})
 
     colorbar_template = {"len": 0.64, "thickness": 16}
 

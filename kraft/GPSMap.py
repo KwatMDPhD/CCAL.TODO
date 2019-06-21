@@ -37,6 +37,7 @@ from .get_triangulation_edges_from_point_x_dimension import (
 )
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .normalize_nd_array import normalize_nd_array
+from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
 from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
@@ -941,12 +942,13 @@ class GPSMap:
                 element_name = self.h_element_name
 
             plot_heat_map(
-                z,
+                normalize_series_or_dataframe(z, 0, "-0-"),
                 column_annotation=column_annotation,
                 column_annotation_colors=label_colors,
                 title=w_or_h.title(),
                 xaxis_title=element_name,
                 yaxis_title=self.node_name,
+                show_xaxis_ticks=False,
             )
 
     def predict(
