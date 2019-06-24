@@ -237,9 +237,9 @@ def _plot(
                 }
             )
 
-    element_marker_line = {"width": 1, "color": node_color}
+    element_marker_line = {"width": element_marker_size / 10}
 
-    element_opacity = 0.8
+    element_opacity = 0.88
 
     if annotation_x_element is not None:
 
@@ -428,7 +428,7 @@ def _plot(
                 "mode": "markers",
                 "marker": {
                     "size": element_marker_size,
-                    "color": "#20d9ba",
+                    "color": "#ffffff",
                     "line": element_marker_line,
                 },
                 "opacity": element_opacity,
