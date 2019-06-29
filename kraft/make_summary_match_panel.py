@@ -111,9 +111,7 @@ def make_summary_match_panel(
 
         data_to_plot = data_to_plot.loc[score_moe_p_value_fdr_to_plot.index]
 
-        data_type = data_dict.get("type", get_data_type(data_to_plot))
-
-        if data_type == "continuous":
+        if data_dict["type"] == "continuous":
 
             data_to_plot = normalize_series_or_dataframe(data_to_plot, 1, "-0-")
 
@@ -149,7 +147,7 @@ def make_summary_match_panel(
                 "x": data_to_plot.columns,
                 "y": data_to_plot.index[::-1],
                 "colorscale": make_colorscale_from_colors(
-                    pick_colors(data_to_plot, data_type=data_type)
+                    pick_colors(data_to_plot, data_type=data_dict["type"])
                 ),
                 "showscale": False,
             }
