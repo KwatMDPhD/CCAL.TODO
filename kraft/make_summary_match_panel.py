@@ -111,13 +111,7 @@ def make_summary_match_panel(
 
         data_to_plot = data_to_plot.loc[score_moe_p_value_fdr_to_plot.index]
 
-        if data_dict["type"] is None:
-
-            data_type = get_data_type(data_to_plot)
-
-        else:
-
-            data_type = data_dict["type"]
+        data_type = data_dict.get("type", get_data_type(data_to_plot))
 
         if data_type == "continuous":
 
