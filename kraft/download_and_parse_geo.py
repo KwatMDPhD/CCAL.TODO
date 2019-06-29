@@ -1,8 +1,22 @@
+from os.path import join
+
 import GEOparse
+from numpy import nan
 from pandas import DataFrame, concat, isna
 
+from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
+from .get_data_type import get_data_type
+from .log_nd_array import log_nd_array
+from .make_binary_dataframe_from_categorical_series import (
+    make_binary_dataframe_from_categorical_series,
+)
 
-def download_and_parse_geo(geo_id, directory_path):
+
+def download_and_parse_geo(
+    geo_id,
+    directory_path,
+    bad_values=("N/A", "n/a", "NA", "na", "None", "none", "?", "Missing", "missing"),
+):
 
     print(f"Downloading {geo_id} into {directory_path} ...")
 
@@ -113,7 +127,9 @@ def download_and_parse_geo(geo_id, directory_path):
 
             print(f"id_gene_symbol.shape: {id_gene_symbol.shape}")
 
-            print(f"N valid gene_symbol: {(id_gene_symbol != 'NO GENE NAME').sum()}")
+            print(
+                f"N valid unique gene_symbol: {(id_gene_symbol.drop_duplicates() != 'NO GENE NAME').sum()}"
+            )
 
             gene_x_sample = geo_dict["id_x_sample"].copy()
 
@@ -136,5 +152,77 @@ def download_and_parse_geo(geo_id, directory_path):
             print(
                 f"\tgene_symbol is not a GPL column ({', '.join(platform_table.columns)}); IDs may be already gene symbols."
             )
+
+    information_x_sample = clean_and_write_dataframe_to_tsv(
+        geo_dict["information_x_sample"],
+        "Information",
+        join(directory_path, "information_x_sample.tsv"),
+    )
+
+    continuous_values = []
+
+    binary_values = []
+
+    for information, values in information_x_sample.iterrows():
+
+        if information.startswith("characteristics"):
+
+            values = values.replace(bad_values, nan)
+
+            if 1 < values.dropna().unique().size:
+
+                try:
+
+                    is_continuous = get_data_type(values.astype(float)) == "continuous"
+
+                except ValueError as exception:
+
+                    print(exception)
+
+                    is_continuous = False
+
+            if is_continuous:
+
+                values.name = values.name.split(sep=".", maxsplit=2)[-1]
+
+                continuous_values.append(values)
+
+            else:
+
+                binary_values.append(
+                    make_binary_dataframe_from_categorical_series(values)
+                )
+
+    if 0 < len(continuous_values):
+
+        information_x_sample = DataFrame(continuous_values).to_csv(
+            join(directory_path, "continuous_information_x_sample.tsv"), sep="\t"
+        )
+
+    if 0 < len(binary_values):
+
+        information_x_sample = concat(binary_values).to_csv(
+            join(directory_path, "binary_information_x_sample.tsv"), sep="\t"
+        )
+
+    print("Merging any duplicated gene by median ...")
+
+    rna__gene_x_sample = geo_dict["gene_x_sample"].groupby(level=0).median()
+
+    print(f"rna__gene_x_sample.shape: {rna__gene_x_sample.shape}")
+
+    rna__gene_x_sample = clean_and_write_dataframe_to_tsv(
+        rna__gene_x_sample, "Gene", join(directory_path, "rna.gene_x_sample.tsv")
+    )
+
+    DataFrame(
+        log_nd_array(
+            rna__gene_x_sample.values,
+            shift_as_necessary_to_achieve_min_before_logging=1,
+            raise_for_bad=False,
+        ),
+        index=rna__gene_x_sample.index,
+        columns=rna__gene_x_sample.columns,
+    ).to_csv(join(directory_path, "rna.gene_x_sample.log.tsv"), sep="\t")
 
     return geo_dict
