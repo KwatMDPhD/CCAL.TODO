@@ -18,6 +18,7 @@ setup(
     install_requires=(
         "numpy",
         "pandas",
+        "xlrd",
         "scipy==1.2.1",
         "scikit-learn",
         "statsmodels",
