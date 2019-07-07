@@ -6,7 +6,6 @@ from pandas import DataFrame, concat, isna
 
 from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
 from .get_data_type import get_data_type
-from .log_nd_array import log_nd_array
 from .make_binary_dataframe_from_categorical_series import (
     make_binary_dataframe_from_categorical_series,
 )
@@ -199,7 +198,7 @@ def download_and_parse_geo(
 
             gene_x_sample.drop("NO GENE NAME", inplace=True, errors="ignore")
 
-            gene_x_sample.index.name = "gene_symbol"
+            gene_x_sample.index.name = "Gene"
 
             geo_dict["gene_x_sample"] = gene_x_sample.sort_index().sort_index(axis=1)
 
@@ -215,22 +214,8 @@ def download_and_parse_geo(
 
         print("Merging any duplicated gene by median ...")
 
-        rna__gene_x_sample = geo_dict["gene_x_sample"].groupby(level=0).median()
+        geo_dict["gene_x_sample"] = geo_dict["gene_x_sample"].groupby(level=0).median()
 
-        print(f"rna__gene_x_sample.shape: {rna__gene_x_sample.shape}")
-
-        rna__gene_x_sample = clean_and_write_dataframe_to_tsv(
-            rna__gene_x_sample, "Gene", join(directory_path, "rna.gene_x_sample.tsv")
-        )
-
-        DataFrame(
-            log_nd_array(
-                rna__gene_x_sample.values,
-                shift_as_necessary_to_achieve_min_before_logging=1,
-                raise_for_bad=False,
-            ),
-            index=rna__gene_x_sample.index,
-            columns=rna__gene_x_sample.columns,
-        ).to_csv(join(directory_path, "rna.gene_x_sample.log.tsv"), sep="\t")
+        print(f"gene_x_sample.shape: {geo_dict['gene_x_sample'].shape}")
 
     return geo_dict
