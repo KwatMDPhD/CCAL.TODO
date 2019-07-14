@@ -1,25 +1,18 @@
 from os.path import join
+from re import sub
 
 import GEOparse
-from numpy import nan
 from pandas import DataFrame, concat, isna
 
 from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
-from .get_data_type import get_data_type
-from .make_binary_dataframe_from_categorical_series import (
-    make_binary_dataframe_from_categorical_series,
-)
+from .isolate_information_x_sample import isolate_information_x_sample
 
 
-def download_and_parse_geo(
-    geo_id,
-    directory_path,
-    bad_values=("N/A", "n/a", "NA", "na", "None", "none", "?", "Missing", "missing"),
-):
+def download_and_parse_geo(geo_id, directory_path):
 
-    print(f"Downloading {geo_id} into {directory_path} ...")
+    print(f"Processing {geo_id} in {directory_path} ...")
 
-    gse = GEOparse.get_GEO(geo=geo_id, destdir=directory_path)
+    gse = GEOparse.get_GEO(geo=geo_id, destdir=directory_path, silent=True)
 
     print(f"Title: {gse.get_metadata_attribute('title')}")
 
@@ -42,51 +35,33 @@ def download_and_parse_geo(
         join(directory_path, "information_x_sample.tsv"),
     )
 
-    continuous_values = []
+    continuous_information_x_sample, binary_information_x_sample = isolate_information_x_sample(
+        information_x_sample.loc[
+            information_x_sample.index.str.startswith("characteristics")
+        ]
+    )
 
-    binary_values = []
+    if continuous_information_x_sample is not None:
 
-    for information, values in information_x_sample.iterrows():
+        continuous_information_x_sample.index = (
+            sub(r"characteristics_ch\d+.\d+.", "", index)
+            for index in continuous_information_x_sample.index
+        )
 
-        if information.startswith("characteristics"):
-
-            values = values.replace(bad_values, nan)
-
-            if 1 < values.dropna().unique().size:
-
-                try:
-
-                    is_continuous = get_data_type(values.astype(float)) == "continuous"
-
-                except ValueError as exception:
-
-                    print(exception)
-
-                    is_continuous = False
-
-                if is_continuous:
-
-                    values.name = values.name.split(sep=".", maxsplit=2)[-1]
-
-                    continuous_values.append(values)
-
-                else:
-
-                    binary_values.append(
-                        make_binary_dataframe_from_categorical_series(values)
-                    )
-
-    if 0 < len(continuous_values):
-
-        geo_dict["continuous_information_x_sample"] = DataFrame(continuous_values)
+        geo_dict["continuous_information_x_sample"] = continuous_information_x_sample
 
         geo_dict["continuous_information_x_sample"].to_csv(
             join(directory_path, "continuous_information_x_sample.tsv"), sep="\t"
         )
 
-    if 0 < len(binary_values):
+    if binary_information_x_sample is not None:
 
-        geo_dict["binary_information_x_sample"] = concat(binary_values)
+        binary_information_x_sample.index = (
+            sub(r"characteristics_ch\d+.\d+.", "", index)
+            for index in binary_information_x_sample.index
+        )
+
+        geo_dict["binary_information_x_sample"] = binary_information_x_sample
 
         geo_dict["binary_information_x_sample"].to_csv(
             join(directory_path, "binary_information_x_sample.tsv"), sep="\t"
@@ -108,7 +83,7 @@ def download_and_parse_geo(
 
     for sample_id, gsm in gse.gsms.items():
 
-        print(f"{sample_id} ...")
+        print(sample_id)
 
         sample_table = gsm.table
 

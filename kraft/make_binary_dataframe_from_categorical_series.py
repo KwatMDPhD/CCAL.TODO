@@ -1,16 +1,22 @@
 from pandas import DataFrame
 
 
-def make_binary_dataframe_from_categorical_series(series):
+def make_binary_dataframe_from_categorical_series(
+    series, include_series_name_in_index=False
+):
 
     object_x_index = DataFrame(
         index=series.dropna().sort_values().unique(), columns=series.index
     )
 
-    object_x_index.index.name = series.name
-
     for object in object_x_index.index:
 
         object_x_index.loc[object] = (series == object).astype(int)
+
+    object_x_index.index.name = series.name
+
+    object_x_index.index = (
+        f"({series.name}) {object}" for object in object_x_index.index
+    )
 
     return object_x_index
