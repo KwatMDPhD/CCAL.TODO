@@ -25,7 +25,7 @@ setup(
         "KDEpy",
         "tables",
         "seaborn",
-        "plotly",
+        "plotly==3",
         "GEOparse",
         "click",
     ),
