@@ -1,10 +1,11 @@
 from os.path import join
 
 from setuptools import setup
+from kraft import get_child_paths
 
 NAME = "kraft"
 
-VERSION = "0.0.4"
+VERSION = "0.0.5"
 
 URL = f"https://github.com/KwatME/{NAME}"
 
@@ -26,14 +27,12 @@ setup(
         "tables",
         "seaborn",
         "plotly",
+        "chart_studio",
         "GEOparse",
         "click",
     ),
     packages=(NAME,),
     package_data={
-        NAME: (
-            join("data", "cell_line_name_best_cell_line_name.tsv"),
-            join("data", "hgnc.tsv"),
-        )
+        NAME: tuple(join("data", path) for path in get_child_paths(join(NAME, "data")))
     },
 )
