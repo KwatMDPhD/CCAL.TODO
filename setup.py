@@ -1,6 +1,7 @@
 from os.path import join
 
 from setuptools import setup
+
 from kraft import get_child_paths
 
 NAME = "kraft"
