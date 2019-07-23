@@ -13,7 +13,7 @@ def run_gsea(
     phenotypes,
     genes,
     function,
-    statistic="ks",
+    statistic="auc",
     n_permutation=10,
     permuting="gene",
     plot=True,

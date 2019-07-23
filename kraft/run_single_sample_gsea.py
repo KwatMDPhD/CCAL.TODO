@@ -6,8 +6,7 @@ from .plot_and_save import plot_and_save
 def run_single_sample_gsea(
     gene_score,
     gene_set_genes,
-    hit=None,
-    statistic="ks",
+    statistic="auc",
     plot=True,
     title="GSEA Mountain Plot",
     gene_score_name="Gene Score",
@@ -19,15 +18,13 @@ def run_single_sample_gsea(
 
     gene_set_gene_None = {gene_set_gene: None for gene_set_gene in gene_set_genes}
 
-    if hit is None:
-
-        hit = asarray(
-            [
-                gene_score_gene in gene_set_gene_None
-                for gene_score_gene in gene_score.index.values
-            ],
-            dtype=int,
-        )
+    hit = asarray(
+        [
+            gene_score_gene in gene_set_gene_None
+            for gene_score_gene in gene_score.index.values
+        ],
+        dtype=int,
+    )
 
     up = absolute(gene_score.values) * hit
 
@@ -39,7 +36,11 @@ def run_single_sample_gsea(
 
     cumsum = (up - down).cumsum()
 
-    if statistic == "ks":
+    if statistic == "auc":
+
+        gsea_score = cumsum.sum()
+
+    elif statistic == "ks":
 
         min_ = cumsum.min()
 
@@ -52,10 +53,6 @@ def run_single_sample_gsea(
         else:
 
             gsea_score = min_
-
-    elif statistic == "auc":
-
-        gsea_score = cumsum.sum()
 
     if not plot:
 

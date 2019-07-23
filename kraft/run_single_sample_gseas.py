@@ -8,9 +8,11 @@ from .split_dataframe import split_dataframe
 
 def _single_sample_gseas(gene_x_sample, gene_sets, statistic):
 
-    print(f"Running single-sample GSEA with {gene_sets.shape[0]} gene sets ...")
+    # print(f"Running single-sample GSEA with {gene_sets.shape[0]} gene sets ...")
 
-    gsea_score__gene_set_x_sample = full(gene_sets.shape, nan)
+    gsea_score__gene_set_x_sample = full(
+        (gene_sets.shape[0], gene_x_sample.shape[1]), nan
+    )
 
     for sample_index, (sample_name, gene_score) in enumerate(gene_x_sample.items()):
 
@@ -36,7 +38,7 @@ def _single_sample_gseas(gene_x_sample, gene_sets, statistic):
 
 
 def run_single_sample_gseas(
-    gene_x_sample, gene_sets, statistic="ks", n_job=1, file_path=None
+    gene_x_sample, gene_sets, statistic="auc", n_job=1, file_path=None
 ):
 
     gsea_score__gene_set_x_sample = concat(
