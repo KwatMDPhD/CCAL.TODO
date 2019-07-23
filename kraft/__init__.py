@@ -1,3 +1,5 @@
+from plotly.io import templates
+
 from .add_conda_to_path import add_conda_to_path
 from .ALMOST_ZERO import ALMOST_ZERO
 from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
@@ -190,3 +192,5 @@ from .VCF_ANN_KEYS import VCF_ANN_KEYS
 from .VCF_COLUMNS import VCF_COLUMNS
 from .write_gps_map import write_gps_map
 from .write_json import write_json
+
+templates.default = "plotly_white"

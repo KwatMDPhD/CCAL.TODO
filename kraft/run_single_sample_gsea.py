@@ -59,7 +59,7 @@ def run_single_sample_gsea(
         return gsea_score
 
     layout = {
-        "title": {"text": title},
+        "title": {"text": title, "x": 0.5, "xanchor": "center"},
         "xaxis": {"anchor": "y", "title": "Rank"},
         "yaxis": {"domain": (0, 0.16), "title": gene_score_name},
         "yaxis2": {"domain": (0.20, 1), "title": "Enrichment"},
