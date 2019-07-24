@@ -19,7 +19,7 @@ from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_match_panel_annotations import make_match_panel_annotations
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 from .select_series_indices import select_series_indices
 
@@ -299,7 +299,7 @@ def make_match_panel(
 
         mode = "lines"
 
-    plot_and_save(
+    plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "Statistics"},
@@ -482,6 +482,6 @@ def make_match_panel(
 
         html_file_path = f"{file_path_prefix}.html"
 
-    plot_and_save({"layout": layout, "data": figure_data}, html_file_path)
+    plot_plotly_figure({"layout": layout, "data": figure_data}, html_file_path)
 
     return score_moe_p_value_fdr

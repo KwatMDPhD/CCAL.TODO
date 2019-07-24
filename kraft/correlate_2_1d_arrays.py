@@ -3,7 +3,7 @@ from numpy.random import seed, shuffle
 from sklearn.linear_model import LinearRegression
 
 from .compute_empirical_p_value import compute_empirical_p_value
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
 
@@ -71,7 +71,7 @@ def correlate_2_1d_arrays(
 
             title = r2_p_value_str
 
-        plot_and_save(
+        plot_plotly_figure(
             {
                 "layout": {
                     "title": {"text": title},

@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
-from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
+from .plot_plotly_figure import plot_plotly_figure
 from .unmesh import unmesh
 
 
@@ -19,7 +19,7 @@ def plot_mesh_grid(
 
     if n_dimension == 1:
 
-        plot_and_save(
+        plot_plotly_figure(
             {
                 "layout": {
                     "title": {"text": title},

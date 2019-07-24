@@ -3,7 +3,7 @@ from numpy import arange, linspace, meshgrid
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .normalize_nd_array import normalize_nd_array
 from .pick_colors import pick_colors
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_bubble_map(
@@ -29,7 +29,7 @@ def plot_bubble_map(
         linspace(0, dataframe_size.shape[0] - 1, num=dataframe_size.shape[0]),
     )
 
-    plot_and_save(
+    plot_plotly_figure(
         {
             "layout": {
                 "width": max(640, marker_size_max * 2 * dataframe_size.shape[1]),

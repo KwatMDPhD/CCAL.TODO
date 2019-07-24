@@ -1,6 +1,6 @@
 from numpy import absolute, arange, asarray, where
 
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def run_single_sample_gsea(
@@ -169,6 +169,6 @@ def run_single_sample_gsea(
         for i, (x, str_) in enumerate(zip(gene_xs, gene_texts))
     ]
 
-    plot_and_save({"layout": layout, "data": data}, html_file_path)
+    plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
 
     return gsea_score

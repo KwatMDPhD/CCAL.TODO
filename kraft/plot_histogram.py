@@ -1,7 +1,7 @@
 from numpy import arange
 
 from .pick_colors import pick_colors
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_histogram(
@@ -65,7 +65,7 @@ def plot_histogram(
                 }
             )
 
-    plot_and_save(
+    plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": title},

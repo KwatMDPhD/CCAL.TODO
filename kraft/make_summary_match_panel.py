@@ -4,7 +4,7 @@ from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_match_panel_annotations import make_match_panel_annotations
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def make_summary_match_panel(
@@ -205,4 +205,4 @@ def make_summary_match_panel(
 
                 y -= row_fraction
 
-    plot_and_save({"layout": layout, "data": figure_data}, html_file_path)
+    plot_plotly_figure({"layout": layout, "data": figure_data}, html_file_path)

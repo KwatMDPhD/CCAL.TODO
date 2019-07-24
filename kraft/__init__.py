@@ -1,5 +1,3 @@
-from plotly.io import templates
-
 from .add_conda_to_path import add_conda_to_path
 from .ALMOST_ZERO import ALMOST_ZERO
 from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
@@ -128,13 +126,13 @@ from .normalize_nd_array import normalize_nd_array
 from .normalize_path import normalize_path
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
-from .plot_and_save import plot_and_save
 from .plot_bayesian_nomogram import plot_bayesian_nomogram
 from .plot_bubble_map import plot_bubble_map
 from .plot_context import plot_context
 from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_mesh_grid import plot_mesh_grid
+from .plot_plotly_figure import plot_plotly_figure
 from .plot_scatter_and_annotate import plot_scatter_and_annotate
 from .print_function_information import print_function_information
 from .print_header_in_terminal import print_header_in_terminal
@@ -192,5 +190,3 @@ from .VCF_ANN_KEYS import VCF_ANN_KEYS
 from .VCF_COLUMNS import VCF_COLUMNS
 from .write_gps_map import write_gps_map
 from .write_json import write_json
-
-templates.default = "plotly_white"

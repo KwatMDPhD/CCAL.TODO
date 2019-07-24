@@ -1,6 +1,6 @@
 from numpy import absolute, arange, linspace, log2, sort
 
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_bayesian_nomogram(
@@ -47,7 +47,7 @@ def plot_bayesian_nomogram(
 
         x = arange(n_grid)
 
-        plot_and_save(
+        plot_plotly_figure(
             {
                 "layout": {"title": {"text": name}},
                 "data": [
@@ -91,4 +91,4 @@ def plot_bayesian_nomogram(
             }
         )
 
-    plot_and_save({"layout": layout, "data": data}, html_file_path)
+    plot_plotly_figure({"layout": layout, "data": data}, html_file_path)

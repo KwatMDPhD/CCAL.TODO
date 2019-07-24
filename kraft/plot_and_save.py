@@ -1,14 +1,13 @@
-# from plotly.io import write_image
-from chart_studio.plotly import plot as plotly_plot
-from plotly.offline import iplot
-from plotly.offline import plot as offline_plot
+from plotly.io import show, write_html
 
 
-def plot_and_save(figure, html_file_path, plotly_html_file_path=None):
+def plot_plotly_figure(figure, html_file_path=None):
 
     if "layout" in figure:
 
-        figure["layout"].update({"autosize": True, "hovermode": "closest"})
+        figure["layout"].update(
+            {"template": "plotly_white", "autosize": True, "hovermode": "closest"}
+        )
 
         for axis in ("xaxis", "yaxis"):
 
@@ -16,27 +15,20 @@ def plot_and_save(figure, html_file_path, plotly_html_file_path=None):
 
                 figure["layout"][axis].update({"automargin": True})
 
+    else:
+
+        figure["layout"] = {
+            "template": "plotly_white",
+            "autosize": True,
+            "hovermode": "closest",
+            "xaxis": {"automargin": True},
+            "yaxis": {"automargin": True},
+        }
+
     config = {"editable": True}
+
+    show(figure, config=config)
 
     if html_file_path is not None:
 
-        html_file_path = offline_plot(
-            figure, filename=html_file_path, auto_open=False, config=config
-        )
-
-        # write_image(
-        #     figure, html_file_path.replace(".html", ".svg"), width=880, height=880
-        # )
-
-    if plotly_html_file_path is not None:
-
-        plotly_plot(
-            figure,
-            filename=plotly_html_file_path,
-            file_opt="overwrite",
-            auto_open=False,
-        )
-
-    iplot(figure, config=config)
-
-    return figure
+        write_html(figure, html_file_path, config=config)

@@ -1,6 +1,6 @@
 from pandas import Series
 
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_scatter_and_annotate(
@@ -94,7 +94,7 @@ def plot_scatter_and_annotate(
             for element, x_, y_ in zip(group_elements, group_x, group_y)
         ]
 
-    plot_and_save(
+    plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": title},

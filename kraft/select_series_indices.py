@@ -1,6 +1,6 @@
 from numpy import arange
 
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def select_series_indices(
@@ -143,7 +143,7 @@ def select_series_indices(
 
             mode = "lines"
 
-        plot_and_save(
+        plot_plotly_figure(
             {
                 "layout": {"title": title, "xaxis": xaxis, "yaxis": yaxis},
                 "data": [

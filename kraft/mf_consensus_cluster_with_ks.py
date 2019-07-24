@@ -6,8 +6,8 @@ from pandas import DataFrame, Index
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .establish_path import establish_path
 from .mf_consensus_cluster import mf_consensus_cluster
-from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
+from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
 
@@ -97,7 +97,7 @@ def mf_consensus_cluster_with_ks(
 
         html_file_path = join(directory_path, file_name)
 
-    plot_and_save(
+    plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "MF Error"},
@@ -135,7 +135,7 @@ def mf_consensus_cluster_with_ks(
 
         html_file_path = join(directory_path, file_name)
 
-    plot_and_save(
+    plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "MFCC Cophenetic Correlation Coefficient"},

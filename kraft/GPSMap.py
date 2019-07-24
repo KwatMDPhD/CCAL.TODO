@@ -39,8 +39,8 @@ from .make_colorscale_from_colors import make_colorscale_from_colors
 from .normalize_nd_array import normalize_nd_array
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
-from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
+from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 from .scale_point_x_dimension_dimension import scale_point_x_dimension_dimension
 from .train_and_classify import train_and_classify
@@ -436,7 +436,7 @@ def _plot(
             }
         )
 
-    plot_and_save({"layout": layout, "data": data}, html_file_path)
+    plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
 
 
 class GPSMap:
@@ -1311,7 +1311,7 @@ class GPSMap:
 
             mode = "lines"
 
-        plot_and_save(
+        plot_plotly_figure(
             {
                 "layout": {
                     "title": {"text": "Annealing Summary"},

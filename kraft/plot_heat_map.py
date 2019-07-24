@@ -3,7 +3,7 @@ from numpy import asarray, nonzero, unique
 from .cast_object_to_builtin import cast_object_to_builtin
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .pick_colors import pick_colors
-from .plot_and_save import plot_and_save
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_heat_map(
@@ -189,4 +189,4 @@ def plot_heat_map(
                         }
                     )
 
-    plot_and_save({"layout": layout, "data": data}, html_file_path)
+    plot_plotly_figure({"layout": layout, "data": data}, html_file_path)

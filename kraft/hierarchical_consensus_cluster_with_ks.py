@@ -7,8 +7,8 @@ from scipy.spatial.distance import pdist, squareform
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .establish_path import establish_path
 from .hierarchical_consensus_cluster import hierarchical_consensus_cluster
-from .plot_and_save import plot_and_save
 from .plot_heat_map import plot_heat_map
+from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
 
@@ -106,7 +106,7 @@ def hierarchical_consensus_cluster_with_ks(
 
         html_file_path = join(directory_path, file_name)
 
-    plot_and_save(
+    plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "HCC Cophenetic Correlation Coefficient"},
