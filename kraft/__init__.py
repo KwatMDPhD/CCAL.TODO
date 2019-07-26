@@ -133,7 +133,6 @@ from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_mesh_grid import plot_mesh_grid
 from .plot_plotly_figure import plot_plotly_figure
-from .plot_point_and_annotate import plot_point_and_annotate
 from .plot_scatter_and_annotate import plot_scatter_and_annotate
 from .print_function_information import print_function_information
 from .print_header_in_terminal import print_header_in_terminal
