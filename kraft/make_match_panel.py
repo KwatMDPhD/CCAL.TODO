@@ -225,7 +225,7 @@ def make_match_panel(
     target_type=None,
     data_type=None,
     plot_std=None,
-    title=None,
+    title_text=None,
     layout_side_margin=196,
     annotation_font_size=8.8,
     file_path_prefix=None,
@@ -303,8 +303,8 @@ def make_match_panel(
         {
             "layout": {
                 "title": {"text": "Statistics"},
-                "xaxis": {"title": "Rank"},
-                "yaxis": {"title": f"Score<br>{match_function.__name__}"},
+                "xaxis": {"title": {"text": "Rank"}},
+                "yaxis": {"title": {"text": f"Score<br>{match_function.__name__}"}},
             },
             "data": [
                 {
@@ -402,7 +402,7 @@ def make_match_panel(
     layout = {
         "height": max(640, 32 * (data_to_plot.shape[0] + 2)),
         "margin": {"l": layout_side_margin, "r": layout_side_margin},
-        "title": {"text": title},
+        "title": {"text": title_text},
         "xaxis": {"anchor": "y", "tickfont": annotation_font},
         "yaxis": {"domain": data_yaxis_domain, "dtick": 1, "tickfont": annotation_font},
         "yaxis2": {

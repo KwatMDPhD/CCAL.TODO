@@ -126,7 +126,7 @@ def _plot(
     annotation_colorscales,
     layout_size,
     highlight_binary,
-    title,
+    title_text,
     html_file_path,
 ):
 
@@ -140,7 +140,7 @@ def _plot(
     layout = {
         "width": layout_size,
         "height": layout_size,
-        "title": {"text": title, "font": {"size": 32, "color": "#4c221b"}},
+        "title": {"text": title_text, "font": {"color": "#4c221b"}},
         "xaxis": axis_template,
         "yaxis": axis_template,
     }
@@ -574,9 +574,9 @@ class GPSMap:
                     DataFrame(self.w, index=self.nodes, columns=self.w_elements).iloc[
                         :, cluster_2d_array(self.w, 1)
                     ],
-                    title="W",
-                    xaxis_title=self.w_element_name,
-                    yaxis_title=self.node_name,
+                    title_text="W",
+                    xaxis_title_text=self.w_element_name,
+                    yaxis_title_text=self.node_name,
                 )
 
                 plot_heat_map(
@@ -588,9 +588,9 @@ class GPSMap:
                         cluster_2d_array(self.w_distance__node_x_node, 0),
                         cluster_2d_array(self.w_distance__node_x_node, 1),
                     ],
-                    title=f"{self.node_name}-{self.node_name} Distance in W",
-                    xaxis_title=self.node_name,
-                    yaxis_title=self.node_name,
+                    title_text=f"{self.node_name}-{self.node_name} Distance in W",
+                    xaxis_title_text=self.node_name,
+                    yaxis_title_text=self.node_name,
                 )
 
         if h is not None:
@@ -611,9 +611,9 @@ class GPSMap:
                     DataFrame(self.h, index=self.nodes, columns=self.h_elements).iloc[
                         :, cluster_2d_array(self.h, 1)
                     ],
-                    title="H",
-                    xaxis_title=self.h_element_name,
-                    yaxis_title=self.node_name,
+                    title_text="H",
+                    xaxis_title_text=self.h_element_name,
+                    yaxis_title_text=self.node_name,
                 )
 
                 plot_heat_map(
@@ -625,9 +625,9 @@ class GPSMap:
                         cluster_2d_array(self.h_distance__node_x_node, 0),
                         cluster_2d_array(self.h_distance__node_x_node, 1),
                     ],
-                    title=f"{self.node_name}-{self.node_name} Distance in H",
-                    xaxis_title=self.node_name,
-                    yaxis_title=self.node_name,
+                    title_text=f"{self.node_name}-{self.node_name} Distance in H",
+                    xaxis_title_text=self.node_name,
+                    yaxis_title_text=self.node_name,
                 )
 
         if w is not None and h is not None:
@@ -656,9 +656,9 @@ class GPSMap:
                         cluster_2d_array(self.distance__node_x_node, 0),
                         cluster_2d_array(self.distance__node_x_node, 1),
                     ],
-                    title=f"{self.node_name}-{self.node_name} Distance in W and H",
-                    xaxis_title=self.node_name,
-                    yaxis_title=self.node_name,
+                    title_text=f"{self.node_name}-{self.node_name} Distance in W and H",
+                    xaxis_title_text=self.node_name,
+                    yaxis_title_text=self.node_name,
                 )
 
         elif w is not None:
@@ -945,9 +945,9 @@ class GPSMap:
                 normalize_series_or_dataframe(z, 0, "-0-"),
                 column_annotation=column_annotation,
                 column_annotation_colors=label_colors,
-                title=w_or_h.title(),
-                xaxis_title=element_name,
-                yaxis_title=self.node_name,
+                title_text=w_or_h.title(),
+                xaxis_title_text=element_name,
+                yaxis_title_text=self.node_name,
                 show_xaxis_ticks=False,
             )
 

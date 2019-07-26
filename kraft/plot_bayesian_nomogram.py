@@ -26,9 +26,9 @@ def plot_bayesian_nomogram(
     layout = {
         "height": 64 * max(8, len(conditional_probabilities)),
         "title": {"text": "Bayesian Nomogram"},
-        "xaxis": {"title": "Log Odds Ratio"},
+        "xaxis": {"title": {"text": "Log Odds Ratio"}},
         "yaxis": {
-            "title": "Evidence",
+            "title": {"text": "Evidence"},
             "ticks": "",
             "showticklabels": False,
             "zeroline": False,

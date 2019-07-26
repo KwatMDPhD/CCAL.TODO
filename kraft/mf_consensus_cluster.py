@@ -92,9 +92,9 @@ def mf_consensus_cluster(
 
                 plot_heat_map(
                     w_0.iloc[cluster_2d_array(w_0.values, 0)],
-                    title=f"MF K={k} W",
-                    xaxis_title=w_0.columns.name,
-                    yaxis_title=w_0.index.name,
+                    title_text=f"MF K={k} W",
+                    xaxis_title_text=w_0.columns.name,
+                    yaxis_title_text=w_0.index.name,
                     html_file_path=html_file_path,
                 )
 
@@ -114,9 +114,9 @@ def mf_consensus_cluster(
 
                 plot_heat_map(
                     h_0.iloc[:, cluster_2d_array(h_0.values, 1)],
-                    title=f"MF K={k} H",
-                    xaxis_title=h_0.columns.name,
-                    yaxis_title=h_0.index.name,
+                    title_text=f"MF K={k} H",
+                    xaxis_title_text=h_0.columns.name,
+                    yaxis_title_text=h_0.index.name,
                     html_file_path=html_file_path,
                 )
 
@@ -164,9 +164,9 @@ def mf_consensus_cluster(
             dataframe,
             row_annotation=w_element_cluster_sorted,
             column_annotation=h_element_cluster_sorted,
-            title=f"MFCC K={k}",
-            xaxis_title=dataframe.columns.name,
-            yaxis_title=dataframe.index.name,
+            title_text=f"MFCC K={k}",
+            xaxis_title_text=dataframe.columns.name,
+            yaxis_title_text=dataframe.index.name,
             html_file_path=html_file_path,
         )
 

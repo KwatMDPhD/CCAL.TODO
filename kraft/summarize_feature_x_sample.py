@@ -28,9 +28,9 @@ def summarize_feature_x_sample(
 
             plot_heat_map(
                 feature_x_sample,
-                title=feature_x_sample_alias,
-                xaxis_title=feature_x_sample.columns.name,
-                yaxis_title=feature_x_sample.index.name,
+                title_text=feature_x_sample_alias,
+                xaxis_title_text=feature_x_sample.columns.name,
+                yaxis_title_text=feature_x_sample.index.name,
             )
 
         feature_x_sample_not_na_values = feature_x_sample.unstack().dropna()
@@ -52,8 +52,8 @@ def summarize_feature_x_sample(
         plot_histogram(
             (Series(feature_x_sample_not_na_values),),
             plot_rug=feature_x_sample_not_na_values.size < plot_rug_max_size,
-            title=f"{feature_x_sample_alias}<br>Histogram of {value_name}",
-            xaxis_title=value_name,
+            title_text=f"{feature_x_sample_alias}<br>Histogram of {value_name}",
+            xaxis_title_text=value_name,
         )
 
     isna__feature_x_sample = feature_x_sample.isna()
@@ -69,6 +69,6 @@ def summarize_feature_x_sample(
         plot_histogram(
             (isna__feature_x_sample.sum(axis=1), isna__feature_x_sample.sum()),
             plot_rug=max(isna__feature_x_sample.shape) < plot_rug_max_size,
-            title=f"{feature_x_sample_alias}<br>Histogram of {value_name} ",
-            xaxis_title=value_name,
+            title_text=f"{feature_x_sample_alias}<br>Histogram of {value_name} ",
+            xaxis_title_text=value_name,
         )

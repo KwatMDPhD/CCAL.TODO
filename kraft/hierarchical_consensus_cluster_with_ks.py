@@ -110,8 +110,8 @@ def hierarchical_consensus_cluster_with_ks(
         {
             "layout": {
                 "title": {"text": "HCC Cophenetic Correlation Coefficient"},
-                "xaxis": {"title": "K"},
-                "yaxis": {"title": "CCC"},
+                "xaxis": {"title": {"text": "K"}},
+                "yaxis": {"title": {"text": "CCC"}},
             },
             "data": [
                 {
@@ -148,9 +148,9 @@ def hierarchical_consensus_cluster_with_ks(
 
         plot_heat_map(
             DataFrame(sort(k_x_element.values, axis=1), index=keys),
-            title="HCC Cluster Distribution",
-            xaxis_title="Element",
-            yaxis_title=k_x_element.index.name,
+            title_text="HCC Cluster Distribution",
+            xaxis_title_text="Element",
+            yaxis_title_text=k_x_element.index.name,
             html_file_path=html_file_path,
         )
 

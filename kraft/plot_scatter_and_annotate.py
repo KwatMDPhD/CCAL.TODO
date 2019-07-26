@@ -10,7 +10,7 @@ def plot_scatter_and_annotate(
     annotation=(),
     opacity=0.64,
     annotation_font_size=10,
-    title=None,
+    title_text=None,
     html_file_path=None,
 ):
 
@@ -97,9 +97,9 @@ def plot_scatter_and_annotate(
     plot_plotly_figure(
         {
             "layout": {
-                "title": {"text": title},
-                "xaxis": {"title": x.name},
-                "yaxis": {"title": y.name},
+                "title": {"text": title_text},
+                "xaxis": {"title": {"text": x.name}},
+                "yaxis": {"title": {"text": y.name}},
                 "annotations": annotations,
             },
             "data": data,

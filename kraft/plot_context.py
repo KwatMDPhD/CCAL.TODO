@@ -25,20 +25,20 @@ def plot_context(
     y_max_is_pdf_max=False,
     n_bin=None,
     plot_rug=None,
-    title=None,
-    xaxis_title=None,
+    title_text=None,
+    xaxis_title_text=None,
     html_file_path=None,
 ):
 
     if isinstance(_1d_array_or_series, Series):
 
-        if title is None:
+        if title_text is None:
 
-            title = _1d_array_or_series.name
+            title_text = _1d_array_or_series.name
 
-        if xaxis_title is None:
+        if xaxis_title_text is None:
 
-            xaxis_title = "Value"
+            xaxis_title_text = "Value"
 
         if text is None:
 
@@ -105,8 +105,8 @@ def plot_context(
         yaxis2_min = 0
 
     layout = {
-        "title": {"text": title},
-        "xaxis": {"anchor": "y", "title": xaxis_title},
+        "title": {"text": title_text},
+        "xaxis": {"anchor": "y", "title": {"text": xaxis_title_text}},
         "yaxis": {
             "domain": (0, yaxis_max),
             "dtick": 1,

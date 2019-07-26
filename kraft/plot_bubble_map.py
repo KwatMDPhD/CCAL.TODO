@@ -12,9 +12,9 @@ def plot_bubble_map(
     marker_size_max=32,
     showscale=None,
     colorbar_x=None,
-    title=None,
-    xaxis_title=None,
-    yaxis_title=None,
+    title_text=None,
+    xaxis_title_text=None,
+    yaxis_title_text=None,
     html_file_path=None,
 ):
 
@@ -34,17 +34,21 @@ def plot_bubble_map(
             "layout": {
                 "width": max(640, marker_size_max * 2 * dataframe_size.shape[1]),
                 "height": max(640, marker_size_max * 2 * dataframe_size.shape[0]),
-                "title": {"text": title},
+                "title": {"text": title_text},
                 "xaxis": {
                     "tickvals": arange(dataframe_size.shape[1]),
                     "ticktext": dataframe_size.columns,
-                    "title": f"{xaxis_title} ({dataframe_size.shape[1]})",
+                    "title": {
+                        "text": f"{xaxis_title_text} ({dataframe_size.shape[1]})"
+                    },
                     **axis_template,
                 },
                 "yaxis": {
                     "tickvals": arange(dataframe_size.shape[0]),
                     "ticktext": dataframe_size.index[::-1],
-                    "title": f"{yaxis_title} ({dataframe_size.shape[0]})",
+                    "title": {
+                        "text": f"{yaxis_title_text} ({dataframe_size.shape[0]})"
+                    },
                     **axis_template,
                 },
             },

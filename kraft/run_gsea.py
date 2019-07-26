@@ -45,7 +45,7 @@ def run_gsea(
         genes,
         statistic=statistic,
         plot=plot,
-        title=title,
+        title_text=title,
         gene_score_name=gene_score_name,
         annotation_text_font_size=annotation_text_font_size,
         annotation_text_width=annotation_text_width,

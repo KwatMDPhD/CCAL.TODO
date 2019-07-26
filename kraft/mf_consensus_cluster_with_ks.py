@@ -101,8 +101,8 @@ def mf_consensus_cluster_with_ks(
         {
             "layout": {
                 "title": {"text": "MF Error"},
-                "xaxis": {"title": "K"},
-                "yaxis": {"title": "Error"},
+                "xaxis": {"title": {"text": "K"}},
+                "yaxis": {"title": {"text": "Error"}},
             },
             "data": [
                 {
@@ -211,9 +211,9 @@ def mf_consensus_cluster_with_ks(
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
-                title=f"MFCC {w_or_h.title()} Cluster Distribution",
-                xaxis_title=f"{w_or_h.title()} Element",
-                yaxis_title=k_x_element.index.name,
+                title_text=f"MFCC {w_or_h.title()} Cluster Distribution",
+                xaxis_title_text=f"{w_or_h.title()} Element",
+                yaxis_title_text=k_x_element.index.name,
                 html_file_path=html_file_path,
             )
 

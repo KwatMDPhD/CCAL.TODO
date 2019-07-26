@@ -8,8 +8,8 @@ def plot_histogram(
     serieses,
     histnorm="",
     plot_rug=None,
-    title=None,
-    xaxis_title=None,
+    title_text=None,
+    xaxis_title_text=None,
     html_file_path=None,
 ):
 
@@ -68,15 +68,18 @@ def plot_histogram(
     plot_plotly_figure(
         {
             "layout": {
-                "title": {"text": title},
-                "xaxis": {"anchor": "y", "title": xaxis_title},
+                "title": {"text": title_text},
+                "xaxis": {"anchor": "y", "title": {"text": xaxis_title_text}},
                 "yaxis": {
                     "domain": (0, yaxis_max),
                     "dtick": 1,
                     "zeroline": False,
                     "showticklabels": False,
                 },
-                "yaxis2": {"domain": (yaxis2_min, 1), "title": histnorm.title()},
+                "yaxis2": {
+                    "domain": (yaxis2_min, 1),
+                    "title": {"text": histnorm.title()},
+                },
                 "barmode": "overlay",
             },
             "data": data,

@@ -14,9 +14,9 @@ def correlate_2_1d_arrays(
     random_seed=RANDOM_SEED,
     plot=True,
     marker_size=16,
-    title=None,
-    xaxis_title=None,
-    yaxis_title=None,
+    title_text=None,
+    xaxis_title_text=None,
+    yaxis_title_text=None,
     html_file_path=None,
 ):
 
@@ -63,20 +63,20 @@ def correlate_2_1d_arrays(
 
             r2_p_value_str = f"{r2_p_value_str} & P-Value={p_value:.3e}"
 
-        if title:
+        if title_text:
 
-            title = f"{title}\n{r2_p_value_str}"
+            title_text = f"{title_text}\n{r2_p_value_str}"
 
         else:
 
-            title = r2_p_value_str
+            title_text = r2_p_value_str
 
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": {"text": title},
-                    "xaxis": {"title": xaxis_title},
-                    "yaxis": {"title": yaxis_title},
+                    "title": {"text": title_text},
+                    "xaxis": {"title": {"text": xaxis_title_text}},
+                    "yaxis": {"title": {"text": yaxis_title_text}},
                 },
                 "data": [
                     {

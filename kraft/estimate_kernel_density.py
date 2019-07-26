@@ -79,7 +79,7 @@ def estimate_kernel_density(
         plot_mesh_grid(
             mesh_grid_point_x_dimension,
             mesh_grid_point_kernel_density,
-            title="Kernel Density",
+            title_text="Kernel Density",
             dimension_names=dimension_names,
         )
 

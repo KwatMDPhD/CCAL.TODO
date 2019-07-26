@@ -66,7 +66,7 @@ def make_match_panels(
                 data_dict["dataframe"],
                 score_moe_p_value_fdr=score_moe_p_value_fdr,
                 data_type=data_dict["type"],
-                title=suffix.replace("/", "<br>"),
+                title_text=suffix.replace("/", "<br>"),
                 file_path_prefix=file_path_prefix,
                 **make_match_panel_keyword_arguments,
             )

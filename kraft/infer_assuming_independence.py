@@ -83,7 +83,7 @@ def infer_assuming_independence(
         plot_mesh_grid(
             no_target__mesh_grid_point_x_dimension,
             no_target__mesh_grid_point_posterior_probability,
-            title=title,
+            title_text=title,
             dimension_names=dimension_names,
         )
 

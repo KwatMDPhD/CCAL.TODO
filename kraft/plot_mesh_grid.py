@@ -6,7 +6,10 @@ from .unmesh import unmesh
 
 
 def plot_mesh_grid(
-    mesh_grid_point_x_dimension, mesh_grid_point_value, title=None, dimension_names=None
+    mesh_grid_point_x_dimension,
+    mesh_grid_point_value,
+    title_text=None,
+    dimension_names=None,
 ):
 
     n_dimension = mesh_grid_point_x_dimension.shape[1]
@@ -22,11 +25,13 @@ def plot_mesh_grid(
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": {"text": title},
+                    "title": {"text": title_text},
                     "xaxis": {
-                        "title": f"{dimension_names[0]} (n={dimension_grids[0].size})"
+                        "title": {
+                            "text": f"{dimension_names[0]} (n={dimension_grids[0].size})"
+                        }
                     },
-                    "yaxis": {"title": "Value"},
+                    "yaxis": {"title": {"text": "Value"}},
                 },
                 "data": [
                     {
@@ -49,9 +54,9 @@ def plot_mesh_grid(
                 index=(f"{i:.3f} *" for i in dimension_grids[0]),
                 columns=(f"* {i:.3f}" for i in dimension_grids[1]),
             ),
-            title=title,
-            xaxis_title=dimension_names[1],
-            yaxis_title=dimension_names[0],
+            title_text=title_text,
+            xaxis_title_text=dimension_names[1],
+            yaxis_title_text=dimension_names[0],
         )
 
     else:

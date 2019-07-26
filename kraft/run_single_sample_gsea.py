@@ -8,7 +8,7 @@ def run_single_sample_gsea(
     gene_set_genes,
     statistic="auc",
     plot=True,
-    title="GSEA Mountain Plot",
+    title_text=None,
     gene_score_name="Gene Score",
     annotation_text_font_size=10,
     annotation_text_width=100,
@@ -59,10 +59,10 @@ def run_single_sample_gsea(
         return gsea_score
 
     layout = {
-        "title": {"text": title, "x": 0.5, "xanchor": "center"},
-        "xaxis": {"anchor": "y", "title": "Rank"},
-        "yaxis": {"domain": (0, 0.16), "title": gene_score_name},
-        "yaxis2": {"domain": (0.20, 1), "title": "Enrichment"},
+        "title": {"text": title_text},
+        "xaxis": {"anchor": "y", "title": {"text": "Rank"}},
+        "yaxis": {"domain": (0, 0.16), "title": {"text": gene_score_name}},
+        "yaxis2": {"domain": (0.20, 1), "title": {"text": "Enrichment"}},
     }
 
     data = []

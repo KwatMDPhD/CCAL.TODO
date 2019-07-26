@@ -1,29 +1,29 @@
-from plotly.io import show, write_html
+from plotly.io import show, templates, write_html
+
+templates["kraft"] = {
+    "layout": {
+        "autosize": True,
+        "title": {
+            # "x": 0.5,
+            # "xanchor": "center",
+            "font": {"size": 32}
+        },
+        "xaxis": {"title": {"font": {"size": 16}}},
+        "yaxis": {"title": {"font": {"size": 16}}},
+    }
+}
 
 
 def plot_plotly_figure(figure, html_file_path=None):
 
+    template = "plotly_white+kraft"
+
     if "layout" in figure:
 
-        figure["layout"].update(
-            {"template": "plotly_white", "autosize": True, "hovermode": "closest"}
-        )
-
-        for axis in ("xaxis", "yaxis"):
-
-            if axis in figure["layout"] and figure["layout"][axis] is not None:
-
-                figure["layout"][axis].update({"automargin": True})
-
+        figure["layout"]["template"] = template
     else:
 
-        figure["layout"] = {
-            "template": "plotly_white",
-            "autosize": True,
-            "hovermode": "closest",
-            "xaxis": {"automargin": True},
-            "yaxis": {"automargin": True},
-        }
+        figure["layout"] = {"template": template}
 
     config = {"editable": True}
 

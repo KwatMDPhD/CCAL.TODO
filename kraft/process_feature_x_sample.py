@@ -10,8 +10,8 @@ from .summarize_feature_x_sample import summarize_feature_x_sample
 
 def process_feature_x_sample(
     feature_x_sample,
-    features_to_drop=None,
-    samples_to_drop=None,
+    features_to_drop=(),
+    samples_to_drop=(),
     nanize=None,
     drop_axis=None,
     max_na=None,
@@ -40,7 +40,7 @@ def process_feature_x_sample(
 
     shape_before_drop = feature_x_sample.shape
 
-    if features_to_drop is not None:
+    if 0 < len(features_to_drop):
 
         features_to_drop = feature_x_sample.index & set(features_to_drop)
 
@@ -50,7 +50,7 @@ def process_feature_x_sample(
 
         print(f"Shape: {feature_x_sample.shape}")
 
-    if samples_to_drop is not None:
+    if 0 < len(samples_to_drop):
 
         samples_to_drop = feature_x_sample.columns & set(samples_to_drop)
 

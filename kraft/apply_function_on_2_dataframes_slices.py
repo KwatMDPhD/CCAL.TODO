@@ -50,9 +50,9 @@ def apply_function_on_2_dataframes_slices(
             cluster_2d_array(comparison.values, 0),
             cluster_2d_array(comparison.values, 1),
         ],
-        title=title,
-        xaxis_title=name_1,
-        yaxis_title=name_0,
+        title_text=title,
+        xaxis_title_text=name_1,
+        yaxis_title_text=name_0,
         html_file_path=html_file_path,
     )
 
