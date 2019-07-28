@@ -3,11 +3,7 @@ from plotly.io import show, templates, write_html
 templates["kraft"] = {
     "layout": {
         "autosize": True,
-        "title": {
-            # "x": 0.5,
-            # "xanchor": "center",
-            "font": {"size": 32}
-        },
+        "title": {"x": 0.5, "xanchor": "center", "font": {"size": 24}},
         "xaxis": {"title": {"font": {"size": 16}}},
         "yaxis": {"title": {"font": {"size": 16}}},
     }

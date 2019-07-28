@@ -101,9 +101,9 @@ def make_summary_match_panel(
 
         data_to_plot = data_dict["dataframe"].reindex(columns=target_to_plot.index)
 
-        score_moe_p_value_fdr_to_plot = score_moe_p_value_fdr_dicts[data_name].loc[
-            data_to_plot.index
-        ]
+        score_moe_p_value_fdr_to_plot = score_moe_p_value_fdr_dicts[data_name].reindex(
+            index=data_to_plot.index
+        )
 
         score_moe_p_value_fdr_to_plot.sort_values(
             "Score", ascending=score_ascending, inplace=True
