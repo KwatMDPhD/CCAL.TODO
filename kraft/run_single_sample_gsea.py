@@ -6,7 +6,7 @@ from .plot_plotly_figure import plot_plotly_figure
 def run_single_sample_gsea(
     gene_score,
     gene_set_genes,
-    statistic="auc",
+    statistic="ks",
     plot=True,
     title_text=None,
     gene_score_name="Gene Score",
@@ -36,11 +36,7 @@ def run_single_sample_gsea(
 
     cumsum = (up - down).cumsum()
 
-    if statistic == "auc":
-
-        gsea_score = cumsum.sum()
-
-    elif statistic == "ks":
+    if statistic == "ks":
 
         min_ = cumsum.min()
 
@@ -53,6 +49,10 @@ def run_single_sample_gsea(
         else:
 
             gsea_score = min_
+
+    elif statistic == "auc":
+
+        gsea_score = cumsum.sum()
 
     if not plot:
 

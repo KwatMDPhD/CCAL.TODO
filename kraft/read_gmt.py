@@ -1,25 +1,13 @@
-from numpy import nan
-from pandas import DataFrame, Index
-
-
 def read_gmt(gmt_file_path):
 
-    indices = []
+    gene_set_genes = {}
 
-    lines = []
+    with open(gmt_file_path, "r") as io:
 
-    with open(gmt_file_path) as io:
+        for line in io.readlines():
 
-        for line in io:
+            line_split = [str_ for str_ in line.strip().split("\t") if str_]
 
-            split = line.strip().split(sep="\t")
+            gene_set_genes[line_split[0]] = line_split[2:]
 
-            indices.append(split.pop(0))
-
-            split.pop(0)
-
-            lines.append(sorted(split))
-
-    dataframe = DataFrame(lines, index=Index(indices, name="Gene Set")).fillna(nan)
-
-    return dataframe
+    return gene_set_genes
