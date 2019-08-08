@@ -21,46 +21,14 @@ def pick_colors(data, data_type=None):
 
         data = asarray(data)
 
-        n_color = unique(data[~check_nd_array_for_bad(data, raise_for_bad=False)]).size
-
-        curated_colors = (
-            "#20d9ba",
-            "#9017e6",
-            "#ff1968",
-            "#ffe119",
-            "#3cb44b",
-            "#4e40d8",
-            "#ffa400",
-            "#aaffc3",
-            "#800000",
-            "#e6beff",
-            "#fffac8",
-            "#0082c8",
-            "#e6194b",
-            "#006442",
-            "#46f0f0",
-            "#bda928",
-            "#c91f37",
-            "#fabebe",
-            "#d2f53c",
-            "#aa6e28",
-            "#ff0000",
-            "#808000",
-            "#003171",
-            "#ff4e20",
-            "#a4345d",
-            "#ffd8b1",
-            "#bb7796",
-            "#f032e6",
+        return tuple(
+            to_hex(rgb)
+            for rgb in husl_palette(
+                n_colors=unique(
+                    data[~check_nd_array_for_bad(data, raise_for_bad=False)]
+                ).size
+            )
         )
-
-        if n_color <= len(curated_colors):
-
-            return curated_colors[:n_color]
-
-        else:
-
-            return tuple(to_hex(rgb) for rgb in husl_palette(n_colors=n_color))
 
     elif data_type == "continuous":
 

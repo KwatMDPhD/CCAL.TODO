@@ -30,13 +30,13 @@ def plot_heat_map(
     html_file_path=None,
 ):
 
-    heat_map_axis_template = {
-        "domain": heat_map_axis_domain,
-        "showgrid": False,
-        "zeroline": False,
-    }
+    heat_map_axis_template = {"domain": heat_map_axis_domain, "showgrid": False}
 
-    annotation_axis_template = {"zeroline": False, "ticks": "", "showticklabels": False}
+    if not show_xaxis_ticks:
+
+        heat_map_axis_template.update({"ticks": "", "showticklabels": False})
+
+    annotation_axis_template = {"showgrid": False, "ticks": "", "showticklabels": False}
 
     layout = {
         "width": layout_width,
@@ -44,37 +44,21 @@ def plot_heat_map(
         "title": {"text": title_text},
         "xaxis": {
             "title": {"text": f"{xaxis_title_text} ({dataframe.shape[1]})"},
-            "tickangle": 90,
             **heat_map_axis_template,
         },
-        "xaxis2": {
-            "domain": annotation_axis_domain,
-            **annotation_axis_template,
-        },
+        "xaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
         "yaxis": {
             "title": {"text": f"{yaxis_title_text} ({dataframe.shape[0]})"},
-            "tickangle": 0,
             **heat_map_axis_template,
         },
-        "yaxis2": {
-            "domain": annotation_axis_domain,
-            **annotation_axis_template,
-        },
+        "yaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
     }
 
-    if not show_xaxis_ticks:
-
-        layout["xaxis"].update({"ticks": "", "showticklabels": False})
-
-    if not show_yaxis_ticks:
-
-        layout["yaxis"].update({"ticks": "", "showticklabels": False})
-
-    colorbar_template = {"len": 0.64, "thickness": 16}
-
-    if row_annotation is not None or column_annotation is not None:
-
-        colorbar_template["y"] = (heat_map_axis_domain[1] - heat_map_axis_domain[0]) / 2
+    colorbar_template = {
+        "len": 0.64,
+        "thickness": layout_width / 64,
+        "y": (heat_map_axis_domain[1] - heat_map_axis_domain[0]) / 2,
+    }
 
     if any(isinstance(cast_object_to_builtin(i), str) for i in dataframe.columns):
 
@@ -125,7 +109,7 @@ def plot_heat_map(
                     "z": tuple((i,) for i in row_annotation[::-1]),
                     "colorscale": make_colorscale_from_colors(row_annotation_colors),
                     "showscale": False,
-                    "hoverinfo": "y+z",
+                    "hoverinfo": "z+y",
                 }
             )
 
@@ -154,7 +138,7 @@ def plot_heat_map(
 
         if column_annotation is not None:
 
-            row_annotation = asarray(row_annotation)
+            column_annotation = asarray(column_annotation)
 
             if column_annotation_colors is None:
 
@@ -168,7 +152,7 @@ def plot_heat_map(
                     "transpose": True,
                     "colorscale": make_colorscale_from_colors(column_annotation_colors),
                     "showscale": False,
-                    "hoverinfo": "x+z",
+                    "hoverinfo": "z+x",
                 }
             )
 
