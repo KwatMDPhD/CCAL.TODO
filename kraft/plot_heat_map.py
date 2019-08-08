@@ -47,13 +47,19 @@ def plot_heat_map(
             "tickangle": 90,
             **heat_map_axis_template,
         },
-        "xaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
+        "xaxis2": {
+            "domain": annotation_axis_domain,
+            **annotation_axis_template,
+        },
         "yaxis": {
             "title": {"text": f"{yaxis_title_text} ({dataframe.shape[0]})"},
             "tickangle": 0,
             **heat_map_axis_template,
         },
-        "yaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
+        "yaxis2": {
+            "domain": annotation_axis_domain,
+            **annotation_axis_template,
+        },
     }
 
     if not show_xaxis_ticks:
