@@ -8,8 +8,6 @@ from .plot_plotly_figure import plot_plotly_figure
 
 def plot_heat_map(
     dataframe,
-    showscale=None,
-    colorbar_x=None,
     layout_width=880,
     layout_height=880,
     heat_map_axis_domain=(0, 0.9),
@@ -22,6 +20,9 @@ def plot_heat_map(
     column_annotation_colors=None,
     column_annotation_str=None,
     column_annotation_keyword_arguments=None,
+    showscale=None,
+    colorbar_x=None,
+    colorbar_title_text=None,
     title_text=None,
     xaxis_title_text=None,
     yaxis_title_text=None,
@@ -54,12 +55,6 @@ def plot_heat_map(
         "yaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
     }
 
-    colorbar_template = {
-        "len": 0.64,
-        "thickness": layout_width / 64,
-        "y": (heat_map_axis_domain[1] - heat_map_axis_domain[0]) / 2,
-    }
-
     if any(isinstance(cast_object_to_builtin(i), str) for i in dataframe.columns):
 
         x = dataframe.columns
@@ -84,7 +79,13 @@ def plot_heat_map(
             "y": y,
             "colorscale": make_colorscale_from_colors(pick_colors(dataframe)),
             "showscale": showscale,
-            "colorbar": {"x": colorbar_x, **colorbar_template},
+            "colorbar": {
+                "x": colorbar_x,
+                "y": (heat_map_axis_domain[1] - heat_map_axis_domain[0]) / 2,
+                "len": 0.64,
+                "thickness": layout_width / 64,
+                "title": {"side": "right", "text": colorbar_title_text},
+            },
         }
     ]
 
