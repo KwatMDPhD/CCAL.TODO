@@ -44,14 +44,14 @@ def plot_context(
 
             text = _vector_or_series.index
 
-        _vector = _vector_or_series.values
+        vector = _vector_or_series.values
 
     else:
 
-        _vector = _vector_or_series
+        vector = _vector_or_series
 
     context_dict = compute_vector_context(
-        _vector,
+        vector,
         n_data=n_data,
         location=location,
         scale=scale,
@@ -154,7 +154,7 @@ def plot_context(
             "type": "histogram",
             "name": "Data",
             "legendgroup": "Data",
-            "x": _vector,
+            "x": vector,
             "marker": {"color": "#20d9ba"},
             "histnorm": "probability density",
             "hoverinfo": "x+y",
@@ -163,9 +163,9 @@ def plot_context(
 
     if n_bin is not None:
 
-        _vector_min = _vector.min()
+        _vector_min = vector.min()
 
-        _vector_max = _vector.max()
+        _vector_max = vector.max()
 
         data[-1]["xbins"] = {
             "start": _vector_min,
@@ -180,8 +180,8 @@ def plot_context(
                 "type": "scatter",
                 "legendgroup": "Data",
                 "showlegend": False,
-                "x": _vector,
-                "y": (0,) * _vector.size,
+                "x": vector,
+                "y": (0,) * vector.size,
                 "text": text,
                 "mode": "markers",
                 "marker": {"symbol": "line-ns-open", "color": "#20d9ba"},

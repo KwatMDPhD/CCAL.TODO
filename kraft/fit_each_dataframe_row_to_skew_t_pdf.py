@@ -20,9 +20,9 @@ def _fit_each_dataframe_row_to_skew_t_pdf(dataframe):
 
             print(f"({i + 1}/{n}) {index} ...")
 
-        _vector = series.values
+        vector = series.values
 
-        skew_t_pdf_fit_parameter[i] = fit_skew_t_pdf_on_vector(_vector)
+        skew_t_pdf_fit_parameter[i] = fit_skew_t_pdf_on_vector(vector)
 
     return DataFrame(
         skew_t_pdf_fit_parameter,

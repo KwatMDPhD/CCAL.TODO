@@ -5,7 +5,7 @@ from .N_GRID import N_GRID
 
 
 def make_vector_grid(
-    _vector,
+    vector,
     grid_min=None,
     grid_max=None,
     fraction_grid_extension=FRACTION_GRID_EXTENSION,
@@ -14,11 +14,11 @@ def make_vector_grid(
 
     if grid_min is None:
 
-        grid_min = _vector.min()
+        grid_min = vector.min()
 
     if grid_max is None:
 
-        grid_max = _vector.max()
+        grid_max = vector.max()
 
     grid_range = grid_max - grid_min
 

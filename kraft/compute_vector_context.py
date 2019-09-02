@@ -19,7 +19,7 @@ from .fit_skew_t_pdf_on_vector import fit_skew_t_pdf_on_vector
 from .make_reflecting_grid import make_reflecting_grid
 
 
-def _compute_pdf_context(
+def _compute_vector_context(
     grid, pdf, pdf_reference, multiply_distance_from_reference_argmax
 ):
 
@@ -55,7 +55,7 @@ def _compute_pdf_context(
 
 
 def compute_vector_context(
-    _vector,
+    vector,
     n_data=None,
     location=None,
     scale=None,
@@ -72,9 +72,9 @@ def compute_vector_context(
     global_shape=None,
 ):
 
-    is_bad = check_array_for_bad(_vector, raise_for_bad=False)
+    is_bad = check_array_for_bad(vector, raise_for_bad=False)
 
-    _vector_good = _vector[~is_bad]
+    _vector_good = vector[~is_bad]
 
     if any(
         parameter is None
@@ -104,7 +104,7 @@ def compute_vector_context(
         ),
     )
 
-    shape_context = _compute_pdf_context(
+    shape_context = _compute_vector_context(
         grid, pdf, shape_pdf_reference, multiply_distance_from_reference_argmax
     )
 
@@ -137,13 +137,13 @@ def compute_vector_context(
             ),
         )
 
-        location_context = _compute_pdf_context(
+        location_context = _compute_vector_context(
             grid, pdf, location_pdf_reference, multiply_distance_from_reference_argmax
         )
 
         context = shape_context + location_context
 
-    context_like_array = full(_vector.size, nan)
+    context_like_array = full(vector.size, nan)
 
     context_like_array[~is_bad] = context[
         [absolute(grid - value).argmin() for value in _vector_good]

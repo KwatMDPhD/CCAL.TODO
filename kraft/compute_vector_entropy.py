@@ -1,8 +1,8 @@
 from numpy import log
 
 
-def compute_vector_entropy(_vector):
+def compute_vector_entropy(vector):
 
-    probabilities = _vector / _vector.sum()
+    probabilities = vector / vector.sum()
 
     return -(probabilities * log(probabilities)).sum()

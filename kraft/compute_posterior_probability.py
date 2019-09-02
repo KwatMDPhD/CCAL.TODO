@@ -27,7 +27,7 @@ def compute_posterior_probability(
     )[1]
 
     mesh_grid_point_posterior_probability = apply_along_axis(
-        lambda _vector: _vector / (_vector.sum() * d_target_dimension),
+        lambda vector: vector / (vector.sum() * d_target_dimension),
         -1,
         joint_probability,
     ).reshape(mesh_grid_point_joint_probability.shape)

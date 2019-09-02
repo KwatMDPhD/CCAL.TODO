@@ -6,7 +6,7 @@ from .apply_function_on_2_vectors import apply_function_on_2_vectors
 from .check_array_for_bad import check_array_for_bad
 
 
-def _compute_euclidean_distance(vector_0, vector_1):
+def _compute_euclidean_distance_between_2_vectors(vector_0, vector_1):
 
     return apply_function_on_2_vectors(
         vector_0,
@@ -35,7 +35,7 @@ def cluster_matrix(
 
     if distance_function is None:
 
-        distance_function = _compute_euclidean_distance
+        distance_function = _compute_euclidean_distance_between_2_vectors
 
     if groups is None:
 

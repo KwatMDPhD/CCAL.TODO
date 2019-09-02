@@ -16,13 +16,3 @@ def print_function_information():
     finally:
 
         del frame_info
-
-
-def _function(a, b=1):
-
-    print_function_information()
-
-
-if __name__ == "__main__":
-
-    _function(2)
