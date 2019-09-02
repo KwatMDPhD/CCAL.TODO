@@ -1,7 +1,7 @@
 from numpy import asarray, full, nan, where
 from statsmodels.sandbox.stats.multicomp import multipletests
 
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 from .compute_empirical_p_value import compute_empirical_p_value
 
 
@@ -9,9 +9,9 @@ def compute_empirical_p_values_and_fdrs(
     values, random_values, p_value_direction, raise_for_bad=True
 ):
 
-    is_good = ~check_nd_array_for_bad(values, raise_for_bad=raise_for_bad)
+    is_good = ~check_array_for_bad(values, raise_for_bad=raise_for_bad)
 
-    is_good_random_value = ~check_nd_array_for_bad(
+    is_good_random_value = ~check_array_for_bad(
         random_values, raise_for_bad=raise_for_bad
     )
 

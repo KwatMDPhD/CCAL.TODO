@@ -1,6 +1,6 @@
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
 
-def compute_1d_array_bandwidth(_1d_array):
+def compute_vector_bandwidth(_vector):
 
-    return KDEMultivariate(_1d_array, "c").bw[0]
+    return KDEMultivariate(_vector, "c").bw[0]

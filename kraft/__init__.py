@@ -2,30 +2,30 @@ from plotly.io import templates
 
 from .add_conda_to_path import add_conda_to_path
 from .ALMOST_ZERO import ALMOST_ZERO
-from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
-from .apply_function_on_2_2d_arrays_slices import apply_function_on_2_2d_arrays_slices
+from .apply_function_on_2_vectors import apply_function_on_2_vectors
+from .apply_function_on_slices_from_2_matrices import apply_function_on_slices_from_2_matrices
 from .apply_function_on_2_dataframes_slices import apply_function_on_2_dataframes_slices
 from .BAD_VALUES import BAD_VALUES
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .cast_object_to_builtin import cast_object_to_builtin
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
-from .clip_nd_array_by_standard_deviation import clip_nd_array_by_standard_deviation
-from .cluster_2d_array import cluster_2d_array
+from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
+from .cluster_matrix import cluster_matrix
 from .cluster_clustering_x_element_and_compute_ccc import (
     cluster_clustering_x_element_and_compute_ccc,
 )
 from .CODON_AMINO_ACID import CODON_AMINO_ACID
-from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
-from .compute_1d_array_context import compute_1d_array_context
-from .compute_1d_array_entropy import compute_1d_array_entropy
+from .compute_vector_bandwidth import compute_vector_bandwidth
+from .compute_vector_context import compute_vector_context
+from .compute_vector_entropy import compute_vector_entropy
 from .compute_empirical_p_value import compute_empirical_p_value
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
-from .compute_information_coefficient_between_2_1d_arrays import (
-    compute_information_coefficient_between_2_1d_arrays,
+from .compute_information_coefficient_between_2_vectors import (
+    compute_information_coefficient_between_2_vectors,
 )
-from .compute_information_distance_between_2_1d_arrays import (
-    compute_information_distance_between_2_1d_arrays,
+from .compute_information_distance_between_2_vectors import (
+    compute_information_distance_between_2_vectors,
 )
 from .compute_joint_probability import compute_joint_probability
 from .compute_kullback_leibler_divergence_between_2_pdfs import (
@@ -34,7 +34,7 @@ from .compute_kullback_leibler_divergence_between_2_pdfs import (
 from .compute_matrix_norm import compute_matrix_norm
 from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
 from .compute_posterior_probability import compute_posterior_probability
-from .correlate_2_1d_arrays import correlate_2_1d_arrays
+from .correlate_2_vectors import correlate_2_vectors
 from .count_gene_impacts_from_variant_dicts import count_gene_impacts_from_variant_dicts
 from .DATA_DIRECTORY_PATH import DATA_DIRECTORY_PATH
 from .download_and_parse_geo import download_and_parse_geo
@@ -47,8 +47,8 @@ from .establish_path import establish_path
 from .estimate_kernel_density import estimate_kernel_density
 from .exit_ import exit_
 from .FeatureAccessor import FeatureAccessor
-from .fit_skew_t_pdf_on_1d_array import fit_skew_t_pdf_on_1d_array
-from .fit_skew_t_pdf_on_each_dataframe_row import fit_skew_t_pdf_on_each_dataframe_row
+from .fit_skew_t_pdf_on_vector import fit_skew_t_pdf_on_vector
+from .fit_each_dataframe_row_to_skew_t_pdf import fit_each_dataframe_row_to_skew_t_pdf
 from .flatten_nested_iterable import flatten_nested_iterable
 from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
 from .get_child_paths import get_child_paths
@@ -60,7 +60,7 @@ from .get_d_dimensions import get_d_dimensions
 from .get_data_type import get_data_type
 from .get_gff3_attribute import get_gff3_attribute
 from .get_git_versions import get_git_versions
-from .get_intersections_between_2_1d_arrays import get_intersections_between_2_1d_arrays
+from .get_intersections_between_2_vectors import get_intersections_between_2_vectors
 from .get_machine import get_machine
 from .get_sequence_from_fasta_or_fasta_gz import get_sequence_from_fasta_or_fasta_gz
 from .get_shell_environment import get_shell_environment
@@ -92,12 +92,12 @@ from .install_python_libraries import install_python_libraries
 from .is_conda_directory_path import is_conda_directory_path
 from .is_in_git_repository import is_in_git_repository
 from .is_program import is_program
-from .is_sorted_nd_array import is_sorted_nd_array
+from .is_sorted_array import is_sorted_array
 from .is_str_version import is_str_version
 from .isolate_information_x_sample import isolate_information_x_sample
 from .log_and_return_response import log_and_return_response
-from .log_nd_array import log_nd_array
-from .make_1d_array_grid import make_1d_array_grid
+from .log_array import log_array
+from .make_vector_grid import make_vector_grid
 from .make_binary_dataframe_from_categorical_series import (
     make_binary_dataframe_from_categorical_series,
 )
@@ -116,7 +116,7 @@ from .make_variant_n_from_vcf_file_path import make_variant_n_from_vcf_file_path
 from .make_variant_n_from_vcf_row import make_variant_n_from_vcf_row
 from .map_objects_to_ints import map_objects_to_ints
 from .merge_2_dicts_with_function import merge_2_dicts_with_function
-from .mf_by_multiple_V_and_H import mf_by_multiple_V_and_H
+from .mf_by_multiple_v_and_h import mf_by_multiple_v_and_h
 from .mf_by_multiplicative_update import mf_by_multiplicative_update
 from .mf_consensus_cluster import mf_consensus_cluster
 from .mf_consensus_cluster_with_ks import mf_consensus_cluster_with_ks
@@ -127,7 +127,7 @@ from .normalize_cell_line_names import normalize_cell_line_names
 from .normalize_contig import normalize_contig
 from .normalize_file_name import normalize_file_name
 from .normalize_git_url import normalize_git_url
-from .normalize_nd_array import normalize_nd_array
+from .normalize_array import normalize_array
 from .normalize_path import normalize_path
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
@@ -172,7 +172,7 @@ from .select_and_group_feature_x_tcga_sample_by_sample_type import (
 )
 from .select_gene_symbol import select_gene_symbol
 from .select_series_indices import select_series_indices
-from .shuffle_each_2d_array_slice import shuffle_each_2d_array_slice
+from .shuffle_each_matrix_slice import shuffle_each_matrix_slice
 from .skip_quote_and_split_str import skip_quote_and_split_str
 from .solve_ax_equal_b import solve_ax_equal_b
 from .solve_for_H import solve_for_H

@@ -3,7 +3,7 @@ from os.path import join
 from numpy import full, nan
 from pandas import DataFrame, Index, Series
 
-from .cluster_2d_array import cluster_2d_array
+from .cluster_matrix import cluster_matrix
 from .cluster_clustering_x_element_and_compute_ccc import (
     cluster_clustering_x_element_and_compute_ccc,
 )
@@ -13,7 +13,7 @@ from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def mf_consensus_cluster(
+def mf_consensus_cluster_dataframe(
     dataframe,
     k,
     mf_function="nmf_by_sklearn",
@@ -91,7 +91,7 @@ def mf_consensus_cluster(
                     html_file_path = join(directory_path, file_name)
 
                 plot_heat_map(
-                    w_0.iloc[cluster_2d_array(w_0.values, 0)],
+                    w_0.iloc[cluster_matrix(w_0.values, 0)],
                     title_text=f"MF K={k} W",
                     xaxis_title_text=w_0.columns.name,
                     yaxis_title_text=w_0.index.name,
@@ -113,7 +113,7 @@ def mf_consensus_cluster(
                     html_file_path = join(directory_path, file_name)
 
                 plot_heat_map(
-                    h_0.iloc[:, cluster_2d_array(h_0.values, 1)],
+                    h_0.iloc[:, cluster_matrix(h_0.values, 1)],
                     title_text=f"MF K={k} H",
                     xaxis_title_text=h_0.columns.name,
                     yaxis_title_text=h_0.index.name,

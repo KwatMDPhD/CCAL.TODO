@@ -7,7 +7,7 @@ from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
 
-def make_summary_match_panel(
+def make_match_panel_summary(
     target,
     data_dicts,
     score_moe_p_value_fdr_dicts,

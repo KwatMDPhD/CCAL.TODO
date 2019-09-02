@@ -1,25 +1,25 @@
 from pandas import DataFrame
 
-from .apply_function_on_2_2d_arrays_slices import apply_function_on_2_2d_arrays_slices
-from .cluster_2d_array import cluster_2d_array
-from .compute_information_coefficient_between_2_1d_arrays import (
-    compute_information_coefficient_between_2_1d_arrays,
+from .apply_function_on_slices_from_2_matrices import apply_function_on_slices_from_2_matrices
+from .cluster_matrix import cluster_matrix
+from .compute_information_coefficient_between_2_vectors import (
+    compute_information_coefficient_between_2_vectors,
 )
 from .plot_heat_map import plot_heat_map
 
 
-def apply_function_on_2_dataframes_slices(
+def apply_function_on_slices_from_2_dataframes(
     dataframe_0,
     dataframe_1,
     axis,
-    function=compute_information_coefficient_between_2_1d_arrays,
+    function=compute_information_coefficient_between_2_vectors,
     title=None,
     name_0=None,
     name_1=None,
     file_path_prefix=None,
 ):
 
-    comparison = apply_function_on_2_2d_arrays_slices(
+    comparison = apply_function_on_slices_from_2_matrices(
         dataframe_0.values, dataframe_1.values, axis, function
     )
 
@@ -47,8 +47,8 @@ def apply_function_on_2_dataframes_slices(
 
     plot_heat_map(
         comparison.iloc[
-            cluster_2d_array(comparison.values, 0),
-            cluster_2d_array(comparison.values, 1),
+            cluster_matrix(comparison.values, 0),
+            cluster_matrix(comparison.values, 1),
         ],
         title_text=title,
         xaxis_title_text=name_1,

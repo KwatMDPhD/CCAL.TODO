@@ -2,11 +2,11 @@ from numpy import full, nan
 from pandas import DataFrame, concat
 
 from .call_function_with_multiprocess import call_function_with_multiprocess
-from .fit_skew_t_pdf_on_1d_array import fit_skew_t_pdf_on_1d_array
+from .fit_skew_t_pdf_on_vector import fit_skew_t_pdf_on_vector
 from .split_dataframe import split_dataframe
 
 
-def _fit_skew_t_pdf_on_each_dataframe_row(dataframe):
+def _fit_each_dataframe_row_to_skew_t_pdf(dataframe):
 
     skew_t_pdf_fit_parameter = full((dataframe.shape[0], 5), nan)
 
@@ -20,9 +20,9 @@ def _fit_skew_t_pdf_on_each_dataframe_row(dataframe):
 
             print(f"({i + 1}/{n}) {index} ...")
 
-        _1d_array = series.values
+        _vector = series.values
 
-        skew_t_pdf_fit_parameter[i] = fit_skew_t_pdf_on_1d_array(_1d_array)
+        skew_t_pdf_fit_parameter[i] = fit_skew_t_pdf_on_vector(_vector)
 
     return DataFrame(
         skew_t_pdf_fit_parameter,
@@ -31,11 +31,11 @@ def _fit_skew_t_pdf_on_each_dataframe_row(dataframe):
     )
 
 
-def fit_skew_t_pdf_on_each_dataframe_row(dataframe, n_job=1, output_file_path=None):
+def fit_each_dataframe_row_to_skew_t_pdf(dataframe, n_job=1, output_file_path=None):
 
     skew_t_pdf_fit_parameter = concat(
         call_function_with_multiprocess(
-            _fit_skew_t_pdf_on_each_dataframe_row,
+            _fit_each_dataframe_row_to_skew_t_pdf,
             (
                 (dataframe_,)
                 for dataframe_ in split_dataframe(

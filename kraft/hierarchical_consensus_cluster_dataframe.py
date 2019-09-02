@@ -16,7 +16,7 @@ from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def hierarchical_consensus_cluster(
+def hierarchical_consensus_cluster_dataframe(
     dataframe,
     k,
     axis,

@@ -6,7 +6,7 @@ from .RANDOM_SEED import RANDOM_SEED
 from .update_H_by_multiplicative_update import update_H_by_multiplicative_update
 
 
-def mf_by_multiple_V_and_H(
+def mf_by_multiple_v_and_h(
     Vs, k, weights=None, n_iteration=int(1e3), random_seed=RANDOM_SEED
 ):
 

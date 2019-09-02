@@ -7,9 +7,9 @@ from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def correlate_2_1d_arrays(
-    _1d_array_0,
-    _1d_array_1,
+def correlate_2_vectors(
+    _vector_0,
+    _vector_1,
     n_permutation=10,
     random_seed=RANDOM_SEED,
     plot=True,
@@ -22,11 +22,11 @@ def correlate_2_1d_arrays(
 
     model = LinearRegression()
 
-    xs = tuple((x_,) for x_ in _1d_array_0)
+    xs = tuple((x_,) for x_ in _vector_0)
 
-    model.fit(xs, _1d_array_1)
+    model.fit(xs, _vector_1)
 
-    r2 = model.score(xs, _1d_array_1)
+    r2 = model.score(xs, _vector_1)
 
     if n_permutation == 0:
 
@@ -38,7 +38,7 @@ def correlate_2_1d_arrays(
 
         m_ = LinearRegression()
 
-        y_ = _1d_array_1.copy()
+        y_ = _vector_1.copy()
 
         seed(seed=random_seed)
 
@@ -81,8 +81,8 @@ def correlate_2_1d_arrays(
                 "data": [
                     {
                         "type": "scatter",
-                        "x": _1d_array_0,
-                        "y": _1d_array_1,
+                        "x": _vector_0,
+                        "y": _vector_1,
                         "name": "Data",
                         "mode": "markers",
                         "marker": {
@@ -93,8 +93,8 @@ def correlate_2_1d_arrays(
                     },
                     {
                         "type": "scatter",
-                        "x": _1d_array_0,
-                        "y": model.coef_ * _1d_array_0 + model.intercept_,
+                        "x": _vector_0,
+                        "y": model.coef_ * _vector_0 + model.intercept_,
                         "name": "Fit",
                         "marker": {"color": "#20d9ba"},
                     },

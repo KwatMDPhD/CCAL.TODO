@@ -8,7 +8,7 @@ from .make_binary_dataframe_from_categorical_series import (
 )
 
 
-def isolate_information_x_sample(information_x_sample, bad_values=BAD_VALUES):
+def separate_information_x_sample(information_x_sample, bad_values=BAD_VALUES):
 
     continuouses = []
 

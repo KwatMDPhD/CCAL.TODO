@@ -2,7 +2,7 @@ from numpy import full, nan
 from pandas import DataFrame, concat
 
 from .call_function_with_multiprocess import call_function_with_multiprocess
-from .compute_1d_array_context import compute_1d_array_context
+from .compute_vector_context import compute_vector_context
 from .split_dataframe import split_dataframe
 
 
@@ -40,7 +40,7 @@ def _make_context_matrix(
                 index, ["N Data", "Location", "Scale", "Degree of Freedom", "Shape"]
             ]
 
-        context_matrix[i] = compute_1d_array_context(
+        context_matrix[i] = compute_vector_context(
             series.values,
             n_data=n_data,
             location=location,

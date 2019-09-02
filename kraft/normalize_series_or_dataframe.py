@@ -1,6 +1,6 @@
 from pandas import DataFrame, Series
 
-from .normalize_nd_array import normalize_nd_array
+from .normalize_array import normalize_array
 
 
 def normalize_series_or_dataframe(
@@ -8,7 +8,7 @@ def normalize_series_or_dataframe(
 ):
 
     series_or_dataframe_normalized = type(series_or_dataframe)(
-        normalize_nd_array(
+        normalize_array(
             series_or_dataframe.values,
             axis,
             method,

@@ -11,11 +11,11 @@ from numpy import (
 )
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 from .compute_kullback_leibler_divergence_between_2_pdfs import (
     compute_kullback_leibler_divergence_between_2_pdfs,
 )
-from .fit_skew_t_pdf_on_1d_array import fit_skew_t_pdf_on_1d_array
+from .fit_skew_t_pdf_on_vector import fit_skew_t_pdf_on_vector
 from .make_reflecting_grid import make_reflecting_grid
 
 
@@ -54,8 +54,8 @@ def _compute_pdf_context(
     return context
 
 
-def compute_1d_array_context(
-    _1d_array,
+def compute_vector_context(
+    _vector,
     n_data=None,
     location=None,
     scale=None,
@@ -72,22 +72,22 @@ def compute_1d_array_context(
     global_shape=None,
 ):
 
-    is_bad = check_nd_array_for_bad(_1d_array, raise_for_bad=False)
+    is_bad = check_array_for_bad(_vector, raise_for_bad=False)
 
-    _1d_array_good = _1d_array[~is_bad]
+    _vector_good = _vector[~is_bad]
 
     if any(
         parameter is None
         for parameter in (n_data, location, scale, degree_of_freedom, shape)
     ):
 
-        n_data, location, scale, degree_of_freedom, shape = fit_skew_t_pdf_on_1d_array(
-            _1d_array_good,
+        n_data, location, scale, degree_of_freedom, shape = fit_skew_t_pdf_on_vector(
+            _vector_good,
             fit_initial_location=fit_initial_location,
             fit_initial_scale=fit_initial_scale,
         )
 
-    grid = linspace(_1d_array_good.min(), _1d_array_good.max(), num=n_grid)
+    grid = linspace(_vector_good.min(), _vector_good.max(), num=n_grid)
 
     skew_t_model = ACSkewT_gen()
 
@@ -143,10 +143,10 @@ def compute_1d_array_context(
 
         context = shape_context + location_context
 
-    context_like_array = full(_1d_array.size, nan)
+    context_like_array = full(_vector.size, nan)
 
     context_like_array[~is_bad] = context[
-        [absolute(grid - value).argmin() for value in _1d_array_good]
+        [absolute(grid - value).argmin() for value in _vector_good]
     ]
 
     return {

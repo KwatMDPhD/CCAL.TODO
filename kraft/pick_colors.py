@@ -2,7 +2,7 @@ from matplotlib.colors import to_hex
 from numpy import asarray, unique
 from seaborn import husl_palette
 
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
 
@@ -25,7 +25,7 @@ def pick_colors(data, data_type=None):
             to_hex(rgb)
             for rgb in husl_palette(
                 n_colors=unique(
-                    data[~check_nd_array_for_bad(data, raise_for_bad=False)]
+                    data[~check_array_for_bad(data, raise_for_bad=False)]
                 ).size
             )
         )

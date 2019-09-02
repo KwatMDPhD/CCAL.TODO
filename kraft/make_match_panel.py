@@ -4,17 +4,17 @@ from numpy import apply_along_axis, array_split, concatenate, full, nan
 from numpy.random import choice, get_state, seed, set_state, shuffle
 from pandas import DataFrame
 
-from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
+from .apply_function_on_2_vectors import apply_function_on_2_vectors
 from .call_function_with_multiprocess import call_function_with_multiprocess
-from .check_nd_array_for_bad import check_nd_array_for_bad
-from .cluster_2d_array import cluster_2d_array
+from .check_array_for_bad import check_array_for_bad
+from .cluster_matrix import cluster_matrix
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
-from .compute_information_coefficient_between_2_1d_arrays import (
-    compute_information_coefficient_between_2_1d_arrays,
+from .compute_information_coefficient_between_2_vectors import (
+    compute_information_coefficient_between_2_vectors,
 )
 from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
 from .get_data_type import get_data_type
-from .is_sorted_nd_array import is_sorted_nd_array
+from .is_sorted_array import is_sorted_array
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_match_panel_annotations import make_match_panel_annotations
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
@@ -33,7 +33,7 @@ def _match_target_and_data(
 ):
 
     return apply_along_axis(
-        apply_function_on_2_1d_arrays,
+        apply_function_on_2_vectors,
         1,
         data,
         target,
@@ -122,7 +122,7 @@ def _match_target_and_data_and_compute_statistics(
         )
     )
 
-    if check_nd_array_for_bad(scores, raise_for_bad=False).all():
+    if check_array_for_bad(scores, raise_for_bad=False).all():
 
         return score_moe_p_value_fdr
 
@@ -211,7 +211,7 @@ def make_match_panel(
     target_ascending=True,
     score_moe_p_value_fdr=None,
     n_job=1,
-    match_function=compute_information_coefficient_between_2_1d_arrays,
+    match_function=compute_information_coefficient_between_2_vectors,
     n_required_for_match_function=2,
     raise_for_n_less_than_required=False,
     n_extreme=8,
@@ -345,7 +345,7 @@ def make_match_panel(
     if (
         cluster_within_category
         and not target_to_plot.isna().any()
-        and is_sorted_nd_array(target_to_plot.values)
+        and is_sorted_array(target_to_plot.values)
         and (1 < target_to_plot.value_counts()).all()
     ):
 
@@ -353,7 +353,7 @@ def make_match_panel(
 
         data_to_plot = data_to_plot.iloc[
             :,
-            cluster_2d_array(
+            cluster_matrix(
                 data_to_plot.values,
                 1,
                 groups=target_to_plot.values,

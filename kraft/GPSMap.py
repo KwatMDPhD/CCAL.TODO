@@ -21,13 +21,13 @@ from scipy.spatial import Delaunay
 from scipy.spatial.distance import euclidean, pdist, squareform
 from scipy.stats import pearsonr
 
-from .apply_function_on_2_2d_arrays_slices import apply_function_on_2_2d_arrays_slices
-from .check_nd_array_for_bad import check_nd_array_for_bad
-from .clip_nd_array_by_standard_deviation import clip_nd_array_by_standard_deviation
-from .cluster_2d_array import cluster_2d_array
-from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
-from .compute_information_distance_between_2_1d_arrays import (
-    compute_information_distance_between_2_1d_arrays,
+from .apply_function_on_slices_from_2_matrices import apply_function_on_slices_from_2_matrices
+from .check_array_for_bad import check_array_for_bad
+from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
+from .cluster_matrix import cluster_matrix
+from .compute_vector_bandwidth import compute_vector_bandwidth
+from .compute_information_distance_between_2_vectors import (
+    compute_information_distance_between_2_vectors,
 )
 from .compute_joint_probability import compute_joint_probability
 from .get_colormap_colors import get_colormap_colors
@@ -36,7 +36,7 @@ from .get_triangulation_edges_from_point_x_dimension import (
     get_triangulation_edges_from_point_x_dimension,
 )
 from .make_colorscale_from_colors import make_colorscale_from_colors
-from .normalize_nd_array import normalize_nd_array
+from .normalize_array import normalize_array
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
 from .plot_heat_map import plot_heat_map
@@ -71,7 +71,7 @@ def _check_node_x_element(node_x_element):
 
         raise ValueError("node_x_element should be only int or float.")
 
-    check_nd_array_for_bad(node_x_element.values)
+    check_array_for_bad(node_x_element.values)
 
 
 def _make_element_x_dimension(node_x_element, node_x_dimension, n_pull, pull_power):
@@ -80,7 +80,7 @@ def _make_element_x_dimension(node_x_element, node_x_dimension, n_pull, pull_pow
         (node_x_element.shape[1], node_x_dimension.shape[1]), nan
     )
 
-    node_x_element = normalize_nd_array(node_x_element, None, "0-1")
+    node_x_element = normalize_array(node_x_element, None, "0-1")
 
     for i in range(node_x_element.shape[1]):
 
@@ -88,7 +88,7 @@ def _make_element_x_dimension(node_x_element, node_x_dimension, n_pull, pull_pow
 
         if 3 < pulls.size:
 
-            pulls = normalize_nd_array(pulls, None, "0-1")
+            pulls = normalize_array(pulls, None, "0-1")
 
         if n_pull is not None:
 
@@ -210,7 +210,7 @@ def _plot(
         )
 
         grid_labels_unique = unique(
-            grid_labels[~check_nd_array_for_bad(grid_labels, raise_for_bad=False)]
+            grid_labels[~check_array_for_bad(grid_labels, raise_for_bad=False)]
         ).astype(int)
 
         for label in grid_labels_unique:
@@ -274,7 +274,7 @@ def _plot(
                 if annotation_std_maxs is not None:
 
                     element_value = Series(
-                        clip_nd_array_by_standard_deviation(
+                        clip_array_by_standard_deviation(
                             element_value.values,
                             annotation_std_maxs[i],
                             raise_for_bad=False,
@@ -565,14 +565,14 @@ class GPSMap:
             self.w_element_name = w.columns.name
 
             self.w_distance__node_x_node = squareform(
-                pdist(self.w, metric=compute_information_distance_between_2_1d_arrays)
+                pdist(self.w, metric=compute_information_distance_between_2_vectors)
             )
 
             if plot:
 
                 plot_heat_map(
                     DataFrame(self.w, index=self.nodes, columns=self.w_elements).iloc[
-                        :, cluster_2d_array(self.w, 1)
+                        :, cluster_matrix(self.w, 1)
                     ],
                     title_text="W",
                     xaxis_title_text=self.w_element_name,
@@ -585,8 +585,8 @@ class GPSMap:
                         index=self.nodes,
                         columns=self.nodes,
                     ).iloc[
-                        cluster_2d_array(self.w_distance__node_x_node, 0),
-                        cluster_2d_array(self.w_distance__node_x_node, 1),
+                        cluster_matrix(self.w_distance__node_x_node, 0),
+                        cluster_matrix(self.w_distance__node_x_node, 1),
                     ],
                     title_text=f"{self.node_name}-{self.node_name} Distance in W",
                     xaxis_title_text=self.node_name,
@@ -602,14 +602,14 @@ class GPSMap:
             self.h_element_name = h.columns.name
 
             self.h_distance__node_x_node = squareform(
-                pdist(self.h, metric=compute_information_distance_between_2_1d_arrays)
+                pdist(self.h, metric=compute_information_distance_between_2_vectors)
             )
 
             if plot:
 
                 plot_heat_map(
                     DataFrame(self.h, index=self.nodes, columns=self.h_elements).iloc[
-                        :, cluster_2d_array(self.h, 1)
+                        :, cluster_matrix(self.h, 1)
                     ],
                     title_text="H",
                     xaxis_title_text=self.h_element_name,
@@ -622,8 +622,8 @@ class GPSMap:
                         index=self.nodes,
                         columns=self.nodes,
                     ).iloc[
-                        cluster_2d_array(self.h_distance__node_x_node, 0),
-                        cluster_2d_array(self.h_distance__node_x_node, 1),
+                        cluster_matrix(self.h_distance__node_x_node, 0),
+                        cluster_matrix(self.h_distance__node_x_node, 1),
                     ],
                     title_text=f"{self.node_name}-{self.node_name} Distance in H",
                     xaxis_title_text=self.node_name,
@@ -653,8 +653,8 @@ class GPSMap:
                     DataFrame(
                         self.distance__node_x_node, index=self.nodes, columns=self.nodes
                     ).iloc[
-                        cluster_2d_array(self.distance__node_x_node, 0),
-                        cluster_2d_array(self.distance__node_x_node, 1),
+                        cluster_matrix(self.distance__node_x_node, 0),
+                        cluster_matrix(self.distance__node_x_node, 1),
                     ],
                     title_text=f"{self.node_name}-{self.node_name} Distance in W and H",
                     xaxis_title_text=self.node_name,
@@ -671,7 +671,7 @@ class GPSMap:
 
         if self.node_x_dimension is None:
 
-            self.node_x_dimension = normalize_nd_array(
+            self.node_x_dimension = normalize_array(
                 scale_point_x_dimension_dimension(
                     2,
                     distance__point_x_point=self.distance__node_x_node,
@@ -830,8 +830,8 @@ class GPSMap:
         label_grid_probabilities = {}
 
         dimension_bandwidths = (
-            compute_1d_array_bandwidth(element_x_dimension[:, 0]),
-            compute_1d_array_bandwidth(element_x_dimension[:, 1]),
+            compute_vector_bandwidth(element_x_dimension[:, 0]),
+            compute_vector_bandwidth(element_x_dimension[:, 1]),
         )
 
         n_dimension = element_x_dimension.shape[1]
@@ -1110,7 +1110,7 @@ class GPSMap:
                 self.w_distance__element_x_element = squareform(
                     pdist(
                         self.w.T,
-                        metric=compute_information_distance_between_2_1d_arrays,
+                        metric=compute_information_distance_between_2_vectors,
                     )
                 )
 
@@ -1118,18 +1118,18 @@ class GPSMap:
 
             if self.w_distance__node_x_element is None:
 
-                distance__node_x_w_element_ = apply_function_on_2_2d_arrays_slices(
+                distance__node_x_w_element_ = apply_function_on_slices_from_2_matrices(
                     self.w,
                     diag((1,) * len(self.w_elements)),
                     0,
-                    compute_information_distance_between_2_1d_arrays,
+                    compute_information_distance_between_2_vectors,
                 )
 
-                distance__w_element_x_node_ = apply_function_on_2_2d_arrays_slices(
+                distance__w_element_x_node_ = apply_function_on_slices_from_2_matrices(
                     self.w,
                     diag((1,) * len(self.nodes)),
                     1,
-                    compute_information_distance_between_2_1d_arrays,
+                    compute_information_distance_between_2_vectors,
                 )
 
                 self.w_distance__node_x_element = (
@@ -1147,7 +1147,7 @@ class GPSMap:
                 self.h_distance__element_x_element = squareform(
                     pdist(
                         self.h.T,
-                        metric=compute_information_distance_between_2_1d_arrays,
+                        metric=compute_information_distance_between_2_vectors,
                     )
                 )
 
@@ -1155,18 +1155,18 @@ class GPSMap:
 
             if self.h_distance__node_x_element is None:
 
-                distance__node_x_h_element_ = apply_function_on_2_2d_arrays_slices(
+                distance__node_x_h_element_ = apply_function_on_slices_from_2_matrices(
                     self.h,
                     diag((1,) * len(self.h_elements)),
                     0,
-                    compute_information_distance_between_2_1d_arrays,
+                    compute_information_distance_between_2_vectors,
                 )
 
-                distance__h_element_x_node_ = apply_function_on_2_2d_arrays_slices(
+                distance__h_element_x_node_ = apply_function_on_slices_from_2_matrices(
                     self.h,
                     diag((1,) * len(self.nodes)),
                     1,
-                    compute_information_distance_between_2_1d_arrays,
+                    compute_information_distance_between_2_vectors,
                 )
 
                 self.h_distance__node_x_element = (
@@ -1194,7 +1194,7 @@ class GPSMap:
         )[0]
 
         node_x_element_score = pearsonr(
-            apply_function_on_2_2d_arrays_slices(
+            apply_function_on_slices_from_2_matrices(
                 self.node_x_dimension, element_x_dimension, 0, euclidean
             ).ravel(),
             target_distance__node_x_element,
@@ -1261,7 +1261,7 @@ class GPSMap:
             )[0]
 
             r__node_x_element_score = pearsonr(
-                apply_function_on_2_2d_arrays_slices(
+                apply_function_on_slices_from_2_matrices(
                     r__node_x_dimension, r__element_x_dimension, 0, euclidean
                 ).ravel(),
                 target_distance__node_x_element,

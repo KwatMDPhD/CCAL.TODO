@@ -1,9 +1,9 @@
 from KDEpy import FFTKDE
 
 from .ALMOST_ZERO import ALMOST_ZERO
-from .compute_1d_array_bandwidth import compute_1d_array_bandwidth
+from .compute_vector_bandwidth import compute_vector_bandwidth
 from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
-from .make_1d_array_grid import make_1d_array_grid
+from .make_vector_grid import make_vector_grid
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .N_GRID import N_GRID
 from .plot_mesh_grid import plot_mesh_grid
@@ -26,7 +26,7 @@ def estimate_kernel_density(
     if dimension_bandwidths is None:
 
         dimension_bandwidths = tuple(
-            compute_1d_array_bandwidth(observation_x_dimension[:, i])
+            compute_vector_bandwidth(observation_x_dimension[:, i])
             for i in range(n_dimension)
         )
 
@@ -55,7 +55,7 @@ def estimate_kernel_density(
 
     mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
         (
-            make_1d_array_grid(
+            make_vector_grid(
                 observation_x_dimension[:, i],
                 dimension_grid_mins[i],
                 dimension_grid_maxs[i],

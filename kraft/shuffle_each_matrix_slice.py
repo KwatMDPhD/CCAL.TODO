@@ -1,29 +1,29 @@
 from numpy.random import seed, shuffle
 
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def shuffle_each_2d_array_slice(
-    _2d_array, axis, random_seed=RANDOM_SEED, raise_for_bad=True
+def shuffle_each_matrix_slice(
+    _matrix, axis, random_seed=RANDOM_SEED, raise_for_bad=True
 ):
 
-    check_nd_array_for_bad(_2d_array, raise_for_bad=raise_for_bad)
+    check_array_for_bad(_matrix, raise_for_bad=raise_for_bad)
 
-    _2d_array = _2d_array.copy()
+    _matrix = _matrix.copy()
 
     seed(seed=random_seed)
 
     if axis == 0:
 
-        for i in range(_2d_array.shape[1]):
+        for i in range(_matrix.shape[1]):
 
-            shuffle(_2d_array[:, i])
+            shuffle(_matrix[:, i])
 
     elif axis == 1:
 
-        for i in range(_2d_array.shape[0]):
+        for i in range(_matrix.shape[0]):
 
-            shuffle(_2d_array[i, :])
+            shuffle(_matrix[i, :])
 
-    return _2d_array
+    return _matrix

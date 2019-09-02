@@ -1,12 +1,12 @@
 from numpy import diff
 
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 
 
-def is_sorted_nd_array(nd_array, raise_for_bad=True):
+def is_sorted_array(array, raise_for_bad=True):
 
-    check_nd_array_for_bad(nd_array, raise_for_bad=raise_for_bad)
+    check_array_for_bad(array, raise_for_bad=raise_for_bad)
 
-    diff_ = diff(nd_array)
+    diff_ = diff(array)
 
     return (diff_ <= 0).all() or (0 <= diff_).all()

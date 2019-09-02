@@ -2,23 +2,23 @@ from numpy import concatenate, where
 from pandas import unique
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-from .apply_function_on_2_1d_arrays import apply_function_on_2_1d_arrays
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .apply_function_on_2_vectors import apply_function_on_2_vectors
+from .check_array_for_bad import check_array_for_bad
 
 
-def _compute_euclidean_distance(_1d_array_0, _1d_array_1):
+def _compute_euclidean_distance(vector_0, vector_1):
 
-    return apply_function_on_2_1d_arrays(
-        _1d_array_0,
-        _1d_array_1,
-        lambda _1d_array_0, _1d_array_1: ((_1d_array_0 - _1d_array_1) ** 2).sum()
+    return apply_function_on_2_vectors(
+        vector_0,
+        vector_1,
+        lambda vector_0, vector_1: ((vector_0 - vector_1) ** 2).sum()
         ** 0.5,
         raise_for_bad=False,
     )
 
 
-def cluster_2d_array(
-    _2d_array,
+def cluster_matrix(
+    matrix,
     axis,
     groups=None,
     distance_function=None,
@@ -27,11 +27,11 @@ def cluster_2d_array(
     raise_for_bad=True,
 ):
 
-    check_nd_array_for_bad(_2d_array, raise_for_bad=raise_for_bad)
+    check_array_for_bad(matrix, raise_for_bad=raise_for_bad)
 
     if axis == 1:
 
-        _2d_array = _2d_array.T
+        matrix = matrix.T
 
     if distance_function is None:
 
@@ -41,7 +41,7 @@ def cluster_2d_array(
 
         return dendrogram(
             linkage(
-                _2d_array,
+                matrix,
                 method=linkage_method,
                 metric=distance_function,
                 optimal_ordering=optimal_ordering,
@@ -51,10 +51,10 @@ def cluster_2d_array(
 
     else:
 
-        if len(groups) != _2d_array.shape[0]:
+        if len(groups) != matrix.shape[0]:
 
             raise ValueError(
-                f"len(groups) ({len(groups)}) != len(axis-{axis} slices) ({_2d_array.shape[0]})"
+                f"len(groups) ({len(groups)}) != len(axis-{axis} slices) ({matrix.shape[0]})"
             )
 
         indices = []
@@ -65,7 +65,7 @@ def cluster_2d_array(
 
             clustered_indices = dendrogram(
                 linkage(
-                    _2d_array[group_indices, :],
+                    matrix[group_indices, :],
                     method=linkage_method,
                     metric=distance_function,
                     optimal_ordering=optimal_ordering,

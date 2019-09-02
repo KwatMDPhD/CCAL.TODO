@@ -3,7 +3,7 @@ from pandas import DataFrame
 from .solve_ax_equal_b import solve_ax_equal_b
 
 
-def solve_for_H(V, W, method="pinv"):
+def solve_for_h(V, W, method="pinv"):
 
     print(f"Solving for H in V{V.shape} = W{W.shape} * H{(W.shape[1], V.shape[1])} ...")
 

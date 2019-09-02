@@ -1,15 +1,15 @@
 from numpy import diff, insert, sign
 
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 
 
-def get_intersections_between_2_1d_arrays(_1d_array_0, _1d_array_1, raise_for_bad=True):
+def get_intersections_between_2_vectors(_vector_0, _vector_1, raise_for_bad=True):
 
-    check_nd_array_for_bad(_1d_array_0, raise_for_bad=raise_for_bad)
+    check_array_for_bad(_vector_0, raise_for_bad=raise_for_bad)
 
-    check_nd_array_for_bad(_1d_array_1, raise_for_bad=raise_for_bad)
+    check_array_for_bad(_vector_1, raise_for_bad=raise_for_bad)
 
-    diff_sign = sign(_1d_array_0 - _1d_array_1)
+    diff_sign = sign(_vector_0 - _vector_1)
 
     diff_sign_0_indices = (diff_sign == 0).nonzero()[0]
 

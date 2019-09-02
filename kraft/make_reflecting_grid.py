@@ -1,9 +1,9 @@
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 
 
 def make_reflecting_grid(grid, reflecting_grid_value, raise_for_bad=True):
 
-    check_nd_array_for_bad(grid, raise_for_bad=raise_for_bad)
+    check_array_for_bad(grid, raise_for_bad=raise_for_bad)
 
     reflecting_grid = grid.copy()
 

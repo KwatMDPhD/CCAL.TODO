@@ -1,6 +1,6 @@
 from numpy import isnan, nan
 
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 
 
 def compute_empirical_p_value(
@@ -11,7 +11,7 @@ def compute_empirical_p_value(
 
         return nan
 
-    is_good = ~check_nd_array_for_bad(random_values, raise_for_bad=raise_for_bad)
+    is_good = ~check_array_for_bad(random_values, raise_for_bad=raise_for_bad)
 
     if is_good.any():
 

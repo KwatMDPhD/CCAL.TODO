@@ -1,12 +1,12 @@
 from numpy import absolute, nanmax
 from pandas import Series
 
-from .compute_1d_array_context import compute_1d_array_context
+from .compute_vector_context import compute_vector_context
 from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_context(
-    _1d_array_or_series,
+    _vector_or_series,
     text=None,
     n_data=None,
     location=None,
@@ -30,11 +30,11 @@ def plot_context(
     html_file_path=None,
 ):
 
-    if isinstance(_1d_array_or_series, Series):
+    if isinstance(_vector_or_series, Series):
 
         if title_text is None:
 
-            title_text = _1d_array_or_series.name
+            title_text = _vector_or_series.name
 
         if xaxis_title_text is None:
 
@@ -42,16 +42,16 @@ def plot_context(
 
         if text is None:
 
-            text = _1d_array_or_series.index
+            text = _vector_or_series.index
 
-        _1d_array = _1d_array_or_series.values
+        _vector = _vector_or_series.values
 
     else:
 
-        _1d_array = _1d_array_or_series
+        _vector = _vector_or_series
 
-    context_dict = compute_1d_array_context(
-        _1d_array,
+    context_dict = compute_vector_context(
+        _vector,
         n_data=n_data,
         location=location,
         scale=scale,
@@ -90,7 +90,7 @@ def plot_context(
 
     if plot_rug is None:
 
-        plot_rug = _1d_array_or_series.size < 1e3
+        plot_rug = _vector_or_series.size < 1e3
 
     if plot_rug:
 
@@ -154,7 +154,7 @@ def plot_context(
             "type": "histogram",
             "name": "Data",
             "legendgroup": "Data",
-            "x": _1d_array,
+            "x": _vector,
             "marker": {"color": "#20d9ba"},
             "histnorm": "probability density",
             "hoverinfo": "x+y",
@@ -163,14 +163,14 @@ def plot_context(
 
     if n_bin is not None:
 
-        _1d_array_min = _1d_array.min()
+        _vector_min = _vector.min()
 
-        _1d_array_max = _1d_array.max()
+        _vector_max = _vector.max()
 
         data[-1]["xbins"] = {
-            "start": _1d_array_min,
-            "end": _1d_array_max,
-            "size": (_1d_array_max - _1d_array_min) / n_bin,
+            "start": _vector_min,
+            "end": _vector_max,
+            "size": (_vector_max - _vector_min) / n_bin,
         }
 
     if plot_rug:
@@ -180,8 +180,8 @@ def plot_context(
                 "type": "scatter",
                 "legendgroup": "Data",
                 "showlegend": False,
-                "x": _1d_array,
-                "y": (0,) * _1d_array.size,
+                "x": _vector,
+                "y": (0,) * _vector.size,
                 "text": text,
                 "mode": "markers",
                 "marker": {"symbol": "line-ns-open", "color": "#20d9ba"},

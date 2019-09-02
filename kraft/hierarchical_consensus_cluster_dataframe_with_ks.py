@@ -12,7 +12,7 @@ from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def hierarchical_consensus_cluster_with_ks(
+def hierarchical_consensus_cluster_dataframe_with_ks(
     dataframe,
     ks,
     axis,

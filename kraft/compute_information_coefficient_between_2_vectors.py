@@ -7,7 +7,7 @@ from .N_GRID import N_GRID
 from .unmesh import unmesh
 
 
-def compute_information_coefficient_between_2_1d_arrays(
+def compute_information_coefficient_between_2_vectors(
     vector_0, y, fraction_grid_extension=FRACTION_GRID_EXTENSION, n_grid=N_GRID
 ):
 

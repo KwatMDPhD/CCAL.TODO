@@ -1,7 +1,7 @@
 from numpy import arange, linspace, meshgrid
 
 from .make_colorscale_from_colors import make_colorscale_from_colors
-from .normalize_nd_array import normalize_nd_array
+from .normalize_array import normalize_array
 from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -60,7 +60,7 @@ def plot_bubble_map(
                     "text": dataframe_size.values.ravel(),
                     "mode": "markers",
                     "marker": {
-                        "size": normalize_nd_array(
+                        "size": normalize_array(
                             dataframe_size.values, None, "0-1"
                         ).ravel()
                         * marker_size_max,

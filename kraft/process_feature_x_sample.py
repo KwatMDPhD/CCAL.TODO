@@ -3,7 +3,7 @@ from pandas import DataFrame
 
 from .drop_dataframe_slice import drop_dataframe_slice
 from .drop_dataframe_slice_greedily import drop_dataframe_slice_greedily
-from .log_nd_array import log_nd_array
+from .log_array import log_array
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .summarize_feature_x_sample import summarize_feature_x_sample
 
@@ -119,7 +119,7 @@ def process_feature_x_sample(
         )
 
         feature_x_sample = DataFrame(
-            log_nd_array(
+            log_array(
                 feature_x_sample.values,
                 raise_for_bad=False,
                 shift_as_necessary_to_achieve_min_before_logging=shift_as_necessary_to_achieve_min_before_logging,

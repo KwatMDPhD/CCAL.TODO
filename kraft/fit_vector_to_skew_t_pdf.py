@@ -1,18 +1,18 @@
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .ALMOST_ZERO import ALMOST_ZERO
-from .check_nd_array_for_bad import check_nd_array_for_bad
+from .check_array_for_bad import check_array_for_bad
 
 
 def fit_vector_to_skew_t_pdf(
-    _1d_array, fit_initial_location=None, fit_initial_scale=None
+    _vector, fit_initial_location=None, fit_initial_scale=None
 ):
 
-    _1d_array = _1d_array[~check_nd_array_for_bad(_1d_array, raise_for_bad=False)]
+    _vector = _vector[~check_array_for_bad(_vector, raise_for_bad=False)]
 
     keyword_arguments = {}
 
-    mean = _1d_array.mean()
+    mean = _vector.mean()
 
     if abs(mean) <= ALMOST_ZERO:
 
@@ -20,12 +20,12 @@ def fit_vector_to_skew_t_pdf(
 
     keyword_arguments["loc"] = mean
 
-    keyword_arguments["scale"] = _1d_array.std() / 2
+    keyword_arguments["scale"] = _vector.std() / 2
 
     skew_t_model = ACSkewT_gen()
 
     degree_of_freedom, shape, location, scale = skew_t_model.fit(
-        _1d_array, **keyword_arguments
+        _vector, **keyword_arguments
     )
 
     if 24 < abs(shape):
@@ -35,7 +35,7 @@ def fit_vector_to_skew_t_pdf(
         keyword_arguments["fscale"] = keyword_arguments["scale"]
 
         degree_of_freedom, shape, location, scale = skew_t_model.fit(
-            _1d_array, **keyword_arguments
+            _vector, **keyword_arguments
         )
 
         if 24 < abs(shape):
@@ -45,7 +45,7 @@ def fit_vector_to_skew_t_pdf(
             keyword_arguments["floc"] = keyword_arguments["loc"]
 
             degree_of_freedom, shape, location, scale = skew_t_model.fit(
-                _1d_array, **keyword_arguments
+                _vector, **keyword_arguments
             )
 
-    return _1d_array.size, location, scale, degree_of_freedom, shape
+    return _vector.size, location, scale, degree_of_freedom, shape
