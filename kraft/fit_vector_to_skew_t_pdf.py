@@ -4,7 +4,7 @@ from .ALMOST_ZERO import ALMOST_ZERO
 from .check_nd_array_for_bad import check_nd_array_for_bad
 
 
-def fit_skew_t_pdf_on_1d_array(
+def fit_vector_to_skew_t_pdf(
     _1d_array, fit_initial_location=None, fit_initial_scale=None
 ):
 
