@@ -3,7 +3,7 @@ from numpy.random import random_sample, seed
 
 from .compute_matrix_norm import compute_matrix_norm
 from .RANDOM_SEED import RANDOM_SEED
-from .update_H_by_multiplicative_update import update_H_by_multiplicative_update
+from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
 
 
 def mf_by_multiple_v_and_h(
@@ -35,7 +35,7 @@ def mf_by_multiple_v_and_h(
         W *= top / bottom
 
         Hs = [
-            update_H_by_multiplicative_update(Vs[i], W, Hs[i]) for i in range(len(Vs))
+            update_h_by_multiplicative_update(Vs[i], W, Hs[i]) for i in range(len(Vs))
         ]
 
         R_norms[:, j + 1] = [

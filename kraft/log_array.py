@@ -33,9 +33,7 @@ def log_array(
             if min_ < shift_as_necessary_to_achieve_min_before_logging:
 
                 array_good = (
-                    array_good
-                    + shift_as_necessary_to_achieve_min_before_logging
-                    - min_
+                    array_good + shift_as_necessary_to_achieve_min_before_logging - min_
                 )
 
         if str(log_base) == "2":

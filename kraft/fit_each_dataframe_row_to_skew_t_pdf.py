@@ -2,7 +2,7 @@ from numpy import full, nan
 from pandas import DataFrame, concat
 
 from .call_function_with_multiprocess import call_function_with_multiprocess
-from .fit_skew_t_pdf_on_vector import fit_skew_t_pdf_on_vector
+from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
 from .split_dataframe import split_dataframe
 
 
@@ -22,7 +22,7 @@ def _fit_each_dataframe_row_to_skew_t_pdf(dataframe):
 
         vector = series.values
 
-        skew_t_pdf_fit_parameter[i] = fit_skew_t_pdf_on_vector(vector)
+        skew_t_pdf_fit_parameter[i] = fit_vector_to_skew_t_pdf(vector)
 
     return DataFrame(
         skew_t_pdf_fit_parameter,

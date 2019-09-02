@@ -3,9 +3,7 @@ from numpy import full, nan
 from .check_array_for_bad import check_array_for_bad
 
 
-def clip_array_by_standard_deviation(
-    array, standard_deviation, raise_for_bad=True
-):
+def clip_array_by_standard_deviation(array, standard_deviation, raise_for_bad=True):
 
     is_good = ~check_array_for_bad(array, raise_for_bad=raise_for_bad)
 

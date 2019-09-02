@@ -15,7 +15,7 @@ from .check_array_for_bad import check_array_for_bad
 from .compute_kullback_leibler_divergence_between_2_pdfs import (
     compute_kullback_leibler_divergence_between_2_pdfs,
 )
-from .fit_skew_t_pdf_on_vector import fit_skew_t_pdf_on_vector
+from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
 from .make_reflecting_grid import make_reflecting_grid
 
 
@@ -81,7 +81,7 @@ def compute_vector_context(
         for parameter in (n_data, location, scale, degree_of_freedom, shape)
     ):
 
-        n_data, location, scale, degree_of_freedom, shape = fit_skew_t_pdf_on_vector(
+        n_data, location, scale, degree_of_freedom, shape = fit_vector_to_skew_t_pdf(
             _vector_good,
             fit_initial_location=fit_initial_location,
             fit_initial_scale=fit_initial_scale,

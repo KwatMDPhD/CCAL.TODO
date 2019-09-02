@@ -5,7 +5,7 @@ import GEOparse
 from pandas import DataFrame, concat, isna
 
 from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
-from .isolate_information_x_sample import isolate_information_x_sample
+from .separate_information_x_sample import separate_information_x_sample
 
 
 def download_and_parse_geo(geo_id, directory_path):
@@ -35,7 +35,7 @@ def download_and_parse_geo(geo_id, directory_path):
         join(directory_path, "information_x_sample.tsv"),
     )
 
-    continuous_information_x_sample, binary_information_x_sample = isolate_information_x_sample(
+    continuous_information_x_sample, binary_information_x_sample = separate_information_x_sample(
         information_x_sample.loc[
             information_x_sample.index.str.startswith("characteristics")
         ]

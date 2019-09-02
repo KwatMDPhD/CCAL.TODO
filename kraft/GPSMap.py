@@ -21,15 +21,17 @@ from scipy.spatial import Delaunay
 from scipy.spatial.distance import euclidean, pdist, squareform
 from scipy.stats import pearsonr
 
-from .apply_function_on_slices_from_2_matrices import apply_function_on_slices_from_2_matrices
+from .apply_function_on_slices_from_2_matrices import (
+    apply_function_on_slices_from_2_matrices,
+)
 from .check_array_for_bad import check_array_for_bad
 from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
 from .cluster_matrix import cluster_matrix
-from .compute_vector_bandwidth import compute_vector_bandwidth
 from .compute_information_distance_between_2_vectors import (
     compute_information_distance_between_2_vectors,
 )
 from .compute_joint_probability import compute_joint_probability
+from .compute_vector_bandwidth import compute_vector_bandwidth
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
 from .get_triangulation_edges_from_point_x_dimension import (
@@ -1109,8 +1111,7 @@ class GPSMap:
 
                 self.w_distance__element_x_element = squareform(
                     pdist(
-                        self.w.T,
-                        metric=compute_information_distance_between_2_vectors,
+                        self.w.T, metric=compute_information_distance_between_2_vectors
                     )
                 )
 
@@ -1146,8 +1147,7 @@ class GPSMap:
 
                 self.h_distance__element_x_element = squareform(
                     pdist(
-                        self.h.T,
-                        metric=compute_information_distance_between_2_vectors,
+                        self.h.T, metric=compute_information_distance_between_2_vectors
                     )
                 )
 

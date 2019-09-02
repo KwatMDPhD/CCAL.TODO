@@ -11,8 +11,7 @@ def _compute_euclidean_distance_between_2_vectors(vector_0, vector_1):
     return apply_function_on_2_vectors(
         vector_0,
         vector_1,
-        lambda vector_0, vector_1: ((vector_0 - vector_1) ** 2).sum()
-        ** 0.5,
+        lambda vector_0, vector_1: ((vector_0 - vector_1) ** 2).sum() ** 0.5,
         raise_for_bad=False,
     )
 

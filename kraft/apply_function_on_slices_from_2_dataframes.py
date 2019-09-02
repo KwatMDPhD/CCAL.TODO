@@ -1,6 +1,8 @@
 from pandas import DataFrame
 
-from .apply_function_on_slices_from_2_matrices import apply_function_on_slices_from_2_matrices
+from .apply_function_on_slices_from_2_matrices import (
+    apply_function_on_slices_from_2_matrices,
+)
 from .cluster_matrix import cluster_matrix
 from .compute_information_coefficient_between_2_vectors import (
     compute_information_coefficient_between_2_vectors,
@@ -47,8 +49,7 @@ def apply_function_on_slices_from_2_dataframes(
 
     plot_heat_map(
         comparison.iloc[
-            cluster_matrix(comparison.values, 0),
-            cluster_matrix(comparison.values, 1),
+            cluster_matrix(comparison.values, 0), cluster_matrix(comparison.values, 1)
         ],
         title_text=title,
         xaxis_title_text=name_1,

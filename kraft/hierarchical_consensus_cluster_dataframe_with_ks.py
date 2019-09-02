@@ -6,7 +6,9 @@ from scipy.spatial.distance import pdist, squareform
 
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .establish_path import establish_path
-from .hierarchical_consensus_cluster import hierarchical_consensus_cluster
+from .hierarchical_consensus_cluster_dataframe import (
+    hierarchical_consensus_cluster_dataframe,
+)
 from .plot_heat_map import plot_heat_map
 from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
@@ -69,7 +71,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
     for (k, (element_cluster, element_cluster__ccc)) in zip(
         ks,
         call_function_with_multiprocess(
-            hierarchical_consensus_cluster,
+            hierarchical_consensus_cluster_dataframe,
             (
                 (
                     dataframe,

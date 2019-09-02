@@ -4,9 +4,7 @@ from .ALMOST_ZERO import ALMOST_ZERO
 from .check_array_for_bad import check_array_for_bad
 
 
-def fit_vector_to_skew_t_pdf(
-    vector, fit_initial_location=None, fit_initial_scale=None
-):
+def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scale=None):
 
     vector = vector[~check_array_for_bad(vector, raise_for_bad=False)]
 

@@ -3,10 +3,10 @@ from os.path import join
 from numpy import full, nan
 from pandas import DataFrame, Index, Series
 
-from .cluster_matrix import cluster_matrix
 from .cluster_clustering_x_element_and_compute_ccc import (
     cluster_clustering_x_element_and_compute_ccc,
 )
+from .cluster_matrix import cluster_matrix
 from .mf_by_multiplicative_update import mf_by_multiplicative_update
 from .nmf_by_sklearn import nmf_by_sklearn
 from .plot_heat_map import plot_heat_map

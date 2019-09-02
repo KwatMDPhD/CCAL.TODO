@@ -69,9 +69,7 @@ def _normalize_array(array, method, rank_method, raise_for_bad):
     return array_normalized
 
 
-def normalize_array(
-    array, axis, method, rank_method="average", raise_for_bad=True
-):
+def normalize_array(array, axis, method, rank_method="average", raise_for_bad=True):
 
     if axis is None:
 

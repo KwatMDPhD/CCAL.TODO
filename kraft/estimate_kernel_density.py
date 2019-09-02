@@ -3,8 +3,8 @@ from KDEpy import FFTKDE
 from .ALMOST_ZERO import ALMOST_ZERO
 from .compute_vector_bandwidth import compute_vector_bandwidth
 from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
-from .make_vector_grid import make_vector_grid
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
+from .make_vector_grid import make_vector_grid
 from .N_GRID import N_GRID
 from .plot_mesh_grid import plot_mesh_grid
 
