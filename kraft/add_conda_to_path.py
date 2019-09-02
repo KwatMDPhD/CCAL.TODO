@@ -4,4 +4,8 @@ from os.path import join
 
 def add_conda_to_path(conda_directory_path):
 
-    environ["PATH"] = f"{join(conda_directory_path, 'bin')}:{environ['PATH']}"
+    bin_directory_path = join(conda_directory_path, "bin")
+
+    environment_path = environ["PATH"]
+
+    environ["PATH"] = f"{bin_directory_path}:{environment_path}"
