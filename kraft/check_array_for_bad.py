@@ -21,10 +21,12 @@ def check_array_for_bad(array, raise_for_bad=True):
 
     n_bad = is_bad.sum()
 
-    if raise_for_bad and n_bad:
+    if 0 < n_bad and raise_for_bad:
 
-        raise ValueError(f"{array.size - n_bad} good & {n_bad} bad ({'|'.join(bads)}).")
+        n_good = array.size - n_bad
 
-    else:
+        bads = "|".join(bads)
 
-        return is_bad
+        raise ValueError(f"{n_good} good & {n_bad} bad ({bads}).")
+
+    return is_bad

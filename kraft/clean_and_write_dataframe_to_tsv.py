@@ -7,9 +7,9 @@ def clean_and_write_dataframe_to_tsv(dataframe, index_name, tsv_file_path):
 
     assert not dataframe.index.hasnans
 
-    assert not dataframe.columns.hasnans
-
     assert not dataframe.index.has_duplicates
+
+    assert not dataframe.columns.hasnans
 
     assert not dataframe.columns.has_duplicates
 
