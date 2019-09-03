@@ -35,9 +35,7 @@ def apply_function_on_2_vectors(
 
                     raise ValueError(f"{n_good} <= n_required ({n_required})")
 
-                else:
-
-                    return nan
+                return nan
 
         vector_0 = vector_0[is_good]
 

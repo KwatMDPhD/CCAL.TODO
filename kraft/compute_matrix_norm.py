@@ -1,6 +1,6 @@
 from numpy.linalg import norm
 
 
-def compute_matrix_norm(M):
+def compute_matrix_norm(matrix):
 
-    return norm(M, ord="fro")
+    return norm(matrix, ord="fro")
