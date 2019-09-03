@@ -1,13 +1,15 @@
 from numpy import absolute, unique
 
-from .compute_posterior_probability import compute_posterior_probability
+from .compute_element_x_dimension_posterior_probability import (
+    compute_element_x_dimension_posterior_probability,
+)
 from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
 from .N_GRID import N_GRID
 from .plot_mesh_grid import plot_mesh_grid
 
 
 def infer(
-    observation_x_dimension,
+    element_x_dimension,
     target_dimension_value,
     fraction_grid_extension=FRACTION_GRID_EXTENSION,
     n_grid=N_GRID,
@@ -15,10 +17,10 @@ def infer(
     dimension_names=None,
 ):
 
-    n_dimension = observation_x_dimension.shape[1]
+    n_dimension = element_x_dimension.shape[1]
 
-    mesh_grid_point_x_dimension, mesh_grid_point_posterior_probability = compute_posterior_probability(
-        observation_x_dimension,
+    mesh_grid_point_x_dimension, mesh_grid_point_posterior_probability = compute_element_x_dimension_posterior_probability(
+        element_x_dimension,
         plot=plot,
         dimension_names=dimension_names,
         dimension_fraction_grid_extensions=(fraction_grid_extension,) * n_dimension,

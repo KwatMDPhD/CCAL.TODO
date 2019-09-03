@@ -1,7 +1,9 @@
 from numpy import asarray, exp, log, nan, sign, sqrt, unique
 from scipy.stats import pearsonr
 
-from .compute_joint_probability import compute_joint_probability
+from .compute_element_x_dimension_joint_probability import (
+    compute_element_x_dimension_joint_probability,
+)
 from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
 from .N_GRID import N_GRID
 from .unmesh import unmesh
@@ -22,7 +24,7 @@ def compute_information_coefficient_between_2_vectors(
     r = pearsonr(vector_0, vector_1)[0]
 
     (x_grid, y_grid), pxy = unmesh(
-        *compute_joint_probability(
+        *compute_element_x_dimension_joint_probability(
             asarray((vector_0, vector_1)).T,
             plot=False,
             dimension_bandwidth_factors=(1 - abs(r) * 2 / 3,) * 2,

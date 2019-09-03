@@ -1,12 +1,12 @@
 from numpy import nan, sqrt
 from scipy.stats import norm
 
-from .check_pdf_for_bad import check_pdf_for_bad
+from .check_array_for_bad import check_array_for_bad
 
 
 def compute_normal_pdf_margin_of_error(pdf, confidence=0.95, raise_for_bad=True):
 
-    is_good = ~check_pdf_for_bad(pdf, raise_for_bad=raise_for_bad)
+    is_good = ~check_array_for_bad(pdf, raise_for_bad=raise_for_bad)
 
     if not is_good.any():
 

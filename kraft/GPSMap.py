@@ -27,10 +27,12 @@ from .apply_function_on_slices_from_2_matrices import (
 from .check_array_for_bad import check_array_for_bad
 from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
 from .cluster_matrix import cluster_matrix
+from .compute_element_x_dimension_joint_probability import (
+    compute_element_x_dimension_joint_probability,
+)
 from .compute_information_distance_between_2_vectors import (
     compute_information_distance_between_2_vectors,
 )
-from .compute_joint_probability import compute_joint_probability
 from .compute_vector_bandwidth import compute_vector_bandwidth
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
@@ -852,7 +854,7 @@ class GPSMap:
 
             label_grid_probabilities[label] = rot90(
                 unmesh(
-                    *compute_joint_probability(
+                    *compute_element_x_dimension_joint_probability(
                         element_x_dimension[element_label == label],
                         plot=False,
                         dimension_bandwidths=dimension_bandwidths,

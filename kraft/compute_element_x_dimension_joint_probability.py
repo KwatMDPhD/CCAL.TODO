@@ -3,7 +3,9 @@ from numpy import product
 from .estimate_element_x_dimension_kernel_density import (
     estimate_element_x_dimension_kernel_density,
 )
-from .get_element_x_dimension_d_dimensions import get_element_x_dimension_d_dimensions
+from .get_mesh_grid_point_x_dimension_d_dimensions import (
+    get_mesh_grid_point_x_dimension_d_dimensions,
+)
 from .plot_mesh_grid import plot_mesh_grid
 
 
@@ -21,7 +23,9 @@ def compute_element_x_dimension_joint_probability(
         **estimate_element_x_dimension_kernel_density_keyword_arguments,
     )
 
-    d_dimensions = get_element_x_dimension_d_dimensions(mesh_grid_point_x_dimension)
+    d_dimensions = get_mesh_grid_point_x_dimension_d_dimensions(
+        mesh_grid_point_x_dimension
+    )
 
     mesh_grid_point_joint_probability = mesh_grid_point_kernel_density / (
         mesh_grid_point_kernel_density.sum() * product(d_dimensions)
