@@ -14,13 +14,19 @@ def plot_mesh_grid(
 
     n_dimension = mesh_grid_point_x_dimension.shape[1]
 
-    dimension_grids, value = unmesh(mesh_grid_point_x_dimension, mesh_grid_point_value)
-
     if dimension_names is None:
 
         dimension_names = tuple(f"Dimension {i} Variable" for i in range(n_dimension))
 
+    dimension_grids, value_reshaped = unmesh(
+        mesh_grid_point_x_dimension, mesh_grid_point_value
+    )
+
     if n_dimension == 1:
+
+        dimension_0_name = dimension_names[0]
+
+        dimension_0_grid_size = dimension_grids[0].size
 
         plot_plotly_figure(
             {
@@ -28,7 +34,7 @@ def plot_mesh_grid(
                     "title": {"text": title_text},
                     "xaxis": {
                         "title": {
-                            "text": f"{dimension_names[0]} (n={dimension_grids[0].size})"
+                            "text": f"{dimension_0_name} (n={dimension_0_grid_size})"
                         }
                     },
                     "yaxis": {"title": {"text": "Value"}},
@@ -37,9 +43,8 @@ def plot_mesh_grid(
                     {
                         "type": "scatter",
                         "x": dimension_grids[0],
-                        "y": value,
+                        "y": value_reshaped,
                         "mode": "markers",
-                        "marker": {"color": "#20d9ba"},
                     }
                 ],
             },
@@ -50,7 +55,7 @@ def plot_mesh_grid(
 
         plot_heat_map(
             DataFrame(
-                value,
+                value_reshaped,
                 index=(f"{i:.3f} *" for i in dimension_grids[0]),
                 columns=(f"* {i:.3f}" for i in dimension_grids[1]),
             ),
@@ -63,14 +68,16 @@ def plot_mesh_grid(
 
         print("=" * 80)
 
-        print(f"{dimension_grids.shape[0]} Dimension Grids:")
+        print("N Dimension:")
+
+        print(n_dimension)
+
+        print("Dimension Grids:")
 
         print(dimension_grids)
 
-        print(f"Value Shape = {value.shape}")
+        print("Value Shape, Min, and Max:")
 
-        print(f"Minimum Value = {value.min()}")
-
-        print(f"Maximum Value = {value.max()}")
+        print(value_reshaped.shape, value_reshaped.min(), value_reshaped.max())
 
         print("^" * 80)

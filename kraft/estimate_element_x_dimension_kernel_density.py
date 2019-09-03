@@ -9,8 +9,8 @@ from .N_GRID import N_GRID
 from .plot_mesh_grid import plot_mesh_grid
 
 
-def estimate_kernel_density(
-    observation_x_dimension,
+def estimate_element_x_dimension_kernel_density(
+    element_x_dimension,
     dimension_bandwidths=None,
     dimension_bandwidth_factors=None,
     dimension_grid_mins=None,
@@ -21,12 +21,12 @@ def estimate_kernel_density(
     dimension_names=None,
 ):
 
-    n_dimension = observation_x_dimension.shape[1]
+    n_dimension = element_x_dimension.shape[1]
 
     if dimension_bandwidths is None:
 
         dimension_bandwidths = tuple(
-            compute_vector_bandwidth(observation_x_dimension[:, i])
+            compute_vector_bandwidth(element_x_dimension[:, i])
             for i in range(n_dimension)
         )
 
@@ -56,7 +56,7 @@ def estimate_kernel_density(
     mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
         (
             make_vector_grid(
-                observation_x_dimension[:, i],
+                element_x_dimension[:, i],
                 dimension_grid_mins[i],
                 dimension_grid_maxs[i],
                 dimension_fraction_grid_extensions[i],
@@ -69,7 +69,7 @@ def estimate_kernel_density(
     mesh_grid_point_kernel_density = (
         (
             FFTKDE(bw=dimension_bandwidths)
-            .fit(observation_x_dimension)
+            .fit(element_x_dimension)
             .evaluate(mesh_grid_point_x_dimension)
         )
     ).clip(min=ALMOST_ZERO)

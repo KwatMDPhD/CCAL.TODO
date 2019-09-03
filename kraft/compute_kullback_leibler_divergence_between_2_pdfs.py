@@ -1,6 +1,6 @@
 from numpy import log
 
 
-def compute_kullback_leibler_divergence_between_2_pdfs(pdf_0, pdf_1):
+def compute_kullback_leibler_divergence(pdf_1, pdf_0):
 
-    return pdf_0 * log(pdf_0 / pdf_1)
+    return pdf_1 * log(pdf_1 / pdf_0)
