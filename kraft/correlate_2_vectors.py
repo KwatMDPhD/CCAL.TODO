@@ -8,8 +8,8 @@ from .RANDOM_SEED import RANDOM_SEED
 
 
 def correlate_2_vectors(
-    _vector_0,
-    _vector_1,
+    vector_0,
+    vector_1,
     n_permutation=10,
     random_seed=RANDOM_SEED,
     plot=True,
@@ -22,11 +22,11 @@ def correlate_2_vectors(
 
     model = LinearRegression()
 
-    xs = tuple((x_,) for x_ in _vector_0)
+    xs = tuple((x,) for x in vector_0)
 
-    model.fit(xs, _vector_1)
+    model.fit(xs, vector_1)
 
-    r2 = model.score(xs, _vector_1)
+    r2 = model.score(xs, vector_1)
 
     if n_permutation == 0:
 
@@ -36,19 +36,19 @@ def correlate_2_vectors(
 
         r2s_shuffled = full(n_permutation, nan)
 
-        m_ = LinearRegression()
+        model_ = LinearRegression()
 
-        y_ = _vector_1.copy()
+        vector_1_copy = vector_1.copy()
 
         seed(seed=random_seed)
 
         for i in range(n_permutation):
 
-            shuffle(y_)
+            shuffle(vector_1_copy)
 
-            m_.fit(xs, y_)
+            model_.fit(xs, vector_1_copy)
 
-            r2s_shuffled[i] = m_.score(xs, y_)
+            r2s_shuffled[i] = model_.score(xs, vector_1_copy)
 
         p_value = min(
             compute_empirical_p_value(r2, r2s_shuffled, "<"),
@@ -65,7 +65,7 @@ def correlate_2_vectors(
 
         if title_text:
 
-            title_text = f"{title_text}\n{r2_p_value_str}"
+            title_text = f"{title_text}<br>{r2_p_value_str}"
 
         else:
 
@@ -81,22 +81,17 @@ def correlate_2_vectors(
                 "data": [
                     {
                         "type": "scatter",
-                        "x": _vector_0,
-                        "y": _vector_1,
                         "name": "Data",
+                        "x": vector_0,
+                        "y": vector_1,
                         "mode": "markers",
-                        "marker": {
-                            "size": marker_size,
-                            "color": "#9017e6",
-                            "opacity": 0.64,
-                        },
+                        "marker": {"size": marker_size, "opacity": 0.64},
                     },
                     {
                         "type": "scatter",
-                        "x": _vector_0,
-                        "y": model.coef_ * _vector_0 + model.intercept_,
                         "name": "Fit",
-                        "marker": {"color": "#20d9ba"},
+                        "x": vector_0,
+                        "y": model.coef_ * vector_0 + model.intercept_,
                     },
                 ],
             },

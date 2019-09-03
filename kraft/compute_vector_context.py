@@ -12,9 +12,7 @@ from numpy import (
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .check_array_for_bad import check_array_for_bad
-from .compute_kullback_leibler_divergence_between_2_pdfs import (
-    compute_kullback_leibler_divergence_between_2_pdfs,
-)
+from .compute_kullback_leibler_divergence import compute_kullback_leibler_divergence
 from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
 from .make_reflecting_grid import make_reflecting_grid
 
@@ -25,13 +23,9 @@ def _compute_vector_context(
 
     center = pdf_reference.argmax()
 
-    left_kl = compute_kullback_leibler_divergence_between_2_pdfs(
-        pdf[:center], pdf_reference[:center]
-    )
+    left_kl = compute_kullback_leibler_divergence(pdf[:center], pdf_reference[:center])
 
-    right_kl = compute_kullback_leibler_divergence_between_2_pdfs(
-        pdf[center:], pdf_reference[center:]
-    )
+    right_kl = compute_kullback_leibler_divergence(pdf[center:], pdf_reference[center:])
 
     left_kl[left_kl == inf] = 0
 
@@ -72,9 +66,9 @@ def compute_vector_context(
     global_shape=None,
 ):
 
-    is_bad = check_array_for_bad(vector, raise_for_bad=False)
+    is_good = ~check_array_for_bad(vector, raise_for_bad=False)
 
-    _vector_good = vector[~is_bad]
+    vector_good = vector[is_good]
 
     if any(
         parameter is None
@@ -82,12 +76,12 @@ def compute_vector_context(
     ):
 
         n_data, location, scale, degree_of_freedom, shape = fit_vector_to_skew_t_pdf(
-            _vector_good,
+            vector_good,
             fit_initial_location=fit_initial_location,
             fit_initial_scale=fit_initial_scale,
         )
 
-    grid = linspace(_vector_good.min(), _vector_good.max(), num=n_grid)
+    grid = linspace(vector_good.min(), vector_good.max(), num=n_grid)
 
     skew_t_model = ACSkewT_gen()
 
@@ -145,8 +139,8 @@ def compute_vector_context(
 
     context_like_array = full(vector.size, nan)
 
-    context_like_array[~is_bad] = context[
-        [absolute(grid - value).argmin() for value in _vector_good]
+    context_like_array[is_good] = context[
+        [absolute(grid - value).argmin() for value in vector_good]
     ]
 
     return {

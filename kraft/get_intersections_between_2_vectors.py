@@ -3,13 +3,13 @@ from numpy import diff, insert, sign
 from .check_array_for_bad import check_array_for_bad
 
 
-def get_intersections_between_2_vectors(_vector_0, _vector_1, raise_for_bad=True):
+def get_intersections_between_2_vectors(vector_0, vector_1, raise_for_bad=True):
 
-    check_array_for_bad(_vector_0, raise_for_bad=raise_for_bad)
+    check_array_for_bad(vector_0, raise_for_bad=raise_for_bad)
 
-    check_array_for_bad(_vector_1, raise_for_bad=raise_for_bad)
+    check_array_for_bad(vector_1, raise_for_bad=raise_for_bad)
 
-    diff_sign = sign(_vector_0 - _vector_1)
+    diff_sign = sign(vector_0 - vector_1)
 
     diff_sign_0_indices = (diff_sign == 0).nonzero()[0]
 
