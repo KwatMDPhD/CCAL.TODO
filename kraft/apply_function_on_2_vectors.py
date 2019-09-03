@@ -8,7 +8,7 @@ def apply_function_on_2_vectors(
     vector_1,
     function,
     n_required=None,
-    raise_for_n_less_than_n_required=True,
+    raise_for_n_less_than_required=True,
     raise_for_bad=True,
     use_only_good=True,
 ):
@@ -31,7 +31,7 @@ def apply_function_on_2_vectors(
 
             if n_good < n_required:
 
-                if raise_for_n_less_than_n_required:
+                if raise_for_n_less_than_required:
 
                     raise ValueError(f"{n_good} <= n_required ({n_required})")
 

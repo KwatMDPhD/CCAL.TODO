@@ -4,9 +4,6 @@ from .apply_function_on_slices_from_2_matrices import (
     apply_function_on_slices_from_2_matrices,
 )
 from .cluster_matrix import cluster_matrix
-from .compute_information_coefficient_between_2_vectors import (
-    compute_information_coefficient_between_2_vectors,
-)
 from .plot_heat_map import plot_heat_map
 
 
@@ -14,10 +11,10 @@ def apply_function_on_slices_from_2_dataframes(
     dataframe_0,
     dataframe_1,
     axis,
-    function=compute_information_coefficient_between_2_vectors,
+    function,
     title=None,
-    name_0=None,
-    name_1=None,
+    dataframe_0_name=None,
+    dataframe_1_name=None,
     file_path_prefix=None,
 ):
 
@@ -27,15 +24,15 @@ def apply_function_on_slices_from_2_dataframes(
 
     if axis == 0:
 
-        comparison = DataFrame(
-            comparison, index=dataframe_0.index, columns=dataframe_1.index
-        )
+        index_and_columns = dataframe_0.index
 
     elif axis == 1:
 
-        comparison = DataFrame(
-            comparison, index=dataframe_0.columns, columns=dataframe_1.columns
-        )
+        index_and_columns = dataframe_0.columns
+
+    comparison = DataFrame(
+        comparison, index=index_and_columns, columns=index_and_columns
+    )
 
     if file_path_prefix is None:
 
@@ -52,8 +49,8 @@ def apply_function_on_slices_from_2_dataframes(
             cluster_matrix(comparison.values, 0), cluster_matrix(comparison.values, 1)
         ],
         title_text=title,
-        xaxis_title_text=name_1,
-        yaxis_title_text=name_0,
+        xaxis_title_text=dataframe_1_name,
+        yaxis_title_text=dataframe_0_name,
         html_file_path=html_file_path,
     )
 
