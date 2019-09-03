@@ -9,7 +9,7 @@ def compute_empirical_p_values_and_fdrs(
     values, random_values, p_value_direction, raise_for_bad=True
 ):
 
-    is_good = ~check_array_for_bad(values, raise_for_bad=raise_for_bad)
+    is_good_value = ~check_array_for_bad(values, raise_for_bad=raise_for_bad)
 
     is_good_random_value = ~check_array_for_bad(
         random_values, raise_for_bad=raise_for_bad
@@ -19,9 +19,9 @@ def compute_empirical_p_values_and_fdrs(
 
     fdrs = full(values.shape, nan)
 
-    if is_good.any() and is_good_random_value.any():
+    if is_good_value.any() and is_good_random_value.any():
 
-        values_good = values[is_good]
+        values_good = values[is_good_value]
 
         random_values_good = random_values[is_good_random_value]
 
@@ -71,8 +71,8 @@ def compute_empirical_p_values_and_fdrs(
 
             good_fdrs = good_fdrs_great
 
-        p_values[is_good] = good_p_values
+        p_values[is_good_value] = good_p_values
 
-        fdrs[is_good] = good_fdrs
+        fdrs[is_good_value] = good_fdrs
 
     return p_values, fdrs
