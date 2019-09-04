@@ -16,7 +16,9 @@ def plot_mesh_grid(
 
     if dimension_names is None:
 
-        dimension_names = tuple(f"Dimension {i} Variable" for i in range(n_dimension))
+        dimension_names = tuple(
+            "Dimension {} Variable".format(i) for i in range(n_dimension)
+        )
 
     dimension_grids, value_reshaped = unmesh(
         mesh_grid_point_x_dimension, mesh_grid_point_value
@@ -34,7 +36,9 @@ def plot_mesh_grid(
                     "title": {"text": title_text},
                     "xaxis": {
                         "title": {
-                            "text": f"{dimension_0_name} (n={dimension_0_grid_size})"
+                            "text": "{} (n={})".format(
+                                dimension_0_name, dimension_0_grid_size
+                            )
                         }
                     },
                     "yaxis": {"title": {"text": "Value"}},
@@ -56,8 +60,8 @@ def plot_mesh_grid(
         plot_heat_map(
             DataFrame(
                 value_reshaped,
-                index=(f"{i:.3f} *" for i in dimension_grids[0]),
-                columns=(f"* {i:.3f}" for i in dimension_grids[1]),
+                index=("{:.3f} *".format(i) for i in dimension_grids[0]),
+                columns=("* {:.3f}".format(i) for i in dimension_grids[1]),
             ),
             title_text=title_text,
             xaxis_title_text=dimension_names[1],
@@ -68,16 +72,16 @@ def plot_mesh_grid(
 
         print("=" * 80)
 
-        print("N Dimension:")
+        print("N dimension: {}".format(n_dimension))
 
-        print(n_dimension)
-
-        print("Dimension Grids:")
+        print("Dimension grids:")
 
         print(dimension_grids)
 
-        print("Value Shape, Min, and Max:")
+        print("Value shape: {}".format(value_reshaped.shape))
 
-        print(value_reshaped.shape, value_reshaped.min(), value_reshaped.max())
+        print("Value min: {}".format(value_reshaped.min()))
+
+        print("Value max: {}".format(value_reshaped.max()))
 
         print("^" * 80)

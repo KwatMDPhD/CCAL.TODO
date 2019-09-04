@@ -36,7 +36,9 @@ def hierarchical_consensus_cluster_dataframe(
     if distance__element_x_element is None:
 
         print(
-            f"Computing distance__element_x_element distance with {distance_function} ..."
+            "Computing distance__element_x_element distance with {}...".format(
+                distance_function
+            )
         )
 
         distance__element_x_element = DataFrame(
@@ -51,7 +53,7 @@ def hierarchical_consensus_cluster_dataframe(
                 join(directory_path, "distance.element_x_element.tsv"), sep="\t"
             )
 
-    print(f"HCC K={k} ...")
+    print("HCC K={}...".format(k))
 
     clustering_x_element = full((n_clustering, dataframe.index.size), nan)
 
@@ -63,7 +65,7 @@ def hierarchical_consensus_cluster_dataframe(
 
         if clustering % n_per_print == 0:
 
-            print(f"\t(K={k}) {clustering + 1}/{n_clustering} ...")
+            print("\t(K={}) {}/{}...".format(k, clustering + 1, n_clustering))
 
         random_elements_with_repeat = randint(
             0, high=dataframe.index.size, size=dataframe.index.size
@@ -91,7 +93,7 @@ def hierarchical_consensus_cluster_dataframe(
     cluster_x_element = make_binary_dataframe_from_categorical_series(element_cluster)
 
     cluster_x_element.index = Index(
-        (f"Cluster{i}" for i in cluster_x_element.index),
+        ("Cluster{}".format(i) for i in cluster_x_element.index),
         name=cluster_x_element.index.name,
     )
 
@@ -107,7 +109,7 @@ def hierarchical_consensus_cluster_dataframe(
 
     if plot_dataframe:
 
-        print("Plotting dataframe.clustered ...")
+        print("Plotting dataframe.clustered...")
 
         element_cluster_sorted = element_cluster.sort_values()
 
@@ -139,7 +141,7 @@ def hierarchical_consensus_cluster_dataframe(
 
         plot_heat_map(
             dataframe,
-            title_text=f"HCC K={k}",
+            title_text="HCC K={}".format(k),
             xaxis_title_text=dataframe.columns.name,
             yaxis_title_text=dataframe.index.name,
             html_file_path=html_file_path,

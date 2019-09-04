@@ -5,4 +5,4 @@ def get_machine():
 
     uname_ = uname()
 
-    return f"{uname_.system}_{uname_.machine}"
+    return "{}_{}".format(uname_.system, uname_.machine)

@@ -53,7 +53,14 @@ def drop_dataframe_slice(
         dataframe = dataframe.loc[:, ~dropped]
 
     print(
-        f"Shape: {shape_before} =(drop: axis={axis}, max_na={max_na}, min_n_not_na_value={min_n_not_na_value}, min_n_not_na_unique_value={min_n_not_na_unique_value})=> {dataframe.shape}"
+        "Shape: {} =(drop: axis={}, max_na={}, min_n_not_na_value={}, min_n_not_na_unique_value={})=> {}".format(
+            shape_before,
+            axis,
+            max_na,
+            min_n_not_na_value,
+            min_n_not_na_unique_value,
+            dataframe.shape,
+        )
     )
 
     return dataframe

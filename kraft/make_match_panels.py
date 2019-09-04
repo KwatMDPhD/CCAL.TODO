@@ -28,7 +28,7 @@ def make_match_panels(
                 normalize_file_name(target_name), normalize_file_name(data_name)
             )
 
-            print(f"Making match panel for {suffix} ...")
+            print("Making match panel for {}...".format(suffix))
 
             if directory_path is None:
 
@@ -42,7 +42,7 @@ def make_match_panels(
 
                 establish_path(file_path_prefix, "file")
 
-                score_moe_p_value_fdr_file_path = f"{file_path_prefix}.tsv"
+                score_moe_p_value_fdr_file_path = "{}.tsv".format(file_path_prefix)
 
                 if (
                     isfile(score_moe_p_value_fdr_file_path)
@@ -50,7 +50,9 @@ def make_match_panels(
                 ):
 
                     print(
-                        f"Reading score_moe_p_value_fdr from {score_moe_p_value_fdr_file_path} ..."
+                        "Reading score_moe_p_value_fdr from {}...".format(
+                            score_moe_p_value_fdr_file_path
+                        )
                     )
 
                     score_moe_p_value_fdr = read_csv(

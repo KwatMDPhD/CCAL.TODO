@@ -34,6 +34,10 @@ def normalize_cell_line_names(cell_line_names):
 
     if len(cell_line_names_failed_to_map):
 
-        print(f"Cell line names failed to map: {set(cell_line_names_failed_to_map)}.")
+        print(
+            "Cell line names failed to map: {}.".format(
+                set(cell_line_names_failed_to_map)
+            )
+        )
 
     return best_cell_line_names

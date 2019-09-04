@@ -48,7 +48,9 @@ def _normalize_array(array, method, rank_method, raise_for_bad):
 
             if array_good.min() < 0:
 
-                raise ValueError("Sum normalize only positives.")
+                raise ValueError(
+                    "Can not normalize array with any negative value with method sum."
+                )
 
             else:
 

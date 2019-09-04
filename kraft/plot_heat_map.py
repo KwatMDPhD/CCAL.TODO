@@ -44,12 +44,12 @@ def plot_heat_map(
         "height": layout_height,
         "title": {"text": title_text},
         "xaxis": {
-            "title": {"text": f"{xaxis_title_text} ({dataframe.shape[1]})"},
+            "title": {"text": "{} ({})".format(xaxis_title_text, dataframe.shape[1])},
             **heat_map_axis_template,
         },
         "xaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
         "yaxis": {
-            "title": {"text": f"{yaxis_title_text} ({dataframe.shape[0]})"},
+            "title": {"text": "{} ({})".format(yaxis_title_text, dataframe.shape[0])},
             **heat_map_axis_template,
         },
         "yaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
@@ -131,7 +131,7 @@ def plot_heat_map(
                             "xref": "x2",
                             "x": 0,
                             "y": index_0 + (indices[-1] - index_0) / 2,
-                            "text": f"<b>{row_annotation_str[a]}</b>",
+                            "text": "<b>{}</b>".format(row_annotation_str[a]),
                             **annotation_keyword_arguments,
                             **row_annotation_keyword_arguments,
                         }
@@ -174,7 +174,7 @@ def plot_heat_map(
                             "yref": "y2",
                             "x": index_0 + (indices[-1] - index_0) / 2,
                             "y": 0,
-                            "text": f"<b>{column_annotation_str[a]}</b>",
+                            "text": "<b>{}</b>".format(column_annotation_str[a]),
                             **annotation_keyword_arguments,
                             **column_annotation_keyword_arguments,
                         }

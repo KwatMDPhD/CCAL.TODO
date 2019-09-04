@@ -7,8 +7,8 @@ def remove_path(path):
 
     if exists(path):
 
-        run_command(f"rm --recursive --force {path}")
+        run_command("rm --recursive --force {}".format(path))
 
     else:
 
-        print(f"{path} does not exist for removal.")
+        print("{} does not exist for removal.".format(path))

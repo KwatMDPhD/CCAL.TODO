@@ -36,17 +36,23 @@ def install_and_activate_conda(
         )
 
         run_command(
-            f"bash {join(tmp_directory_path, conda_script_file_name)} -b -p {conda_directory_path}"
+            "bash {} -b -p {}".format(
+                join(tmp_directory_path, conda_script_file_name), conda_directory_path
+            )
         )
 
     add_conda_to_path(conda_directory_path)
 
     if pip_installs is not None:
 
-        run_command(f"pip install {' '.join(pip_installs)}")
+        run_command("pip install {}".format(" ".join(pip_installs)))
 
     if conda_installs is not None:
 
         for channel, packages in conda_installs.items():
 
-            run_command(f"conda install --channel {channel} --yes {' '.join(packages)}")
+            run_command(
+                "conda install --channel {} --yes {}".format(
+                    channel, " ".join(packages)
+                )
+            )

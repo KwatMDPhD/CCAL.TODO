@@ -54,7 +54,9 @@ def select_gene_symbol(
     )
 
     print(
-        f"Removing {remove_by_gene_family_name.sum()}/{remove_by_gene_family_name.size} by gene family name ..."
+        "Removing {}/{} by gene family name...".format(
+            remove_by_gene_family_name.sum(), remove_by_gene_family_name.size
+        )
     )
 
     keep_by_locus_type = asarray(
@@ -66,12 +68,14 @@ def select_gene_symbol(
     )
 
     print(
-        f"Keeping {keep_by_locus_type.sum()}/{keep_by_locus_type.size} by locus type ..."
+        "Keeping {}/{} by locus type...".format(
+            keep_by_locus_type.sum(), keep_by_locus_type.size
+        )
     )
 
     remove = remove_by_gene_family_name | ~keep_by_locus_type
 
-    print(f"Removing {remove.sum()} ...")
+    print("Removing {}...".format(remove.sum()))
 
     for column_name in ("Gene Family Name", "Locus Type"):
 
@@ -90,6 +94,6 @@ def select_gene_symbol(
         .unique()
     )
 
-    print(f"Selected {gene_symbols.size} gene symbols.")
+    print("Selected {} gene symbols.".format(gene_symbols.size))
 
     return gene_symbols.tolist()

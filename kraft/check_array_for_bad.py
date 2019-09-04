@@ -3,19 +3,19 @@ from numpy import isinf, isnan
 
 def check_array_for_bad(array, raise_for_bad=True):
 
-    bads = []
+    bad_kinds = []
 
     is_nan = isnan(array)
 
     if is_nan.any():
 
-        bads.append("nan")
+        bad_kinds.append("nan")
 
     is_inf = isinf(array)
 
     if is_inf.any():
 
-        bads.append("inf")
+        bad_kinds.append("inf")
 
     is_bad = is_nan | is_inf
 
@@ -25,8 +25,8 @@ def check_array_for_bad(array, raise_for_bad=True):
 
         n_good = array.size - n_bad
 
-        bads = "|".join(bads)
+        bad_kinds = "|".join(bad_kinds)
 
-        raise ValueError(f"{n_good} good & {n_bad} bad ({bads}).")
+        raise ValueError("{} good & {} bad ({}).".format(n_good, n_bad, bad_kinds))
 
     return is_bad

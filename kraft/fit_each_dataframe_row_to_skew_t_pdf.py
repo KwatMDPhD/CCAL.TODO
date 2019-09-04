@@ -18,7 +18,7 @@ def _fit_each_dataframe_row_to_skew_t_pdf(dataframe):
 
         if i % n_per_print == 0:
 
-            print(f"({i + 1}/{n}) {index} ...")
+            print("({}/{}) {}...".format(i + 1, n, index))
 
         vector = series.values
 

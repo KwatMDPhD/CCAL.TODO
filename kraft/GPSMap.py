@@ -315,7 +315,7 @@ def _plot(
                         "x": element_x_dimension_[:, 0],
                         "y": element_x_dimension_[:, 1],
                         "text": tuple(
-                            f"{element}<br>{value:.2f}"
+                            "{}<br>{:.2f}".format(element, value)
                             for element, value in element_value.items()
                         ),
                         "mode": "markers",
@@ -338,7 +338,7 @@ def _plot(
                         {
                             "x": element_x_dimension_[i, 0],
                             "y": element_x_dimension_[i, 1],
-                            "text": f"<b>{element_value.index[i]}</b>",
+                            "text": "<b>{}</b>".format(element_value.index[i]),
                             "font": {"size": 16},
                             "arrowhead": 2,
                             "arrowwidth": 2,
@@ -369,11 +369,13 @@ def _plot(
                         sector_radian * i, sector_radian * (i + 1), num=16
                     )
 
-                    path = f"M {x} {y}"
+                    path = "M {} {}".format(x, y)
 
                     for x_, y_ in zip(cos(sector_radians), sin(sector_radians)):
 
-                        path += f" L {x + x_ * marker_size_factor} {y + y_ * marker_size_factor}"
+                        path += " L {} {}".format(
+                            x + x_ * marker_size_factor, y + y_ * marker_size_factor
+                        )
 
                     path += " Z"
 
@@ -592,7 +594,9 @@ class GPSMap:
                         cluster_matrix(self.w_distance__node_x_node, 0),
                         cluster_matrix(self.w_distance__node_x_node, 1),
                     ],
-                    title_text=f"{self.node_name}-{self.node_name} Distance in W",
+                    title_text="{}-{} Distance in W".format(
+                        self.node_name, self.node_name
+                    ),
                     xaxis_title_text=self.node_name,
                     yaxis_title_text=self.node_name,
                 )
@@ -629,7 +633,9 @@ class GPSMap:
                         cluster_matrix(self.h_distance__node_x_node, 0),
                         cluster_matrix(self.h_distance__node_x_node, 1),
                     ],
-                    title_text=f"{self.node_name}-{self.node_name} Distance in H",
+                    title_text="{}-{} Distance in H".format(
+                        self.node_name, self.node_name
+                    ),
                     xaxis_title_text=self.node_name,
                     yaxis_title_text=self.node_name,
                 )
@@ -660,7 +666,9 @@ class GPSMap:
                         cluster_matrix(self.distance__node_x_node, 0),
                         cluster_matrix(self.distance__node_x_node, 1),
                     ],
-                    title_text=f"{self.node_name}-{self.node_name} Distance in W and H",
+                    title_text="{}-{} Distance in W and H".format(
+                        self.node_name, self.node_name
+                    ),
                     xaxis_title_text=self.node_name,
                     yaxis_title_text=self.node_name,
                 )
@@ -1036,7 +1044,7 @@ class GPSMap:
                     c=support_vector_parameter_c,
                     tol=1e-8,
                 ),
-                name=f"Predicted {element_name} Label",
+                name="Predicted {} Label".format(element_name),
                 index=predicting_elements,
             )
 
@@ -1064,7 +1072,7 @@ class GPSMap:
 
         if title is None:
 
-            title = f"{w_or_h.title()} (predicted)"
+            title = "{} (predicted)".format(w_or_h.title())
 
         _plot(
             self.nodes,
@@ -1224,7 +1232,7 @@ class GPSMap:
 
             if i % n_per_print == 0:
 
-                print(f"\t{i + 1}/{n_iteration} ...")
+                print("\t{}/{}...".format(i + 1, n_iteration))
 
             r__node_x_dimension = self.node_x_dimension.copy()
 
@@ -1281,7 +1289,9 @@ class GPSMap:
 
                 if print_acceptance:
 
-                    print(f"\t\t{fitness:.3e} =(accept)=> {r__fitness:.3e} ...")
+                    print(
+                        "\t\t{:.3e} =(accept)=> {:.3e}...".format(fitness, r__fitness)
+                    )
 
                 self.node_x_dimension = r__node_x_dimension
 

@@ -54,7 +54,7 @@ def _permute_target_and_match_target_and_data(
     raise_for_n_less_than_required,
 ):
 
-    print(f"Computing p-value and FDR with {n_permutation} permutation ...")
+    print("Computing p-value and FDR with {} permutation...".format(n_permutation))
 
     seed(seed=random_seed)
 
@@ -101,7 +101,11 @@ def _match_target_and_data_and_compute_statistics(
 
     n_job = min(data.shape[0], n_job)
 
-    print(f"Computing score using {match_function.__name__} with {n_job} process ...")
+    print(
+        "Computing score using {} with {} process...".format(
+            match_function.__name__, n_job
+        )
+    )
 
     data_split = array_split(data, n_job)
 
@@ -142,7 +146,7 @@ def _match_target_and_data_and_compute_statistics(
 
         moe_indices = score_moe_p_value_fdr.index
 
-    print(f"Computing MoE with {n_sampling} sampling ...")
+    print("Computing MoE with {} sampling...".format(n_sampling))
 
     seed(seed=random_seed)
 
@@ -234,7 +238,9 @@ def make_match_panel(
     common_indices = target.index & data.columns
 
     print(
-        f"target.index ({target.index.size}) & data.columns ({data.columns.size}) have {len(common_indices)} in common."
+        "target.index ({}) & data.columns ({}) have {} in common.".format(
+            target.index.size, data.columns.size, len(common_indices)
+        )
     )
 
     target = target[common_indices]
@@ -277,7 +283,7 @@ def make_match_panel(
 
     if file_path_prefix is not None:
 
-        score_moe_p_value_fdr.to_csv(f"{file_path_prefix}.tsv", sep="\t")
+        score_moe_p_value_fdr.to_csv("{}.tsv".format(file_path_prefix), sep="\t")
 
     if not plot:
 
@@ -289,7 +295,7 @@ def make_match_panel(
 
     else:
 
-        html_file_path = f"{file_path_prefix}.statistics.html"
+        html_file_path = "{}.statistics.html".format(file_path_prefix)
 
     if score_moe_p_value_fdr.shape[0] < 1e3:
 
@@ -304,7 +310,9 @@ def make_match_panel(
             "layout": {
                 "title": {"text": "Statistics"},
                 "xaxis": {"title": {"text": "Rank"}},
-                "yaxis": {"title": {"text": f"Score<br>{match_function.__name__}"}},
+                "yaxis": {
+                    "title": {"text": "Score<br>{}".format(match_function.__name__)}
+                },
             },
             "data": [
                 {
@@ -349,7 +357,7 @@ def make_match_panel(
         and (1 < target_to_plot.value_counts()).all()
     ):
 
-        print("Clustering within category ...")
+        print("Clustering within category...")
 
         data_to_plot = data_to_plot.iloc[
             :,
@@ -459,7 +467,7 @@ def make_match_panel(
             {
                 "x": x,
                 "y": 1 - (row_fraction / 2),
-                "text": f"<b>{annotation}</b>",
+                "text": "<b>{}</b>".format(annotation),
                 **layout_annotation_template,
             }
         )
@@ -469,7 +477,12 @@ def make_match_panel(
         for str_ in strs:
 
             layout["annotations"].append(
-                {"x": x, "y": y, "text": f"<b>{str_}</b>", **layout_annotation_template}
+                {
+                    "x": x,
+                    "y": y,
+                    "text": "<b>{}</b>".format(str_),
+                    **layout_annotation_template,
+                }
             )
 
             y -= data_row_fraction
@@ -480,7 +493,7 @@ def make_match_panel(
 
     else:
 
-        html_file_path = f"{file_path_prefix}.html"
+        html_file_path = "{}.html".format(file_path_prefix)
 
     plot_plotly_figure({"layout": layout, "data": figure_data}, html_file_path)
 

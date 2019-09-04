@@ -15,7 +15,9 @@ def read_matrix_market(
     index_file_column = 1
 
     print(
-        f"Index File (using column {index_file_column} as feature):\n{index_file.head()}"
+        "Index File (using column {} as feature):\n{}".format(
+            index_file_column, index_file.head()
+        )
     )
 
     dataframe = DataFrame(
@@ -26,7 +28,7 @@ def read_matrix_market(
 
     if dataframe.index.has_duplicates:
 
-        print("Merging duplicated index with median ...")
+        print("Merging duplicated index with median...")
 
         dataframe = dataframe.groupby(level=0).median()
 
@@ -36,7 +38,7 @@ def read_matrix_market(
 
     if dataframe.columns.has_duplicates:
 
-        print("Merging duplicated column with median ...")
+        print("Merging duplicated column with median...")
 
         dataframe = dataframe.T.groupby(level=0).median().T
 

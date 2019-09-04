@@ -49,7 +49,9 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
     if distance__element_x_element is None:
 
         print(
-            f"Computing distance__element_x_element distance with {distance_function} ..."
+            "Computing distance__element_x_element distance with {}...".format(
+                distance_function
+            )
         )
 
         distance__element_x_element = DataFrame(
@@ -91,12 +93,12 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
         ),
     ):
 
-        k_return[f"K{k}"] = {
+        k_return["K{}".format(k)] = {
             "element_cluster": element_cluster,
             "element_cluster.ccc": element_cluster__ccc,
         }
 
-    keys = Index((f"K{k}" for k in ks), name="K")
+    keys = Index(("K{}".format(k) for k in ks), name="K")
 
     file_name = "ccc.html"
 

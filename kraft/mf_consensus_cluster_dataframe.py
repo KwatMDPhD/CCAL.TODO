@@ -27,7 +27,7 @@ def mf_consensus_cluster_dataframe(
     directory_path=None,
 ):
 
-    print(f"MFCC K={k} ...")
+    print("MFCC K={}...".format(k))
 
     clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
 
@@ -47,7 +47,7 @@ def mf_consensus_cluster_dataframe(
 
         if clustering % n_per_print == 0:
 
-            print(f"\t(K={k}) {clustering + 1}/{n_clustering} ...")
+            print("\t(K={}) {}/{}...".format(k, clustering + 1, n_clustering))
 
         w, h, e = mf_function(
             dataframe.values,
@@ -64,7 +64,7 @@ def mf_consensus_cluster_dataframe(
 
             e_0 = e
 
-            factors = Index((f"Factor{i}" for i in range(k)), name="Factor")
+            factors = Index(("Factor{}".format(i) for i in range(k)), name="Factor")
 
             w_0 = DataFrame(w_0, index=dataframe.index, columns=factors)
 
@@ -78,7 +78,7 @@ def mf_consensus_cluster_dataframe(
 
             if plot_w:
 
-                print("Plotting w ...")
+                print("Plotting w...")
 
                 file_name = "w.html"
 
@@ -92,7 +92,7 @@ def mf_consensus_cluster_dataframe(
 
                 plot_heat_map(
                     w_0.iloc[cluster_matrix(w_0.values, 0)],
-                    title_text=f"MF K={k} W",
+                    title_text="MF K={} W".format(k),
                     xaxis_title_text=w_0.columns.name,
                     yaxis_title_text=w_0.index.name,
                     html_file_path=html_file_path,
@@ -100,7 +100,7 @@ def mf_consensus_cluster_dataframe(
 
             if plot_h:
 
-                print("Plotting h ...")
+                print("Plotting h...")
 
                 file_name = "h.html"
 
@@ -114,7 +114,7 @@ def mf_consensus_cluster_dataframe(
 
                 plot_heat_map(
                     h_0.iloc[:, cluster_matrix(h_0.values, 1)],
-                    title_text=f"MF K={k} H",
+                    title_text="MF K={} H".format(k),
                     xaxis_title_text=h_0.columns.name,
                     yaxis_title_text=h_0.index.name,
                     html_file_path=html_file_path,
@@ -140,7 +140,7 @@ def mf_consensus_cluster_dataframe(
 
     if plot_dataframe:
 
-        print("Plotting dataframe.clustered ...")
+        print("Plotting dataframe.clustered...")
 
         file_name = "dataframe.cluster.html"
 
@@ -164,7 +164,7 @@ def mf_consensus_cluster_dataframe(
             dataframe,
             row_annotation=w_element_cluster_sorted,
             column_annotation=h_element_cluster_sorted,
-            title_text=f"MFCC K={k}",
+            title_text="MFCC K={}".format(k),
             xaxis_title_text=dataframe.columns.name,
             yaxis_title_text=dataframe.index.name,
             html_file_path=html_file_path,

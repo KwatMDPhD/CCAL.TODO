@@ -32,11 +32,11 @@ def process_feature_x_sample(
 
     if feature_x_sample.index.has_duplicates:
 
-        raise ValueError(f"{feature_x_sample.index.name} duplicated.")
+        raise ValueError("{} duplicated.".format(feature_x_sample.index.name))
 
     elif feature_x_sample.columns.has_duplicates:
 
-        raise ValueError(f"{feature_x_sample.columns.name} duplicated.")
+        raise ValueError("{} duplicated.".format(feature_x_sample.columns.name))
 
     shape_before_drop = feature_x_sample.shape
 
@@ -44,21 +44,25 @@ def process_feature_x_sample(
 
         features_to_drop = feature_x_sample.index & set(features_to_drop)
 
-        print(f"Dropping {feature_x_sample.index.name}: {features_to_drop} ...")
+        print(
+            "Dropping {}: {}...".format(feature_x_sample.index.name, features_to_drop)
+        )
 
         feature_x_sample.drop(features_to_drop, inplace=True)
 
-        print(f"Shape: {feature_x_sample.shape}")
+        print("Shape: {}".format(feature_x_sample.shape))
 
     if 0 < len(samples_to_drop):
 
         samples_to_drop = feature_x_sample.columns & set(samples_to_drop)
 
-        print(f"Dropping {feature_x_sample.columns.name}: {features_to_drop} ...")
+        print(
+            "Dropping {}: {}...".format(feature_x_sample.columns.name, features_to_drop)
+        )
 
         feature_x_sample.drop(samples_to_drop, axis=1, inplace=True)
 
-        print(f"Shape: {feature_x_sample.shape}")
+        print("Shape: {}".format(feature_x_sample.shape))
 
     if feature_x_sample.shape != shape_before_drop:
 
@@ -68,7 +72,7 @@ def process_feature_x_sample(
 
     if nanize is not None:
 
-        print(f"NANizing <= {nanize} ...")
+        print("NANizing <= {}...".format(nanize))
 
         feature_x_sample[feature_x_sample <= nanize] = nan
 
@@ -82,7 +86,7 @@ def process_feature_x_sample(
         or min_n_not_na_unique_value is not None
     ):
 
-        print("Dropping slice ...")
+        print("Dropping slice...")
 
         shape_before_drop = feature_x_sample.shape
 
@@ -115,7 +119,9 @@ def process_feature_x_sample(
     if log_base is not None:
 
         print(
-            f"Logging (shift_as_necessary_to_achieve_min_before_logging={shift_as_necessary_to_achieve_min_before_logging}, log_base={log_base}) ..."
+            "Logging (shift_as_necessary_to_achieve_min_before_logging={}, log_base={})...".format(
+                shift_as_necessary_to_achieve_min_before_logging, log_base
+            )
         )
 
         feature_x_sample = DataFrame(
@@ -135,7 +141,9 @@ def process_feature_x_sample(
 
     if normalization_method is not None:
 
-        print(f"Axis-{normalization_axis} {normalization_method} normalizing ...")
+        print(
+            "Axis-{} {} normalizing...".format(normalization_axis, normalization_method)
+        )
 
         feature_x_sample = normalize_series_or_dataframe(
             feature_x_sample, normalization_axis, normalization_method
@@ -147,13 +155,13 @@ def process_feature_x_sample(
 
     if clip_min is not None:
 
-        print(f"|-{clip_min} clipping  ...")
+        print("|-{} clipping...".format(clip_min))
 
         feature_x_sample.clip(lower=clip_min, inplace=True)
 
     if clip_max is not None:
 
-        print(f"{clip_max}-| clipping  ...")
+        print("{}-| clipping...".format(clip_max))
 
         feature_x_sample.clip(upper=clip_max, inplace=True)
 

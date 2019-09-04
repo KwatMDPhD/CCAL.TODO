@@ -10,7 +10,7 @@ def get_child_paths(parent_directory_path, relative=True):
 
         for directory_name in directory_names:
 
-            child_paths.append(join(directory_path, f"{directory_name}/"))
+            child_paths.append(join(directory_path, "{}/".format(directory_name)))
 
         for file_name in file_names:
 

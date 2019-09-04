@@ -62,7 +62,7 @@ def make_match_panel_summary(
 
     row_fraction = 1 / n_row
 
-    yaxis_name = f"yaxis{len(data_dicts) + 1}"
+    yaxis_name = "yaxis{}".format(len(data_dicts) + 1)
 
     domain_end = 1
 
@@ -97,7 +97,7 @@ def make_match_panel_summary(
 
     for data_index, (data_name, data_dict) in enumerate(data_dicts.items()):
 
-        print(f"Making match panel for {data_name} ...")
+        print("Making match panel for {}...".format(data_name))
 
         data_to_plot = data_dict["dataframe"].reindex(columns=target_to_plot.index)
 
@@ -119,7 +119,7 @@ def make_match_panel_summary(
 
                 data_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
 
-        yaxis_name = f"yaxis{len(data_dicts) - data_index}"
+        yaxis_name = "yaxis{}".format(len(data_dicts) - data_index)
 
         domain_end = domain_start - row_fraction
 
@@ -166,7 +166,7 @@ def make_match_panel_summary(
                 "xanchor": "center",
                 "x": 0.5,
                 "y": domain_end + (row_fraction / 2),
-                "text": f"<b>{data_name}</b>",
+                "text": "<b>{}</b>".format(data_name),
                 **layout_annotation_template,
             }
         )
@@ -185,7 +185,7 @@ def make_match_panel_summary(
                     {
                         "x": x,
                         "y": 1 - (row_fraction / 2),
-                        "text": f"<b>{annotation}</b>",
+                        "text": "<b>{}</b>".format(annotation),
                         **layout_annotation_template,
                     }
                 )
@@ -198,7 +198,7 @@ def make_match_panel_summary(
                     {
                         "x": x,
                         "y": y,
-                        "text": f"<b>{str_}</b>",
+                        "text": "<b>{}</b>".format(str_),
                         **layout_annotation_template,
                     }
                 )

@@ -7,11 +7,13 @@ def print_function_information():
 
     try:
 
-        arguments = (f"{k} = {v}" for k, v in sorted(frame_info[0].f_locals.items()))
+        arguments = (
+            "{} = {}".format(k, v) for k, v in sorted(frame_info[0].f_locals.items())
+        )
 
         separater = "\n    "
 
-        print(f"@ {frame_info[3]}{separater}{separater.join(arguments)}")
+        print("@ {}{}{}".format(frame_info[3], separater, separater.join(arguments)))
 
     finally:
 

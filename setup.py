@@ -14,7 +14,7 @@ def get_child_paths(parent_directory_path, relative=True):
 
         for directory_name in directory_names:
 
-            child_paths.append(join(directory_path, f"{directory_name}/"))
+            child_paths.append(join(directory_path, "{}/".format(directory_name)))
 
         for file_name in file_names:
 
@@ -33,7 +33,7 @@ def get_child_paths(parent_directory_path, relative=True):
 
 setup(
     name=NAME,
-    url=f"https://github.com/KwatME/{NAME}",
+    url="https://github.com/KwatME/{}".format(NAME),
     version="0.2.0",
     author="Kwat Medetgul-Ernar",
     author_email="kwatme8@gmail.com",

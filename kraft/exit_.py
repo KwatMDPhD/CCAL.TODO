@@ -5,6 +5,6 @@ from .echo_or_print_str import echo_or_print_str
 
 def exit_(exit_message):
 
-    echo_or_print_str(f"{exit_message}", fg="red")
+    echo_or_print_str(exit_message, fg="red")
 
     exit()

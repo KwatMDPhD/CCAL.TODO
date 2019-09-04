@@ -57,15 +57,15 @@ def correlate_2_vectors(
 
     if plot:
 
-        r2_p_value_str = f"R^2={r2:.3f}"
+        r2_p_value_str = "R^2={:.3f}".format(r2)
 
         if not isnan(p_value):
 
-            r2_p_value_str = f"{r2_p_value_str} & P-Value={p_value:.3e}"
+            r2_p_value_str = "{} & P-Value={:.3e}".format(r2_p_value_str, p_value)
 
-        if title_text:
+        if title_text is not None:
 
-            title_text = f"{title_text}<br>{r2_p_value_str}"
+            title_text = "{}<br>{}".format(title_text, r2_p_value_str)
 
         else:
 

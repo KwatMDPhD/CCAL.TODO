@@ -17,4 +17,4 @@ def print_header_in_terminal(str_):
 
     spacer = "=" * terminal_width
 
-    echo_or_print_str(f"{spacer}\n{str_}\n{spacer}", fg="random")
+    echo_or_print_str("{0}\n{1}\n{0}".format(spacer, str_), fg="random")

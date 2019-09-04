@@ -39,7 +39,9 @@ def plot_bubble_map(
                     "tickvals": arange(dataframe_size.shape[1]),
                     "ticktext": dataframe_size.columns,
                     "title": {
-                        "text": f"{xaxis_title_text} ({dataframe_size.shape[1]})"
+                        "text": "{} ({})".format(
+                            xaxis_title_text, dataframe_size.shape[1]
+                        )
                     },
                     **axis_template,
                 },
@@ -47,7 +49,9 @@ def plot_bubble_map(
                     "tickvals": arange(dataframe_size.shape[0]),
                     "ticktext": dataframe_size.index[::-1],
                     "title": {
-                        "text": f"{yaxis_title_text} ({dataframe_size.shape[0]})"
+                        "text": "{} ({})".format(
+                            yaxis_title_text, dataframe_size.shape[0]
+                        )
                     },
                     **axis_template,
                 },

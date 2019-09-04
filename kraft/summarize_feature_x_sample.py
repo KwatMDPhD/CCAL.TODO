@@ -16,11 +16,11 @@ def summarize_feature_x_sample(
     plot_rug_max_size=1000,
 ):
 
-    print(f"Shape: {feature_x_sample.shape}")
+    print("Shape: {}".format(feature_x_sample.shape))
 
-    print(f"Min (not-nan): {nanmin(feature_x_sample.values)}")
+    print("Min (not-nan): {}".format(nanmin(feature_x_sample.values)))
 
-    print(f"Max (not-nan): {nanmax(feature_x_sample.values)}")
+    print("Max (not-nan): {}".format(nanmax(feature_x_sample.values)))
 
     if plot:
 
@@ -38,7 +38,9 @@ def summarize_feature_x_sample(
         if plot_histogram_max_size < feature_x_sample_not_na_values.size:
 
             print(
-                f"Sampling random {plot_histogram_max_size:,} values for histogram ..."
+                "Sampling random {:,} values for histogram...".format(
+                    plot_histogram_max_size
+                )
             )
 
             feature_x_sample_not_na_values = choice(
@@ -52,7 +54,9 @@ def summarize_feature_x_sample(
         plot_histogram(
             (Series(feature_x_sample_not_na_values),),
             plot_rug=feature_x_sample_not_na_values.size < plot_rug_max_size,
-            title_text=f"{feature_x_sample_alias}<br>Histogram of {value_name}",
+            title_text="{}<br>Histogram of {}".format(
+                feature_x_sample_alias, value_name
+            ),
             xaxis_title_text=value_name,
         )
 
@@ -60,7 +64,7 @@ def summarize_feature_x_sample(
 
     n_na = isna__feature_x_sample.values.sum()
 
-    print(f"N NA: {n_na} ({n_na / feature_x_sample.size * 100:.2f}%)")
+    print("N NA: {} ({:.2f}%)".format(n_na, n_na / feature_x_sample.size * 100))
 
     if n_na and plot and isna__feature_x_sample.size < plot_histogram_max_size:
 
@@ -69,6 +73,8 @@ def summarize_feature_x_sample(
         plot_histogram(
             (isna__feature_x_sample.sum(axis=1), isna__feature_x_sample.sum()),
             plot_rug=max(isna__feature_x_sample.shape) < plot_rug_max_size,
-            title_text=f"{feature_x_sample_alias}<br>Histogram of {value_name} ",
+            title_text="{}<br>Histogram of {}".format(
+                feature_x_sample_alias, value_name
+            ),
             xaxis_title_text=value_name,
         )

@@ -13,13 +13,13 @@ def make_variant_n_from_vcf_file_path(vcf_file_path):
 
     if "PASS" in filter_column.values:
 
-        print("Using only rows with 'PASS' ...")
+        print("Using only rows with 'PASS'...")
 
         vcf = vcf[filter_column == "PASS"]
 
     else:
 
-        print("Using all rows because there is not a row with 'PASS' ...")
+        print("Using all rows because there is not a row with 'PASS'...")
 
     variant_n = value_counts(
         flatten_nested_iterable(vcf.apply(make_variant_n_from_vcf_row, axis=1))

@@ -26,7 +26,7 @@ def separate_information_x_sample(information_x_sample, bad_values=BAD_VALUES):
 
             except ValueError as exception:
 
-                print(f"{information} is not continuous ({exception}).")
+                print("{} is not continuous ({}).".format(information, exception))
 
                 is_continuous = False
 

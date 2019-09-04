@@ -34,7 +34,6 @@ def infer_assuming_independence(
         target__mesh_grid_point_x_dimension,
         target__mesh_grid_point_posterior_probability,
     )
-    print(target__probability.shape)
 
     target__dimension_grid = target__dimensino_grids[0]
 
@@ -72,11 +71,22 @@ def infer_assuming_independence(
 
         if n_dimension == 2:
 
-            title = f"P({dimension_names[1]} = {target_dimension_value_:.3f} (~{target_dimension_value}) | {dimension_names[0]})"
+            title = "P({} = {:.3f} (~{}) | {})".format(
+                dimension_names[1],
+                target_dimension_value_,
+                target_dimension_value,
+                dimension_names[0],
+            )
 
         elif n_dimension == 3:
 
-            title = f"P({dimension_names[2]} = {target_dimension_value_:.3f} (~{target_dimension_value}) | {dimension_names[0]}, {dimension_names[1]})"
+            title = "P({} = {:.3f} (~{}) | {}, {})".format(
+                dimension_names[2],
+                target_dimension_value_,
+                target_dimension_value,
+                dimension_names[0],
+                dimension_names[1],
+            )
 
         else:
 

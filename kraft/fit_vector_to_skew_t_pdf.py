@@ -28,7 +28,7 @@ def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scal
 
     if 24 < abs(shape):
 
-        print("Refitting with fixed scale ...")
+        print("Refitting with fixed scale...")
 
         keyword_arguments["fscale"] = keyword_arguments["scale"]
 
@@ -38,7 +38,7 @@ def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scal
 
         if 24 < abs(shape):
 
-            print("Refitting with fixed location ...")
+            print("Refitting with fixed location...")
 
             keyword_arguments["floc"] = keyword_arguments["loc"]
 

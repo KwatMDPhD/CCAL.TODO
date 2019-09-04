@@ -16,7 +16,7 @@ def make_binary_dataframe_from_categorical_series(
     object_x_index.index.name = series.name
 
     object_x_index.index = (
-        f"({series.name}) {object}" for object in object_x_index.index
+        "({}) {}".format(series.name, object) for object in object_x_index.index
     )
 
     return object_x_index

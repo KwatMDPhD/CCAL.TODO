@@ -75,7 +75,7 @@ def mf_consensus_cluster_dataframe_with_ks(
         ),
     ):
 
-        k_return[f"K{k}"] = {
+        k_return["K{}".format(k)] = {
             "w": w_0,
             "h": h_0,
             "e": e_0,
@@ -85,7 +85,7 @@ def mf_consensus_cluster_dataframe_with_ks(
             "h_element_cluster.ccc": h_element_cluster__ccc,
         }
 
-    keys = Index((f"K{k}" for k in ks), name="K")
+    keys = Index(("K{}".format(k) for k in ks), name="K")
 
     file_name = "mf_error.html"
 
@@ -194,12 +194,12 @@ def mf_consensus_cluster_dataframe_with_ks(
         if directory_path is not None:
 
             k_x_element.to_csv(
-                join(directory_path, f"k_x_{w_or_h}_element.tsv"), sep="\t"
+                join(directory_path, "k_x_{}_element.tsv".format(w_or_h)), sep="\t"
             )
 
         if plot_dataframe:
 
-            file_name = f"k_x_{w_or_h}_element.cluster_distribution.html"
+            file_name = "k_x_{}_element.cluster_distribution.html".format(w_or_h)
 
             if directory_path is None:
 
@@ -211,8 +211,8 @@ def mf_consensus_cluster_dataframe_with_ks(
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
-                title_text=f"MFCC {w_or_h.title()} Cluster Distribution",
-                xaxis_title_text=f"{w_or_h.title()} Element",
+                title_text="MFCC {} Cluster Distribution".format(w_or_h.title()),
+                xaxis_title_text="{} Element".format(w_or_h.title()),
                 yaxis_title_text=k_x_element.index.name,
                 html_file_path=html_file_path,
             )

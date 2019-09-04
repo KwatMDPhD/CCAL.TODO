@@ -60,13 +60,13 @@ def plot_bayesian_nomogram(
                     },
                     {
                         "type": "scatter",
-                        "name": f"P(hit = {target_hit} | {name})",
+                        "name": "P(hit = {} | {})".format(target_hit, name),
                         "x": x,
                         "y": p_th__,
                     },
                     {
                         "type": "scatter",
-                        "name": f"P(miss = {target_miss} | {name})",
+                        "name": "P(miss = {} | {})".format(target_miss, name),
                         "x": x,
                         "y": p_tm__,
                     },

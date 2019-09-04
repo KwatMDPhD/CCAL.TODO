@@ -8,4 +8,4 @@ def add_conda_to_path(conda_directory_path):
 
     environment_path = environ["PATH"]
 
-    environ["PATH"] = f"{bin_directory_path}:{environment_path}"
+    environ["PATH"] = "{}:{}".format(bin_directory_path, environment_path)
