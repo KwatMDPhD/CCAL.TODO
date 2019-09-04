@@ -7,8 +7,8 @@ from .download_url import download_url
 
 def download_url_and_extract(url, directory_path):
 
-    file_path = download_url(url, directory_path)
+    compressed_file_path = download_url(url, directory_path)
 
-    unpack_archive(file_path, extract_dir=splitext(file_path)[0])
+    unpack_archive(compressed_file_path, extract_dir=splitext(compressed_file_path)[0])
 
-    remove(file_path)
+    remove(compressed_file_path)

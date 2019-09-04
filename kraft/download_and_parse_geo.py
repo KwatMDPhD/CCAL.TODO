@@ -10,7 +10,7 @@ from .separate_information_x_sample import separate_information_x_sample
 
 def download_and_parse_geo(geo_id, directory_path):
 
-    print("Getting {} in {}...".format(geo_id, directory_path))
+    print("{} ==> {}...".format(geo_id, directory_path))
 
     gse = GEOparse.get_GEO(geo=geo_id, destdir=directory_path, silent=True)
 
@@ -159,9 +159,9 @@ def download_and_parse_geo(geo_id, directory_path):
 
             gene_x_sample.drop("NO GENE NAME", inplace=True, errors="ignore")
 
-            geo_dict["gene_x_sample"] = clean_and_write_dataframe_to_tsv(
-                gene_x_sample, "Gene", join(directory_path, "gene_x_sample.tsv")
-            )
+            gene_x_sample.index.name = "Gene"
+
+            geo_dict["gene_x_sample"] = gene_x_sample
 
         else:
 

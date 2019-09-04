@@ -16,10 +16,6 @@ def echo_or_print_str(
     reset=True,
 ):
 
-    if fg == "random":
-
-        fg = choice(("green", "yellow", "blue", "magenta", "cyan", "white"))
-
     try:
 
         secho(

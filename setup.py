@@ -3,7 +3,7 @@ from os.path import join
 
 from setuptools import setup
 
-NAME = "kraft"
+name = "kraft"
 
 
 def get_child_paths(parent_directory_path, relative=True):
@@ -32,8 +32,8 @@ def get_child_paths(parent_directory_path, relative=True):
 
 
 setup(
-    name=NAME,
-    url="https://github.com/KwatME/{}".format(NAME),
+    name=name,
+    url="https://github.com/KwatME/{}".format(name),
     version="0.2.0",
     author="Kwat Medetgul-Ernar",
     author_email="kwatme8@gmail.com",
@@ -52,8 +52,8 @@ setup(
         "GEOparse",
         "click",
     ),
-    packages=(NAME,),
+    packages=(name,),
     package_data={
-        NAME: tuple(join("data", path) for path in get_child_paths(join(NAME, "data")))
+        name: tuple(join("data", path) for path in get_child_paths(join(name, "data")))
     },
 )

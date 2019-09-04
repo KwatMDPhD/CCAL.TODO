@@ -33,10 +33,8 @@ def drop_dataframe_slice_greedily(
 
             return dataframe
 
-        else:
+        shape_before = shape_after
 
-            shape_before = shape_after
+        axis = (axis + 1) % 2
 
-            axis = (axis + 1) % 2
-
-            check_for_return = True
+        check_for_return = True

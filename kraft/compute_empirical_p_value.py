@@ -23,10 +23,12 @@ def compute_empirical_p_value(
 
         n_significant_random_value = (value <= random_values_good).sum()
 
+    n_random_values_good = random_values_good.size
+
     if n_significant_random_value == 0:
 
-        return 1 / random_values_good
+        return 1 / n_random_values_good
 
     else:
 
-        return n_significant_random_value / random_values_good
+        return n_significant_random_value / n_random_values_good
