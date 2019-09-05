@@ -1,6 +1,7 @@
-from .read_matrix_market import read_matrix_market
 from os.path import join
+
 from .process_feature_x_sample import process_feature_x_sample
+from .read_matrix_market import read_matrix_market
 
 
 def read_gene_x_cell(
