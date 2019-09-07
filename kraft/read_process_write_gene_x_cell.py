@@ -90,8 +90,6 @@ def read_process_write_gene_x_cell(
             yaxis={"title": {"text": "Fraction Gene"}},
         )
 
-    print("Selected {} cells.".format(cells.size))
-
     gene_x_cell__clean__log.loc[genes, cells].to_csv(
         output_file_path.replace(".tsv", ".clean.log.selected.tsv"), sep="\t"
     )

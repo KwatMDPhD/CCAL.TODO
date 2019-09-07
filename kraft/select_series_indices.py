@@ -145,7 +145,13 @@ def select_series_indices(
 
         plot_plotly_figure(
             {
-                "layout": {"title": title, "xaxis": xaxis, "yaxis": yaxis},
+                "layout": {
+                    "title": "{}<br>Selected {}/{}".format(
+                        title, is_selected.sum(), series_no_na_sorted
+                    ),
+                    "xaxis": xaxis,
+                    "yaxis": yaxis,
+                },
                 "data": [
                     {
                         "type": "scatter",
