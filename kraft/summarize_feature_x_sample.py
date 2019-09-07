@@ -9,7 +9,6 @@ from .plot_histogram import plot_histogram
 def summarize_feature_x_sample(
     feature_x_sample,
     feature_x_sample_alias="Feature-x-Sample",
-    feature_x_sample_value_name="Value",
     plot=True,
     plot_heat_map_max_size=1000000,
     plot_histogram_max_size=1000000,
@@ -18,13 +17,13 @@ def summarize_feature_x_sample(
 
     print("Shape: {}".format(feature_x_sample.shape))
 
-    print("Min (not-nan): {}".format(nanmin(feature_x_sample.values)))
+    print("Not-NaN min: {}".format(nanmin(feature_x_sample.values)))
 
-    print("Max (not-nan): {}".format(nanmax(feature_x_sample.values)))
+    print("Not-NaN max: {}".format(nanmax(feature_x_sample.values)))
 
     if plot:
 
-        if feature_x_sample.size < plot_heat_map_max_size:
+        if feature_x_sample.size <= plot_heat_map_max_size:
 
             plot_heat_map(
                 feature_x_sample,
@@ -38,7 +37,7 @@ def summarize_feature_x_sample(
         if plot_histogram_max_size < feature_x_sample_not_na_values.size:
 
             print(
-                "Sampling random {:,} values for histogram...".format(
+                "Sampling random {} values for histogram...".format(
                     plot_histogram_max_size
                 )
             )
@@ -49,32 +48,24 @@ def summarize_feature_x_sample(
                 replace=False,
             )
 
-        value_name = "Not-NA Value"
-
         plot_histogram(
             (Series(feature_x_sample_not_na_values),),
-            plot_rug=feature_x_sample_not_na_values.size < plot_rug_max_size,
-            title_text="{}<br>Histogram of {}".format(
-                feature_x_sample_alias, value_name
-            ),
-            xaxis_title_text=value_name,
+            plot_rug=feature_x_sample_not_na_values.size <= plot_rug_max_size,
+            title_text=feature_x_sample_alias,
+            xaxis_title_text="Not-NA Value",
         )
 
     isna__feature_x_sample = feature_x_sample.isna()
 
     n_na = isna__feature_x_sample.values.sum()
 
-    print("N NA: {} ({:.2f}%)".format(n_na, n_na / feature_x_sample.size * 100))
+    print("% NA: {}".format(n_na / feature_x_sample.size * 100))
 
-    if n_na and plot and isna__feature_x_sample.size < plot_histogram_max_size:
-
-        value_name = "N NA"
+    if n_na and plot and isna__feature_x_sample.size <= plot_histogram_max_size:
 
         plot_histogram(
             (isna__feature_x_sample.sum(axis=1), isna__feature_x_sample.sum()),
-            plot_rug=max(isna__feature_x_sample.shape) < plot_rug_max_size,
-            title_text="{}<br>Histogram of {}".format(
-                feature_x_sample_alias, value_name
-            ),
-            xaxis_title_text=value_name,
+            plot_rug=max(isna__feature_x_sample.shape) <= plot_rug_max_size,
+            title_text=feature_x_sample_alias,
+            xaxis_title_text="N NA",
         )

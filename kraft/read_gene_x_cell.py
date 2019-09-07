@@ -18,6 +18,8 @@ def read_gene_x_cell(
 
     gene_x_cell = gene_x_cell.groupby(level=0).median()
 
+    return gene_x_cell
+
     output_file_path = join(output_directory_path, "gene_x_cell.tsv")
 
     gene_x_cell.to_csv(output_file_path, sep="\t")
@@ -32,12 +34,10 @@ def read_gene_x_cell(
         plot=True,
     )
 
-    return gene_x_cell__clean__log
+    gene_x_cell__clean__log.to_csv(
+        output_file_path.replace(".tsv", ".clean.log.tsv"), sep="\t"
+    )
 
-    # gene_x_cell__clean__log.to_csv(
-    #     output_file_path.replace(".tsv", ".clean.log.tsv"), sep="\t"
-    # )
-
-    # gene_x_cell__clean__log.fillna(0).to_csv(
-    #     output_file_path.replace(".tsv", ".clean.log.na0.tsv"), sep="\t"
-    # )
+    gene_x_cell__clean__log.fillna(0).to_csv(
+        output_file_path.replace(".tsv", ".clean.log.na0.tsv"), sep="\t"
+    )
