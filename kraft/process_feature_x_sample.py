@@ -42,7 +42,7 @@ def process_feature_x_sample(
 
     if 0 < len(features_to_drop):
 
-        features_to_drop = feature_x_sample.index & set(features_to_drop)
+        features_to_drop = set(features_to_drop) & feature_x_sample.index
 
         print(
             "Dropping {}: {}...".format(feature_x_sample.index.name, features_to_drop)
@@ -54,10 +54,10 @@ def process_feature_x_sample(
 
     if 0 < len(samples_to_drop):
 
-        samples_to_drop = feature_x_sample.columns & set(samples_to_drop)
+        samples_to_drop = set(samples_to_drop) & feature_x_sample.columns
 
         print(
-            "Dropping {}: {}...".format(feature_x_sample.columns.name, features_to_drop)
+            "Dropping {}: {}...".format(feature_x_sample.columns.name, samples_to_drop)
         )
 
         feature_x_sample.drop(samples_to_drop, axis=1, inplace=True)
@@ -92,23 +92,19 @@ def process_feature_x_sample(
 
         if drop_axis is None:
 
-            feature_x_sample = drop_dataframe_slice_greedily(
-                feature_x_sample,
-                drop_axis,
-                max_na=max_na,
-                min_n_not_na_value=min_n_not_na_value,
-                min_n_not_na_unique_value=min_n_not_na_unique_value,
-            )
+            drop_function = drop_dataframe_slice_greedily
 
         else:
 
-            feature_x_sample = drop_dataframe_slice(
-                feature_x_sample,
-                drop_axis,
-                max_na=max_na,
-                min_n_not_na_value=min_n_not_na_value,
-                min_n_not_na_unique_value=min_n_not_na_unique_value,
-            )
+            drop_function = drop_dataframe_slice
+
+        feature_x_sample = drop_function(
+            feature_x_sample,
+            drop_axis,
+            max_na=max_na,
+            min_n_not_na_value=min_n_not_na_value,
+            min_n_not_na_unique_value=min_n_not_na_unique_value,
+        )
 
         if feature_x_sample.shape != shape_before_drop:
 
@@ -153,19 +149,11 @@ def process_feature_x_sample(
             feature_x_sample, **summarize_feature_x_sample_keyword_arguments
         )
 
-    if clip_min is not None:
-
-        print("|-{} clipping...".format(clip_min))
-
-        feature_x_sample.clip(lower=clip_min, inplace=True)
-
-    if clip_max is not None:
-
-        print("{}-| clipping...".format(clip_max))
-
-        feature_x_sample.clip(upper=clip_max, inplace=True)
-
     if clip_min is not None or clip_max is not None:
+
+        print("Clipping |{} - {}|...".format(clip_min, clip_max))
+
+        feature_x_sample.clip(lower=clip_min, upper=clip_max, inplace=True)
 
         summarize_feature_x_sample(
             feature_x_sample, **summarize_feature_x_sample_keyword_arguments

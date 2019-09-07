@@ -1,24 +1,34 @@
+from pandas import DataFrame, read_csv
 from os.path import join
-
+from scipy.io import mmread
 from .process_feature_x_sample import process_feature_x_sample
-from .read_matrix_market import read_matrix_market
 
 
 def read_gene_x_cell(
-    mtx_file_path, genes_file_path, barcodes_file_path, output_directory_path
+    mtx_file_path, index_file_path, column_file_path, output_directory_path
 ):
 
-    gene_x_cell = read_matrix_market(
-        mtx_file_path,
-        genes_file_path,
-        barcodes_file_path,
-        index_name="Gene",
-        column_name="Cell",
+    gene_x_cell = DataFrame(
+        mmread(mtx_file_path).toarray(),
+        index=read_csv(index_file_path, sep="\t", header=None).iloc[:, 1],
+        columns=read_csv(column_file_path, sep="\t", header=None, squeeze=True),
     )
 
-    gene_x_cell = gene_x_cell.groupby(level=0).median()
+    gene_x_cell.index.name = "Gene"
 
-    return gene_x_cell
+    if gene_x_cell.index.has_duplicates:
+
+        print("Gene duplicated; merging duplicates with median...")
+
+        gene_x_cell = gene_x_cell.groupby(level=0).median()
+
+    gene_x_cell.columns.name = "Cell"
+
+    if gene_x_cell.columns.has_duplicates:
+
+        print("Cell duplicated.")
+
+    gene_x_cell = gene_x_cell.sort_index().sort_index(axis=1)
 
     output_file_path = join(output_directory_path, "gene_x_cell.tsv")
 
@@ -28,10 +38,9 @@ def read_gene_x_cell(
         gene_x_cell,
         nanize=0,
         min_n_not_na_value=3,
-        min_n_not_na_unique_value=1,
         shift_as_necessary_to_achieve_min_before_logging=1,
         log_base=2,
-        plot=True,
+        plot=False,
     )
 
     gene_x_cell__clean__log.to_csv(
