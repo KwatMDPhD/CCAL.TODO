@@ -29,13 +29,15 @@ def read_gene_x_cell(
         min_n_not_na_unique_value=1,
         shift_as_necessary_to_achieve_min_before_logging=1,
         log_base=2,
-        plot=False,
+        plot=True,
     )
 
-    gene_x_cell__clean__log.to_csv(
-        output_file_path.replace(".tsv", ".clean.log.tsv"), sep="\t"
-    )
+    return gene_x_cell__clean__log
 
-    gene_x_cell__clean__log.fillna(0).to_csv(
-        output_file_path.replace(".tsv", ".clean.log.na0.tsv"), sep="\t"
-    )
+    # gene_x_cell__clean__log.to_csv(
+    #     output_file_path.replace(".tsv", ".clean.log.tsv"), sep="\t"
+    # )
+
+    # gene_x_cell__clean__log.fillna(0).to_csv(
+    #     output_file_path.replace(".tsv", ".clean.log.na0.tsv"), sep="\t"
+    # )

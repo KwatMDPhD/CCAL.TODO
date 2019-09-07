@@ -63,6 +63,7 @@ from .get_colormap_colors import get_colormap_colors
 from .get_conda_environments import get_conda_environments
 from .get_conda_prefix import get_conda_prefix
 from .get_data_type import get_data_type
+from .get_dataframe_slice_fraction_good import get_dataframe_slice_fraction_good
 from .get_gff3_attribute import get_gff3_attribute
 from .get_git_versions import get_git_versions
 from .get_intersections_between_2_vectors import get_intersections_between_2_vectors
@@ -171,6 +172,7 @@ from .select_and_group_feature_x_tcga_sample_by_sample_type import (
     select_and_group_feature_x_tcga_sample_by_sample_type,
 )
 from .select_gene_symbol import select_gene_symbol
+from .select_gene_x_cell import select_gene_x_cell
 from .select_series_indices import select_series_indices
 from .separate_information_x_sample import separate_information_x_sample
 from .shuffle_each_matrix_slice import shuffle_each_matrix_slice
