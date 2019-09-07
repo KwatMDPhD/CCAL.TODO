@@ -124,11 +124,11 @@ from .plot_scatter_and_annotate import plot_scatter_and_annotate
 from .print_function_information import print_function_information
 from .print_header_in_terminal import print_header_in_terminal
 from .process_feature_x_sample import process_feature_x_sample
-from .read_gene_x_cell import read_gene_x_cell
 from .read_gff3 import read_gff3
 from .read_gmt import read_gmt
 from .read_gps_map import read_gps_map
 from .read_json import read_json
+from .read_process_write_gene_x_cell import read_process_write_gene_x_cell
 from .read_where_and_map_column_name_on_hdf5_table import read_where_and_map_column_name_on_hdf5_table
 from .remove_path import remove_path
 from .rescale_x_y_coordiantes_in_polar_coordiante import rescale_x_y_coordiantes_in_polar_coordiante
@@ -137,7 +137,6 @@ from .sample_from_each_series_value import sample_from_each_series_value
 from .scale_point_x_dimension_dimension import scale_point_x_dimension_dimension
 from .select_and_group_feature_x_tcga_sample_by_sample_type import select_and_group_feature_x_tcga_sample_by_sample_type
 from .select_gene_symbol import select_gene_symbol
-from .select_gene_x_cell import select_gene_x_cell
 from .select_series_indices import select_series_indices
 from .separate_information_x_sample import separate_information_x_sample
 from .shuffle_each_matrix_slice import shuffle_each_matrix_slice
