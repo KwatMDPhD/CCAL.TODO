@@ -10,7 +10,7 @@ def download_url(url, directory_path):
 
     print("{} =(download)=> {}...".format(url, file_path))
 
-    with open(file_path, "wb") as io:
+    with open(file_path, mode="wb") as io:
 
         io.write(get(url, allow_redirects=True).content)
 

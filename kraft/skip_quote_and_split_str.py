@@ -8,7 +8,11 @@ def skip_quote_and_split_str(str_, separator):
 
         if '"' in str_split:
 
-            if part:
+            if part == "":
+
+                part = str_split
+
+            else:
 
                 part += str_split
 
@@ -16,21 +20,17 @@ def skip_quote_and_split_str(str_, separator):
 
                 part = ""
 
-            else:
-
-                part = str_split
-
         else:
 
-            if part:
-
-                part += str_split
-
-            else:
+            if part == "":
 
                 splits.append(str_split)
 
-    if part:
+            else:
+
+                part += str_split
+
+    if part != "":
 
         splits.append(part)
 

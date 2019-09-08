@@ -59,7 +59,7 @@ def summarize_feature_x_sample(
 
     n_na = isna__feature_x_sample.values.sum()
 
-    print("% NA: {}".format(n_na / feature_x_sample.size * 100))
+    print("% NA: {:.3f}".format(n_na / feature_x_sample.size * 100))
 
     if n_na and plot and isna__feature_x_sample.size <= plot_histogram_max_size:
 

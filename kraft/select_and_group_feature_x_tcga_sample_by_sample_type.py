@@ -9,7 +9,7 @@ def select_and_group_feature_x_tcga_sample_by_sample_type(
         :, feature_x_tcga_sample.columns.str[13:15] == sample_type
     ]
 
-    print("{}: sample_type_selected".format(sample_type_selected.shape))
+    print("sample_type_selected.shape: {}".format(sample_type_selected.shape))
 
     duplicated = sample_type_selected.columns.str[:12].duplicated(keep=False)
 
@@ -20,20 +20,22 @@ def select_and_group_feature_x_tcga_sample_by_sample_type(
     ]
 
     print(
-        "{}: sample_type_selected_not_duplicated".format(
+        "sample_type_selected_not_duplicated.shape: {}".format(
             sample_type_selected_not_duplicated.shape
         )
     )
 
     sample_type_selected_duplicated = sample_type_selected.loc[:, duplicated]
 
-    if sample_type_selected_duplicated.size:
+    if not sample_type_selected_duplicated.empty:
 
         print(
-            "{}: sample_type_selected_duplicated".format(
+            "sample_type_selected_duplicated.shape: {}".format(
                 sample_type_selected_duplicated.shape
             )
         )
+
+        print("Merging duplicates with median...")
 
         sample_type_selected_duplicated = sample_type_selected_duplicated.groupby(
             by=sample_type_selected_duplicated.columns.str[:12], axis=1

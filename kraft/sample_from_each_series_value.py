@@ -24,8 +24,8 @@ def sample_from_each_series_value(series, n_per_value=None, random_seed=RANDOM_S
         else:
 
             print(
-                "Not sampling {}, which appears less than {} times.".format(
-                    group_name, n_per_value
+                "There is not enough {} to sample without replacement.".format(
+                    group_name
                 )
             )
 

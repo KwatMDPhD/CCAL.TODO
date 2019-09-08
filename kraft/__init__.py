@@ -168,7 +168,7 @@ from .rescale_x_y_coordiantes_in_polar_coordiante import (
 )
 from .run_command import run_command
 from .sample_from_each_series_value import sample_from_each_series_value
-from .scale_point_x_dimension_dimension import scale_point_x_dimension_dimension
+from .scale_element_x_dimension_dimension import scale_element_x_dimension_dimension
 from .select_and_group_feature_x_tcga_sample_by_sample_type import (
     select_and_group_feature_x_tcga_sample_by_sample_type,
 )

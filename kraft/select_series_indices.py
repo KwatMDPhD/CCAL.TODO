@@ -36,7 +36,7 @@ def select_series_indices(
 
         elif direction == "<>":
 
-            fraction = min(fraction, 0.5)
+            fraction = min(fraction, 1 / 2)
 
     if direction == "<":
 
@@ -122,7 +122,7 @@ def select_series_indices(
 
             else:
 
-                thresholds = (None, None)
+                thresholds = (None,) * 2
 
         is_selected = (series_no_na_sorted <= thresholds[0]) | (
             thresholds[1] <= series_no_na_sorted

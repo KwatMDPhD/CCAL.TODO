@@ -10,7 +10,7 @@ def shuffle_each_matrix_slice(
 
     check_array_for_bad(matrix, raise_for_bad=raise_for_bad)
 
-    matrix = matrix.copy()
+    matrix_ = matrix.copy()
 
     seed(seed=random_seed)
 
@@ -18,12 +18,12 @@ def shuffle_each_matrix_slice(
 
         for i in range(matrix.shape[1]):
 
-            shuffle(matrix[:, i])
+            shuffle(matrix_[:, i])
 
     elif axis == 1:
 
         for i in range(matrix.shape[0]):
 
-            shuffle(matrix[i, :])
+            shuffle(matrix_[i, :])
 
-    return matrix
+    return matrix_

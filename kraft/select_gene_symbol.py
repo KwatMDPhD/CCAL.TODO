@@ -54,7 +54,7 @@ def select_gene_symbol(
     )
 
     print(
-        "Removing {}/{} by gene family name...".format(
+        "Removing {}/{} Gene Family Name...".format(
             remove_by_gene_family_name.sum(), remove_by_gene_family_name.size
         )
     )
@@ -68,18 +68,16 @@ def select_gene_symbol(
     )
 
     print(
-        "Keeping {}/{} by locus type...".format(
+        "Keeping {}/{} Locus Type...".format(
             keep_by_locus_type.sum(), keep_by_locus_type.size
         )
     )
 
-    remove = remove_by_gene_family_name | ~keep_by_locus_type
-
-    print("Removing {}...".format(remove.sum()))
+    is_removed = remove_by_gene_family_name | ~keep_by_locus_type
 
     for column_name in ("Gene Family Name", "Locus Type"):
 
-        dataframe = hgnc.loc[remove, column_name].value_counts().to_frame()
+        dataframe = hgnc.loc[is_removed, column_name].value_counts().to_frame()
 
         dataframe.index.name = column_name
 
@@ -88,7 +86,7 @@ def select_gene_symbol(
         print(dataframe)
 
     gene_symbols = (
-        hgnc.loc[~remove, ["Approved Symbol", "Previous Symbols"]]
+        hgnc.loc[~is_removed, ["Approved Symbol", "Previous Symbols"]]
         .unstack()
         .dropna()
         .unique()

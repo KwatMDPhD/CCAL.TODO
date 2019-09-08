@@ -46,7 +46,7 @@ from .pick_colors import pick_colors
 from .plot_heat_map import plot_heat_map
 from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
-from .scale_point_x_dimension_dimension import scale_point_x_dimension_dimension
+from .scale_element_x_dimension_dimension import scale_element_x_dimension_dimension
 from .train_and_classify import train_and_classify
 from .unmesh import unmesh
 
@@ -683,7 +683,7 @@ class GPSMap:
         if self.node_x_dimension is None:
 
             self.node_x_dimension = normalize_array(
-                scale_point_x_dimension_dimension(
+                scale_element_x_dimension_dimension(
                     2,
                     distance__point_x_point=self.distance__node_x_node,
                     random_seed=mds_random_seed,

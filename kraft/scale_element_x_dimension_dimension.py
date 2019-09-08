@@ -4,7 +4,7 @@ from sklearn.manifold import MDS
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def scale_point_x_dimension_dimension(
+def scale_element_x_dimension_dimension(
     n_target_dimension,
     point_x_dimension=None,
     distance__point_x_point=None,
@@ -31,13 +31,13 @@ def scale_point_x_dimension_dimension(
 
     if distance__point_x_point is None and not callable(distance_function):
 
-        mds_ = MDS(dissimilarity=distance_function, **keyword_arguments)
+        mds = MDS(dissimilarity=distance_function, **keyword_arguments)
 
-        point_x_target_dimension = mds_.fit_transform(point_x_dimension)
+        point_x_target_dimension = mds.fit_transform(point_x_dimension)
 
     else:
 
-        mds_ = MDS(dissimilarity="precomputed", **keyword_arguments)
+        mds = MDS(dissimilarity="precomputed", **keyword_arguments)
 
         if distance__point_x_point is None:
 
@@ -45,6 +45,6 @@ def scale_point_x_dimension_dimension(
                 pdist(point_x_dimension, distance_function)
             )
 
-        point_x_target_dimension = mds_.fit_transform(distance__point_x_point)
+        point_x_target_dimension = mds.fit_transform(distance__point_x_point)
 
     return point_x_target_dimension

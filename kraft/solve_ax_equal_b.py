@@ -3,7 +3,7 @@ from numpy.linalg import pinv
 from scipy.optimize import nnls
 
 
-def solve_ax_equal_b(a, b, method="pinv"):
+def solve_ax_equal_b(a, b, method):
 
     if method == "pinv":
 
