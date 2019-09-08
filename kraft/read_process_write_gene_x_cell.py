@@ -1,11 +1,11 @@
 from os.path import join
 
+from numpy import nan
 from pandas import DataFrame, read_csv
 from scipy.io import mmread
 
 from .process_feature_x_sample import process_feature_x_sample
 from .select_series_indices import select_series_indices
-from numpy import nan
 
 
 def _get_dataframe_slice_fraction_good(dataframe, axis, bads=()):
