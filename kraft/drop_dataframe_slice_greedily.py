@@ -15,7 +15,7 @@ def drop_dataframe_slice_greedily(
 
         axis = int(dataframe.shape[0] < dataframe.shape[1])
 
-    check_for_return = False
+    can_return = False
 
     while True:
 
@@ -29,7 +29,7 @@ def drop_dataframe_slice_greedily(
 
         shape_after = dataframe.shape
 
-        if check_for_return and shape_before == shape_after:
+        if can_return and shape_before == shape_after:
 
             return dataframe
 
@@ -37,4 +37,4 @@ def drop_dataframe_slice_greedily(
 
         axis = (axis + 1) % 2
 
-        check_for_return = True
+        can_return = True

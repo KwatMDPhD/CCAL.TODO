@@ -32,7 +32,7 @@ def drop_dataframe_slice(
     if min_n_not_na_value is not None:
 
         dropped |= dataframe.apply(
-            lambda series: series[~series.isna()].size < min_n_not_na_value,
+            lambda series: (~series.isna()).sum() < min_n_not_na_value,
             axis=axis_for_applying,
         )
 
