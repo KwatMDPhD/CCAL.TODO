@@ -24,7 +24,9 @@ def plot_heat_map(
     html_file_path=None,
 ):
 
-    heat_map_axis_template = {"domain": (0, 0.9), "zeroline": False, "showgrid": False}
+    axis_template = {"zeroline": False, "showgrid": False}
+
+    heat_map_axis_template = {"domain": (0, 0.9), **axis_template}
 
     if heat_map_xaxis is None:
 
@@ -44,10 +46,9 @@ def plot_heat_map(
 
     annotation_axis_template = {
         "domain": (0.92, 1),
-        "zeroline": False,
-        "showgrid": False,
         "ticks": "",
         "showticklabels": False,
+        **axis_template,
     }
 
     if annotation_axis is None:
@@ -59,11 +60,11 @@ def plot_heat_map(
         annotation_axis = {**annotation_axis_template, **annotation_axis}
 
     layout_template = {
-        "height": 880,
-        "width": 880,
+        "height": 640,
+        "width": 640,
         "xaxis": heat_map_xaxis,
-        "yaxis": heat_map_yaxis,
         "xaxis2": annotation_axis,
+        "yaxis": heat_map_yaxis,
         "yaxis2": annotation_axis,
         "annotations": [],
     }
@@ -138,15 +139,13 @@ def plot_heat_map(
 
             for i in unique(row_annotations):
 
-                indices = nonzero(row_annotations == i)[0]
-
-                index_0 = indices[0]
+                index_first, index_last = nonzero(row_annotations == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
                         "xref": "x2",
                         "x": 0,
-                        "y": index_0 + (indices[-1] - index_0) / 2,
+                        "y": index_first + (index_last - index_first) / 2,
                         "text": "<b>{}</b>".format(row_annotation_str[i]),
                         **row_annotation,
                     }
@@ -186,14 +185,12 @@ def plot_heat_map(
 
             for i in unique(column_annotations):
 
-                indices = nonzero(column_annotations == i)[0]
-
-                index_0 = indices[0]
+                index_first, index_last = nonzero(column_annotations == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
                         "yref": "y2",
-                        "x": index_0 + (indices[-1] - index_0) / 2,
+                        "x": index_first + (index_last - index_first) / 2,
                         "y": 0,
                         "text": "<b>{}</b>".format(column_annotation_str[i]),
                         **column_annotation,

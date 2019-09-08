@@ -1,12 +1,19 @@
-from numpy import arange
-
-from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_histogram(
     serieses, histnorm="", plot_rug=None, layout=None, xaxis=None, html_file_path=None
 ):
+
+    xaxis_template = {"anchor": "y"}
+
+    if xaxis is None:
+
+        xaxis = xaxis_template
+
+    else:
+
+        xaxis = {**xaxis_template, **xaxis}
 
     if plot_rug is None:
 
@@ -24,13 +31,29 @@ def plot_histogram(
 
         yaxis2_min = 0
 
+    layout_template = {
+        "xaxis": xaxis,
+        "yaxis": {
+            "domain": (0, yaxis_max),
+            "dtick": 1,
+            "zeroline": False,
+            "showticklabels": False,
+        },
+        "yaxis2": {"domain": (yaxis2_min, 1), "title": {"text": histnorm.title()}},
+        "barmode": "overlay",
+    }
+
+    if layout is None:
+
+        layout = layout_template
+
+    else:
+
+        layout = {**layout_template, **layout}
+
     data = []
 
-    colors = pick_colors(arange(len(serieses)))
-
     for i, series in enumerate(serieses):
-
-        color = colors[i]
 
         data.append(
             {
@@ -40,8 +63,6 @@ def plot_histogram(
                 "legendgroup": series.name,
                 "x": series,
                 "histnorm": histnorm,
-                "marker": {"color": color},
-                "opacity": 0.8,
             }
         )
 
@@ -56,28 +77,8 @@ def plot_histogram(
                     "y": (i,) * series.size,
                     "text": series.index,
                     "mode": "markers",
-                    "marker": {"symbol": "line-ns-open", "color": color},
+                    "marker": {"symbol": "line-ns-open"},
                 }
             )
 
-    plot_plotly_figure(
-        {
-            "layout": {
-                "xaxis": {"anchor": "y", **xaxis},
-                "yaxis": {
-                    "domain": (0, yaxis_max),
-                    "dtick": 1,
-                    "zeroline": False,
-                    "showticklabels": False,
-                },
-                "yaxis2": {
-                    "domain": (yaxis2_min, 1),
-                    "title": {"text": histnorm.title()},
-                },
-                "barmode": "overlay",
-                **layout,
-            },
-            "data": data,
-        },
-        html_file_path,
-    )
+    plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
