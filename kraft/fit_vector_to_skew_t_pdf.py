@@ -6,11 +6,11 @@ from .check_array_for_bad import check_array_for_bad
 
 def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scale=None):
 
-    vector = vector[~check_array_for_bad(vector, raise_for_bad=False)]
+    vector_good = vector[~check_array_for_bad(vector, raise_for_bad=False)]
 
     keyword_arguments = {}
 
-    mean = vector.mean()
+    mean = vector_good.mean()
 
     if abs(mean) <= ALMOST_ZERO:
 
@@ -18,12 +18,12 @@ def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scal
 
     keyword_arguments["loc"] = mean
 
-    keyword_arguments["scale"] = vector.std() / 2
+    keyword_arguments["scale"] = vector_good.std() / 2
 
     skew_t_model = ACSkewT_gen()
 
     degree_of_freedom, shape, location, scale = skew_t_model.fit(
-        vector, **keyword_arguments
+        vector_good, **keyword_arguments
     )
 
     if 24 < abs(shape):
@@ -33,7 +33,7 @@ def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scal
         keyword_arguments["fscale"] = keyword_arguments["scale"]
 
         degree_of_freedom, shape, location, scale = skew_t_model.fit(
-            vector, **keyword_arguments
+            vector_good, **keyword_arguments
         )
 
         if 24 < abs(shape):
@@ -43,7 +43,7 @@ def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scal
             keyword_arguments["floc"] = keyword_arguments["loc"]
 
             degree_of_freedom, shape, location, scale = skew_t_model.fit(
-                vector, **keyword_arguments
+                vector_good, **keyword_arguments
             )
 
-    return vector.size, location, scale, degree_of_freedom, shape
+    return vector_good.size, location, scale, degree_of_freedom, shape

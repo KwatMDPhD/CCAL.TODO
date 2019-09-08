@@ -30,4 +30,4 @@ def establish_path(path, path_type):
 
         mkdir(directory_path)
 
-        print("Created directory {}.".format(directory_path))
+        print("Made directory {}.".format(directory_path))
