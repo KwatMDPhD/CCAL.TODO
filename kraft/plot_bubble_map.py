@@ -23,10 +23,12 @@ def plot_bubble_map(
 
     mesh_grid_x, mesh_grid_y = meshgrid(x_grid, y_grid)
 
+    axis_template = {"zeroline": False}
+
     xaxis_template = {
-        "zeroline": False,
         "tickvals": x_grid,
         "ticktext": dataframe_size.columns,
+        **axis_template,
     }
 
     if xaxis is None:
@@ -38,9 +40,9 @@ def plot_bubble_map(
         xaxis = {**xaxis_template, **xaxis}
 
     yaxis_template = {
-        "zeroline": False,
         "tickvals": y_grid,
         "ticktext": dataframe_size.index,
+        **axis_template,
     }
 
     if yaxis is None:
@@ -51,9 +53,11 @@ def plot_bubble_map(
 
         yaxis = {**yaxis_template, **yaxis}
 
+    bubble_size = marker_size_max * 2
+
     layout_template = {
-        "height": max(640, marker_size_max * 2 * y_grid.size),
-        "width": max(640, marker_size_max * 2 * x_grid.size),
+        "height": max(640, bubble_size * y_grid.size),
+        "width": max(640, bubble_size * x_grid.size),
         "xaxis": xaxis,
         "yaxis": yaxis,
     }
@@ -89,9 +93,7 @@ def plot_bubble_map(
                         "colorscale": make_colorscale_from_colors(
                             pick_colors(dataframe_color)
                         ),
-                        "showscale": True,
                         "colorbar": colorbar,
-                        "line": {"color": "#000000"},
                     },
                 }
             ],

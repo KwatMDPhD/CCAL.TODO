@@ -25,8 +25,8 @@ def plot_context(
     y_max_is_pdf_max=False,
     n_bin=None,
     plot_rug=None,
-    title_text=None,
-    xaxis_title_text=None,
+    layout=None,
+    xaxis=None,
     html_file_path=None,
 ):
 
@@ -105,7 +105,6 @@ def plot_context(
         yaxis2_min = 0
 
     layout = {
-        "title": {"text": title_text},
         "xaxis": {"anchor": "y", "title": {"text": xaxis_title_text}},
         "yaxis": {
             "domain": (0, yaxis_max),
@@ -115,6 +114,7 @@ def plot_context(
         },
         "yaxis2": {"domain": (yaxis2_min, 1)},
         "legend": {"orientation": "h", "xanchor": "center", "x": 0.5, "y": -0.2},
+        **layout,
     }
 
     annotations = []

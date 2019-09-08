@@ -5,12 +5,7 @@ from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_histogram(
-    serieses,
-    histnorm="",
-    plot_rug=None,
-    title_text=None,
-    xaxis_title_text=None,
-    html_file_path=None,
+    serieses, histnorm="", plot_rug=None, layout=None, xaxis=None, html_file_path=None
 ):
 
     if plot_rug is None:
@@ -68,8 +63,7 @@ def plot_histogram(
     plot_plotly_figure(
         {
             "layout": {
-                "title": {"text": title_text},
-                "xaxis": {"anchor": "y", "title": {"text": xaxis_title_text}},
+                "xaxis": {"anchor": "y", **xaxis},
                 "yaxis": {
                     "domain": (0, yaxis_max),
                     "dtick": 1,
@@ -81,6 +75,7 @@ def plot_histogram(
                     "title": {"text": histnorm.title()},
                 },
                 "barmode": "overlay",
+                **layout,
             },
             "data": data,
         },

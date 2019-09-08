@@ -8,7 +8,6 @@ from .unmesh import unmesh
 def plot_mesh_grid(
     mesh_grid_point_x_dimension,
     mesh_grid_point_value,
-    title_text=None,
     dimension_names=None,
 ):
 
@@ -63,9 +62,9 @@ def plot_mesh_grid(
                 index=("{:.3f} *".format(i) for i in dimension_grids[0]),
                 columns=("* {:.3f}".format(i) for i in dimension_grids[1]),
             ),
-            title_text=title_text,
-            xaxis_title_text=dimension_names[1],
-            yaxis_title_text=dimension_names[0],
+            title={"text": title_text},
+            xaxis={"title": {"text": dimension_names[1]}},
+            yaxis={"title": {"text": dimension_names[0]}},
         )
 
     else:
