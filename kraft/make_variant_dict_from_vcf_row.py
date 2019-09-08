@@ -38,7 +38,7 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
             info_without_field.append(info)
 
-    if len(info_without_field):
+    if 0 < len(info_without_field):
 
         variant_dict["INFO_without_field"] = ";".join(info_without_field)
 

@@ -16,8 +16,4 @@ def merge_2_dicts_with_function(dict_0, dict_1, function):
 
             dict_[key] = dict_1[key]
 
-        else:
-
-            raise ValueError("dict_0 or dict_1 changed during iteration.")
-
     return dict_
