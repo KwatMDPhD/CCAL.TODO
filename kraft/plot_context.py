@@ -1,13 +1,11 @@
 from numpy import absolute, nanmax
-from pandas import Series
 
 from .compute_vector_context import compute_vector_context
 from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_context(
-    _vector_or_series,
-    text=None,
+    series,
     n_data=None,
     location=None,
     scale=None,
@@ -24,34 +22,13 @@ def plot_context(
     global_shape=None,
     y_max_is_pdf_max=False,
     n_bin=None,
-    plot_rug=None,
     layout=None,
     xaxis=None,
     html_file_path=None,
 ):
 
-    if isinstance(_vector_or_series, Series):
-
-        if title_text is None:
-
-            title_text = _vector_or_series.name
-
-        if xaxis_title_text is None:
-
-            xaxis_title_text = "Value"
-
-        if text is None:
-
-            text = _vector_or_series.index
-
-        vector = _vector_or_series.values
-
-    else:
-
-        vector = _vector_or_series
-
     context_dict = compute_vector_context(
-        vector,
+        series.values,
         n_data=n_data,
         location=location,
         scale=scale,
@@ -72,54 +49,45 @@ def plot_context(
 
     context = context_dict["context"]
 
-    absolute_context = absolute(context)
+    context_abs = absolute(context)
 
-    absolute_context_max = nanmax(absolute_context)
+    context_abs_max = nanmax(context_abs)
 
     if y_max_is_pdf_max:
 
         y_max = pdf_max
 
-        if y_max < absolute_context_max:
+        if y_max < context_abs_max:
 
-            absolute_context = absolute_context / absolute_context_max * y_max
-
-    else:
-
-        y_max = max(pdf_max, absolute_context_max)
-
-    if plot_rug is None:
-
-        plot_rug = _vector_or_series.size < 1e3
-
-    if plot_rug:
-
-        yaxis_max = 0.16
-
-        yaxis2_min = yaxis_max + 0.08
+            context_abs /= context_abs_max * y_max
 
     else:
 
-        yaxis_max = 0
+        y_max = max(pdf_max, context_abs_max)
 
-        yaxis2_min = 0
-
-    layout = {
-        "xaxis": {"anchor": "y", "title": {"text": xaxis_title_text}},
+    layout_template = {
+        "title": series.name,
+        "xaxis": xaxis,
         "yaxis": {
-            "domain": (0, yaxis_max),
+            "domain": (0, 0.2),
             "dtick": 1,
             "zeroline": False,
             "showticklabels": False,
         },
-        "yaxis2": {"domain": (yaxis2_min, 1)},
+        "yaxis2": {"domain": (0.22, 1)},
         "legend": {"orientation": "h", "xanchor": "center", "x": 0.5, "y": -0.2},
-        **layout,
+        "annotations": [],
     }
 
-    annotations = []
+    if layout is None:
 
-    for i, (template, fit_parameter) in enumerate(
+        layout = layout_template
+
+    else:
+
+        layout = {**layout_template, **layout}
+
+    for i, (format_, fit_parameter) in enumerate(
         zip(
             (
                 "N = {:.0f}",
@@ -132,66 +100,62 @@ def plot_context(
         )
     ):
 
-        annotations.append(
+        layout["annotations"].append(
             {
                 "xref": "paper",
                 "yref": "paper",
                 "x": (i + 1) / (5 + 1),
-                "y": 1.064,
+                "y": 1.05,
                 "xanchor": "center",
-                "text": template.format(fit_parameter),
+                "text": format_.format(fit_parameter),
                 "showarrow": False,
             }
         )
 
-    layout.update({"annotations": annotations})
-
     data = []
 
-    data.append(
-        {
-            "yaxis": "y2",
-            "type": "histogram",
-            "name": "Data",
-            "legendgroup": "Data",
-            "x": vector,
-            "marker": {"color": "#20d9ba"},
-            "histnorm": "probability density",
-            "hoverinfo": "x+y",
-        }
-    )
+    histogram_trace = {
+        "yaxis": "y2",
+        "type": "histogram",
+        "legendgroup": "Data",
+        "name": "Data",
+        "x": series.values,
+        "marker": {"color": "#20d9ba"},
+        "histnorm": "probability density",
+        "hoverinfo": "x+y",
+    }
 
     if n_bin is not None:
 
-        _vector_min = vector.min()
+        series_values_min = series.values.min()
 
-        _vector_max = vector.max()
+        series_values_max = series.values.max()
 
-        data[-1]["xbins"] = {
-            "start": _vector_min,
-            "end": _vector_max,
-            "size": (_vector_max - _vector_min) / n_bin,
+        histogram_trace["xbins"] = {
+            "start": series_values_min,
+            "end": series_values_max,
+            "size": (series_values_max - series_values_min) / n_bin,
         }
 
-    if plot_rug:
+    data.append(histogram_trace)
 
-        data.append(
-            {
-                "type": "scatter",
-                "legendgroup": "Data",
-                "showlegend": False,
-                "x": vector,
-                "y": (0,) * vector.size,
-                "text": text,
-                "mode": "markers",
-                "marker": {"symbol": "line-ns-open", "color": "#20d9ba"},
-                "hoverinfo": "x+text",
-            }
-        )
+    data.append(
+        {
+            "type": "scatter",
+            "legendgroup": "Data",
+            "showlegend": False,
+            "x": series.values,
+            "y": (0,) * series.size,
+            "text": series.index,
+            "mode": "markers",
+            "marker": {"symbol": "line-ns-open", "color": "#20d9ba"},
+            "hoverinfo": "x+text",
+        }
+    )
 
     grid = context_dict["grid"]
 
-    line_width = 3.2
+    line_width = 3
 
     pdf = context_dict["pdf"]
 
@@ -253,7 +217,7 @@ def plot_context(
                 "type": "scatter",
                 "name": name,
                 "x": grid[indices],
-                "y": absolute_context[indices],
+                "y": context_abs[indices],
                 "line": {"width": line_width, "color": color},
                 "fill": "tozeroy",
             }
