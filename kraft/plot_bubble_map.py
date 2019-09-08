@@ -1,4 +1,4 @@
-from numpy import arange, linspace, meshgrid
+from numpy import arange, meshgrid
 
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .normalize_array import normalize_array
@@ -10,57 +10,74 @@ def plot_bubble_map(
     dataframe_size,
     dataframe_color=None,
     marker_size_max=32,
-    showscale=None,
-    colorbar_x=None,
-    title_text=None,
-    xaxis_title_text=None,
-    yaxis_title_text=None,
+    colorbar=None,
+    layout=None,
+    xaxis=None,
+    yaxis=None,
     html_file_path=None,
 ):
+
+    x_grid = arange(dataframe_size.shape[1])
+
+    y_grid = arange(dataframe_size.shape[0])
+
+    mesh_grid_x, mesh_grid_y = meshgrid(x_grid, y_grid)
+
+    xaxis_template = {
+        "zeroline": False,
+        "tickvals": x_grid,
+        "ticktext": dataframe_size.columns,
+    }
+
+    if xaxis is None:
+
+        xaxis = xaxis_template
+
+    else:
+
+        xaxis = {**xaxis_template, **xaxis}
+
+    yaxis_template = {
+        "zeroline": False,
+        "tickvals": y_grid,
+        "ticktext": dataframe_size.index,
+    }
+
+    if yaxis is None:
+
+        yaxis = yaxis_template
+
+    else:
+
+        yaxis = {**yaxis_template, **yaxis}
+
+    layout_template = {
+        "height": max(640, marker_size_max * 2 * y_grid.size),
+        "width": max(640, marker_size_max * 2 * x_grid.size),
+        "xaxis": xaxis,
+        "yaxis": yaxis,
+    }
+
+    if layout is None:
+
+        layout = layout_template
+
+    else:
+
+        layout = {**layout_template, **layout}
 
     if dataframe_color is None:
 
         dataframe_color = dataframe_size
 
-    axis_template = {"zeroline": False}
-
-    x, y = meshgrid(
-        linspace(0, dataframe_size.shape[1] - 1, num=dataframe_size.shape[1]),
-        linspace(0, dataframe_size.shape[0] - 1, num=dataframe_size.shape[0]),
-    )
-
     plot_plotly_figure(
         {
-            "layout": {
-                "width": max(640, marker_size_max * 2 * dataframe_size.shape[1]),
-                "height": max(640, marker_size_max * 2 * dataframe_size.shape[0]),
-                "title": {"text": title_text},
-                "xaxis": {
-                    "tickvals": arange(dataframe_size.shape[1]),
-                    "ticktext": dataframe_size.columns,
-                    "title": {
-                        "text": "{} ({})".format(
-                            xaxis_title_text, dataframe_size.shape[1]
-                        )
-                    },
-                    **axis_template,
-                },
-                "yaxis": {
-                    "tickvals": arange(dataframe_size.shape[0]),
-                    "ticktext": dataframe_size.index[::-1],
-                    "title": {
-                        "text": "{} ({})".format(
-                            yaxis_title_text, dataframe_size.shape[0]
-                        )
-                    },
-                    **axis_template,
-                },
-            },
+            "layout": layout,
             "data": [
                 {
                     "type": "scatter",
-                    "x": x.ravel(),
-                    "y": y.ravel()[::-1],
+                    "x": mesh_grid_x.ravel(),
+                    "y": mesh_grid_y.ravel()[::-1],
                     "text": dataframe_size.values.ravel(),
                     "mode": "markers",
                     "marker": {
@@ -73,11 +90,7 @@ def plot_bubble_map(
                             pick_colors(dataframe_color)
                         ),
                         "showscale": True,
-                        "colorbar": {
-                            "x": colorbar_x,
-                            "len": 0.64,
-                            "thickness": marker_size_max / 3,
-                        },
+                        "colorbar": colorbar,
                         "line": {"color": "#000000"},
                     },
                 }

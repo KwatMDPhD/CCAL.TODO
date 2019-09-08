@@ -141,9 +141,9 @@ def hierarchical_consensus_cluster_dataframe(
 
         plot_heat_map(
             dataframe,
-            title_text="HCC K={}".format(k),
-            xaxis_title_text=dataframe.columns.name,
-            yaxis_title_text=dataframe.index.name,
+            title={"text": "HCC K={}".format(k)},
+            xaxis={"title": {"text": dataframe.columns.name}},
+            yaxis={"title": {"text": dataframe.index.name}},
             html_file_path=html_file_path,
             **plot_heat_map_keyword_arguments,
         )

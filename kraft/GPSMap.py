@@ -955,7 +955,7 @@ class GPSMap:
 
             plot_heat_map(
                 normalize_series_or_dataframe(z, 0, "-0-"),
-                column_annotation=column_annotation,
+                column_annotations=column_annotation,
                 column_annotation_colors=label_colors,
                 title_text=w_or_h.title(),
                 xaxis_title_text=element_name,

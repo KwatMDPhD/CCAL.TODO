@@ -1,8 +1,10 @@
-from pandas import DataFrame, read_csv
 from os.path import join
+
+from pandas import DataFrame, read_csv
 from scipy.io import mmread
-from .process_feature_x_sample import process_feature_x_sample
+
 from .get_dataframe_slice_fraction_good import get_dataframe_slice_fraction_good
+from .process_feature_x_sample import process_feature_x_sample
 from .select_series_indices import select_series_indices
 
 
@@ -69,7 +71,6 @@ def read_process_write_gene_x_cell(
             ">",
             thresholds=(minimum_fraction_cell_with_gene_signal,),
             title={"text": "Genes"},
-            xaxis={"title": {"text": "Ranking"}},
             yaxis={"title": {"text": "Fraction Cell"}},
         )
 
@@ -86,7 +87,6 @@ def read_process_write_gene_x_cell(
             ">",
             standard_deviation=minimum_fraction_gene_z_score,
             title={"text": "Cells"},
-            xaxis={"title": {"text": "Ranking"}},
             yaxis={"title": {"text": "Fraction Gene"}},
         )
 

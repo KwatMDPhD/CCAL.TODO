@@ -12,16 +12,11 @@ def select_series_indices(
     standard_deviation=None,
     plot=True,
     title=None,
-    xaxis=None,
     yaxis=None,
     html_file_path=None,
 ):
 
     series_no_na_sorted = series.dropna().sort_values()
-
-    if series_no_na_sorted.empty:
-
-        raise ValueError("Series has only na.")
 
     if n is not None:
 
@@ -133,6 +128,8 @@ def select_series_indices(
             thresholds[1] <= series_no_na_sorted
         )
 
+    selected_indices = series_no_na_sorted.index[is_selected]
+
     if plot:
 
         if series_no_na_sorted.size < 1e3:
@@ -146,16 +143,14 @@ def select_series_indices(
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": "{}<br>Selected {}/{}".format(
-                        title, is_selected.sum(), series_no_na_sorted
-                    ),
-                    "xaxis": xaxis,
+                    "title": title,
+                    "xaxis": {"title": {"text": "Ranking"}},
                     "yaxis": yaxis,
                 },
                 "data": [
                     {
                         "type": "scatter",
-                        "name": "All",
+                        "name": "All ({})".format(series_no_na_sorted.size),
                         "x": arange(series_no_na_sorted.size),
                         "y": series_no_na_sorted,
                         "text": series_no_na_sorted.index,
@@ -164,11 +159,11 @@ def select_series_indices(
                     },
                     {
                         "type": "scatter",
-                        "name": "Selected",
+                        "name": "Selected ({})".format(is_selected.sum()),
                         "x": is_selected.values.nonzero()[0],
                         "y": series_no_na_sorted[is_selected],
-                        "text": series_no_na_sorted.index[is_selected],
-                        "mode": "markers",
+                        "text": selected_indices,
+                        "mode": mode,
                         "marker": {"color": "#20d9ba"},
                     },
                 ],
@@ -176,4 +171,4 @@ def select_series_indices(
             html_file_path,
         )
 
-    return series_no_na_sorted.index[is_selected]
+    return selected_indices

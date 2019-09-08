@@ -48,9 +48,9 @@ def apply_function_on_slices_from_2_dataframes(
         comparison.iloc[
             cluster_matrix(comparison.values, 0), cluster_matrix(comparison.values, 1)
         ],
-        title_text=title,
-        xaxis_title_text=dataframe_1_name,
-        yaxis_title_text=dataframe_0_name,
+        title=title,
+        xaxis={"title": {"text": dataframe_1_name}},
+        yaxis={"title": {"text": dataframe_0_name}},
         html_file_path=html_file_path,
     )
 

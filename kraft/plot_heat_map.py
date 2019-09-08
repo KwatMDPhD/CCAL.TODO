@@ -8,52 +8,73 @@ from .plot_plotly_figure import plot_plotly_figure
 
 def plot_heat_map(
     dataframe,
-    layout_width=880,
-    layout_height=880,
-    heat_map_axis_domain=(0, 0.9),
-    annotation_axis_domain=(0.92, 1),
-    row_annotation=None,
+    row_annotations=None,
     row_annotation_colors=None,
     row_annotation_str=None,
-    row_annotation_keyword_arguments=None,
-    column_annotation=None,
+    row_annotation=None,
+    column_annotations=None,
     column_annotation_colors=None,
     column_annotation_str=None,
-    column_annotation_keyword_arguments=None,
-    showscale=None,
-    colorbar_x=None,
-    colorbar_title_text=None,
-    title_text=None,
-    xaxis_title_text=None,
-    yaxis_title_text=None,
-    show_xaxis_ticks=True,
-    show_yaxis_ticks=True,
+    column_annotation=None,
+    colorbar=None,
+    layout=None,
+    heat_map_xaxis=None,
+    heat_map_yaxis=None,
+    annotation_axis=None,
     html_file_path=None,
 ):
 
-    heat_map_axis_template = {"domain": heat_map_axis_domain, "showgrid": False}
+    heat_map_axis_template = {"domain": (0, 0.9), "zeroline": False, "showgrid": False}
 
-    if not show_xaxis_ticks:
+    if heat_map_xaxis is None:
 
-        heat_map_axis_template.update({"ticks": "", "showticklabels": False})
+        heat_map_xaxis = heat_map_axis_template
 
-    annotation_axis_template = {"showgrid": False, "ticks": "", "showticklabels": False}
+    else:
 
-    layout = {
-        "width": layout_width,
-        "height": layout_height,
-        "title": {"text": title_text},
-        "xaxis": {
-            "title": {"text": "{} ({})".format(xaxis_title_text, dataframe.shape[1])},
-            **heat_map_axis_template,
-        },
-        "xaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
-        "yaxis": {
-            "title": {"text": "{} ({})".format(yaxis_title_text, dataframe.shape[0])},
-            **heat_map_axis_template,
-        },
-        "yaxis2": {"domain": annotation_axis_domain, **annotation_axis_template},
+        heat_map_xaxis = {**heat_map_axis_template, **heat_map_xaxis}
+
+    if heat_map_yaxis is None:
+
+        heat_map_yaxis = heat_map_axis_template
+
+    else:
+
+        heat_map_yaxis = {**heat_map_axis_template, **heat_map_yaxis}
+
+    annotation_axis_template = {
+        "domain": (0.92, 1),
+        "zeroline": False,
+        "showgrid": False,
+        "ticks": "",
+        "showticklabels": False,
     }
+
+    if annotation_axis is None:
+
+        annotation_axis = annotation_axis_template
+
+    else:
+
+        annotation_axis = {**annotation_axis_template, **annotation_axis}
+
+    layout_template = {
+        "height": 880,
+        "width": 880,
+        "xaxis": heat_map_xaxis,
+        "yaxis": heat_map_yaxis,
+        "xaxis2": annotation_axis,
+        "yaxis2": annotation_axis,
+        "annotations": [],
+    }
+
+    if layout is None:
+
+        layout = layout_template
+
+    else:
+
+        layout = {**layout_template, **layout}
 
     if any(isinstance(cast_object_to_builtin(i), str) for i in dataframe.columns):
 
@@ -78,106 +99,105 @@ def plot_heat_map(
             "x": x,
             "y": y,
             "colorscale": make_colorscale_from_colors(pick_colors(dataframe)),
-            "showscale": showscale,
-            "colorbar": {
-                "x": colorbar_x,
-                "y": (heat_map_axis_domain[1] - heat_map_axis_domain[0]) / 2,
-                "len": 0.64,
-                "thickness": layout_width / 64,
-                "title": {"side": "right", "text": colorbar_title_text},
-            },
+            "colorbar": colorbar,
         }
     ]
 
-    if row_annotation is not None or column_annotation is not None:
+    annotation_template = {"showarrow": False, "borderpad": 0}
 
-        layout["annotations"] = []
+    if row_annotations is not None:
 
-        annotation_keyword_arguments = {"showarrow": False, "borderpad": 0}
+        row_annotations = asarray(row_annotations)
 
-        if row_annotation is not None:
+        if row_annotation_colors is None:
 
-            row_annotation = asarray(row_annotation)
+            row_annotation_colors = pick_colors(row_annotations)
 
-            if row_annotation_colors is None:
+        data.append(
+            {
+                "xaxis": "x2",
+                "type": "heatmap",
+                "z": tuple((i,) for i in row_annotations[::-1]),
+                "colorscale": make_colorscale_from_colors(row_annotation_colors),
+                "showscale": False,
+                "hoverinfo": "z+y",
+            }
+        )
 
-                row_annotation_colors = pick_colors(row_annotation)
+        if row_annotation_str is not None:
 
-            data.append(
-                {
-                    "xaxis": "x2",
-                    "type": "heatmap",
-                    "z": tuple((i,) for i in row_annotation[::-1]),
-                    "colorscale": make_colorscale_from_colors(row_annotation_colors),
-                    "showscale": False,
-                    "hoverinfo": "z+y",
-                }
-            )
+            row_annotation_template = annotation_template
 
-            if row_annotation_str is not None:
+            if row_annotation is None:
 
-                if row_annotation_keyword_arguments is None:
+                row_annotation = row_annotation_template
 
-                    row_annotation_keyword_arguments = {}
+            else:
 
-                for a in unique(row_annotation):
+                row_annotation = {**row_annotation_template, **row_annotation}
 
-                    indices = nonzero(row_annotation == a)[0]
+            for i in unique(row_annotations):
 
-                    index_0 = indices[0]
+                indices = nonzero(row_annotations == i)[0]
 
-                    layout["annotations"].append(
-                        {
-                            "xref": "x2",
-                            "x": 0,
-                            "y": index_0 + (indices[-1] - index_0) / 2,
-                            "text": "<b>{}</b>".format(row_annotation_str[a]),
-                            **annotation_keyword_arguments,
-                            **row_annotation_keyword_arguments,
-                        }
-                    )
+                index_0 = indices[0]
 
-        if column_annotation is not None:
+                layout["annotations"].append(
+                    {
+                        "xref": "x2",
+                        "x": 0,
+                        "y": index_0 + (indices[-1] - index_0) / 2,
+                        "text": "<b>{}</b>".format(row_annotation_str[i]),
+                        **row_annotation,
+                    }
+                )
 
-            column_annotation = asarray(column_annotation)
+    if column_annotations is not None:
 
-            if column_annotation_colors is None:
+        column_annotations = asarray(column_annotations)
 
-                column_annotation_colors = pick_colors(column_annotation)
+        if column_annotation_colors is None:
 
-            data.append(
-                {
-                    "yaxis": "y2",
-                    "type": "heatmap",
-                    "z": tuple((i,) for i in column_annotation),
-                    "transpose": True,
-                    "colorscale": make_colorscale_from_colors(column_annotation_colors),
-                    "showscale": False,
-                    "hoverinfo": "z+x",
-                }
-            )
+            column_annotation_colors = pick_colors(column_annotations)
 
-            if column_annotation_str is not None:
+        data.append(
+            {
+                "yaxis": "y2",
+                "type": "heatmap",
+                "z": tuple((i,) for i in column_annotations),
+                "transpose": True,
+                "colorscale": make_colorscale_from_colors(column_annotation_colors),
+                "showscale": False,
+                "hoverinfo": "z+x",
+            }
+        )
 
-                if column_annotation_keyword_arguments is None:
+        if column_annotation_str is not None:
 
-                    column_annotation_keyword_arguments = {"textangle": -90}
+            column_annotation_template = {"textangle": -90, **annotation_template}
 
-                for a in unique(column_annotation):
+            if column_annotation is None:
 
-                    indices = nonzero(column_annotation == a)[0]
+                column_annotation = column_annotation_template
 
-                    index_0 = indices[0]
+            else:
 
-                    layout["annotations"].append(
-                        {
-                            "yref": "y2",
-                            "x": index_0 + (indices[-1] - index_0) / 2,
-                            "y": 0,
-                            "text": "<b>{}</b>".format(column_annotation_str[a]),
-                            **annotation_keyword_arguments,
-                            **column_annotation_keyword_arguments,
-                        }
-                    )
+                column_annotation = {**column_annotation_template, **column_annotation}
+
+            for i in unique(column_annotations):
+
+                indices = nonzero(column_annotations == i)[0]
+
+                index_0 = indices[0]
+
+                layout["annotations"].append(
+                    {
+                        "yref": "y2",
+                        "x": index_0 + (indices[-1] - index_0) / 2,
+                        "y": 0,
+                        "text": "<b>{}</b>".format(column_annotation_str[i]),
+                        **column_annotation,
+                    }
+                )
 
     plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
