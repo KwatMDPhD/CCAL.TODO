@@ -49,7 +49,7 @@ def infer(
 
         if n_dimension == 2:
 
-            title = "P({} = {:.3f} (~{}) | {})".format(
+            title_text = "P({} = {:.3f} (~{}) | {})".format(
                 dimension_names[1],
                 target_dimension_value_,
                 target_dimension_value,
@@ -58,7 +58,7 @@ def infer(
 
         elif n_dimension == 3:
 
-            title = "P({} = {:.3f} (~{}) | {}, {})".format(
+            title_text = "P({} = {:.3f} (~{}) | {}, {})".format(
                 dimension_names[2],
                 target_dimension_value_,
                 target_dimension_value,
@@ -68,12 +68,12 @@ def infer(
 
         else:
 
-            title = None
+            title_text = None
 
         plot_mesh_grid(
             no_target__mesh_grid_point_x_dimension,
             no_target__mesh_grid_point_posterior_probability,
-            title={"text": title},
+            title={"text": title_text},
             dimension_names=dimension_names,
         )
 

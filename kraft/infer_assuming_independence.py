@@ -25,9 +25,9 @@ def infer_assuming_independence(
     n_dimension = element_x_dimension.shape[1]
 
     target__mesh_grid_point_x_dimension, target__mesh_grid_point_posterior_probability = compute_element_x_dimension_joint_probability(
-        element_x_dimension[:, -1:],
+        element_x_dimension[:, [-1]],
         plot=plot,
-        dimension_names=dimension_names[-1:],
+        dimension_names=dimension_names[[-1]],
         dimension_fraction_grid_extensions=(fraction_grid_extension,),
         dimension_n_grids=(n_grid,),
     )
@@ -73,7 +73,7 @@ def infer_assuming_independence(
 
         if n_dimension == 2:
 
-            title = "P({} = {:.3f} (~{}) | {})".format(
+            title_text = "P({} = {:.3f} (~{}) | {})".format(
                 dimension_names[1],
                 target_dimension_value_,
                 target_dimension_value,
@@ -82,7 +82,7 @@ def infer_assuming_independence(
 
         elif n_dimension == 3:
 
-            title = "P({} = {:.3f} (~{}) | {}, {})".format(
+            title_text = "P({} = {:.3f} (~{}) | {}, {})".format(
                 dimension_names[2],
                 target_dimension_value_,
                 target_dimension_value,
@@ -92,12 +92,12 @@ def infer_assuming_independence(
 
         else:
 
-            title = None
+            title_text = None
 
         plot_mesh_grid(
             no_target__mesh_grid_point_x_dimension,
             no_target__mesh_grid_point_posterior_probability,
-            title={"text": title},
+            title={"text": title_text},
             dimension_names=dimension_names,
         )
 
