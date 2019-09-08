@@ -56,7 +56,9 @@ from .exit_ import exit_
 from .fit_each_dataframe_row_to_skew_t_pdf import fit_each_dataframe_row_to_skew_t_pdf
 from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
 from .flatten_nested_iterable import flatten_nested_iterable
-from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
+from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
+    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
+)
 from .get_child_paths import get_child_paths
 from .get_chromosome_size_from_fasta_gz import get_chromosome_size_from_fasta_gz
 from .get_colormap_colors import get_colormap_colors
@@ -129,7 +131,7 @@ from .mf_consensus_cluster_dataframe import mf_consensus_cluster_dataframe
 from .mf_consensus_cluster_dataframe_with_ks import (
     mf_consensus_cluster_dataframe_with_ks,
 )
-from .N_GRID import N_GRID
+from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .nmf_by_sklearn import nmf_by_sklearn
 from .NONE_STRS import NONE_STRS
 from .normalize_array import normalize_array

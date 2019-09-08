@@ -1,15 +1,17 @@
 from numpy import linspace
 
-from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
-from .N_GRID import N_GRID
+from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
+    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
+)
+from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 
 
 def make_vector_grid(
     vector,
     grid_min=None,
     grid_max=None,
-    fraction_grid_extension=FRACTION_GRID_EXTENSION,
-    n_grid=N_GRID,
+    fraction_grid_extension=FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
+    n_grid=N_GRID_FOR_ESTIMATING_KERNEL_DENSITY,
 ):
 
     if grid_min is None:

@@ -4,13 +4,18 @@ from scipy.stats import pearsonr
 from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
 )
-from .FRACTION_GRID_EXTENSION import FRACTION_GRID_EXTENSION
-from .N_GRID import N_GRID
+from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
+    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
+)
+from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .unmesh import unmesh
 
 
 def compute_information_coefficient_between_2_vectors(
-    vector_0, vector_1, fraction_grid_extension=FRACTION_GRID_EXTENSION, n_grid=N_GRID
+    vector_0,
+    vector_1,
+    fraction_grid_extension=FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
+    n_grid=N_GRID_FOR_ESTIMATING_KERNEL_DENSITY,
 ):
 
     if unique(vector_0).size == 1 or unique(vector_1).size == 1:
