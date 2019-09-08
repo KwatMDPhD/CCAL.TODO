@@ -76,7 +76,7 @@ from .get_mesh_grid_point_x_dimension_d_dimensions import (
 from .get_sequence_from_fasta_or_fasta_gz import get_sequence_from_fasta_or_fasta_gz
 from .get_shell_environment import get_shell_environment
 from .get_triangulation_edges_from_point_x_dimension import (
-    get_triangulation_edges_from_point_x_dimension,
+    get_element_x_dimension_triangulation_edges,
 )
 from .get_variant_start_and_end_positions import get_variant_start_and_end_positions
 from .get_variants_from_vcf_or_vcf_gz import get_variants_from_vcf_or_vcf_gz

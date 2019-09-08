@@ -36,8 +36,8 @@ from .compute_information_distance_between_2_vectors import (
 from .compute_vector_bandwidth import compute_vector_bandwidth
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
-from .get_triangulation_edges_from_point_x_dimension import (
-    get_triangulation_edges_from_point_x_dimension,
+from .get_element_x_dimension_triangulation_edges import (
+    get_element_x_dimension_triangulation_edges,
 )
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .normalize_array import normalize_array
@@ -153,7 +153,7 @@ def _plot(
 
     node_opacity = 0.88
 
-    edge_xs, edge_ys = get_triangulation_edges_from_point_x_dimension(node_x_dimension)
+    edge_xs, edge_ys = get_element_x_dimension_triangulation_edges(node_x_dimension)
 
     data.append(
         {

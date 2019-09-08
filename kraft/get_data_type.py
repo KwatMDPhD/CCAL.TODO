@@ -17,7 +17,7 @@ def get_data_type(data):
 
             return "binary"
 
-        elif n_good_unique <= 32:
+        elif n_good_unique <= 24:
 
             return "categorical"
 

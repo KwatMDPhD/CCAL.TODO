@@ -13,7 +13,7 @@ def get_intersections_between_2_vectors(vector_0, vector_1, raise_for_bad=True):
 
     diff_sign_0_indices = (diff_sign == 0).nonzero()[0]
 
-    if diff_sign_0_indices.size:
+    if 0 < diff_sign_0_indices.size:
 
         diff_sign[diff_sign_0_indices] = diff_sign[diff_sign_0_indices + 1]
 

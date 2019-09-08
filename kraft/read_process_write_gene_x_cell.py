@@ -3,9 +3,18 @@ from os.path import join
 from pandas import DataFrame, read_csv
 from scipy.io import mmread
 
-from .get_dataframe_slice_fraction_good import get_dataframe_slice_fraction_good
 from .process_feature_x_sample import process_feature_x_sample
 from .select_series_indices import select_series_indices
+from numpy import nan
+
+
+def _get_dataframe_slice_fraction_good(dataframe, axis, bads=()):
+
+    if 0 < len(bads):
+
+        dataframe = dataframe.replace(bads, nan)
+
+    return 1 - dataframe.isna().sum(axis=axis) / dataframe.shape[axis]
 
 
 def read_process_write_gene_x_cell(
@@ -67,7 +76,7 @@ def read_process_write_gene_x_cell(
     else:
 
         genes = select_series_indices(
-            get_dataframe_slice_fraction_good(gene_x_cell__clean__log, 1),
+            _get_dataframe_slice_fraction_good(gene_x_cell__clean__log, 1),
             ">",
             thresholds=(minimum_fraction_cell_with_gene_signal,),
             title={"text": "Genes"},
@@ -83,7 +92,7 @@ def read_process_write_gene_x_cell(
     else:
 
         cells = select_series_indices(
-            get_dataframe_slice_fraction_good(gene_x_cell__clean__log.loc[genes], 0),
+            _get_dataframe_slice_fraction_good(gene_x_cell__clean__log.loc[genes], 0),
             ">",
             standard_deviation=minimum_fraction_gene_z_score,
             title={"text": "Cells"},
