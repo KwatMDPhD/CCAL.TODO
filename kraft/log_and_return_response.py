@@ -1,13 +1,3 @@
-def log_and_return_response(response, logger=None):
+def log_response(logger, response):
 
-    str_ = response.get_data().decode().strip()
-
-    if logger is None:
-
-        print(str_)
-
-    else:
-
-        logger.debug(str_)
-
-    return response
+    logger.debug(response.get_data().decode().strip())

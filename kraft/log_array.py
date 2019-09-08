@@ -14,40 +14,40 @@ def log_array(
 
     is_good = ~check_array_for_bad(array, raise_for_bad=raise_for_bad)
 
-    array_logged = full(array.shape, nan)
+    array_ = full(array.shape, nan)
 
-    if is_good.any():
+    if not is_good.any():
 
-        array_good = array[is_good]
+        return array_
 
-        if shift_as_necessary_to_achieve_min_before_logging is not None:
+    array_good = array[is_good]
 
-            min_ = array_good.min()
+    if shift_as_necessary_to_achieve_min_before_logging is not None:
 
-            if shift_as_necessary_to_achieve_min_before_logging == "0<":
+        if shift_as_necessary_to_achieve_min_before_logging == "0<":
 
-                shift_as_necessary_to_achieve_min_before_logging = array_good[
-                    0 < array_good
-                ].min()
+            shift_as_necessary_to_achieve_min_before_logging = array_good[
+                0 < array_good
+            ].min()
 
-            if min_ < shift_as_necessary_to_achieve_min_before_logging:
+        min_ = array_good.min()
 
-                array_good = (
-                    array_good + shift_as_necessary_to_achieve_min_before_logging - min_
-                )
+        if min_ < shift_as_necessary_to_achieve_min_before_logging:
 
-        if str(log_base) == "2":
+            array_good += shift_as_necessary_to_achieve_min_before_logging - min_
 
-            log_ = log2
+    if str(log_base) == "2":
 
-        elif log_base == "e":
+        log_ = log2
 
-            log_ = loge
+    elif log_base == "e":
 
-        elif str(log_base) == "10":
+        log_ = loge
 
-            log_ = log10
+    elif str(log_base) == "10":
 
-        array_logged[is_good] = log_(array_good)
+        log_ = log10
 
-    return array_logged
+    array_[is_good] = log_(array_good)
+
+    return array_
