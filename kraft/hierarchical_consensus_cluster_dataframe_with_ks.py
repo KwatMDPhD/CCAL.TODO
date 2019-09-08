@@ -70,14 +70,14 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
         dataframe = dataframe.T
 
-    for (k, (element_cluster, element_cluster__ccc)) in zip(
+    for k, (element_cluster, element_cluster__ccc) in zip(
         ks,
         call_function_with_multiprocess(
             hierarchical_consensus_cluster_dataframe,
             (
                 (
                     dataframe,
-                    k,
+                    ks[i],
                     axis,
                     distance__element_x_element,
                     None,
@@ -85,9 +85,9 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                     random_seed,
                     linkage_method,
                     plot_dataframe,
-                    k_directory_path,
+                    k_directory_paths[i],
                 )
-                for k, k_directory_path in zip(ks, k_directory_paths)
+                for i in range(ks)
             ),
             n_job=n_job,
         ),
@@ -100,22 +100,20 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
 
-    file_name = "ccc.html"
-
     if directory_path is None:
 
         html_file_path = None
 
     else:
 
-        html_file_path = join(directory_path, file_name)
+        html_file_path = join(directory_path, "ccc.html")
 
     plot_plotly_figure(
         {
             "layout": {
-                "title": {"text": "HCC Cophenetic Correlation Coefficient"},
+                "title": {"text": "HCC"},
                 "xaxis": {"title": {"text": "K"}},
-                "yaxis": {"title": {"text": "CCC"}},
+                "yaxis": {"title": {"text": "Cophenetic Correlation Coefficient"}},
             },
             "data": [
                 {
@@ -140,19 +138,19 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
     if plot_dataframe:
 
-        file_name = "k_x_element.cluster_distribution.html"
-
         if directory_path is None:
 
             html_file_path = None
 
         else:
 
-            html_file_path = join(directory_path, file_name)
+            html_file_path = join(
+                directory_path, "k_x_element.cluster_distribution.html"
+            )
 
         plot_heat_map(
             DataFrame(sort(k_x_element.values, axis=1), index=keys),
-            title={"text": "HCC Cluster Distribution"},
+            title={"text": "HCC"},
             xaxis={"title": {"text": "Element"}},
             yaxis={"title": {"text": k_x_element.index.name}},
             html_file_path=html_file_path,

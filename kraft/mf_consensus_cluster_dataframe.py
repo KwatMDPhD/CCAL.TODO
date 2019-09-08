@@ -80,15 +80,13 @@ def mf_consensus_cluster_dataframe(
 
                 print("Plotting w...")
 
-                file_name = "w.html"
-
                 if directory_path is None:
 
                     html_file_path = None
 
                 else:
 
-                    html_file_path = join(directory_path, file_name)
+                    html_file_path = join(directory_path, "w.html")
 
                 plot_heat_map(
                     w_0.iloc[cluster_matrix(w_0.values, 0)],
@@ -102,15 +100,13 @@ def mf_consensus_cluster_dataframe(
 
                 print("Plotting h...")
 
-                file_name = "h.html"
-
                 if directory_path is None:
 
                     html_file_path = None
 
                 else:
 
-                    html_file_path = join(directory_path, file_name)
+                    html_file_path = join(directory_path, "h.html")
 
                 plot_heat_map(
                     h_0.iloc[:, cluster_matrix(h_0.values, 1)],
@@ -142,15 +138,13 @@ def mf_consensus_cluster_dataframe(
 
         print("Plotting dataframe.clustered...")
 
-        file_name = "dataframe.cluster.html"
-
         if directory_path is None:
 
             html_file_path = None
 
         else:
 
-            html_file_path = join(directory_path, file_name)
+            html_file_path = join(directory_path, "dataframe.cluster.html")
 
         w_element_cluster_sorted = w_element_cluster.sort_values()
 

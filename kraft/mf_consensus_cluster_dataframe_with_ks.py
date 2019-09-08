@@ -58,7 +58,7 @@ def mf_consensus_cluster_dataframe_with_ks(
             (
                 (
                     dataframe,
-                    k,
+                    ks[i],
                     mf_function,
                     n_clustering,
                     n_iteration,
@@ -67,9 +67,9 @@ def mf_consensus_cluster_dataframe_with_ks(
                     plot_w,
                     plot_h,
                     plot_dataframe,
-                    k_directory_path,
+                    k_directory_paths[i],
                 )
-                for k, k_directory_path in zip(ks, k_directory_paths)
+                for i in range(ks)
             ),
             n_job=n_job,
         ),
@@ -87,20 +87,18 @@ def mf_consensus_cluster_dataframe_with_ks(
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
 
-    file_name = "mf_error.html"
-
     if directory_path is None:
 
         html_file_path = None
 
     else:
 
-        html_file_path = join(directory_path, file_name)
+        html_file_path = join(directory_path, "mf_error.html")
 
     plot_plotly_figure(
         {
             "layout": {
-                "title": {"text": "MF Error"},
+                "title": {"text": "MF"},
                 "xaxis": {"title": {"text": "K"}},
                 "yaxis": {"title": {"text": "Error"}},
             },
@@ -125,27 +123,25 @@ def mf_consensus_cluster_dataframe_with_ks(
         tuple(k_return[key]["h_element_cluster.ccc"] for key in keys)
     )
 
-    file_name = "ccc.html"
-
     if directory_path is None:
 
         html_file_path = None
 
     else:
 
-        html_file_path = join(directory_path, file_name)
+        html_file_path = join(directory_path, "ccc.html")
 
     plot_plotly_figure(
         {
             "layout": {
-                "title": {"text": "MFCC Cophenetic Correlation Coefficient"},
+                "title": {"text": "MFCC"},
                 "xaxis": {"title": "K"},
-                "yaxis": {"title": "CCC"},
+                "yaxis": {"title": {"text": "Cophenetic Correlation Coefficient"}},
             },
             "data": [
                 {
                     "type": "scatter",
-                    "name": "W Element Cluster CCC",
+                    "name": "W",
                     "x": ks,
                     "y": w_element_cluster__ccc,
                     "mode": "lines+markers",
@@ -153,7 +149,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                 },
                 {
                     "type": "scatter",
-                    "name": "H Element Cluster CCC",
+                    "name": "H",
                     "x": ks,
                     "y": h_element_cluster__ccc,
                     "mode": "lines+markers",
@@ -161,7 +157,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                 },
                 {
                     "type": "scatter",
-                    "name": "W H Mean",
+                    "name": "Mean",
                     "x": ks,
                     "y": (w_element_cluster__ccc + h_element_cluster__ccc) / 2,
                     "mode": "lines+markers",
@@ -199,20 +195,21 @@ def mf_consensus_cluster_dataframe_with_ks(
 
         if plot_dataframe:
 
-            file_name = "k_x_{}_element.cluster_distribution.html".format(w_or_h)
-
             if directory_path is None:
 
                 html_file_path = None
 
             else:
 
-                html_file_path = join(directory_path, file_name)
+                html_file_path = join(
+                    directory_path,
+                    "k_x_{}_element.cluster_distribution.html".format(w_or_h),
+                )
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
-                title={"text": "MFCC {} Cluster Distribution".format(w_or_h.title())},
-                xaxis={"title": {"text": "{} Element".format(w_or_h.title())}},
+                title={"text": "MFCC {}".format(w_or_h.title())},
+                xaxis={"title": {"text": "Element"}},
                 yaxis={"title": {"text": k_x_element.index.name}},
                 html_file_path=html_file_path,
             )

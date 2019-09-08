@@ -119,17 +119,15 @@ def hierarchical_consensus_cluster_dataframe(
 
             dataframe = dataframe.loc[element_cluster_sorted.index]
 
-            plot_heat_map_keyword_arguments["row_annotation"] = element_cluster_sorted
+            plot_heat_map_keyword = "row_annotations"
 
         elif axis == 1:
 
             dataframe = dataframe[element_cluster_sorted.index]
 
-            plot_heat_map_keyword_arguments[
-                "column_annotation"
-            ] = element_cluster_sorted
+            plot_heat_map_keyword = "column_annotations"
 
-        file_name = "dataframe.cluster.html"
+        plot_heat_map_keyword_arguments[plot_heat_map_keyword] = element_cluster_sorted
 
         if directory_path is None:
 
@@ -137,7 +135,7 @@ def hierarchical_consensus_cluster_dataframe(
 
         else:
 
-            html_file_path = join(directory_path, file_name)
+            html_file_path = join(directory_path, "dataframe.cluster.html")
 
         plot_heat_map(
             dataframe,
