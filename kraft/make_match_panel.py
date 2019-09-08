@@ -60,16 +60,16 @@ def _permute_target_and_match_target_and_data(
 
     index_x_permutation = full((data.shape[0], n_permutation), nan)
 
-    target_shuffled = target.copy()
+    target_ = target.copy()
 
     for i in range(n_permutation):
 
-        shuffle(target_shuffled)
+        shuffle(target_)
 
         random_state = get_state()
 
         index_x_permutation[:, i] = _match_target_and_data(
-            target_shuffled,
+            target_,
             data,
             match_function,
             n_required_for_match_function,
@@ -102,9 +102,7 @@ def _match_target_and_data_and_compute_statistics(
     n_job = min(data.shape[0], n_job)
 
     print(
-        "Computing score using {} with {} process...".format(
-            match_function.__name__, n_job
-        )
+        "Computing score using {} with {} job...".format(match_function.__name__, n_job)
     )
 
     data_split = array_split(data, n_job)
@@ -229,7 +227,7 @@ def make_match_panel(
     target_type=None,
     data_type=None,
     plot_std=None,
-    title_text=None,
+    title=None,
     layout_side_margin=196,
     annotation_font_size=8.8,
     file_path_prefix=None,
@@ -238,8 +236,8 @@ def make_match_panel(
     common_indices = target.index & data.columns
 
     print(
-        "target.index ({}) & data.columns ({}) have {} in common.".format(
-            target.index.size, data.columns.size, len(common_indices)
+        "target.index ({}) and data.columns ({}) have {} in common.".format(
+            target.index.size, data.columns.size, common_indices.size
         )
     )
 
@@ -275,7 +273,7 @@ def make_match_panel(
 
     if score_moe_p_value_fdr.isna().values.all():
 
-        print("score_moe_p_value_fdr has only na.")
+        print("score_moe_p_value_fdr has only NA.")
 
         return score_moe_p_value_fdr
 
@@ -312,12 +310,8 @@ def make_match_panel(
                     "name": name,
                     "x": score_moe_p_value_fdr.index,
                     "y": score_moe_p_value_fdr[name].values,
-                    "marker": {"color": color},
                 }
-                for name, color in zip(
-                    score_moe_p_value_fdr.columns,
-                    ("#20d9ba", "#ff1968", "#4e40d8", "#9017e6"),
-                )
+                for name in score_moe_p_value_fdr.columns
             ],
         },
         html_file_path,
@@ -401,7 +395,7 @@ def make_match_panel(
     layout = {
         "height": max(640, 32 * (data_to_plot.shape[0] + 2)),
         "margin": {"l": layout_side_margin, "r": layout_side_margin},
-        "title": {"text": title_text},
+        "title": title,
         "xaxis": {"anchor": "y", "tickfont": annotation_font},
         "yaxis": {"domain": data_yaxis_domain, "dtick": 1, "tickfont": annotation_font},
         "yaxis2": {

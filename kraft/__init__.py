@@ -65,7 +65,9 @@ from .get_colormap_colors import get_colormap_colors
 from .get_conda_environments import get_conda_environments
 from .get_conda_prefix import get_conda_prefix
 from .get_data_type import get_data_type
-from .get_dataframe_slice_fraction_good import get_dataframe_slice_fraction_good
+from .get_element_x_dimension_triangulation_edges import (
+    get_element_x_dimension_triangulation_edges,
+)
 from .get_gff3_attribute import get_gff3_attribute
 from .get_git_versions import get_git_versions
 from .get_intersections_between_2_vectors import get_intersections_between_2_vectors
@@ -75,9 +77,6 @@ from .get_mesh_grid_point_x_dimension_d_dimensions import (
 )
 from .get_sequence_from_fasta_or_fasta_gz import get_sequence_from_fasta_or_fasta_gz
 from .get_shell_environment import get_shell_environment
-from .get_triangulation_edges_from_point_x_dimension import (
-    get_element_x_dimension_triangulation_edges,
-)
 from .get_variant_start_and_end_positions import get_variant_start_and_end_positions
 from .get_variants_from_vcf_or_vcf_gz import get_variants_from_vcf_or_vcf_gz
 from .get_vcf_genotype import get_vcf_genotype
@@ -85,9 +84,6 @@ from .get_vcf_info import get_vcf_info
 from .get_vcf_info_ann import get_vcf_info_ann
 from .get_vcf_sample_format import get_vcf_sample_format
 from .GPSMap import GPSMap
-from .group_and_apply_function_on_each_group_in_iterable import (
-    group_and_apply_function_on_each_group_in_iterable,
-)
 from .hierarchical_consensus_cluster_dataframe import (
     hierarchical_consensus_cluster_dataframe,
 )
@@ -104,8 +100,8 @@ from .is_in_git_repository import is_in_git_repository
 from .is_program import is_program
 from .is_sorted_array import is_sorted_array
 from .is_str_version import is_str_version
-from .log_and_return_response import log_and_return_response
 from .log_array import log_array
+from .log_response import log_response
 from .make_binary_dataframe_from_categorical_series import (
     make_binary_dataframe_from_categorical_series,
 )
@@ -118,7 +114,6 @@ from .make_match_panel_summary import make_match_panel_summary
 from .make_match_panels import make_match_panels
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .make_reflecting_grid import make_reflecting_grid
-from .make_variant_dict_consistent import make_variant_dict_consistent
 from .make_variant_dict_from_vcf_row import make_variant_dict_from_vcf_row
 from .make_variant_n_from_vcf_file_path import make_variant_n_from_vcf_file_path
 from .make_variant_n_from_vcf_row import make_variant_n_from_vcf_row
@@ -129,14 +124,13 @@ from .mf_consensus_cluster_dataframe import mf_consensus_cluster_dataframe
 from .mf_consensus_cluster_dataframe_with_ks import (
     mf_consensus_cluster_dataframe_with_ks,
 )
-from .mf_with_multiple_v_and_h import mf_with_vs_and_h
 from .mf_with_multiplicative_update import mf_with_multiplicative_update
+from .mf_with_vs_and_hs import mf_with_vs_and_hs
 from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .nmf_with_sklearn import nmf_with_sklearn
 from .NONE_STRS import NONE_STRS
 from .normalize_array import normalize_array
 from .normalize_cell_line_names import normalize_cell_line_names
-from .normalize_contig import normalize_contig
 from .normalize_file_name import normalize_file_name
 from .normalize_git_url import normalize_git_url
 from .normalize_path import normalize_path
@@ -149,7 +143,6 @@ from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_mesh_grid import plot_mesh_grid
 from .plot_plotly_figure import plot_plotly_figure
-from .plot_scatter_and_annotate import plot_scatter_and_annotate
 from .print_function_information import print_function_information
 from .print_header_in_terminal import print_header_in_terminal
 from .process_feature_x_sample import process_feature_x_sample
@@ -159,9 +152,6 @@ from .read_gmt import read_gmt
 from .read_gps_map import read_gps_map
 from .read_json import read_json
 from .read_process_write_gene_x_cell import read_process_write_gene_x_cell
-from .read_where_and_map_column_name_on_hdf5_table import (
-    read_where_and_map_column_name_on_hdf5_table,
-)
 from .remove_path import remove_path
 from .rescale_x_y_coordiantes_in_polar_coordiante import (
     rescale_x_y_coordiantes_in_polar_coordiante,
@@ -179,7 +169,6 @@ from .shuffle_each_matrix_slice import shuffle_each_matrix_slice
 from .skip_quote_and_split_str import skip_quote_and_split_str
 from .solve_ax_equal_b import solve_ax_equal_b
 from .solve_for_h import solve_for_h
-from .split_codons import split_codons
 from .split_dataframe import split_dataframe
 from .summarize_feature_x_sample import summarize_feature_x_sample
 from .title_str import title_str

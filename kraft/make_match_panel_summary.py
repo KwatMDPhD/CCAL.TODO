@@ -16,7 +16,7 @@ def make_match_panel_summary(
     score_ascending=False,
     target_type=None,
     plot_std=None,
-    title_text=None,
+    title=None,
     layout_side_margin=196,
     annotation_font_size=8.8,
     html_file_path=None,
@@ -55,7 +55,7 @@ def make_match_panel_summary(
     layout = {
         "height": max(640, 32 * n_row),
         "margin": {"l": layout_side_margin, "r": layout_side_margin},
-        "title": {"text": title_text},
+        "title": title,
         "xaxis": {"anchor": "y"},
         "annotations": [],
     }
