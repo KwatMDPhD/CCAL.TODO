@@ -125,14 +125,14 @@ from .make_variant_n_from_vcf_row import make_variant_n_from_vcf_row
 from .make_vector_grid import make_vector_grid
 from .map_objects_to_ints import map_objects_to_ints
 from .merge_2_dicts_with_function import merge_2_dicts_with_function
-from .mf_by_multiple_v_and_h import mf_by_multiple_v_and_h
-from .mf_by_multiplicative_update import mf_by_multiplicative_update
 from .mf_consensus_cluster_dataframe import mf_consensus_cluster_dataframe
 from .mf_consensus_cluster_dataframe_with_ks import (
     mf_consensus_cluster_dataframe_with_ks,
 )
+from .mf_with_multiple_v_and_h import mf_with_vs_and_h
+from .mf_with_multiplicative_update import mf_with_multiplicative_update
 from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
-from .nmf_by_sklearn import nmf_by_sklearn
+from .nmf_with_sklearn import nmf_with_sklearn
 from .NONE_STRS import NONE_STRS
 from .normalize_array import normalize_array
 from .normalize_cell_line_names import normalize_cell_line_names

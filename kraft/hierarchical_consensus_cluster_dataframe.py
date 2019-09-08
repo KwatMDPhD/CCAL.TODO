@@ -21,7 +21,7 @@ def hierarchical_consensus_cluster_dataframe(
     k,
     axis,
     distance__element_x_element=None,
-    distance_function="euclidean",
+    distance_function="correlation",
     n_clustering=10,
     random_seed=RANDOM_SEED,
     linkage_method="ward",
@@ -55,7 +55,7 @@ def hierarchical_consensus_cluster_dataframe(
 
     print("HCC K={}...".format(k))
 
-    clustering_x_element = full((n_clustering, dataframe.index.size), nan)
+    clustering_x_element = full((n_clustering, dataframe.shape[0]), nan)
 
     n_per_print = max(1, n_clustering // 10)
 
@@ -113,8 +113,6 @@ def hierarchical_consensus_cluster_dataframe(
 
         element_cluster_sorted = element_cluster.sort_values()
 
-        plot_heat_map_keyword_arguments = {}
-
         if axis == 0:
 
             dataframe = dataframe.loc[element_cluster_sorted.index]
@@ -126,8 +124,6 @@ def hierarchical_consensus_cluster_dataframe(
             dataframe = dataframe[element_cluster_sorted.index]
 
             plot_heat_map_keyword = "column_annotations"
-
-        plot_heat_map_keyword_arguments[plot_heat_map_keyword] = element_cluster_sorted
 
         if directory_path is None:
 
@@ -143,7 +139,7 @@ def hierarchical_consensus_cluster_dataframe(
             xaxis={"title": {"text": dataframe.columns.name}},
             yaxis={"title": {"text": dataframe.index.name}},
             html_file_path=html_file_path,
-            **plot_heat_map_keyword_arguments,
+            **{plot_heat_map_keyword: element_cluster_sorted},
         )
 
     return element_cluster, element_cluster__ccc

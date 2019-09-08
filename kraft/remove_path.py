@@ -7,7 +7,7 @@ def remove_path(path):
 
     if exists(path):
 
-        run_command("rm --recursive --force {}".format(path))
+        run_command("rm -rf {}".format(path))
 
     else:
 

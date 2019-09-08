@@ -32,13 +32,15 @@ def process_feature_x_sample(
 
     if feature_x_sample.index.has_duplicates:
 
-        raise ValueError("{} duplicated.".format(feature_x_sample.index.name))
+        raise ValueError(
+            "{} can not be duplicated.".format(feature_x_sample.index.name)
+        )
 
     elif feature_x_sample.columns.has_duplicates:
 
-        raise ValueError("{} duplicated.".format(feature_x_sample.columns.name))
-
-    shape_before_drop = feature_x_sample.shape
+        raise ValueError(
+            "{} can not be duplicated.".format(feature_x_sample.columns.name)
+        )
 
     if 0 < len(features_to_drop):
 
@@ -50,7 +52,9 @@ def process_feature_x_sample(
 
         feature_x_sample.drop(features_to_drop, inplace=True)
 
-        print("Shape: {}".format(feature_x_sample.shape))
+        summarize_feature_x_sample(
+            feature_x_sample, **summarize_feature_x_sample_keyword_arguments
+        )
 
     if 0 < len(samples_to_drop):
 
@@ -62,17 +66,13 @@ def process_feature_x_sample(
 
         feature_x_sample.drop(samples_to_drop, axis=1, inplace=True)
 
-        print("Shape: {}".format(feature_x_sample.shape))
-
-    if feature_x_sample.shape != shape_before_drop:
-
         summarize_feature_x_sample(
             feature_x_sample, **summarize_feature_x_sample_keyword_arguments
         )
 
     if nanize is not None:
 
-        print("NANizing <= {}...".format(nanize))
+        print("NaNizing <= {}...".format(nanize))
 
         feature_x_sample[feature_x_sample <= nanize] = nan
 
@@ -87,8 +87,6 @@ def process_feature_x_sample(
     ):
 
         print("Dropping slice...")
-
-        shape_before_drop = feature_x_sample.shape
 
         if drop_axis is None:
 
@@ -106,11 +104,9 @@ def process_feature_x_sample(
             min_n_not_na_unique_value=min_n_not_na_unique_value,
         )
 
-        if feature_x_sample.shape != shape_before_drop:
-
-            summarize_feature_x_sample(
-                feature_x_sample, **summarize_feature_x_sample_keyword_arguments
-            )
+        summarize_feature_x_sample(
+            feature_x_sample, **summarize_feature_x_sample_keyword_arguments
+        )
 
     if log_base is not None:
 

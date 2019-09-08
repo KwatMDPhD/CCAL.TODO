@@ -41,12 +41,7 @@ def plot_mesh_grid(
                     "yaxis": {"title": {"text": "Value"}},
                 },
                 "data": [
-                    {
-                        "type": "scatter",
-                        "x": dimension_grids[0],
-                        "y": value_reshaped,
-                        "mode": "markers",
-                    }
+                    {"type": "scatter", "x": dimension_grids[0], "y": value_reshaped}
                 ],
             },
             None,

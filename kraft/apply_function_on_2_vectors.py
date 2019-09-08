@@ -27,13 +27,11 @@ def apply_function_on_2_vectors(
 
                 n_required *= is_good.size
 
-            n_good = is_good.sum()
-
-            if n_good < n_required:
+            if is_good.sum() < n_required:
 
                 if raise_for_n_less_than_required:
 
-                    raise ValueError("{} <= n_required = {}".format(n_good, n_required))
+                    raise ValueError
 
                 return nan
 

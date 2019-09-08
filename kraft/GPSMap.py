@@ -63,17 +63,17 @@ def _check_node_x_element(node_x_element):
 
     if node_x_element.index.has_duplicates:
 
-        raise ValueError("node_x_element should not have duplicated index.")
+        raise ValueError
 
     if node_x_element.columns.has_duplicates:
 
-        raise ValueError("node_x_element should not have duplicated column.")
+        raise ValueError
 
     if not node_x_element.applymap(
         lambda value: isinstance(value, (int, float))
     ).values.all():
 
-        raise ValueError("node_x_element should be only int or float.")
+        raise ValueError
 
     check_array_for_bad(node_x_element.values)
 
@@ -162,7 +162,6 @@ def _plot(
             "showlegend": False,
             "x": edge_xs,
             "y": edge_ys,
-            "mode": "lines",
             "line": {"color": "#23191e"},
             "opacity": node_opacity,
             "hoverinfo": None,
@@ -548,7 +547,7 @@ class GPSMap:
 
             else:
 
-                raise ValueError("w and h indices mismatch.")
+                raise ValueError
 
         elif w is not None:
 
@@ -808,11 +807,11 @@ class GPSMap:
 
         if not element_label.map(lambda label: isinstance(label, int)).all():
 
-            raise ValueError("element_label should be int.")
+            raise ValueError
 
         if (element_label.value_counts() < 3).any():
 
-            raise ValueError("Each label should have at least 3 elements.")
+            raise ValueError
 
         if w_or_h == "w":
 
@@ -1315,14 +1314,6 @@ class GPSMap:
 
         x = arange(n_iteration)
 
-        if n_iteration < 1e3:
-
-            mode = "markers"
-
-        else:
-
-            mode = "lines"
-
         plot_plotly_figure(
             {
                 "layout": {
@@ -1335,36 +1326,21 @@ class GPSMap:
                         "name": "Temperature",
                         "x": x,
                         "y": scores[:, 0],
-                        "mode": mode,
                     },
-                    {
-                        "type": "scatter",
-                        "name": "Node-Node",
-                        "x": x,
-                        "y": scores[:, 1],
-                        "mode": mode,
-                    },
+                    {"type": "scatter", "name": "Node-Node", "x": x, "y": scores[:, 1]},
                     {
                         "type": "scatter",
                         "name": "Element-Element",
                         "x": x,
                         "y": scores[:, 2],
-                        "mode": mode,
                     },
                     {
                         "type": "scatter",
                         "name": "Node-Element",
                         "x": x,
                         "y": scores[:, 3],
-                        "mode": mode,
                     },
-                    {
-                        "type": "scatter",
-                        "name": "Fitness",
-                        "x": x,
-                        "y": scores[:, 4],
-                        "mode": mode,
-                    },
+                    {"type": "scatter", "name": "Fitness", "x": x, "y": scores[:, 4]},
                 ],
             },
             None,

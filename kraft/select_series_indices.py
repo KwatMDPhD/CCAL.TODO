@@ -132,19 +132,11 @@ def select_series_indices(
 
     if plot:
 
-        if series_no_na_sorted.size < 1e3:
-
-            mode = "markers"
-
-        else:
-
-            mode = "lines"
-
         plot_plotly_figure(
             {
                 "layout": {
                     "title": title,
-                    "xaxis": {"title": {"text": "Ranking"}},
+                    "xaxis": {"title": {"text": "Rank"}},
                     "yaxis": yaxis,
                 },
                 "data": [
@@ -154,7 +146,6 @@ def select_series_indices(
                         "x": arange(series_no_na_sorted.size),
                         "y": series_no_na_sorted,
                         "text": series_no_na_sorted.index,
-                        "mode": mode,
                         "marker": {"color": "#d0d0d0"},
                     },
                     {
@@ -163,7 +154,6 @@ def select_series_indices(
                         "x": is_selected.values.nonzero()[0],
                         "y": series_no_na_sorted[is_selected],
                         "text": selected_indices,
-                        "mode": mode,
                         "marker": {"color": "#20d9ba"},
                     },
                 ],

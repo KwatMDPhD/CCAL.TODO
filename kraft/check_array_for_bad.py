@@ -19,14 +19,8 @@ def check_array_for_bad(array, raise_for_bad=True):
 
     is_bad = is_nan | is_inf
 
-    n_bad = is_bad.sum()
+    if is_bad.any() and raise_for_bad:
 
-    if 0 < n_bad and raise_for_bad:
-
-        n_good = array.size - n_bad
-
-        bad_kinds = "|".join(bad_kinds)
-
-        raise ValueError("{} good & {} bad ({}).".format(n_good, n_bad, bad_kinds))
+        raise ValueError
 
     return is_bad

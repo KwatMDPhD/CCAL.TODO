@@ -17,7 +17,7 @@ def make_variant_n_from_vcf_file_path(vcf_file_path, use_only_pass=True):
 
         if use_only_pass and not is_pass.any():
 
-            raise ValueError("There is no PASS variant.")
+            raise ValueError("There is not any PASS variant.")
 
         vcf = vcf[is_pass]
 

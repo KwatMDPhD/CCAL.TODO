@@ -44,7 +44,7 @@ def read_process_write_gene_x_cell(
 
     if gene_x_cell.columns.has_duplicates:
 
-        print("Cell duplicated.")
+        raise ValueError
 
     gene_x_cell = gene_x_cell.sort_index().sort_index(axis=1)
 
@@ -83,22 +83,24 @@ def read_process_write_gene_x_cell(
             yaxis={"title": {"text": "Fraction Cell"}},
         )
 
-    print("Selected {} genes.".format(genes.size))
+    gene_x_cell__clean__log__selected_gene = gene_x_cell__clean__log.loc[genes]
 
     if minimum_fraction_gene_z_score is None:
 
-        cells = gene_x_cell__clean__log.columns
+        cells = gene_x_cell__clean__log__selected_gene.columns
 
     else:
 
         cells = select_series_indices(
-            _get_dataframe_slice_fraction_good(gene_x_cell__clean__log.loc[genes], 0),
+            _get_dataframe_slice_fraction_good(
+                gene_x_cell__clean__log__selected_gene, 0
+            ),
             ">",
             standard_deviation=minimum_fraction_gene_z_score,
             title={"text": "Cells"},
             yaxis={"title": {"text": "Fraction Gene"}},
         )
 
-    gene_x_cell__clean__log.loc[genes, cells].to_csv(
+    gene_x_cell__clean__log__selected_gene[cells].to_csv(
         output_file_path.replace(".tsv", ".clean.log.selected.tsv"), sep="\t"
     )

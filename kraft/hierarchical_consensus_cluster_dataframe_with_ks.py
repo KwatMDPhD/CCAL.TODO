@@ -18,9 +18,9 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
     dataframe,
     ks,
     axis,
-    n_job=1,
     distance__element_x_element=None,
     distance_function="correlation",
+    n_job=1,
     n_clustering=10,
     random_seed=RANDOM_SEED,
     linkage_method="ward",
@@ -120,7 +120,6 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                     "type": "scatter",
                     "x": ks,
                     "y": tuple(k_return[key]["element_cluster.ccc"] for key in keys),
-                    "mode": "lines+markers",
                     "marker": {"color": "#20d9ba"},
                 }
             ],

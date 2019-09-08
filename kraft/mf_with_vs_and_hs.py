@@ -6,11 +6,13 @@ from .RANDOM_SEED import RANDOM_SEED
 from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
 
 
-def mf_by_multiple_v_and_h(
+def mf_with_vs_and_hs(
     Vs, k, weights=None, n_iteration=int(1e3), random_seed=RANDOM_SEED
 ):
 
-    R_norms = full((len(Vs), n_iteration + 1), nan)
+    n = len(Vs)
+
+    R_norms = full((n, n_iteration + 1), nan)
 
     seed(seed=random_seed)
 
@@ -18,7 +20,7 @@ def mf_by_multiple_v_and_h(
 
     Hs = [random_sample(size=(k, V.shape[1])) for V in Vs]
 
-    R_norms[:, 0] = [compute_matrix_norm(Vs[i] - W @ Hs[i]) for i in range(len(Vs))]
+    R_norms[:, 0] = [compute_matrix_norm(Vs[i] - W @ Hs[i]) for i in range(n)]
 
     V_0_norm = compute_matrix_norm(Vs[0])
 
@@ -28,18 +30,14 @@ def mf_by_multiple_v_and_h(
 
     for j in range(n_iteration):
 
-        top = sum([weights[i] * Vs[i] @ Hs[i].T for i in range(len(Vs))], axis=0)
+        top = sum([weights[i] * Vs[i] @ Hs[i].T for i in range(n)], axis=0)
 
-        bottom = sum([weights[i] * W @ Hs[i] @ Hs[i].T for i in range(len(Vs))], axis=0)
+        bottom = sum([weights[i] * W @ Hs[i] @ Hs[i].T for i in range(n)], axis=0)
 
         W *= top / bottom
 
-        Hs = [
-            update_h_by_multiplicative_update(Vs[i], W, Hs[i]) for i in range(len(Vs))
-        ]
+        Hs = [update_h_by_multiplicative_update(Vs[i], W, Hs[i]) for i in range(n)]
 
-        R_norms[:, j + 1] = [
-            compute_matrix_norm(Vs[i] - W @ Hs[i]) for i in range(len(Vs))
-        ]
+        R_norms[:, j + 1] = [compute_matrix_norm(Vs[i] - W @ Hs[i]) for i in range(n)]
 
     return W, Hs, R_norms

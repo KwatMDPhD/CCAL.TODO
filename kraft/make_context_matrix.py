@@ -63,7 +63,7 @@ def make_context_matrix(
     dataframe,
     n_job=1,
     skew_t_pdf_fit_parameter=None,
-    n_grid=1e3,
+    n_grid=int(1e3),
     degree_of_freedom_for_tail_reduction=1e8,
     multiply_distance_from_reference_argmax=False,
     global_location=None,

@@ -7,8 +7,8 @@ from .cluster_clustering_x_element_and_compute_ccc import (
     cluster_clustering_x_element_and_compute_ccc,
 )
 from .cluster_matrix import cluster_matrix
-from .mf_by_multiplicative_update import mf_by_multiplicative_update
-from .nmf_by_sklearn import nmf_by_sklearn
+from .mf_with_multiplicative_update import mf_with_multiplicative_update
+from .nmf_with_sklearn import nmf_with_sklearn
 from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
 
@@ -16,7 +16,7 @@ from .RANDOM_SEED import RANDOM_SEED
 def mf_consensus_cluster_dataframe(
     dataframe,
     k,
-    mf_function="nmf_by_sklearn",
+    mf_function="nmf_with_sklearn",
     n_clustering=10,
     n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
@@ -35,13 +35,13 @@ def mf_consensus_cluster_dataframe(
 
     n_per_print = max(1, n_clustering // 10)
 
-    if mf_function == "mf_by_multiplicative_update":
+    if mf_function == "mf_with_multiplicative_update":
 
-        mf_function = mf_by_multiplicative_update
+        mf_function = mf_with_multiplicative_update
 
-    elif mf_function == "nmf_by_sklearn":
+    elif mf_function == "nmf_with_sklearn":
 
-        mf_function = nmf_by_sklearn
+        mf_function = nmf_with_sklearn
 
     for clustering in range(n_clustering):
 
@@ -138,14 +138,6 @@ def mf_consensus_cluster_dataframe(
 
         print("Plotting dataframe.clustered...")
 
-        if directory_path is None:
-
-            html_file_path = None
-
-        else:
-
-            html_file_path = join(directory_path, "dataframe.cluster.html")
-
         w_element_cluster_sorted = w_element_cluster.sort_values()
 
         h_element_cluster_sorted = h_element_cluster.sort_values()
@@ -153,6 +145,14 @@ def mf_consensus_cluster_dataframe(
         dataframe = dataframe.loc[
             w_element_cluster_sorted.index, h_element_cluster_sorted.index
         ]
+
+        if directory_path is None:
+
+            html_file_path = None
+
+        else:
+
+            html_file_path = join(directory_path, "dataframe.cluster.html")
 
         plot_heat_map(
             dataframe,

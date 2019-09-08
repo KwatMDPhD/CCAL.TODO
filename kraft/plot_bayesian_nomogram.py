@@ -56,7 +56,6 @@ def plot_bayesian_nomogram(
                         "name": name,
                         "x": x,
                         "y": sort(target)[:: target.size // n_grid],
-                        "marker": {"color": "#9017e6"},
                     },
                     {
                         "type": "scatter",
@@ -75,7 +74,6 @@ def plot_bayesian_nomogram(
                         "name": "Log Odds Ratio",
                         "x": x,
                         "y": log_odds_ratios,
-                        "marker": {"color": "#20d9ba"},
                     },
                 ],
             },
@@ -87,7 +85,7 @@ def plot_bayesian_nomogram(
                 "type": "scatter",
                 "name": name,
                 "x": (log_odds_ratios.min(), log_odds_ratios.max()),
-                "y": (i, i),
+                "y": (i,) * 2,
             }
         )
 

@@ -10,9 +10,9 @@ def summarize_feature_x_sample(
     feature_x_sample,
     feature_x_sample_alias="Feature-x-Sample",
     plot=True,
-    plot_heat_map_max_size=1000000,
-    plot_histogram_max_size=1000000,
-    plot_rug_max_size=1000,
+    plot_heat_map_max_size=1e6,
+    plot_histogram_max_size=1e5,
+    plot_rug_max_size=1e4,
 ):
 
     print("Shape: {}".format(feature_x_sample.shape))

@@ -8,67 +8,59 @@ def _normalize_array(array, method, rank_method, raise_for_bad):
 
     is_good = ~check_array_for_bad(array, raise_for_bad=raise_for_bad)
 
-    array_normalized = full(array.shape, nan)
+    array_ = full(array.shape, nan)
 
-    if is_good.any():
+    if not is_good.any():
 
-        array_good = array[is_good]
+        return array_
 
-        if method == "-0-":
+    array_good = array[is_good]
 
-            array_good_std = array_good.std()
+    if method == "-0-":
 
-            if array_good_std == 0:
+        array_good_std = array_good.std()
 
-                array_normalized[is_good] = 0
+        if array_good_std == 0:
 
-            else:
+            array_[is_good] = 0
 
-                array_normalized[is_good] = (
-                    array_good - array_good.mean()
-                ) / array_good_std
+        else:
 
-        elif method == "0-1":
+            array_[is_good] = (array_good - array_good.mean()) / array_good_std
 
-            array_good_min = array_good.min()
+    elif method == "0-1":
 
-            array_good_range = array_good.max() - array_good_min
+        array_good_min = array_good.min()
 
-            if array_good_range == 0:
+        array_good_range = array_good.max() - array_good_min
 
-                array_normalized[is_good] = nan
+        if array_good_range == 0:
 
-            else:
+            array_[is_good] = nan
 
-                array_normalized[is_good] = (
-                    array_good - array_good_min
-                ) / array_good_range
+        else:
 
-        elif method == "sum":
+            array_[is_good] = (array_good - array_good_min) / array_good_range
 
-            if array_good.min() < 0:
+    elif method == "sum":
 
-                raise ValueError(
-                    "Can not normalize array with any negative value with method sum."
-                )
+        if array_good.min() < 0:
 
-            else:
+            raise ValueError(
+                "Method sum can not normalize array with any negative value."
+            )
 
-                array_good_sum = array_good.sum()
+        if (array_good == 0).all():
 
-                if array_good_sum == 0:
+            array_[is_good] = 0
 
-                    array_normalized[is_good] = 1 / is_good.sum()
+        array_[is_good] = array_good / array_good.sum()
 
-                else:
+    elif method == "rank":
 
-                    array_normalized[is_good] = array_good / array_good_sum
+        array_[is_good] = rankdata(array_good, method=rank_method)
 
-        elif method == "rank":
-
-            array_normalized[is_good] = rankdata(array_good, method=rank_method)
-
-    return array_normalized
+    return array_
 
 
 def normalize_array(array, axis, method, rank_method="average", raise_for_bad=True):

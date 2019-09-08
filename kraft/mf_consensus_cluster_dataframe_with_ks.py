@@ -14,7 +14,7 @@ from .RANDOM_SEED import RANDOM_SEED
 def mf_consensus_cluster_dataframe_with_ks(
     dataframe,
     ks,
-    mf_function="nmf_by_sklearn",
+    mf_function="nmf_with_sklearn",
     n_job=1,
     n_clustering=10,
     n_iteration=int(1e3),
@@ -107,7 +107,6 @@ def mf_consensus_cluster_dataframe_with_ks(
                     "type": "scatter",
                     "x": ks,
                     "y": tuple(k_return[key]["e"] for key in keys),
-                    "mode": "lines+markers",
                     "marker": {"color": "#ff1968"},
                 }
             ],
@@ -144,7 +143,6 @@ def mf_consensus_cluster_dataframe_with_ks(
                     "name": "W",
                     "x": ks,
                     "y": w_element_cluster__ccc,
-                    "mode": "lines+markers",
                     "marker": {"color": "#9017e6"},
                 },
                 {
@@ -152,7 +150,6 @@ def mf_consensus_cluster_dataframe_with_ks(
                     "name": "H",
                     "x": ks,
                     "y": h_element_cluster__ccc,
-                    "mode": "lines+markers",
                     "marker": {"color": "#4e40d8"},
                 },
                 {
@@ -160,7 +157,6 @@ def mf_consensus_cluster_dataframe_with_ks(
                     "name": "Mean",
                     "x": ks,
                     "y": (w_element_cluster__ccc + h_element_cluster__ccc) / 2,
-                    "mode": "lines+markers",
                     "marker": {"color": "#20d9ba"},
                 },
             ],

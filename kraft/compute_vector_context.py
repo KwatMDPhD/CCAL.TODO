@@ -57,7 +57,7 @@ def compute_vector_context(
     shape=None,
     fit_initial_location=None,
     fit_initial_scale=None,
-    n_grid=1e3,
+    n_grid=int(1e3),
     degree_of_freedom_for_tail_reduction=1e8,
     multiply_distance_from_reference_argmax=False,
     global_location=None,

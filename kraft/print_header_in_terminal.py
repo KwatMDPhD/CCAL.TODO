@@ -7,14 +7,10 @@ def print_header_in_terminal(str_):
 
     terminal_width, terminal_height = get_terminal_size()
 
-    spaces = " " * max(0, (terminal_width - len(str_)) // 2)
+    str_length = len(str_)
 
-    str_ = spaces + str_ + spaces
+    if str_length < terminal_width:
 
-    if not terminal_width % 2:
+        str_ = "{0}{1}{0}".format(" " * (terminal_width - str_length) // 2, str_)
 
-        str_ += " "
-
-    spacer = "=" * terminal_width
-
-    echo_or_print_str("{0}\n{1}\n{0}".format(spacer, str_))
+    echo_or_print_str("{0}\n{1}\n{0}".format("=" * terminal_width, str_))

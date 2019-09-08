@@ -297,14 +297,6 @@ def make_match_panel(
 
         html_file_path = "{}.statistics.html".format(file_path_prefix)
 
-    if score_moe_p_value_fdr.shape[0] < 1e3:
-
-        mode = "lines+markers"
-
-    else:
-
-        mode = "lines"
-
     plot_plotly_figure(
         {
             "layout": {
@@ -320,7 +312,6 @@ def make_match_panel(
                     "name": name,
                     "x": score_moe_p_value_fdr.index,
                     "y": score_moe_p_value_fdr[name].values,
-                    "mode": mode,
                     "marker": {"color": color},
                 }
                 for name, color in zip(

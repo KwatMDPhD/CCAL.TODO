@@ -2,7 +2,7 @@ def read_gmt(gmt_file_path):
 
     gene_set_genes = {}
 
-    with open(gmt_file_path, "r") as io:
+    with open(gmt_file_path) as io:
 
         for line in io.readlines():
 
