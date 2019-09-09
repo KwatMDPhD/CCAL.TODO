@@ -20,8 +20,8 @@ from .compute_vector_bandwidth import compute_vector_bandwidth
 from .make_element_x_dimension_from_node_x_element_and_node_dimension import (
     make_element_x_dimension_from_node_x_element_and_node_dimension,
 )
-from .normalize_array import normalize_array
-from .normalize_series_or_dataframe import normalize_series_or_dataframe
+from .normalize_array_on_axis import normalize_array_on_axis
+from .normalize_dataframe import normalize_dataframe
 from .pick_colors import pick_colors
 from .plot_gps_map import plot_gps_map
 from .plot_heat_map import plot_heat_map
@@ -278,7 +278,7 @@ class GPSMap:
 
         if self.node_x_dimension is None:
 
-            self.node_x_dimension = normalize_array(
+            self.node_x_dimension = normalize_array_on_axis(
                 scale_element_x_dimension_dimension(
                     2,
                     distance__point_x_point=self.distance__node_x_node,
@@ -532,9 +532,9 @@ class GPSMap:
 
                 column_annotation = self.w_element_label.sort_values()
 
-                z = DataFrame(self.w, index=self.nodes, columns=self.w_elements)[
-                    column_annotation.index
-                ]
+                dataframe = DataFrame(
+                    self.w, index=self.nodes, columns=self.w_elements
+                )[column_annotation.index]
 
                 element_name = self.w_element_name
 
@@ -542,19 +542,19 @@ class GPSMap:
 
                 column_annotation = self.h_element_label.sort_values()
 
-                z = DataFrame(self.h, index=self.nodes, columns=self.h_elements)[
-                    column_annotation.index
-                ]
+                dataframe = DataFrame(
+                    self.h, index=self.nodes, columns=self.h_elements
+                )[column_annotation.index]
 
                 element_name = self.h_element_name
 
             plot_heat_map(
-                normalize_series_or_dataframe(z, 0, "-0-"),
+                normalize_dataframe(dataframe, 0, "-0-"),
                 column_annotations=column_annotation,
                 column_annotation_colors=label_colors,
-                title_text=w_or_h.title(),
-                xaxis_title_text=element_name,
-                yaxis_title_text=self.node_name,
+                title={"text": w_or_h.title()},
+                xaxis={"title": {"text": element_name}},
+                yaxis={"title": {"text": self.node_name}},
                 show_xaxis_ticks=False,
             )
 

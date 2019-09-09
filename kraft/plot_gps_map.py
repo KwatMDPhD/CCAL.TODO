@@ -11,7 +11,6 @@ from .get_element_x_dimension_triangulation_edges import (
 )
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .pick_colors import pick_colors
-from .plot_gps_map import plot_gps_map
 from .plot_plotly_figure import plot_plotly_figure
 
 

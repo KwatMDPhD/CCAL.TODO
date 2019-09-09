@@ -4,7 +4,7 @@ from pandas import DataFrame
 from .drop_dataframe_slice import drop_dataframe_slice
 from .drop_dataframe_slice_greedily import drop_dataframe_slice_greedily
 from .log_array import log_array
-from .normalize_series_or_dataframe import normalize_series_or_dataframe
+from .normalize_dataframe import normalize_dataframe
 from .summarize_feature_x_sample import summarize_feature_x_sample
 
 
@@ -137,7 +137,7 @@ def process_feature_x_sample(
             "Axis-{} {} normalizing...".format(normalization_axis, normalization_method)
         )
 
-        feature_x_sample = normalize_series_or_dataframe(
+        feature_x_sample = normalize_dataframe(
             feature_x_sample, normalization_axis, normalization_method
         )
 

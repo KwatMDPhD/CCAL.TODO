@@ -2,7 +2,8 @@ from .ALMOST_ZERO import ALMOST_ZERO
 from .get_data_type import get_data_type
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_match_panel_annotations import make_match_panel_annotations
-from .normalize_series_or_dataframe import normalize_series_or_dataframe
+from .normalize_dataframe import normalize_dataframe
+from .normalize_series import normalize_series
 from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -40,7 +41,7 @@ def make_match_panel_summary(
 
     if target_type == "continuous":
 
-        target_to_plot = normalize_series_or_dataframe(target_to_plot, None, "-0-")
+        target_to_plot = normalize_series(target_to_plot, "-0-")
 
         if plot_std is not None:
 
@@ -113,7 +114,7 @@ def make_match_panel_summary(
 
         if data_dict["type"] == "continuous":
 
-            data_to_plot = normalize_series_or_dataframe(data_to_plot, 1, "-0-")
+            data_to_plot = normalize_dataframe(data_to_plot, 1, "-0-")
 
             if plot_std is not None:
 

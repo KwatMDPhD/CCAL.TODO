@@ -1,210 +1,20 @@
-from math import ceil
-
-from numpy import apply_along_axis, array_split, concatenate, full, nan
-from numpy.random import choice, get_state, seed, set_state, shuffle
-from pandas import DataFrame
-
-from .apply_function_on_2_vectors import apply_function_on_2_vectors
-from .call_function_with_multiprocess import call_function_with_multiprocess
-from .check_array_for_bad import check_array_for_bad
+from .apply_function_on_vector_and_each_matrix_row_and_compute_statistics import (
+    apply_function_on_vector_and_each_matrix_row_and_compute_statistics,
+)
 from .cluster_matrix import cluster_matrix
-from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
 from .compute_information_coefficient_between_2_vectors import (
     compute_information_coefficient_between_2_vectors,
 )
-from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
 from .get_data_type import get_data_type
 from .is_sorted_array import is_sorted_array
 from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_match_panel_annotations import make_match_panel_annotations
-from .normalize_series_or_dataframe import normalize_series_or_dataframe
+from .normalize_dataframe import normalize_dataframe
+from .normalize_series import normalize_series
 from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 from .select_series_indices import select_series_indices
-
-
-def _match_target_and_data(
-    target,
-    data,
-    match_function,
-    n_required_for_match_function,
-    raise_for_n_less_than_required,
-):
-
-    return apply_along_axis(
-        apply_function_on_2_vectors,
-        1,
-        data,
-        target,
-        match_function,
-        n_required=n_required_for_match_function,
-        raise_for_n_less_than_required=raise_for_n_less_than_required,
-        raise_for_bad=False,
-    )
-
-
-def _permute_target_and_match_target_and_data(
-    target,
-    data,
-    random_seed,
-    n_permutation,
-    match_function,
-    n_required_for_match_function,
-    raise_for_n_less_than_required,
-):
-
-    print("Computing p-value and FDR with {} permutation...".format(n_permutation))
-
-    seed(seed=random_seed)
-
-    index_x_permutation = full((data.shape[0], n_permutation), nan)
-
-    target_ = target.copy()
-
-    for i in range(n_permutation):
-
-        shuffle(target_)
-
-        random_state = get_state()
-
-        index_x_permutation[:, i] = _match_target_and_data(
-            target_,
-            data,
-            match_function,
-            n_required_for_match_function,
-            raise_for_n_less_than_required,
-        )
-
-        set_state(random_state)
-
-    return index_x_permutation
-
-
-def _match_target_and_data_and_compute_statistics(
-    target,
-    data,
-    n_job,
-    match_function,
-    n_required_for_match_function,
-    raise_for_n_less_than_required,
-    n_extreme,
-    fraction_extreme,
-    random_seed,
-    n_sampling,
-    n_permutation,
-):
-
-    score_moe_p_value_fdr = DataFrame(
-        index=range(data.shape[0]), columns=("Score", "0.95 MoE", "P-Value", "FDR")
-    )
-
-    n_job = min(data.shape[0], n_job)
-
-    print(
-        "Computing score using {} with {} job...".format(match_function.__name__, n_job)
-    )
-
-    data_split = array_split(data, n_job)
-
-    scores = concatenate(
-        call_function_with_multiprocess(
-            _match_target_and_data,
-            (
-                (
-                    target,
-                    data_,
-                    match_function,
-                    n_required_for_match_function,
-                    raise_for_n_less_than_required,
-                )
-                for data_ in data_split
-            ),
-            n_job,
-        )
-    )
-
-    if check_array_for_bad(scores, raise_for_bad=False).all():
-
-        return score_moe_p_value_fdr
-
-    score_moe_p_value_fdr["Score"] = scores
-
-    if n_extreme is not None or fraction_extreme is not None:
-
-        moe_indices = select_series_indices(
-            score_moe_p_value_fdr["Score"],
-            "<>",
-            n=n_extreme,
-            fraction=fraction_extreme,
-            plot=False,
-        )
-
-    else:
-
-        moe_indices = score_moe_p_value_fdr.index
-
-    print("Computing MoE with {} sampling...".format(n_sampling))
-
-    seed(seed=random_seed)
-
-    index_x_sampling = full((moe_indices.size, n_sampling), nan)
-
-    n_sample = ceil(0.632 * target.size)
-
-    for i in range(n_sampling):
-
-        random_indices = choice(target.size, size=n_sample, replace=True)
-
-        sampled_target = target[random_indices]
-
-        sampled_data = data[moe_indices][:, random_indices]
-
-        random_state = get_state()
-
-        index_x_sampling[:, i] = _match_target_and_data(
-            sampled_target,
-            sampled_data,
-            match_function,
-            n_required_for_match_function,
-            raise_for_n_less_than_required,
-        )
-
-        set_state(random_state)
-
-    score_moe_p_value_fdr.loc[moe_indices, "0.95 MoE"] = apply_along_axis(
-        compute_normal_pdf_margin_of_error, 1, index_x_sampling, raise_for_bad=False
-    )
-
-    p_values, fdrs = compute_empirical_p_values_and_fdrs(
-        score_moe_p_value_fdr["Score"],
-        concatenate(
-            call_function_with_multiprocess(
-                _permute_target_and_match_target_and_data,
-                (
-                    (
-                        target,
-                        data_,
-                        random_seed,
-                        n_permutation,
-                        match_function,
-                        n_required_for_match_function,
-                        raise_for_n_less_than_required,
-                    )
-                    for data_ in data_split
-                ),
-                n_job,
-            )
-        ).flatten(),
-        "<>",
-        raise_for_bad=False,
-    )
-
-    score_moe_p_value_fdr["P-Value"] = p_values
-
-    score_moe_p_value_fdr["FDR"] = fdrs
-
-    return score_moe_p_value_fdr
 
 
 def make_match_panel(
@@ -251,7 +61,7 @@ def make_match_panel(
 
     if score_moe_p_value_fdr is None:
 
-        score_moe_p_value_fdr = _match_target_and_data_and_compute_statistics(
+        score_moe_p_value_fdr = apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
             target.values,
             data.values,
             n_job,
@@ -362,7 +172,7 @@ def make_match_panel(
 
     if target_type == "continuous":
 
-        target_to_plot = normalize_series_or_dataframe(target_to_plot, None, "-0-")
+        target_to_plot = normalize_series(target_to_plot, "-0-")
 
         if plot_std is not None:
 
@@ -374,7 +184,7 @@ def make_match_panel(
 
     if data_type == "continuous":
 
-        data_to_plot = normalize_series_or_dataframe(data_to_plot, 1, "-0-")
+        data_to_plot = normalize_dataframe(data_to_plot, 1, "-0-")
 
         if plot_std is not None:
 

@@ -2,25 +2,17 @@ from numpy import concatenate, where
 from pandas import unique
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-from .apply_function_on_2_vectors import apply_function_on_2_vectors
 from .check_array_for_bad import check_array_for_bad
-
-
-def _ignore_bad_and_compute_euclidean_distance(vector_0, vector_1):
-
-    return apply_function_on_2_vectors(
-        vector_0,
-        vector_1,
-        lambda vector_0, vector_1: ((vector_0 - vector_1) ** 2).sum() ** 0.5,
-        raise_for_bad=False,
-    )
+from .ignore_bad_and_compute_euclidean_distance import (
+    ignore_bad_and_compute_euclidean_distance,
+)
 
 
 def cluster_matrix(
     matrix,
     axis,
     groups=None,
-    distance_function=_ignore_bad_and_compute_euclidean_distance,
+    distance_function=ignore_bad_and_compute_euclidean_distance,
     linkage_method="average",
     optimal_ordering=True,
     raise_for_bad=True,

@@ -1,10 +1,10 @@
-from numpy import apply_along_axis, full, nan
+from numpy import full, nan
 from scipy.stats import rankdata
 
 from .check_array_for_bad import check_array_for_bad
 
 
-def _normalize_array(array, method, rank_method, raise_for_bad):
+def normalize_array(array, method, rank_method="average", raise_for_bad=True):
 
     is_good = ~check_array_for_bad(array, raise_for_bad=raise_for_bad)
 
@@ -61,16 +61,3 @@ def _normalize_array(array, method, rank_method, raise_for_bad):
         array_[is_good] = rankdata(array_good, method=rank_method)
 
     return array_
-
-
-def normalize_array(array, axis, method, rank_method="average", raise_for_bad=True):
-
-    if axis is None:
-
-        return _normalize_array(array, method, rank_method, raise_for_bad)
-
-    else:
-
-        return apply_along_axis(
-            _normalize_array, axis, array, method, rank_method, raise_for_bad
-        )

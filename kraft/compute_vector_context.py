@@ -1,51 +1,10 @@
-from numpy import (
-    absolute,
-    asarray,
-    concatenate,
-    cumsum,
-    full,
-    inf,
-    linspace,
-    minimum,
-    nan,
-)
+from numpy import absolute, asarray, full, linspace, minimum, nan
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .check_array_for_bad import check_array_for_bad
-from .compute_kullback_leibler_divergence import compute_kullback_leibler_divergence
+from .compute_pdf_and_pdf_reference_context import compute_pdf_and_pdf_reference_context
 from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
 from .make_reflecting_grid import make_reflecting_grid
-
-
-def _compute_vector_context(
-    grid, pdf, pdf_reference, multiply_distance_from_reference_argmax
-):
-
-    center = pdf_reference.argmax()
-
-    left_kl = compute_kullback_leibler_divergence(pdf[:center], pdf_reference[:center])
-
-    right_kl = compute_kullback_leibler_divergence(pdf[center:], pdf_reference[center:])
-
-    left_kl[left_kl == inf] = 0
-
-    right_kl[right_kl == inf] = 0
-
-    left_context = -cumsum((left_kl / left_kl.sum())[::-1])[::-1]
-
-    right_context = cumsum(right_kl / right_kl.sum())
-
-    left_context *= left_kl.sum() / left_kl.size
-
-    right_context *= right_kl.sum() / right_kl.size
-
-    context = concatenate((left_context, right_context))
-
-    if multiply_distance_from_reference_argmax:
-
-        context *= absolute(grid - grid[center])
-
-    return context
 
 
 def compute_vector_context(
@@ -98,7 +57,7 @@ def compute_vector_context(
         ),
     )
 
-    shape_context = _compute_vector_context(
+    shape_context = compute_pdf_and_pdf_reference_context(
         grid, pdf, shape_pdf_reference, multiply_distance_from_reference_argmax
     )
 
@@ -131,7 +90,7 @@ def compute_vector_context(
             ),
         )
 
-        location_context = _compute_vector_context(
+        location_context = compute_pdf_and_pdf_reference_context(
             grid, pdf, location_pdf_reference, multiply_distance_from_reference_argmax
         )
 

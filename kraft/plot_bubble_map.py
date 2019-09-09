@@ -85,9 +85,7 @@ def plot_bubble_map(
                     "text": dataframe_size.values.ravel(),
                     "mode": "markers",
                     "marker": {
-                        "size": normalize_array(
-                            dataframe_size.values, None, "0-1"
-                        ).ravel()
+                        "size": normalize_array(dataframe_size.values, "0-1").ravel()
                         * marker_size_max,
                         "color": dataframe_color.values.ravel(),
                         "colorscale": make_colorscale_from_colors(
