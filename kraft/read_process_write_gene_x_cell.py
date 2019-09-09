@@ -70,7 +70,7 @@ def read_process_write_gene_x_cell(
             get_dataframe_fraction_good_on_axis(gene_x_cell__clean__log, 1),
             ">",
             thresholds=(minimum_fraction_cell_with_gene_signal,),
-            title={"text": "Genes"},
+            layout={"title": {"text": "Genes"}},
             yaxis={"title": {"text": "Fraction Cell"}},
         )
 
@@ -88,7 +88,7 @@ def read_process_write_gene_x_cell(
             ),
             ">",
             standard_deviation=minimum_fraction_gene_z_score,
-            title={"text": "Cells"},
+            layout={"title": {"text": "Cells"}},
             yaxis={"title": {"text": "Fraction Gene"}},
         )
 

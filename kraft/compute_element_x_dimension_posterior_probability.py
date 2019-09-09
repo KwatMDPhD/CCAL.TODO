@@ -43,7 +43,7 @@ def compute_element_x_dimension_posterior_probability(
         plot_mesh_grid(
             mesh_grid_point_x_dimension,
             mesh_grid_point_posterior_probability,
-            title={"text": "Posterior Probability"},
+            layout={"title": {"text": "Posterior Probability"}},
             dimension_names=dimension_names,
         )
 

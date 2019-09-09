@@ -27,7 +27,7 @@ def summarize_feature_x_sample(
 
             plot_heat_map(
                 feature_x_sample,
-                title={"text": feature_x_sample_alias},
+                layout={"title": {"text": feature_x_sample_alias}},
                 xaxis={"title": {"text": feature_x_sample.columns.name}},
                 yaxis={"title": {"text": feature_x_sample.index.name}},
             )
@@ -51,7 +51,7 @@ def summarize_feature_x_sample(
         plot_histogram(
             (Series(feature_x_sample_not_na_values),),
             plot_rug=feature_x_sample_not_na_values.size <= plot_rug_max_size,
-            title={"text": feature_x_sample_alias},
+            layout={"title": {"text": feature_x_sample_alias}},
             xaxis={"title": {"text": "Not-NA Value"}},
         )
 
@@ -66,6 +66,6 @@ def summarize_feature_x_sample(
         plot_histogram(
             (isna__feature_x_sample.sum(axis=1), isna__feature_x_sample.sum()),
             plot_rug=max(isna__feature_x_sample.shape) <= plot_rug_max_size,
-            title={"text": feature_x_sample_alias},
+            layout={"title": {"text": feature_x_sample_alias}},
             xaxis={"title": {"text": "N NA"}},
         )

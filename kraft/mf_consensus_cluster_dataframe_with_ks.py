@@ -69,7 +69,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                     plot_dataframe,
                     k_directory_paths[i],
                 )
-                for i in range(ks)
+                for i in range(len(ks))
             ),
             n_job=n_job,
         ),
@@ -204,9 +204,9 @@ def mf_consensus_cluster_dataframe_with_ks(
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
-                title={"text": "MFCC {}".format(w_or_h.title())},
-                xaxis={"title": {"text": "Element"}},
-                yaxis={"title": {"text": k_x_element.index.name}},
+                layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
+                heat_map_xaxis={"title": {"text": "Element"}},
+                heat_map_yaxis={"title": {"text": k_x_element.index.name}},
                 html_file_path=html_file_path,
             )
 

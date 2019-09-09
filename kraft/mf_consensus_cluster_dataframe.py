@@ -90,9 +90,9 @@ def mf_consensus_cluster_dataframe(
 
                 plot_heat_map(
                     w_0.iloc[cluster_matrix(w_0.values, 0)],
-                    title={"text": "MF K={} W".format(k)},
-                    xaxis={"title": {"text": w_0.columns.name}},
-                    yaxis={"title": {"text": w_0.index.name}},
+                    layout={"title": {"text": "MF K={} W".format(k)}},
+                    heat_map_xaxis={"title": {"text": w_0.columns.name}},
+                    heat_map_yaxis={"title": {"text": w_0.index.name}},
                     html_file_path=html_file_path,
                 )
 
@@ -110,9 +110,9 @@ def mf_consensus_cluster_dataframe(
 
                 plot_heat_map(
                     h_0.iloc[:, cluster_matrix(h_0.values, 1)],
-                    title={"text": "MF K={} H".format(k)},
-                    xaxis={"title": {"text": h_0.columns.name}},
-                    yaxis={"title": {"text": h_0.index.name}},
+                    layout={"title": {"text": "MF K={} H".format(k)}},
+                    heat_map_xaxis={"title": {"text": h_0.columns.name}},
+                    heat_map_yaxis={"title": {"text": h_0.index.name}},
                     html_file_path=html_file_path,
                 )
 
@@ -158,9 +158,9 @@ def mf_consensus_cluster_dataframe(
             dataframe,
             row_annotations=w_element_cluster_sorted,
             column_annotations=h_element_cluster_sorted,
-            title={"text": "MFCC K={}".format(k)},
-            xaxis={"title": {"text": dataframe.columns.name}},
-            yaxis={"title": {"text": dataframe.index.name}},
+            layout={"title": {"text": "MFCC K={}".format(k)}},
+            heat_map_xaxis={"title": {"text": dataframe.columns.name}},
+            heat_map_yaxis={"title": {"text": dataframe.index.name}},
             html_file_path=html_file_path,
         )
 

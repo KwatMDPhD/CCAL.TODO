@@ -135,9 +135,9 @@ def hierarchical_consensus_cluster_dataframe(
 
         plot_heat_map(
             dataframe,
-            title={"text": "HCC K={}".format(k)},
-            xaxis={"title": {"text": dataframe.columns.name}},
-            yaxis={"title": {"text": dataframe.index.name}},
+            layout={"title": {"text": "HCC K={}".format(k)}},
+            heat_map_xaxis={"title": {"text": dataframe.columns.name}},
+            heat_map_yaxis={"title": {"text": dataframe.index.name}},
             html_file_path=html_file_path,
             **{plot_heat_map_keyword: element_cluster_sorted},
         )

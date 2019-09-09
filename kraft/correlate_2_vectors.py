@@ -14,7 +14,7 @@ def correlate_2_vectors(
     random_seed=RANDOM_SEED,
     plot=True,
     marker_size=16,
-    title=None,
+    layout=None,
     xaxis=None,
     yaxis=None,
     html_file_path=None,
@@ -63,17 +63,29 @@ def correlate_2_vectors(
 
             r2_p_value_str = "{} & P-Value={:.3e}".format(r2_p_value_str, p_value)
 
-        if title["text"] is not None:
+        layout_template = {"xaxis": xaxis, "yaxis": yaxis}
 
-            title["text"] = "{}<br>{}".format(title["text"], r2_p_value_str)
+        if layout is None:
+
+            layout = layout_template
 
         else:
 
-            title["text"] = r2_p_value_str
+            layout = {**layout_template, **layout}
+
+        if layout["title"]["text"] is not None:
+
+            layout["title"]["text"] = "{}<br>{}".format(
+                layout["title"]["text"], r2_p_value_str
+            )
+
+        else:
+
+            layout["title"]["text"] = r2_p_value_str
 
         plot_plotly_figure(
             {
-                "layout": {"title": title, "xaxis": xaxis, "yaxis": yaxis},
+                "layout": layout,
                 "data": [
                     {
                         "type": "scatter",

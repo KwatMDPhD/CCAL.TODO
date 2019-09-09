@@ -1,16 +1,11 @@
 from plotly.io import show, templates, write_html
 
-templates["kraft"] = {
-    "layout": {
-        # "autosize": True,
-    }
-}
+templates["kraft"] = {"layout": {"autosize": False}}
 
 
 def plot_plotly_figure(figure, html_file_path=None):
 
-    # template = "plotly_white+kraft"
-    template = "plotly_white"
+    template = "plotly_white+kraft"
 
     if "layout" in figure:
 
@@ -20,7 +15,7 @@ def plot_plotly_figure(figure, html_file_path=None):
 
         figure["layout"] = {"template": template}
 
-    config = {"editable": True}
+    config = {"editable": False}
 
     show(figure, config=config)
 

@@ -552,7 +552,7 @@ class GPSMap:
                 normalize_dataframe(dataframe, 0, "-0-"),
                 column_annotations=column_annotation,
                 column_annotation_colors=label_colors,
-                title={"text": w_or_h.title()},
+                layout={"title": {"text": w_or_h.title()}},
                 xaxis={"title": {"text": element_name}},
                 yaxis={"title": {"text": self.node_name}},
                 show_xaxis_ticks=False,

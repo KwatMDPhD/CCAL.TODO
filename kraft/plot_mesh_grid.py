@@ -6,7 +6,10 @@ from .unmesh import unmesh
 
 
 def plot_mesh_grid(
-    mesh_grid_point_x_dimension, mesh_grid_point_value, title=None, dimension_names=None
+    mesh_grid_point_x_dimension,
+    mesh_grid_point_value,
+    layout=None,
+    dimension_names=None,
 ):
 
     n_dimension = mesh_grid_point_x_dimension.shape[1]
@@ -27,19 +30,26 @@ def plot_mesh_grid(
 
         dimension_0_grid_size = dimension_grids[0].size
 
+        layout_template = {
+            "xaxis": {
+                "title": {
+                    "text": "{} (n={})".format(dimension_0_name, dimension_0_grid_size)
+                }
+            },
+            "yaxis": {"title": {"text": "Value"}},
+        }
+
+        if layout is None:
+
+            layout = layout_template
+
+        else:
+
+            layout = {**layout_template, **layout}
+
         plot_plotly_figure(
             {
-                "layout": {
-                    "title": title,
-                    "xaxis": {
-                        "title": {
-                            "text": "{} (n={})".format(
-                                dimension_0_name, dimension_0_grid_size
-                            )
-                        }
-                    },
-                    "yaxis": {"title": {"text": "Value"}},
-                },
+                "layout": layout,
                 "data": [
                     {"type": "scatter", "x": dimension_grids[0], "y": value_reshaped}
                 ],
@@ -55,7 +65,7 @@ def plot_mesh_grid(
                 index=("{:.3f} *".format(i) for i in dimension_grids[0]),
                 columns=("* {:.3f}".format(i) for i in dimension_grids[1]),
             ),
-            title=title,
+            layout=layout,
             xaxis={"title": {"text": dimension_names[1]}},
             yaxis={"title": {"text": dimension_names[0]}},
         )

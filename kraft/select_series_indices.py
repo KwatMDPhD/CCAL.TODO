@@ -11,7 +11,7 @@ def select_series_indices(
     fraction=None,
     standard_deviation=None,
     plot=True,
-    title=None,
+    layout=None,
     yaxis=None,
     html_file_path=None,
 ):
@@ -132,13 +132,19 @@ def select_series_indices(
 
     if plot:
 
+        layout_template = {"xaxis": {"title": {"text": "Rank"}}, "yaxis": yaxis}
+
+        if layout is None:
+
+            layout = layout_template
+
+        else:
+
+            layout = {**layout_template, **layout}
+
         plot_plotly_figure(
             {
-                "layout": {
-                    "title": title,
-                    "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": yaxis,
-                },
+                "layout": layout,
                 "data": [
                     {
                         "type": "scatter",

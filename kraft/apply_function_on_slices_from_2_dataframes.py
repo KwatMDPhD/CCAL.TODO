@@ -12,7 +12,7 @@ def apply_function_on_slices_from_2_dataframes(
     dataframe_1,
     axis,
     function,
-    title=None,
+    layout=None,
     dataframe_0_name=None,
     dataframe_1_name=None,
     file_path_prefix=None,
@@ -48,7 +48,7 @@ def apply_function_on_slices_from_2_dataframes(
         comparison.iloc[
             cluster_matrix(comparison.values, 0), cluster_matrix(comparison.values, 1)
         ],
-        title=title,
+        layout=layout,
         xaxis={"title": {"text": dataframe_1_name}},
         yaxis={"title": {"text": dataframe_0_name}},
         html_file_path=html_file_path,
