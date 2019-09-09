@@ -15,6 +15,7 @@ def plot_plotly_figure(figure, html_file_path=None):
     if "layout" in figure:
 
         figure["layout"]["template"] = template
+
     else:
 
         figure["layout"] = {"template": template}

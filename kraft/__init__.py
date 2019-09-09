@@ -1,5 +1,3 @@
-from plotly.io import templates
-templates.default = "plotly_white"
 from .ALMOST_ZERO import ALMOST_ZERO
 from .BAD_VALUES import BAD_VALUES
 from .DATA_DIRECTORY_PATH import DATA_DIRECTORY_PATH
