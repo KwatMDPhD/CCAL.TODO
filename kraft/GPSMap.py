@@ -1,20 +1,4 @@
-from matplotlib.colors import LinearSegmentedColormap, to_hex
-from numpy import (
-    arange,
-    asarray,
-    cos,
-    diag,
-    exp,
-    full,
-    linspace,
-    mean,
-    nan,
-    pi,
-    rot90,
-    sin,
-    sort,
-    unique,
-)
+from numpy import arange, diag, exp, full, linspace, mean, nan, rot90
 from numpy.random import choice, normal, random_sample, seed
 from pandas import DataFrame, Series
 from scipy.spatial import Delaunay
@@ -24,8 +8,7 @@ from scipy.stats import pearsonr
 from .apply_function_on_slices_from_2_matrices import (
     apply_function_on_slices_from_2_matrices,
 )
-from .check_array_for_bad import check_array_for_bad
-from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
+from .check_dataframe_number import check_dataframe_number
 from .cluster_matrix import cluster_matrix
 from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
@@ -34,15 +17,13 @@ from .compute_information_distance_between_2_vectors import (
     compute_information_distance_between_2_vectors,
 )
 from .compute_vector_bandwidth import compute_vector_bandwidth
-from .get_colormap_colors import get_colormap_colors
-from .get_data_type import get_data_type
-from .get_element_x_dimension_triangulation_edges import (
-    get_element_x_dimension_triangulation_edges,
+from .make_element_x_dimension_from_node_x_element_and_node_dimension import (
+    make_element_x_dimension_from_node_x_element_and_node_dimension,
 )
-from .make_colorscale_from_colors import make_colorscale_from_colors
 from .normalize_array import normalize_array
 from .normalize_series_or_dataframe import normalize_series_or_dataframe
 from .pick_colors import pick_colors
+from .plot_gps_map import plot_gps_map
 from .plot_heat_map import plot_heat_map
 from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
@@ -57,391 +38,6 @@ grid_label_opacity_without_annotation = 0.64
 grid_label_opacity_with_annotation = 0.5
 
 grid_extension = 1 / 1e3
-
-
-def _check_node_x_element(node_x_element):
-
-    if node_x_element.index.has_duplicates:
-
-        raise ValueError
-
-    if node_x_element.columns.has_duplicates:
-
-        raise ValueError
-
-    if not node_x_element.applymap(
-        lambda value: isinstance(value, (int, float))
-    ).values.all():
-
-        raise ValueError
-
-    check_array_for_bad(node_x_element.values)
-
-
-def _make_element_x_dimension(node_x_element, node_x_dimension, n_pull, pull_power):
-
-    element_x_dimension = full(
-        (node_x_element.shape[1], node_x_dimension.shape[1]), nan
-    )
-
-    node_x_element = normalize_array(node_x_element, None, "0-1")
-
-    for i in range(node_x_element.shape[1]):
-
-        pulls = node_x_element[:, i]
-
-        if 3 < pulls.size:
-
-            pulls = normalize_array(pulls, None, "0-1")
-
-        if n_pull is not None:
-
-            pulls[pulls < sort(pulls)[-n_pull]] = 0
-
-        if pull_power is not None:
-
-            pulls = pulls ** pull_power
-
-        for j in range(node_x_dimension.shape[1]):
-
-            element_x_dimension[i, j] = (
-                pulls * node_x_dimension[:, j]
-            ).sum() / pulls.sum()
-
-    return element_x_dimension
-
-
-def _plot(
-    nodes,
-    node_name,
-    node_x_dimension,
-    elements,
-    element_name,
-    element_x_dimension,
-    element_marker_size,
-    element_label,
-    grid_values,
-    grid_labels,
-    label_colors,
-    grid_label_opacity,
-    annotation_x_element,
-    annotation_types,
-    annotation_std_maxs,
-    annotation_colorscales,
-    layout_size,
-    highlight_binary,
-    title_text,
-    html_file_path,
-):
-
-    axis_template = {
-        "showgrid": False,
-        "zeroline": False,
-        "ticks": "",
-        "showticklabels": False,
-    }
-
-    layout = {
-        "width": layout_size,
-        "height": layout_size,
-        "title": {"text": title_text, "font": {"color": "#4c221b"}},
-        "xaxis": axis_template,
-        "yaxis": axis_template,
-    }
-
-    data = []
-
-    node_opacity = 0.88
-
-    edge_xs, edge_ys = get_element_x_dimension_triangulation_edges(node_x_dimension)
-
-    data.append(
-        {
-            "type": "scatter",
-            "legendgroup": node_name,
-            "showlegend": False,
-            "x": edge_xs,
-            "y": edge_ys,
-            "line": {"color": "#23191e"},
-            "opacity": node_opacity,
-            "hoverinfo": None,
-        }
-    )
-
-    node_color = "#2e211b"
-
-    node_color_accent = "#ebf6f7"
-
-    data.append(
-        {
-            "type": "scatter",
-            "name": node_name,
-            "legendgroup": node_name,
-            "x": node_x_dimension[:, 0],
-            "y": node_x_dimension[:, 1],
-            "text": arange(len(nodes)),
-            "mode": "markers+text",
-            "marker": {
-                "size": 32,
-                "color": node_color,
-                "line": {"width": 2.4, "color": node_color_accent},
-            },
-            "textfont": {"size": 16, "color": node_color_accent},
-            "opacity": node_opacity,
-        }
-    )
-
-    if grid_values is not None:
-
-        x = linspace(0 - grid_extension, 1 + grid_extension, num=grid_values.shape[1])
-
-        y = linspace(0 - grid_extension, 1 + grid_extension, num=grid_values.shape[0])
-
-        data.append(
-            {
-                "type": "contour",
-                "showlegend": False,
-                "z": grid_values[::-1],
-                "x": x,
-                "y": y,
-                "autocontour": False,
-                "ncontours": 24,
-                "contours": {"coloring": "none"},
-                "showscale": False,
-                "opacity": node_opacity,
-            }
-        )
-
-        grid_labels_unique = unique(
-            grid_labels[~check_array_for_bad(grid_labels, raise_for_bad=False)]
-        ).astype(int)
-
-        for label in grid_labels_unique:
-
-            z = grid_values.copy()
-
-            z[grid_labels != label] = nan
-
-            data.append(
-                {
-                    "type": "heatmap",
-                    "z": z[::-1],
-                    "x": x,
-                    "y": y,
-                    "colorscale": make_colorscale_from_colors(
-                        get_colormap_colors(
-                            LinearSegmentedColormap.from_list(
-                                None, ("#ffffff", label_colors[label])
-                            )
-                        )
-                    ),
-                    "showscale": False,
-                    "opacity": grid_label_opacity,
-                }
-            )
-
-    element_marker_line = {"width": element_marker_size / 10}
-
-    element_opacity = 0.88
-
-    if annotation_x_element is not None:
-
-        if 1 < annotation_x_element.shape[0]:
-
-            shapes = []
-
-            marker_size_factor = element_marker_size / layout_size
-
-        for i, (_, element_value) in enumerate(annotation_x_element.iterrows()):
-
-            element_value.dropna(inplace=True)
-
-            element_x_dimension_ = element_x_dimension[
-                [elements.index(element) for element in element_value.index]
-            ]
-
-            if annotation_types is None:
-
-                data_type = get_data_type(element_value)
-
-            else:
-
-                data_type = annotation_types[i]
-
-            if data_type in ("binary", "categorical"):
-
-                element_value = element_value.rank(method="dense") - 1
-
-            elif data_type == "continuous":
-
-                if annotation_std_maxs is not None:
-
-                    element_value = Series(
-                        clip_array_by_standard_deviation(
-                            element_value.values,
-                            annotation_std_maxs[i],
-                            raise_for_bad=False,
-                        ),
-                        name=element_value.name,
-                        index=element_value.index,
-                    )
-
-            if annotation_x_element.shape[0] == 1:
-
-                sorted_indices = element_value.abs().argsort()
-
-                element_value = element_value[sorted_indices]
-
-                element_x_dimension_ = element_x_dimension_[sorted_indices]
-
-            if annotation_colorscales is None:
-
-                colorscale = make_colorscale_from_colors(
-                    pick_colors(element_value, data_type=data_type)
-                )
-
-            else:
-
-                colorscale = annotation_colorscales[i]
-
-            if 1 == annotation_x_element.shape[0]:
-
-                data.append(
-                    {
-                        "type": "scatter",
-                        "name": element_name,
-                        "showlegend": False,
-                        "x": element_x_dimension_[:, 0],
-                        "y": element_x_dimension_[:, 1],
-                        "text": tuple(
-                            "{}<br>{:.2f}".format(element, value)
-                            for element, value in element_value.items()
-                        ),
-                        "mode": "markers",
-                        "marker": {
-                            "size": element_marker_size,
-                            "color": element_value,
-                            "colorscale": colorscale,
-                            "showscale": data_type == "continuous",
-                            "colorbar": {"len": 0.64, "thickness": layout_size // 64},
-                            "line": element_marker_line,
-                        },
-                        "opacity": element_opacity,
-                        "hoverinfo": "text",
-                    }
-                )
-
-                if highlight_binary and data_type == "binary":
-
-                    layout["annotations"] = [
-                        {
-                            "x": element_x_dimension_[i, 0],
-                            "y": element_x_dimension_[i, 1],
-                            "text": "<b>{}</b>".format(element_value.index[i]),
-                            "font": {"size": 16},
-                            "arrowhead": 2,
-                            "arrowwidth": 2,
-                            "arrowcolor": "#c93756",
-                            "standoff": 16,
-                            "clicktoshow": "onoff",
-                        }
-                        for i in element_value.values.nonzero()[0]
-                    ]
-
-            else:
-
-                for value, (x, y) in zip(element_value.values, element_x_dimension_):
-
-                    color = to_hex(
-                        colorscale[
-                            int(
-                                (len(colorscale) - 1)
-                                * (value - element_value.min())
-                                / (element_value.max() - element_value.min())
-                            )
-                        ][1]
-                    )
-
-                    sector_radian = pi * 2 / annotation_x_element.shape[0]
-
-                    sector_radians = linspace(
-                        sector_radian * i, sector_radian * (i + 1), num=16
-                    )
-
-                    path = "M {} {}".format(x, y)
-
-                    for x_, y_ in zip(cos(sector_radians), sin(sector_radians)):
-
-                        path += " L {} {}".format(
-                            x + x_ * marker_size_factor, y + y_ * marker_size_factor
-                        )
-
-                    path += " Z"
-
-                    shapes.append(
-                        {
-                            "type": "path",
-                            "x0": x,
-                            "y0": y,
-                            "path": path,
-                            "fillcolor": color,
-                            "line": element_marker_line,
-                            "opacity": element_opacity,
-                        }
-                    )
-
-        if 1 < annotation_x_element.shape[0]:
-
-            layout["shapes"] = shapes
-
-    elif element_label is not None:
-
-        for label in grid_labels_unique:
-
-            element_indices = element_label == label
-
-            label_str = str(label)
-
-            data.append(
-                {
-                    "type": "scatter",
-                    "name": label_str,
-                    "legendgroup": label_str,
-                    "x": element_x_dimension[element_indices, 0],
-                    "y": element_x_dimension[element_indices, 1],
-                    "text": asarray(elements)[element_indices],
-                    "mode": "markers",
-                    "marker": {
-                        "size": element_marker_size,
-                        "color": label_colors[label],
-                        "line": element_marker_line,
-                    },
-                    "opacity": element_opacity,
-                    "hoverinfo": "text",
-                }
-            )
-
-    else:
-
-        data.append(
-            {
-                "type": "scatter",
-                "name": element_name,
-                "x": element_x_dimension[:, 0],
-                "y": element_x_dimension[:, 1],
-                "text": elements,
-                "mode": "markers",
-                "marker": {
-                    "size": element_marker_size,
-                    "color": "#ffffff",
-                    "line": element_marker_line,
-                },
-                "opacity": element_opacity,
-                "hoverinfo": "text",
-            }
-        )
-
-    plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
 
 
 class GPSMap:
@@ -531,11 +127,11 @@ class GPSMap:
 
         if w is not None:
 
-            _check_node_x_element(w)
+            check_dataframe_number(w)
 
         if h is not None:
 
-            _check_node_x_element(h)
+            check_dataframe_number(h)
 
         if w is not None and h is not None:
 
@@ -696,13 +292,13 @@ class GPSMap:
 
         if w is not None:
 
-            self.w_element_x_dimension = _make_element_x_dimension(
+            self.w_element_x_dimension = make_element_x_dimension_from_node_x_element_and_node_dimension(
                 self.w, self.node_x_dimension, self.w_n_pull, self.w_pull_power
             )
 
         if h is not None:
 
-            self.h_element_x_dimension = _make_element_x_dimension(
+            self.h_element_x_dimension = make_element_x_dimension_from_node_x_element_and_node_dimension(
                 self.h, self.node_x_dimension, self.h_n_pull, self.h_pull_power
             )
 
@@ -772,7 +368,7 @@ class GPSMap:
 
             title = w_or_h.title()
 
-        _plot(
+        plot_gps_map(
             self.nodes,
             self.node_name,
             self.node_x_dimension,
@@ -981,7 +577,7 @@ class GPSMap:
         html_file_path=None,
     ):
 
-        _check_node_x_element(node_x_predicting_element)
+        check_dataframe_number(node_x_predicting_element)
 
         predicting_elements = node_x_predicting_element.columns.tolist()
 
@@ -1029,7 +625,7 @@ class GPSMap:
 
             label_colors = self.h_label_colors
 
-        predicting_element_x_dimension = _make_element_x_dimension(
+        predicting_element_x_dimension = make_element_x_dimension_from_node_x_element_and_node_dimension(
             node_x_predicting_element.values, self.node_x_dimension, n_pull, pull_power
         )
 
@@ -1073,7 +669,7 @@ class GPSMap:
 
             title = "{} (predicted)".format(w_or_h.title())
 
-        _plot(
+        plot_gps_map(
             self.nodes,
             self.node_name,
             self.node_x_dimension,

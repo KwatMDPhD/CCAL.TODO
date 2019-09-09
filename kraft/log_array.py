@@ -1,6 +1,4 @@
-from numpy import full
-from numpy import log as loge
-from numpy import log2, log10, nan
+from numpy import full, log as loge, log2, log10, nan
 
 from .check_array_for_bad import check_array_for_bad
 
