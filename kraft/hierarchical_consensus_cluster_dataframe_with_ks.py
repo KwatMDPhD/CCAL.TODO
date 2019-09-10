@@ -120,7 +120,6 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                     "type": "scatter",
                     "x": ks,
                     "y": tuple(k_return[key]["element_cluster.ccc"] for key in keys),
-                    "marker": {"color": "#20d9ba"},
                 }
             ],
         },

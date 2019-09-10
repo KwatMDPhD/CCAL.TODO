@@ -140,20 +140,6 @@ def mf_consensus_cluster_dataframe_with_ks(
             "data": [
                 {
                     "type": "scatter",
-                    "name": "W",
-                    "x": ks,
-                    "y": w_element_cluster__ccc,
-                    "marker": {"color": "#9017e6"},
-                },
-                {
-                    "type": "scatter",
-                    "name": "H",
-                    "x": ks,
-                    "y": h_element_cluster__ccc,
-                    "marker": {"color": "#4e40d8"},
-                },
-                {
-                    "type": "scatter",
                     "name": "Mean",
                     "x": ks,
                     "y": (
@@ -161,8 +147,9 @@ def mf_consensus_cluster_dataframe_with_ks(
                         + asarray(h_element_cluster__ccc)
                     )
                     / 2,
-                    "marker": {"color": "#20d9ba"},
                 },
+                {"type": "scatter", "name": "W", "x": ks, "y": w_element_cluster__ccc},
+                {"type": "scatter", "name": "H", "x": ks, "y": h_element_cluster__ccc},
             ],
         },
         html_file_path,

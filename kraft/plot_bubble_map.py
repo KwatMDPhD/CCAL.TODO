@@ -1,65 +1,35 @@
 from numpy import arange, meshgrid
 
-from .make_colorscale_from_colors import make_colorscale_from_colors
+from .COLORBAR import COLORBAR
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .normalize_array import normalize_array
-from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_bubble_map(
     dataframe_size,
     dataframe_color=None,
-    marker_size_max=32,
-    colorbar=None,
+    marker_size_max=20,
+    colorscale=None,
     layout=None,
-    xaxis=None,
-    yaxis=None,
     html_file_path=None,
 ):
 
     x_grid = arange(dataframe_size.shape[1])
 
-    y_grid = arange(dataframe_size.shape[0])
-
-    mesh_grid_x, mesh_grid_y = meshgrid(x_grid, y_grid)
-
-    axis_template = {"zeroline": False}
-
-    xaxis_template = {
-        "tickvals": x_grid,
-        "ticktext": dataframe_size.columns,
-        **axis_template,
-    }
-
-    if xaxis is None:
-
-        xaxis = xaxis_template
-
-    else:
-
-        xaxis = {**xaxis_template, **xaxis}
-
-    yaxis_template = {
-        "tickvals": y_grid,
-        "ticktext": dataframe_size.index,
-        **axis_template,
-    }
-
-    if yaxis is None:
-
-        yaxis = yaxis_template
-
-    else:
-
-        yaxis = {**yaxis_template, **yaxis}
-
-    bubble_size = marker_size_max * 2
+    y_grid = arange(dataframe_size.shape[0])[::-1]
 
     layout_template = {
-        "height": max(640, bubble_size * y_grid.size),
-        "width": max(640, bubble_size * x_grid.size),
-        "xaxis": xaxis,
-        "yaxis": yaxis,
+        "xaxis": {
+            "title": dataframe_size.columns.name,
+            "tickvals": x_grid,
+            "ticktext": dataframe_size.columns,
+        },
+        "yaxis": {
+            "title": dataframe_size.index.name,
+            "tickvals": y_grid,
+            "ticktext": dataframe_size.index,
+        },
     }
 
     if layout is None:
@@ -68,11 +38,13 @@ def plot_bubble_map(
 
     else:
 
-        layout = {**layout_template, **layout}
+        layout = merge_2_dicts_recursively(layout_template, layout)
 
     if dataframe_color is None:
 
         dataframe_color = dataframe_size
+
+    mesh_grid_x, mesh_grid_y = meshgrid(x_grid, y_grid)
 
     plot_plotly_figure(
         {
@@ -81,17 +53,15 @@ def plot_bubble_map(
                 {
                     "type": "scatter",
                     "x": mesh_grid_x.ravel(),
-                    "y": mesh_grid_y.ravel()[::-1],
+                    "y": mesh_grid_y.ravel(),
                     "text": dataframe_size.values.ravel(),
                     "mode": "markers",
                     "marker": {
                         "size": normalize_array(dataframe_size.values, "0-1").ravel()
                         * marker_size_max,
                         "color": dataframe_color.values.ravel(),
-                        "colorscale": make_colorscale_from_colors(
-                            pick_colors(dataframe_color)
-                        ),
-                        "colorbar": colorbar,
+                        "colorscale": colorscale,
+                        "colorbar": COLORBAR,
                     },
                 }
             ],

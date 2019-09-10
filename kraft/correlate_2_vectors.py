@@ -3,6 +3,7 @@ from numpy.random import seed, shuffle
 from sklearn.linear_model import LinearRegression
 
 from .compute_empirical_p_value import compute_empirical_p_value
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
@@ -13,10 +14,8 @@ def correlate_2_vectors(
     n_permutation=10,
     random_seed=RANDOM_SEED,
     plot=True,
-    marker_size=16,
+    marker_size=None,
     layout=None,
-    xaxis=None,
-    yaxis=None,
     html_file_path=None,
 ):
 
@@ -57,13 +56,28 @@ def correlate_2_vectors(
 
     if plot:
 
-        r2_p_value_str = "R^2={:.3f}".format(r2)
+        if isnan(p_value):
 
-        if not isnan(p_value):
+            statistic_str = "R^2 = {:.3f}".format(r2)
 
-            r2_p_value_str = "{} & P-Value={:.3e}".format(r2_p_value_str, p_value)
+        else:
 
-        layout_template = {"xaxis": xaxis, "yaxis": yaxis}
+            statistic_str = "R^2 = {:.3f}<br>P-Value = {:.3e}".format(r2, p_value)
+
+        layout_template = {
+            "annotations": [
+                {
+                    "xref": "paper",
+                    "yref": "paper",
+                    "xanchor": "center",
+                    "yanchor": "middle",
+                    "x": 0.5,
+                    "y": 1.05,
+                    "showarrow": False,
+                    "text": statistic_str,
+                }
+            ]
+        }
 
         if layout is None:
 
@@ -71,17 +85,7 @@ def correlate_2_vectors(
 
         else:
 
-            layout = {**layout_template, **layout}
-
-        if layout["title"]["text"] is not None:
-
-            layout["title"]["text"] = "{}<br>{}".format(
-                layout["title"]["text"], r2_p_value_str
-            )
-
-        else:
-
-            layout["title"]["text"] = r2_p_value_str
+            layout = merge_2_dicts_recursively(layout_template, layout)
 
         plot_plotly_figure(
             {
@@ -93,7 +97,7 @@ def correlate_2_vectors(
                         "x": vector_0,
                         "y": vector_1,
                         "mode": "markers",
-                        "marker": {"size": marker_size, "opacity": 0.64},
+                        "marker": {"size": marker_size, "opacity": 0.5},
                     },
                     {
                         "type": "scatter",
