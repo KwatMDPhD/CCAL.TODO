@@ -6,10 +6,7 @@ from .unmesh import unmesh
 
 
 def plot_mesh_grid(
-    mesh_grid_point_x_dimension,
-    mesh_grid_point_value,
-    layout=None,
-    dimension_names=None,
+    mesh_grid_point_x_dimension, mesh_grid_point_value, dimension_names=None
 ):
 
     n_dimension = mesh_grid_point_x_dimension.shape[1]
@@ -24,32 +21,27 @@ def plot_mesh_grid(
         mesh_grid_point_x_dimension, mesh_grid_point_value
     )
 
+    layout_title_text = "{} Dimensional Mesh Grid".format(n_dimension)
+
     if n_dimension == 1:
 
         dimension_0_name = dimension_names[0]
 
         dimension_0_grid_size = dimension_grids[0].size
 
-        layout_template = {
-            "xaxis": {
-                "title": {
-                    "text": "{} (n={})".format(dimension_0_name, dimension_0_grid_size)
-                }
-            },
-            "yaxis": {"title": {"text": "Value"}},
-        }
-
-        if layout is None:
-
-            layout = layout_template
-
-        else:
-
-            layout = {**layout_template, **layout}
-
         plot_plotly_figure(
             {
-                "layout": layout,
+                "layout": {
+                    "title": {"text": layout_title_text},
+                    "xaxis": {
+                        "title": {
+                            "text": "{} (n={})".format(
+                                dimension_0_name, dimension_0_grid_size
+                            )
+                        }
+                    },
+                    "yaxis": {"title": {"text": "Value"}},
+                },
                 "data": [
                     {"type": "scatter", "x": dimension_grids[0], "y": value_reshaped}
                 ],
@@ -65,25 +57,25 @@ def plot_mesh_grid(
                 index=("{:.3f} *".format(i) for i in dimension_grids[0]),
                 columns=("* {:.3f}".format(i) for i in dimension_grids[1]),
             ),
-            layout=layout,
-            xaxis={"title": {"text": dimension_names[1]}},
-            yaxis={"title": {"text": dimension_names[0]}},
+            layout={
+                "title": {"text": layout_title_text},
+                "xaxis": {"title": {"text": dimension_names[1]}},
+                "yaxis": {"title": {"text": dimension_names[0]}},
+            },
         )
 
     else:
 
-        print("=" * 80)
+        print(layout_title_text)
 
-        print("N dimension: {}".format(n_dimension))
-
-        print("Dimension grids:")
+        print("Dimension Grids:")
 
         print(dimension_grids)
 
-        print("Value shape: {}".format(value_reshaped.shape))
+        print("Value Reshaped:")
 
-        print("Value min: {}".format(value_reshaped.min()))
+        print("Shape: {}".format(value_reshaped.shape))
 
-        print("Value max: {}".format(value_reshaped.max()))
+        print("Min: {}".format(value_reshaped.min()))
 
-        print("^" * 80)
+        print("Max: {}".format(value_reshaped.max()))

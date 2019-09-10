@@ -2,6 +2,7 @@ from numpy import asarray, nonzero, unique
 
 from .cast_object_to_builtin import cast_object_to_builtin
 from .make_colorscale_from_colors import make_colorscale_from_colors
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -16,56 +17,28 @@ def plot_heat_map(
     column_annotation_colors=None,
     column_annotation_str=None,
     column_annotation=None,
-    colorbar=None,
     layout=None,
-    heat_map_xaxis=None,
-    heat_map_yaxis=None,
-    annotation_axis=None,
     html_file_path=None,
 ):
 
     axis_template = {"zeroline": False, "showgrid": False}
 
-    heat_map_axis_template = {"domain": (0, 0.9), **axis_template}
-
-    if heat_map_xaxis is None:
-
-        heat_map_xaxis = heat_map_axis_template
-
-    else:
-
-        heat_map_xaxis = {**heat_map_axis_template, **heat_map_xaxis}
-
-    if heat_map_yaxis is None:
-
-        heat_map_yaxis = heat_map_axis_template
-
-    else:
-
-        heat_map_yaxis = {**heat_map_axis_template, **heat_map_yaxis}
+    heat_map_axis_template = {"domain": (0, 0.95), **axis_template}
 
     annotation_axis_template = {
-        "domain": (0.92, 1),
+        "domain": (0.96, 1),
         "ticks": "",
         "showticklabels": False,
         **axis_template,
     }
 
-    if annotation_axis is None:
-
-        annotation_axis = annotation_axis_template
-
-    else:
-
-        annotation_axis = {**annotation_axis_template, **annotation_axis}
-
     layout_template = {
         "height": 640,
         "width": 640,
-        "xaxis": heat_map_xaxis,
-        "xaxis2": annotation_axis,
-        "yaxis": heat_map_yaxis,
-        "yaxis2": annotation_axis,
+        "xaxis": heat_map_axis_template,
+        "xaxis2": annotation_axis_template,
+        "yaxis": heat_map_axis_template,
+        "yaxis2": annotation_axis_template,
         "annotations": [],
     }
 
@@ -75,7 +48,7 @@ def plot_heat_map(
 
     else:
 
-        layout = {**layout_template, **layout}
+        layout = merge_2_dicts_recursively(layout_template, layout)
 
     if any(isinstance(cast_object_to_builtin(i), str) for i in dataframe.columns):
 
@@ -100,7 +73,7 @@ def plot_heat_map(
             "x": x,
             "y": y,
             "colorscale": make_colorscale_from_colors(pick_colors(dataframe)),
-            "colorbar": colorbar,
+            "colorbar": {"thicknessmode": "fraction", "thickness": 0.02, "len": 0.5},
         }
     ]
 

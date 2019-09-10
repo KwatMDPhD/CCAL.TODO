@@ -27,21 +27,16 @@ def mf_consensus_cluster_dataframe(
     directory_path=None,
 ):
 
-    print("MFCC K={}...".format(k))
-
     clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
 
     clustering_x_h_element = full((n_clustering, dataframe.shape[1]), nan)
 
     n_per_print = max(1, n_clustering // 10)
 
-    if mf_function == "mf_with_multiplicative_update":
-
-        mf_function = mf_with_multiplicative_update
-
-    elif mf_function == "nmf_with_sklearn":
-
-        mf_function = nmf_with_sklearn
+    mf_function = {
+        "mf_with_multiplicative_update": mf_with_multiplicative_update,
+        "nmf_with_sklearn": nmf_with_sklearn,
+    }[mf_function]
 
     for clustering in range(n_clustering):
 
@@ -90,9 +85,11 @@ def mf_consensus_cluster_dataframe(
 
                 plot_heat_map(
                     w_0.iloc[cluster_matrix(w_0.values, 0)],
-                    layout={"title": {"text": "MF K={} W".format(k)}},
-                    heat_map_xaxis={"title": {"text": w_0.columns.name}},
-                    heat_map_yaxis={"title": {"text": w_0.index.name}},
+                    layout={
+                        "title": {"text": "MF K={} W".format(k)},
+                        "xaxis": {"title": {"text": w_0.columns.name}},
+                        "yaxis": {"title": {"text": w_0.index.name}},
+                    },
                     html_file_path=html_file_path,
                 )
 
@@ -110,9 +107,11 @@ def mf_consensus_cluster_dataframe(
 
                 plot_heat_map(
                     h_0.iloc[:, cluster_matrix(h_0.values, 1)],
-                    layout={"title": {"text": "MF K={} H".format(k)}},
-                    heat_map_xaxis={"title": {"text": h_0.columns.name}},
-                    heat_map_yaxis={"title": {"text": h_0.index.name}},
+                    layout={
+                        "title": {"text": "MF K={} H".format(k)},
+                        "xaxis": {"title": {"text": h_0.columns.name}},
+                        "yaxis": {"title": {"text": h_0.index.name}},
+                    },
                     html_file_path=html_file_path,
                 )
 
@@ -158,9 +157,11 @@ def mf_consensus_cluster_dataframe(
             dataframe,
             row_annotations=w_element_cluster_sorted,
             column_annotations=h_element_cluster_sorted,
-            layout={"title": {"text": "MFCC K={}".format(k)}},
-            heat_map_xaxis={"title": {"text": dataframe.columns.name}},
-            heat_map_yaxis={"title": {"text": dataframe.index.name}},
+            layout={
+                "title": {"text": "MFCC K={}".format(k)},
+                "xaxis": {"title": {"text": dataframe.columns.name}},
+                "yaxis": {"title": {"text": dataframe.index.name}},
+            },
             html_file_path=html_file_path,
         )
 

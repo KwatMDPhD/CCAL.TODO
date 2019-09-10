@@ -8,14 +8,7 @@ from .plot_heat_map import plot_heat_map
 
 
 def apply_function_on_slices_from_2_dataframes(
-    dataframe_0,
-    dataframe_1,
-    axis,
-    function,
-    layout=None,
-    dataframe_0_name=None,
-    dataframe_1_name=None,
-    file_path_prefix=None,
+    dataframe_0, dataframe_1, axis, function, layout=None, file_path_prefix=None
 ):
 
     comparison = apply_function_on_slices_from_2_matrices(
@@ -49,8 +42,6 @@ def apply_function_on_slices_from_2_dataframes(
             cluster_matrix(comparison.values, 0), cluster_matrix(comparison.values, 1)
         ],
         layout=layout,
-        xaxis={"title": {"text": dataframe_1_name}},
-        yaxis={"title": {"text": dataframe_0_name}},
         html_file_path=html_file_path,
     )
 

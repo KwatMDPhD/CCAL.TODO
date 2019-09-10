@@ -40,13 +40,11 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
             establish_path(k_directory_path, "directory")
 
-    k_return = {}
-
-    if axis == 1:
-
-        dataframe = dataframe.T
-
     if distance__element_x_element is None:
+
+        if axis == 1:
+
+            dataframe = dataframe.T
 
         print(
             "Computing distance__element_x_element distance with {}...".format(
@@ -66,9 +64,11 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                 join(directory_path, "distance.element_x_element.tsv"), sep="\t"
             )
 
-    if axis == 1:
+        if axis == 1:
 
-        dataframe = dataframe.T
+            dataframe = dataframe.T
+
+    k_return = {}
 
     for k, (element_cluster, element_cluster__ccc) in zip(
         ks,
@@ -149,9 +149,11 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
         plot_heat_map(
             DataFrame(sort(k_x_element.values, axis=1), index=keys),
-            layout={"title": {"text": "HCC"}},
-            heat_map_xaxis={"title": {"text": "Element"}},
-            heat_map_yaxis={"title": {"text": k_x_element.index.name}},
+            layout={
+                "title": {"text": "HCC"},
+                "xaxis": {"title": {"text": "Element"}},
+                "yaxis": {"title": {"text": k_x_element.index.name}},
+            },
             html_file_path=html_file_path,
         )
 

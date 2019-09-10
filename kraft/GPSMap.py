@@ -175,9 +175,11 @@ class GPSMap:
                     DataFrame(self.w, index=self.nodes, columns=self.w_elements).iloc[
                         :, cluster_matrix(self.w, 1)
                     ],
-                    title_text="W",
-                    xaxis_title_text=self.w_element_name,
-                    yaxis_title_text=self.node_name,
+                    layout={
+                        "title": {"text": "W"},
+                        "xaxis": {"title": {"text": self.w_element_name}},
+                        "yaxis": {"title": {"text": self.node_name}},
+                    },
                 )
 
                 plot_heat_map(
@@ -189,11 +191,13 @@ class GPSMap:
                         cluster_matrix(self.w_distance__node_x_node, 0),
                         cluster_matrix(self.w_distance__node_x_node, 1),
                     ],
-                    title_text="{}-{} Distance in W".format(
-                        self.node_name, self.node_name
-                    ),
-                    xaxis_title_text=self.node_name,
-                    yaxis_title_text=self.node_name,
+                    layout={
+                        "title": {
+                            "text": "{0}-{0} Distance in W".format(self.node_name)
+                        },
+                        "xaxis": {"title": {"text": self.node_name}},
+                        "yaxis": {"title": {"text": self.node_name}},
+                    },
                 )
 
         if h is not None:
@@ -214,9 +218,11 @@ class GPSMap:
                     DataFrame(self.h, index=self.nodes, columns=self.h_elements).iloc[
                         :, cluster_matrix(self.h, 1)
                     ],
-                    title_text="H",
-                    xaxis_title_text=self.h_element_name,
-                    yaxis_title_text=self.node_name,
+                    layout={
+                        "title": {"text": "H"},
+                        "xaxis": {"title": {"text": self.h_element_name}},
+                        "yaxis": {"title": {"text": self.node_name}},
+                    },
                 )
 
                 plot_heat_map(
@@ -228,11 +234,13 @@ class GPSMap:
                         cluster_matrix(self.h_distance__node_x_node, 0),
                         cluster_matrix(self.h_distance__node_x_node, 1),
                     ],
-                    title_text="{}-{} Distance in H".format(
-                        self.node_name, self.node_name
-                    ),
-                    xaxis_title_text=self.node_name,
-                    yaxis_title_text=self.node_name,
+                    layout={
+                        "title": {
+                            "text": "{0}-{0} Distance in H".format(self.node_name)
+                        },
+                        "xaxis": {"title": {"text": self.node_name}},
+                        "yaxis": {"title": {"text": self.node_name}},
+                    },
                 )
 
         if w is not None and h is not None:
@@ -261,11 +269,13 @@ class GPSMap:
                         cluster_matrix(self.distance__node_x_node, 0),
                         cluster_matrix(self.distance__node_x_node, 1),
                     ],
-                    title_text="{}-{} Distance in W and H".format(
-                        self.node_name, self.node_name
-                    ),
-                    xaxis_title_text=self.node_name,
-                    yaxis_title_text=self.node_name,
+                    layout={
+                        "title": {
+                            "text": "{0}-{0} Distance in W and H".format(self.node_name)
+                        },
+                        "xaxis": {"title": {"text": self.node_name}},
+                        "yaxis": {"title": {"text": self.node_name}},
+                    },
                 )
 
         elif w is not None:
@@ -552,10 +562,11 @@ class GPSMap:
                 normalize_dataframe(dataframe, 0, "-0-"),
                 column_annotations=column_annotation,
                 column_annotation_colors=label_colors,
-                layout={"title": {"text": w_or_h.title()}},
-                xaxis={"title": {"text": element_name}},
-                yaxis={"title": {"text": self.node_name}},
-                show_xaxis_ticks=False,
+                layout={
+                    "title": {"text": w_or_h.title()},
+                    "xaxis": {"title": {"text": element_name}},
+                    "yaxis": {"title": {"text": node_name}},
+                },
             )
 
     def predict(

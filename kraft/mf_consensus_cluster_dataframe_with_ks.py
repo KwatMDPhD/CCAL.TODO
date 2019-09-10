@@ -114,12 +114,12 @@ def mf_consensus_cluster_dataframe_with_ks(
         html_file_path,
     )
 
-    w_element_cluster__ccc = asarray(
-        tuple(k_return[key]["w_element_cluster.ccc"] for key in keys)
+    w_element_cluster__ccc = tuple(
+        k_return[key]["w_element_cluster.ccc"] for key in keys
     )
 
-    h_element_cluster__ccc = asarray(
-        tuple(k_return[key]["h_element_cluster.ccc"] for key in keys)
+    h_element_cluster__ccc = tuple(
+        k_return[key]["h_element_cluster.ccc"] for key in keys
     )
 
     if directory_path is None:
@@ -156,7 +156,11 @@ def mf_consensus_cluster_dataframe_with_ks(
                     "type": "scatter",
                     "name": "Mean",
                     "x": ks,
-                    "y": (w_element_cluster__ccc + h_element_cluster__ccc) / 2,
+                    "y": (
+                        asarray(w_element_cluster__ccc)
+                        + asarray(h_element_cluster__ccc)
+                    )
+                    / 2,
                     "marker": {"color": "#20d9ba"},
                 },
             ],
@@ -204,9 +208,11 @@ def mf_consensus_cluster_dataframe_with_ks(
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
-                layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
-                heat_map_xaxis={"title": {"text": "Element"}},
-                heat_map_yaxis={"title": {"text": k_x_element.index.name}},
+                layout={
+                    "title": {"text": "MFCC {}".format(w_or_h.title())},
+                    "xaxis": {"title": {"text": "Element"}},
+                    "yaxis": {"title": {"text": k_x_element.index.name}},
+                },
                 html_file_path=html_file_path,
             )
 
