@@ -36,8 +36,8 @@ def compute_element_x_dimension_joint_probability(
         plot_mesh_grid(
             mesh_grid_point_x_dimension,
             mesh_grid_point_joint_probability,
-            layout={"title": {"text": "Joint Probability"}},
             dimension_names=dimension_names,
+            value_name="Joint Probability",
         )
 
     return mesh_grid_point_x_dimension, mesh_grid_point_joint_probability

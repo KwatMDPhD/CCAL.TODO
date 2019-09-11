@@ -6,7 +6,10 @@ from .unmesh import unmesh
 
 
 def plot_mesh_grid(
-    mesh_grid_point_x_dimension, mesh_grid_point_value, dimension_names=None
+    mesh_grid_point_x_dimension,
+    mesh_grid_point_value,
+    dimension_names=None,
+    value_name="Value",
 ):
 
     n_dimension = mesh_grid_point_x_dimension.shape[1]
@@ -21,26 +24,13 @@ def plot_mesh_grid(
         mesh_grid_point_x_dimension, mesh_grid_point_value
     )
 
-    layout_title_text = "{} Dimensional Mesh Grid".format(n_dimension)
-
     if n_dimension == 1:
-
-        dimension_0_name = dimension_names[0]
-
-        dimension_0_grid_size = dimension_grids[0].size
 
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": {"text": layout_title_text},
-                    "xaxis": {
-                        "title": {
-                            "text": "{} (n={})".format(
-                                dimension_0_name, dimension_0_grid_size
-                            )
-                        }
-                    },
-                    "yaxis": {"title": {"text": "Value"}},
+                    "xaxis": {"title": {"text": dimension_names[0]}},
+                    "yaxis": {"title": {"text": value_name}},
                 },
                 "data": [
                     {"type": "scatter", "x": dimension_grids[0], "y": value_reshaped}
@@ -54,11 +44,11 @@ def plot_mesh_grid(
         plot_heat_map(
             DataFrame(
                 value_reshaped,
-                index=("{:.3f} *".format(i) for i in dimension_grids[0]),
-                columns=("* {:.3f}".format(i) for i in dimension_grids[1]),
+                index=("{:.2e} *".format(i) for i in dimension_grids[0]),
+                columns=("* {:.2e}".format(i) for i in dimension_grids[1]),
             ),
             layout={
-                "title": {"text": layout_title_text},
+                "title": {"text": value_name},
                 "xaxis": {"title": {"text": dimension_names[1]}},
                 "yaxis": {"title": {"text": dimension_names[0]}},
             },
@@ -66,7 +56,7 @@ def plot_mesh_grid(
 
     else:
 
-        print(layout_title_text)
+        print("======== {} ========".format(value_name))
 
         print("Dimension Grids:")
 
@@ -76,6 +66,6 @@ def plot_mesh_grid(
 
         print("Shape: {}".format(value_reshaped.shape))
 
-        print("Min: {}".format(value_reshaped.min()))
+        print("Min: {:.2e}".format(value_reshaped.min()))
 
-        print("Max: {}".format(value_reshaped.max()))
+        print("Max: {:.2e}".format(value_reshaped.max()))

@@ -13,6 +13,8 @@ from .make_colorscale_from_colors import make_colorscale_from_colors
 from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
+grid_extension = 1 / 1e3
+
 
 def plot_gps_map(
     nodes,
@@ -37,12 +39,7 @@ def plot_gps_map(
     html_file_path,
 ):
 
-    axis_template = {
-        "showgrid": False,
-        "zeroline": False,
-        "ticks": "",
-        "showticklabels": False,
-    }
+    axis_template = {"showgrid": False, "zeroline": False, "showticklabels": False}
 
     layout = {
         "width": layout_size,

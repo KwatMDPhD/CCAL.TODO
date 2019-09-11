@@ -83,8 +83,8 @@ def estimate_element_x_dimension_kernel_density(
         plot_mesh_grid(
             mesh_grid_point_x_dimension,
             mesh_grid_point_kernel_density,
-            layout={"title": {"text": "Kernel Density"}},
             dimension_names=dimension_names,
+            value_name="Kernel Density",
         )
 
     return mesh_grid_point_x_dimension, mesh_grid_point_kernel_density

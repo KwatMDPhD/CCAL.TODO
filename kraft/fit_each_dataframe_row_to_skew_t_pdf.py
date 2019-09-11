@@ -1,37 +1,15 @@
-from numpy import full, nan
-from pandas import DataFrame, concat
+from pandas import concat
 
 from .call_function_with_multiprocess import call_function_with_multiprocess
-from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
+from .fit_each_dataframe_row_to_skew_t_pdf_ import fit_each_dataframe_row_to_skew_t_pdf_
 from .split_dataframe import split_dataframe
 
 
 def fit_each_dataframe_row_to_skew_t_pdf(dataframe, n_job=1, output_file_path=None):
-    def function(dataframe_):
-
-        skew_t_pdf_fit_parameter = full((dataframe_.shape[0], 5), nan)
-
-        n = dataframe_.shape[0]
-
-        n_per_print = max(1, n // 10)
-
-        for i, (index, series) in enumerate(dataframe_.iterrows()):
-
-            if i % n_per_print == 0:
-
-                print("({}/{}) {}...".format(i + 1, n, index))
-
-            skew_t_pdf_fit_parameter[i] = fit_vector_to_skew_t_pdf(series.values)
-
-        return DataFrame(
-            skew_t_pdf_fit_parameter,
-            index=dataframe_.index,
-            columns=("N Data", "Location", "Scale", "Degree of Freedom", "Shape"),
-        )
 
     skew_t_pdf_fit_parameter = concat(
         call_function_with_multiprocess(
-            function,
+            fit_each_dataframe_row_to_skew_t_pdf_,
             (
                 (dataframe_,)
                 for dataframe_ in split_dataframe(

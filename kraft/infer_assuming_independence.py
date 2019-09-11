@@ -24,12 +24,18 @@ def infer_assuming_independence(
 
     n_dimension = element_x_dimension.shape[1]
 
+    if dimension_names is None:
+
+        dimension_names = tuple(
+            "Dimension {} Variable".format(i) for i in range(n_dimension)
+        )
+
     target__mesh_grid_point_x_dimension, target__mesh_grid_point_posterior_probability = compute_element_x_dimension_joint_probability(
-        element_x_dimension[:, [-1]],
-        plot=plot,
-        dimension_names=dimension_names[[-1]],
+        element_x_dimension[:, -1:],
         dimension_fraction_grid_extensions=(fraction_grid_extension,),
         dimension_n_grids=(n_grid,),
+        plot=plot,
+        dimension_names=dimension_names[-1:],
     )
 
     target__dimensino_grids, target__probability = unmesh(
@@ -69,36 +75,16 @@ def infer_assuming_independence(
 
     if plot:
 
-        target_dimension_value_ = target__dimension_grid[target__value_index]
-
-        if n_dimension == 2:
-
-            layout_title_text = "P({} = {:.3f} (~{}) | {})".format(
-                dimension_names[1],
-                target_dimension_value_,
-                target_dimension_value,
-                dimension_names[0],
-            )
-
-        elif n_dimension == 3:
-
-            layout_title_text = "P({} = {:.3f} (~{}) | {}, {})".format(
-                dimension_names[2],
-                target_dimension_value_,
-                target_dimension_value,
-                dimension_names[0],
-                dimension_names[1],
-            )
-
-        else:
-
-            layout_title_text = None
-
         plot_mesh_grid(
             no_target__mesh_grid_point_x_dimension,
             no_target__mesh_grid_point_posterior_probability,
-            layout={"title": {"text": layout_title_text}},
             dimension_names=dimension_names,
+            value_name="P({} = {:.3f} (~{}) | {})".format(
+                dimension_names[-1],
+                target__dimension_grid[target__value_index],
+                target_dimension_value,
+                *dimension_names[:-1],
+            ),
         )
 
     return (
