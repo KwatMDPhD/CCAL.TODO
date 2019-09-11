@@ -896,7 +896,7 @@ class GPSMap:
                 if print_acceptance:
 
                     print(
-                        "\t\t{:.3e} =(accept)=> {:.3e}...".format(fitness, r__fitness)
+                        "\t\t{:.2e} =(accept)=> {:.2e}...".format(fitness, r__fitness)
                     )
 
                 self.node_x_dimension = r__node_x_dimension

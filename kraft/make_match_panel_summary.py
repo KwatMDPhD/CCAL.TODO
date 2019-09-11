@@ -87,8 +87,8 @@ def make_match_panel_summary(
         {
             "yaxis": yaxis_name.replace("axis", ""),
             "type": "heatmap",
-            "z": target_to_plot.to_frame().T,
             "x": target_to_plot.index,
+            "z": target_to_plot.to_frame().T,
             "colorscale": make_colorscale_from_colors(
                 pick_colors(target_to_plot, data_type=target_type)
             ),
@@ -144,9 +144,9 @@ def make_match_panel_summary(
             {
                 "yaxis": yaxis_name.replace("axis", ""),
                 "type": "heatmap",
-                "z": data_to_plot.values[::-1],
                 "x": data_to_plot.columns,
                 "y": data_to_plot.index[::-1],
+                "z": data_to_plot.values[::-1],
                 "colorscale": make_colorscale_from_colors(
                     pick_colors(data_to_plot, data_type=data_dict["type"])
                 ),

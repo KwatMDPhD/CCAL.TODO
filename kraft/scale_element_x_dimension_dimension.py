@@ -18,7 +18,7 @@ def scale_element_x_dimension_dimension(
     random_seed=RANDOM_SEED,
 ):
 
-    keyword_arguments = {
+    mds_keyword_arguments = {
         "n_components": n_target_dimension,
         "metric": metric,
         "n_init": n_init,
@@ -31,13 +31,13 @@ def scale_element_x_dimension_dimension(
 
     if distance__point_x_point is None and not callable(distance_function):
 
-        mds = MDS(dissimilarity=distance_function, **keyword_arguments)
+        mds = MDS(dissimilarity=distance_function, **mds_keyword_arguments)
 
         point_x_target_dimension = mds.fit_transform(point_x_dimension)
 
     else:
 
-        mds = MDS(dissimilarity="precomputed", **keyword_arguments)
+        mds = MDS(dissimilarity="precomputed", **mds_keyword_arguments)
 
         if distance__point_x_point is None:
 

@@ -79,7 +79,7 @@ def infer_assuming_independence(
             no_target__mesh_grid_point_x_dimension,
             no_target__mesh_grid_point_posterior_probability,
             dimension_names=dimension_names,
-            value_name="P({} = {:.3f} (~{}) | {})".format(
+            value_name="P({} = {:.2e} (~{}) | {})".format(
                 dimension_names[-1],
                 target__dimension_grid[target__value_index],
                 target_dimension_value,

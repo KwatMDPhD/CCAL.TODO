@@ -1,46 +1,21 @@
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 
 
-def plot_histogram(
-    serieses, histnorm="", plot_rug=None, layout=None, xaxis=None, html_file_path=None
-):
+def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
 
-    xaxis_template = {"anchor": "y"}
+    if histnorm is None:
 
-    if xaxis is None:
-
-        xaxis = xaxis_template
+        yaxis2_title_text = "N"
 
     else:
 
-        xaxis = {**xaxis_template, **xaxis}
-
-    if plot_rug is None:
-
-        plot_rug = all(series.size < 1e3 for series in serieses)
-
-    if plot_rug:
-
-        yaxis_max = 0.16
-
-        yaxis2_min = yaxis_max + 0.08
-
-    else:
-
-        yaxis_max = 0
-
-        yaxis2_min = 0
+        yaxis2_title_text = histnorm.title()
 
     layout_template = {
-        "xaxis": xaxis,
-        "yaxis": {
-            "domain": (0, yaxis_max),
-            "dtick": 1,
-            "zeroline": False,
-            "showticklabels": False,
-        },
-        "yaxis2": {"domain": (yaxis2_min, 1), "title": {"text": histnorm.title()}},
-        "barmode": "overlay",
+        "xaxis": {"anchor": "y"},
+        "yaxis": {"domain": (0, 0.1), "dtick": 1, "showticklabels": False},
+        "yaxis2": {"domain": (0.1, 1), "title": {"text": yaxis2_title_text}},
     }
 
     if layout is None:
@@ -49,7 +24,7 @@ def plot_histogram(
 
     else:
 
-        layout = {**layout_template, **layout}
+        layout = merge_2_dicts_recursively(layout_template, layout)
 
     data = []
 
@@ -59,26 +34,24 @@ def plot_histogram(
             {
                 "yaxis": "y2",
                 "type": "histogram",
-                "name": series.name,
                 "legendgroup": series.name,
+                "name": series.name,
                 "x": series,
                 "histnorm": histnorm,
             }
         )
 
-        if plot_rug:
-
-            data.append(
-                {
-                    "type": "scatter",
-                    "legendgroup": series.name,
-                    "showlegend": False,
-                    "x": series,
-                    "y": (i,) * series.size,
-                    "text": series.index,
-                    "mode": "markers",
-                    "marker": {"symbol": "line-ns-open"},
-                }
-            )
+        data.append(
+            {
+                "type": "scatter",
+                "legendgroup": series.name,
+                "showlegend": False,
+                "x": series,
+                "y": (i,) * series.size,
+                "text": series.index,
+                "mode": "markers",
+                "marker": {"symbol": "line-ns-open"},
+            }
+        )
 
     plot_plotly_figure({"layout": layout, "data": data}, html_file_path)

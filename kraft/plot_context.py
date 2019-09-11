@@ -18,7 +18,7 @@ def plot_context(
         "title": series.name,
         "yaxis": {"domain": (0, 0.2), "dtick": 1, "showticklabels": False},
         "yaxis2": {"domain": (0.22, 1)},
-        "legend": {"orientation": "h", "xanchor": "center", "x": 0.5, "y": -0.2},
+        "legend": {"orientation": "h", "x": 0.5, "y": -0.2, "xanchor": "center"},
         "annotations": [],
     }
 

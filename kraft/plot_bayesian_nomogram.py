@@ -29,7 +29,6 @@ def plot_bayesian_nomogram(
         "xaxis": {"title": {"text": "Log Odds Ratio"}},
         "yaxis": {
             "title": {"text": "Evidence"},
-            "ticks": "",
             "showticklabels": False,
             "zeroline": False,
         },

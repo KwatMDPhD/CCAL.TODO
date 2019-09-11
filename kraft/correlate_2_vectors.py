@@ -58,21 +58,21 @@ def correlate_2_vectors(
 
         if isnan(p_value):
 
-            statistic_str = "R^2 = {:.3f}".format(r2)
+            statistic_str = "R^2 = {:.2e}".format(r2)
 
         else:
 
-            statistic_str = "R^2 = {:.3f}<br>P-Value = {:.3e}".format(r2, p_value)
+            statistic_str = "R^2 = {:.2e}<br>P-Value = {:.2e}".format(r2, p_value)
 
         layout_template = {
             "annotations": [
                 {
                     "xref": "paper",
                     "yref": "paper",
-                    "xanchor": "center",
-                    "yanchor": "middle",
                     "x": 0.5,
                     "y": 1.05,
+                    "xanchor": "center",
+                    "yanchor": "middle",
                     "showarrow": False,
                     "text": statistic_str,
                 }

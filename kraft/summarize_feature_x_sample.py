@@ -12,7 +12,6 @@ def summarize_feature_x_sample(
     plot=True,
     plot_heat_map_max_size=1e6,
     plot_histogram_max_size=1e5,
-    plot_rug_max_size=1e4,
 ):
 
     print("Shape: {}".format(feature_x_sample.shape))
@@ -52,22 +51,24 @@ def summarize_feature_x_sample(
 
         plot_histogram(
             (Series(feature_x_sample_not_na_values),),
-            plot_rug=feature_x_sample_not_na_values.size <= plot_rug_max_size,
-            layout={"title": {"text": feature_x_sample_alias}},
-            xaxis={"title": {"text": "Not-NA Value"}},
+            layout={
+                "title": {"text": feature_x_sample_alias},
+                "xaxis": {"title": {"text": "Not-NA Value"}},
+            },
         )
 
     isna__feature_x_sample = feature_x_sample.isna()
 
     n_na = isna__feature_x_sample.values.sum()
 
-    print("% NA: {:.3f}".format(n_na / feature_x_sample.size * 100))
+    print("Fraction NA: {:.2e}".format(n_na / feature_x_sample.size))
 
     if n_na and plot and isna__feature_x_sample.size <= plot_histogram_max_size:
 
         plot_histogram(
             (isna__feature_x_sample.sum(axis=1), isna__feature_x_sample.sum()),
-            plot_rug=max(isna__feature_x_sample.shape) <= plot_rug_max_size,
-            layout={"title": {"text": feature_x_sample_alias}},
-            xaxis={"title": {"text": "N NA"}},
+            layout={
+                "title": {"text": feature_x_sample_alias},
+                "xaxis": {"title": {"text": "N NA"}},
+            },
         )

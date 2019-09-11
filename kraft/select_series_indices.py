@@ -1,5 +1,6 @@
 from numpy import arange
 
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 
 
@@ -12,7 +13,6 @@ def select_series_indices(
     standard_deviation=None,
     plot=True,
     layout=None,
-    yaxis=None,
     html_file_path=None,
 ):
 
@@ -132,7 +132,7 @@ def select_series_indices(
 
     if plot:
 
-        layout_template = {"xaxis": {"title": {"text": "Rank"}}, "yaxis": yaxis}
+        layout_template = {"xaxis": {"title": {"text": "Rank"}}}
 
         if layout is None:
 
@@ -140,7 +140,7 @@ def select_series_indices(
 
         else:
 
-            layout = {**layout_template, **layout}
+            layout = merge_2_dicts_recursively(layout_template, layout)
 
         plot_plotly_figure(
             {

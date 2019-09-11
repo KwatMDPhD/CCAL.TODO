@@ -4,6 +4,7 @@ from pandas import Series
 
 from .check_array_for_bad import check_array_for_bad
 from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
+from .COLORBAR import COLORBAR
 from .get_colormap_colors import get_colormap_colors
 from .get_data_type import get_data_type
 from .get_element_x_dimension_triangulation_edges import (
@@ -75,8 +76,8 @@ def plot_gps_map(
     data.append(
         {
             "type": "scatter",
-            "name": node_name,
             "legendgroup": node_name,
+            "name": node_name,
             "x": node_x_dimension[:, 0],
             "y": node_x_dimension[:, 1],
             "text": arange(len(nodes)),
@@ -101,9 +102,9 @@ def plot_gps_map(
             {
                 "type": "contour",
                 "showlegend": False,
-                "z": grid_values[::-1],
                 "x": x,
                 "y": y,
+                "z": grid_values[::-1],
                 "autocontour": False,
                 "ncontours": 24,
                 "contours": {"coloring": "none"},
@@ -125,9 +126,9 @@ def plot_gps_map(
             data.append(
                 {
                     "type": "heatmap",
-                    "z": z[::-1],
                     "x": x,
                     "y": y,
+                    "z": z[::-1],
                     "colorscale": make_colorscale_from_colors(
                         get_colormap_colors(
                             LinearSegmentedColormap.from_list(
@@ -209,7 +210,6 @@ def plot_gps_map(
                 data.append(
                     {
                         "type": "scatter",
-                        "name": element_name,
                         "showlegend": False,
                         "x": element_x_dimension_[:, 0],
                         "y": element_x_dimension_[:, 1],
@@ -223,7 +223,7 @@ def plot_gps_map(
                             "color": element_value,
                             "colorscale": colorscale,
                             "showscale": data_type == "continuous",
-                            "colorbar": {"len": 0.64, "thickness": layout_size // 64},
+                            "colorbar": COLORBAR,
                             "line": element_marker_line,
                         },
                         "opacity": element_opacity,
@@ -305,8 +305,8 @@ def plot_gps_map(
             data.append(
                 {
                     "type": "scatter",
-                    "name": label_str,
                     "legendgroup": label_str,
+                    "name": label_str,
                     "x": element_x_dimension[element_indices, 0],
                     "y": element_x_dimension[element_indices, 1],
                     "text": asarray(elements)[element_indices],
