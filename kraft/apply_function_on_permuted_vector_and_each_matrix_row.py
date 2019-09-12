@@ -16,8 +16,6 @@ def apply_function_on_permuted_vector_and_each_matrix_row(
     raise_for_n_less_than_required,
 ):
 
-    print("Computing p-value and FDR with {} permutation...".format(n_permutation))
-
     seed(seed=random_seed)
 
     index_x_permutation = full((data.shape[0], n_permutation), nan)

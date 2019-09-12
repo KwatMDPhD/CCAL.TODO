@@ -10,7 +10,9 @@ from .separate_information_x_sample import separate_information_x_sample
 
 def download_and_parse_geo(geo_id, directory_path):
 
-    print("{} ==> {}...".format(geo_id, directory_path))
+    directory_path = join(directory_path, geo_id)
+
+    print("Populating {}...".format(directory_path))
 
     gse = GEOparse.get_GEO(geo=geo_id, destdir=directory_path, silent=True)
 

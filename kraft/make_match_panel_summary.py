@@ -1,6 +1,8 @@
-from .ALMOST_ZERO import ALMOST_ZERO
-from .guess_data_type import guess_data_type
+from numpy import nan
+
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .make_match_panel_annotations import make_match_panel_annotations
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .normalize_dataframe import normalize_dataframe
 from .normalize_series import normalize_series
 from .plot_plotly_figure import plot_plotly_figure
@@ -12,12 +14,10 @@ def make_match_panel_summary(
     score_moe_p_value_fdr_dicts,
     plot_only_shared_by_target_and_all_data=False,
     target_ascending=True,
-    score_ascending=False,
-    target_data_type=None,
-    plot_std=None,
-    title=None,
-    layout_side_margin=196,
-    annotation_font_size=8.8,
+    target_data_type="continuous",
+    data_data_type="continuous",
+    plot_std=nan,
+    layout=None,
     html_file_path=None,
 ):
 
@@ -33,70 +33,87 @@ def make_match_panel_summary(
 
     target_to_plot = target.copy()
 
-    if target_data_type is None:
-
-        target_data_type = guess_data_type(target_to_plot)
-
     if target_data_type == "continuous":
 
-        target_to_plot = normalize_series(target_to_plot, "-0-")
+        target_to_plot = normalize_series(target_to_plot, "-0-").clip(
+            lower=-plot_std, upper=plot_std
+        )
 
-        if plot_std is not None:
+        target_to_plot_z_magnitude = plot_std
 
-            target_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
+    else:
 
-    n_row = 1 + len(data_dicts)
+        target_to_plot_z_magnitude = nan
+
+    n_space = 2
+
+    n_row = 1
 
     for data_dict in data_dicts.values():
 
+        n_row += n_space
+
         n_row += data_dict["dataframe"].shape[0]
 
-    layout = {
-        "height": max(640, 32 * n_row),
-        "margin": {"l": layout_side_margin, "r": layout_side_margin},
-        "title": title,
-        "xaxis": {"anchor": "y"},
+    layout_template = {
+        "height": max(250, 25 * n_row),
+        "margin": {"l": 200, "r": 200},
+        "title": {"xref": "paper", "x": 0.5},
+        "xaxis": {"showticklabels": False},
         "annotations": [],
     }
 
+    if layout is None:
+
+        layout = layout_template
+
+    else:
+
+        layout = merge_2_dicts_recursively(layout_template, layout)
+
     row_fraction = 1 / n_row
 
-    yaxis_name = "yaxis{}".format(len(data_dicts) + 1)
+    yaxis = "yaxis{}".format(len(data_dicts) + 1)
 
-    domain_end = 1
+    domain = (1 - row_fraction, 1)
 
-    domain_start = domain_end - row_fraction
-
-    if abs(domain_start) <= ALMOST_ZERO:
-
-        domain_start = 0
-
-    annotation_font = {"size": annotation_font_size}
-
-    layout[yaxis_name] = {
-        "domain": (domain_start, domain_end),
-        "tickmode": "array",
-        "tickvals": (0,),
-        "ticktext": (target_to_plot.name,),
-        "tickfont": annotation_font,
-    }
+    layout[yaxis] = {"domain": domain, "showticklabels": False}
 
     figure_data = [
         {
-            "yaxis": yaxis_name.replace("axis", ""),
+            "yaxis": yaxis.replace("axis", ""),
             "type": "heatmap",
+            "name": "Target",
             "x": target_to_plot.index,
             "z": target_to_plot.to_frame().T,
-            "colorscale": make_colorscale_from_colors(
-                pick_colors(target_to_plot, data_type=target_data_type)
-            ),
+            "zmin": -target_to_plot_z_magnitude,
+            "zmax": target_to_plot_z_magnitude,
+            "colorscale": DATA_TYPE_COLORSCALE[target_data_type],
             "showscale": False,
         }
     ]
 
+    layout_annotation_template = {
+        "xref": "paper",
+        "yref": "paper",
+        "yanchor": "middle",
+        "font": {"size": 10},
+        "showarrow": False,
+    }
+
+    layout["annotations"].append(
+        {
+            "x": 0,
+            "y": 1 - (row_fraction / 2),
+            "xanchor": "right",
+            "text": "<b>{}</b>".format(target.name),
+            **layout_annotation_template,
+        }
+    )
+
     for data_index, (data_name, data_dict) in enumerate(data_dicts.items()):
 
-        print("Making match panel for {}...".format(data_name))
+        print("Making match panel with data {}...".format(data_name))
 
         data_to_plot = data_dict["dataframe"].reindex(columns=target_to_plot.index)
 
@@ -104,79 +121,71 @@ def make_match_panel_summary(
             index=data_to_plot.index
         )
 
+        if "emphasis" in data_dict:
+
+            score_ascending = data_dict["emphasis"] == "-"
+
+        else:
+
+            score_ascending = False
+
         score_moe_p_value_fdr_to_plot.sort_values(
             "Score", ascending=score_ascending, inplace=True
         )
 
         data_to_plot = data_to_plot.loc[score_moe_p_value_fdr_to_plot.index]
 
-        if data_dict["type"] == "continuous":
+        if data_data_type == "continuous":
 
-            data_to_plot = normalize_dataframe(data_to_plot, 1, "-0-")
+            data_to_plot = normalize_dataframe(data_to_plot, 1, "-0-").clip(
+                lower=-plot_std, upper=plot_std
+            )
 
-            if plot_std is not None:
+            data_to_plot_z_magnitude = plot_std
 
-                data_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
+        else:
 
-        yaxis_name = "yaxis{}".format(len(data_dicts) - data_index)
+            data_to_plot_z_magnitude = nan
 
-        domain_end = domain_start - row_fraction
+        yaxis = "yaxis{}".format(len(data_dicts) - data_index)
 
-        if abs(domain_end) <= ALMOST_ZERO:
+        domain = (
+            max(0, domain[0] - row_fraction * (n_space + data_to_plot.shape[0])),
+            domain[0] - row_fraction * n_space,
+        )
 
-            domain_end = 0
-
-        domain_start = domain_end - data_to_plot.shape[0] * row_fraction
-
-        if abs(domain_start) <= ALMOST_ZERO:
-
-            domain_start = 0
-
-        layout[yaxis_name] = {
-            "domain": (domain_start, domain_end),
-            "dtick": 1,
-            "tickfont": annotation_font,
-        }
+        layout[yaxis] = {"domain": domain, "showticklabels": False}
 
         figure_data.append(
             {
-                "yaxis": yaxis_name.replace("axis", ""),
+                "yaxis": yaxis.replace("axis", ""),
                 "type": "heatmap",
+                "name": "Data {}".format(data_name),
                 "x": data_to_plot.columns,
                 "y": data_to_plot.index[::-1],
                 "z": data_to_plot.values[::-1],
-                "colorscale": make_colorscale_from_colors(
-                    pick_colors(data_to_plot, data_type=data_dict["type"])
-                ),
+                "zmin": -data_to_plot_z_magnitude,
+                "zmax": data_to_plot_z_magnitude,
+                "colorscale": DATA_TYPE_COLORSCALE[data_dict["data_type"]],
                 "showscale": False,
             }
         )
 
-        layout_annotation_template = {
-            "xref": "paper",
-            "yref": "paper",
-            "yanchor": "middle",
-            "font": annotation_font,
-            "showarrow": False,
-        }
-
         layout["annotations"].append(
             {
-                "xanchor": "center",
                 "x": 0.5,
-                "y": domain_end + (row_fraction / 2),
+                "y": domain[1] + (row_fraction / 2),
+                "xanchor": "center",
                 "text": "<b>{}</b>".format(data_name),
                 **layout_annotation_template,
             }
         )
 
-        layout_annotation_template.update({"xanchor": "left", "width": 64})
-
-        for i, (annotation, strs) in enumerate(
+        for annotation_index, (annotation, annotation_values) in enumerate(
             make_match_panel_annotations(score_moe_p_value_fdr_to_plot).items()
         ):
 
-            x = 1.0016 + i / 10
+            x = 1.1 + annotation_index / 5
 
             if data_index == 0:
 
@@ -184,20 +193,34 @@ def make_match_panel_summary(
                     {
                         "x": x,
                         "y": 1 - (row_fraction / 2),
+                        "xanchor": "center",
                         "text": "<b>{}</b>".format(annotation),
                         **layout_annotation_template,
                     }
                 )
 
-            y = domain_end - (row_fraction / 2)
+            y = domain[1] - (row_fraction / 2)
 
-            for str_ in strs:
+            for data_to_plot_index, annotation in zip(
+                data_to_plot.index, annotation_values
+            ):
+
+                layout["annotations"].append(
+                    {
+                        "x": 0,
+                        "y": y,
+                        "xanchor": "right",
+                        "text": data_to_plot_index,
+                        **layout_annotation_template,
+                    }
+                )
 
                 layout["annotations"].append(
                     {
                         "x": x,
                         "y": y,
-                        "text": "<b>{}</b>".format(str_),
+                        "xanchor": "center",
+                        "text": annotation,
                         **layout_annotation_template,
                     }
                 )

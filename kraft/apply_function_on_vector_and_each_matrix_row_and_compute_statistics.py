@@ -33,7 +33,6 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
     random_seed=RANDOM_SEED,
     n_sampling=10,
     n_permutation=10,
-    score_ascending=False,
 ):
 
     score_moe_p_value_fdr = DataFrame(
@@ -42,7 +41,9 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
 
     n_job = min(matrix.shape[0], n_job)
 
-    print("Computing score with {} ({} job)...".format(match_function.__name__, n_job))
+    print("Using {} job...".format(n_job))
+
+    print("Computing score with {}...".format(match_function.__name__))
 
     matrix_split = array_split(matrix, n_job)
 
@@ -111,6 +112,8 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
         compute_normal_pdf_margin_of_error, 1, index_x_sampling, raise_for_bad=False
     )
 
+    print("Computing p-value and FDR with {} permutation...".format(n_permutation))
+
     p_values, fdrs = compute_empirical_p_values_and_fdrs(
         score_moe_p_value_fdr["Score"],
         concatenate(
@@ -139,4 +142,4 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
 
     score_moe_p_value_fdr["FDR"] = fdrs
 
-    return score_moe_p_value_fdr.sort_values("Score", ascending=score_ascending)
+    return score_moe_p_value_fdr

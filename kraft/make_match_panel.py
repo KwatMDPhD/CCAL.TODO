@@ -19,6 +19,7 @@ def make_match_panel(
     data,
     target_ascending=True,
     score_moe_p_value_fdr=None,
+    score_ascending=False,
     n_extreme=8,
     fraction_extreme=None,
     plot=True,
@@ -61,7 +62,11 @@ def make_match_panel(
 
     else:
 
-        score_moe_p_value_fdr = score_moe_p_value_fdr.reindex(index=data.index)
+        score_moe_p_value_fdr = score_moe_p_value_fdr.reindex(
+            data_to_plot_index=data.index
+        )
+
+    score_moe_p_value_fdr.sort_values("Score", ascending=score_ascending, inplace=True)
 
     if file_path_prefix is not None:
 
@@ -117,6 +122,10 @@ def make_match_panel(
             )
         ]
 
+    score_moe_p_value_fdr_to_plot.sort_values(
+        "Score", ascending=score_ascending, inplace=True
+    )
+
     data_to_plot = data.loc[score_moe_p_value_fdr_to_plot.index]
 
     if target_data_type == "continuous":
@@ -164,12 +173,15 @@ def make_match_panel(
 
         target_to_plot = target_to_plot[data_to_plot.columns]
 
-    row_fraction = 1 / (1 + 1 + data_to_plot.shape[0])
+    n_row = 1 + 1 + data_to_plot.shape[0]
+
+    row_fraction = 1 / n_row
 
     layout_template = {
+        "height": max(250, 25 * n_row),
         "margin": {"l": 200, "r": 200},
         "title": {"xref": "paper", "x": 0.5},
-        "xaxis": {"dtick": 1, "showticklabels": False},
+        "xaxis": {"showticklabels": False},
         "yaxis": {"domain": (0, 1 - 2 * row_fraction), "showticklabels": False},
         "yaxis2": {"domain": (1 - row_fraction, 1), "showticklabels": False},
         "annotations": [],
@@ -227,32 +239,34 @@ def make_match_panel(
         }
     )
 
-    for i, (statistic, values) in enumerate(
+    for annotation_index, (annotation, annotation_values) in enumerate(
         make_match_panel_annotations(score_moe_p_value_fdr_to_plot).items()
     ):
 
-        x = 1.1 + i / 5
+        x = 1.1 + annotation_index / 5
 
         layout["annotations"].append(
             {
                 "x": x,
                 "y": 1 - (row_fraction / 2),
                 "xanchor": "center",
-                "text": "<b>{}</b>".format(statistic),
+                "text": "<b>{}</b>".format(annotation),
                 **layout_annotation_template,
             }
         )
 
         y = layout["yaxis"]["domain"][1] - (row_fraction / 2)
 
-        for index, statistic in zip(data_to_plot.index, values):
+        for data_to_plot_index, annotation in zip(
+            data_to_plot.index, annotation_values
+        ):
 
             layout["annotations"].append(
                 {
                     "x": 0,
                     "y": y,
                     "xanchor": "right",
-                    "text": index,
+                    "text": data_to_plot_index,
                     **layout_annotation_template,
                 }
             )
@@ -262,7 +276,7 @@ def make_match_panel(
                     "x": x,
                     "y": y,
                     "xanchor": "center",
-                    "text": statistic,
+                    "text": annotation,
                     **layout_annotation_template,
                 }
             )
