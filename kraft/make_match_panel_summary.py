@@ -1,10 +1,8 @@
 from .ALMOST_ZERO import ALMOST_ZERO
-from .get_data_type import get_data_type
-from .make_colorscale_from_colors import make_colorscale_from_colors
+from .guess_data_type import guess_data_type
 from .make_match_panel_annotations import make_match_panel_annotations
 from .normalize_dataframe import normalize_dataframe
 from .normalize_series import normalize_series
-from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
 
 
@@ -15,7 +13,7 @@ def make_match_panel_summary(
     plot_only_shared_by_target_and_all_data=False,
     target_ascending=True,
     score_ascending=False,
-    target_type=None,
+    target_data_type=None,
     plot_std=None,
     title=None,
     layout_side_margin=196,
@@ -35,11 +33,11 @@ def make_match_panel_summary(
 
     target_to_plot = target.copy()
 
-    if target_type is None:
+    if target_data_type is None:
 
-        target_type = get_data_type(target_to_plot)
+        target_data_type = guess_data_type(target_to_plot)
 
-    if target_type == "continuous":
+    if target_data_type == "continuous":
 
         target_to_plot = normalize_series(target_to_plot, "-0-")
 
@@ -90,7 +88,7 @@ def make_match_panel_summary(
             "x": target_to_plot.index,
             "z": target_to_plot.to_frame().T,
             "colorscale": make_colorscale_from_colors(
-                pick_colors(target_to_plot, data_type=target_type)
+                pick_colors(target_to_plot, data_type=target_data_type)
             ),
             "showscale": False,
         }

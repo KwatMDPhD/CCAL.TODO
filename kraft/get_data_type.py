@@ -3,7 +3,7 @@ from numpy import asarray, unique
 from .check_array_for_bad import check_array_for_bad
 
 
-def get_data_type(data):
+def guess_data_type(data):
 
     data = asarray(data)
 

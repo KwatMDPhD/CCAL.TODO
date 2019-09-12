@@ -8,7 +8,7 @@ def establish_path(path, path_type):
 
         if path.endswith("/"):
 
-            raise ValueError
+            raise
 
     elif path_type == "directory":
 

@@ -13,48 +13,51 @@ from .apply_function_on_vector_and_each_matrix_row import (
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .check_array_for_bad import check_array_for_bad
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
+from .compute_information_coefficient_between_2_vectors import (
+    compute_information_coefficient_between_2_vectors,
+)
 from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
+from .RANDOM_SEED import RANDOM_SEED
 from .select_series_indices import select_series_indices
 
 
 def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
-    target,
-    data,
-    n_job,
-    match_function,
-    n_required_for_match_function,
-    raise_for_n_less_than_required,
-    n_extreme,
-    fraction_extreme,
-    random_seed,
-    n_sampling,
-    n_permutation,
+    vector,
+    matrix,
+    n_job=1,
+    match_function=compute_information_coefficient_between_2_vectors,
+    n_required_for_match_function=2,
+    raise_for_n_less_than_required=False,
+    n_extreme=8,
+    fraction_extreme=None,
+    random_seed=RANDOM_SEED,
+    n_sampling=10,
+    n_permutation=10,
+    score_ascending=False,
 ):
 
     score_moe_p_value_fdr = DataFrame(
-        index=range(data.shape[0]), columns=("Score", "0.95 MoE", "P-Value", "FDR")
+        index=range(matrix.shape[0]), columns=("Score", "0.95 MoE", "P-Value", "FDR")
     )
 
-    n_job = min(data.shape[0], n_job)
+    n_job = min(matrix.shape[0], n_job)
 
-    print(
-        "Computing score using {} with {} job...".format(match_function.__name__, n_job)
-    )
+    print("Computing score with {} ({} job)...".format(match_function.__name__, n_job))
 
-    data_split = array_split(data, n_job)
+    matrix_split = array_split(matrix, n_job)
 
     scores = concatenate(
         call_function_with_multiprocess(
             apply_function_on_vector_and_each_matrix_row,
             (
                 (
-                    target,
-                    data_,
+                    vector,
+                    matrix_,
                     match_function,
                     n_required_for_match_function,
                     raise_for_n_less_than_required,
                 )
-                for data_ in data_split
+                for matrix_ in matrix_split
             ),
             n_job,
         )
@@ -62,7 +65,7 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
 
     if check_array_for_bad(scores, raise_for_bad=False).all():
 
-        return score_moe_p_value_fdr
+        raise
 
     score_moe_p_value_fdr["Score"] = scores
 
@@ -86,21 +89,17 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
 
     index_x_sampling = full((moe_indices.size, n_sampling), nan)
 
-    n_sample = ceil(0.632 * target.size)
+    n_sample = ceil(0.632 * vector.size)
 
     for i in range(n_sampling):
 
-        random_indices = choice(target.size, size=n_sample, replace=True)
-
-        sampled_target = target[random_indices]
-
-        sampled_data = data[moe_indices][:, random_indices]
+        random_indices = choice(vector.size, size=n_sample, replace=True)
 
         random_state = get_state()
 
         index_x_sampling[:, i] = apply_function_on_vector_and_each_matrix_row(
-            sampled_target,
-            sampled_data,
+            vector[random_indices],
+            matrix[moe_indices][:, random_indices],
             match_function,
             n_required_for_match_function,
             raise_for_n_less_than_required,
@@ -119,15 +118,15 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
                 apply_function_on_permuted_vector_and_each_matrix_row,
                 (
                     (
-                        target,
-                        data_,
+                        vector,
+                        matrix_,
                         random_seed,
                         n_permutation,
                         match_function,
                         n_required_for_match_function,
                         raise_for_n_less_than_required,
                     )
-                    for data_ in data_split
+                    for matrix_ in matrix_split
                 ),
                 n_job,
             )
@@ -140,4 +139,4 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
 
     score_moe_p_value_fdr["FDR"] = fdrs
 
-    return score_moe_p_value_fdr
+    return score_moe_p_value_fdr.sort_values("Score", ascending=score_ascending)

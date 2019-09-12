@@ -22,7 +22,6 @@ from .make_element_x_dimension_from_node_x_element_and_node_dimension import (
 )
 from .normalize_array_on_axis import normalize_array_on_axis
 from .normalize_dataframe import normalize_dataframe
-from .pick_colors import pick_colors
 from .plot_gps_map import plot_gps_map
 from .plot_heat_map import plot_heat_map
 from .plot_plotly_figure import plot_plotly_figure
@@ -143,7 +142,7 @@ class GPSMap:
 
             else:
 
-                raise ValueError
+                raise
 
         elif w is not None:
 
@@ -413,11 +412,11 @@ class GPSMap:
 
         if not element_label.map(lambda label: isinstance(label, int)).all():
 
-            raise ValueError
+            raise
 
         if (element_label.value_counts() < 3).any():
 
-            raise ValueError
+            raise
 
         if w_or_h == "w":
 

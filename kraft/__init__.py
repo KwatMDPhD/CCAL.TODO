@@ -52,6 +52,7 @@ from .compute_vector_entropy import compute_vector_entropy
 from .correlate_2_vectors import correlate_2_vectors
 from .count_gene_impacts_from_variant_dicts import count_gene_impacts_from_variant_dicts
 from .DATA_DIRECTORY_PATH import DATA_DIRECTORY_PATH
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .download_and_parse_geo import download_and_parse_geo
 from .download_url import download_url
 from .download_url_and_extract import download_url_and_extract
@@ -75,7 +76,6 @@ from .get_chromosome_size_from_fasta_gz import get_chromosome_size_from_fasta_gz
 from .get_colormap_colors import get_colormap_colors
 from .get_conda_environments import get_conda_environments
 from .get_conda_prefix import get_conda_prefix
-from .get_data_type import get_data_type
 from .get_dataframe_fraction_good_on_axis import get_dataframe_fraction_good_on_axis
 from .get_element_x_dimension_triangulation_edges import (
     get_element_x_dimension_triangulation_edges,
@@ -96,6 +96,7 @@ from .get_vcf_info import get_vcf_info
 from .get_vcf_info_ann import get_vcf_info_ann
 from .get_vcf_sample_format import get_vcf_sample_format
 from .GPSMap import GPSMap
+from .guess_data_type import guess_data_type
 from .hierarchical_consensus_cluster_dataframe import (
     hierarchical_consensus_cluster_dataframe,
 )
@@ -117,10 +118,10 @@ from .is_sorted_array import is_sorted_array
 from .is_str_version import is_str_version
 from .log_array import log_array
 from .log_response import log_response
+from .make_array import make_array
 from .make_binary_dataframe_from_categorical_series import (
     make_binary_dataframe_from_categorical_series,
 )
-from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_context_matrix import make_context_matrix
 from .make_context_matrix_ import make_context_matrix_
 from .make_element_x_dimension_from_node_x_element_and_node_dimension import (
@@ -157,7 +158,6 @@ from .normalize_file_name import normalize_file_name
 from .normalize_git_url import normalize_git_url
 from .normalize_path import normalize_path
 from .normalize_series import normalize_series
-from .pick_colors import pick_colors
 from .plot_bayesian_nomogram import plot_bayesian_nomogram
 from .plot_bubble_map import plot_bubble_map
 from .plot_context import plot_context

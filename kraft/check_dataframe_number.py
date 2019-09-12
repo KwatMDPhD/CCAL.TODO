@@ -5,16 +5,16 @@ def check_dataframe_number(dataframe):
 
     if dataframe.index.has_duplicates:
 
-        raise ValueError
+        raise
 
     if dataframe.columns.has_duplicates:
 
-        raise ValueError
+        raise
 
     if not dataframe.applymap(
         lambda value: isinstance(value, (int, float))
     ).values.all():
 
-        raise ValueError
+        raise
 
     check_array_for_bad(dataframe.values)

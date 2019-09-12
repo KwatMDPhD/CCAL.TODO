@@ -107,7 +107,6 @@ def mf_consensus_cluster_dataframe_with_ks(
                     "type": "scatter",
                     "x": ks,
                     "y": tuple(k_return[key]["e"] for key in keys),
-                    "marker": {"color": "#ff1968"},
                 }
             ],
         },

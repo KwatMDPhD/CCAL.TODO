@@ -2,7 +2,7 @@ from numpy import nan
 from pandas import DataFrame, concat
 
 from .BAD_VALUES import BAD_VALUES
-from .get_data_type import get_data_type
+from .guess_data_type import guess_data_type
 from .make_binary_dataframe_from_categorical_series import (
     make_binary_dataframe_from_categorical_series,
 )
@@ -22,7 +22,7 @@ def separate_information_x_sample(information_x_sample, bad_values=BAD_VALUES):
 
             try:
 
-                is_continuous = get_data_type(values.astype(float)) == "continuous"
+                is_continuous = guess_data_type(values.astype(float)) == "continuous"
 
             except ValueError as exception:
 

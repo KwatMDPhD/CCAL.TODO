@@ -32,15 +32,11 @@ def process_feature_x_sample(
 
     if feature_x_sample.index.has_duplicates:
 
-        raise ValueError(
-            "{} can not be duplicated.".format(feature_x_sample.index.name)
-        )
+        raise
 
     elif feature_x_sample.columns.has_duplicates:
 
-        raise ValueError(
-            "{} can not be duplicated.".format(feature_x_sample.columns.name)
-        )
+        raise
 
     if 0 < len(features_to_drop):
 

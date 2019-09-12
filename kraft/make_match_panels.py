@@ -16,29 +16,33 @@ def make_match_panels(
     **make_match_panel_keyword_arguments,
 ):
 
-    for target_name, target_values in target_x_sample.iterrows():
+    for target_name, target in target_x_sample.iterrows():
 
         if drop_negative_target:
 
-            target_values = target_values[target_values != -1]
+            target = target[0 < target]
 
         for data_name, data_dict in data_dicts.items():
 
-            suffix = join(
-                normalize_file_name(target_name), normalize_file_name(data_name)
+            print(
+                "Making match panel with target {} and data {}...".format(
+                    target_name, data_name
+                )
             )
 
-            print("Making match panel for {}...".format(suffix))
+            score_moe_p_value_fdr = None
 
             if directory_path is None:
 
                 file_path_prefix = None
 
-                score_moe_p_value_fdr = None
-
             else:
 
-                file_path_prefix = join(directory_path, suffix)
+                file_path_prefix = join(
+                    directory_path,
+                    normalize_file_name(target_name),
+                    normalize_file_name(data_name),
+                )
 
                 establish_path(file_path_prefix, "file")
 
@@ -59,16 +63,12 @@ def make_match_panels(
                         score_moe_p_value_fdr_file_path, sep="\t", index_col=0
                     )
 
-                else:
-
-                    score_moe_p_value_fdr = None
-
             make_match_panel(
-                target_values,
+                target,
                 data_dict["dataframe"],
                 score_moe_p_value_fdr=score_moe_p_value_fdr,
-                data_type=data_dict["type"],
-                title={"text": suffix.replace("/", "<br>")},
+                data_data_type=data_dict["data_type"],
+                layout={"title": {"text": "{}<br>{}".format(target_name, data_name)}},
                 file_path_prefix=file_path_prefix,
                 **make_match_panel_keyword_arguments,
             )

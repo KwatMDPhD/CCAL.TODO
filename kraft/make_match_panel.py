@@ -1,19 +1,16 @@
+from numpy import nan
+
 from .apply_function_on_vector_and_each_matrix_row_and_compute_statistics import (
     apply_function_on_vector_and_each_matrix_row_and_compute_statistics,
 )
 from .cluster_matrix import cluster_matrix
-from .compute_information_coefficient_between_2_vectors import (
-    compute_information_coefficient_between_2_vectors,
-)
-from .get_data_type import get_data_type
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .is_sorted_array import is_sorted_array
-from .make_colorscale_from_colors import make_colorscale_from_colors
 from .make_match_panel_annotations import make_match_panel_annotations
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .normalize_dataframe import normalize_dataframe
 from .normalize_series import normalize_series
-from .pick_colors import pick_colors
 from .plot_plotly_figure import plot_plotly_figure
-from .RANDOM_SEED import RANDOM_SEED
 from .select_series_indices import select_series_indices
 
 
@@ -22,25 +19,16 @@ def make_match_panel(
     data,
     target_ascending=True,
     score_moe_p_value_fdr=None,
-    n_job=1,
-    match_function=compute_information_coefficient_between_2_vectors,
-    n_required_for_match_function=2,
-    raise_for_n_less_than_required=False,
     n_extreme=8,
     fraction_extreme=None,
-    random_seed=RANDOM_SEED,
-    n_sampling=10,
-    n_permutation=10,
-    score_ascending=False,
     plot=True,
+    target_data_type="continuous",
+    data_data_type="continuous",
+    plot_std=nan,
     cluster_within_category=True,
-    target_type=None,
-    data_type=None,
-    plot_std=None,
-    title=None,
-    layout_side_margin=196,
-    annotation_font_size=8.8,
+    layout=None,
     file_path_prefix=None,
+    **apply_function_on_vector_and_each_matrix_row_and_compute_statistics_keyword_arguments,
 ):
 
     common_indices = target.index & data.columns
@@ -64,15 +52,9 @@ def make_match_panel(
         score_moe_p_value_fdr = apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
             target.values,
             data.values,
-            n_job,
-            match_function,
-            n_required_for_match_function,
-            raise_for_n_less_than_required,
-            n_extreme,
-            fraction_extreme,
-            random_seed,
-            n_sampling,
-            n_permutation,
+            n_extreme=n_extreme,
+            fraction_extreme=fraction_extreme,
+            **apply_function_on_vector_and_each_matrix_row_and_compute_statistics_keyword_arguments,
         )
 
         score_moe_p_value_fdr.index = data.index
@@ -81,14 +63,6 @@ def make_match_panel(
 
         score_moe_p_value_fdr = score_moe_p_value_fdr.reindex(index=data.index)
 
-    if score_moe_p_value_fdr.isna().values.all():
-
-        print("score_moe_p_value_fdr has only NA.")
-
-        return score_moe_p_value_fdr
-
-    score_moe_p_value_fdr.sort_values("Score", ascending=score_ascending, inplace=True)
-
     if file_path_prefix is not None:
 
         score_moe_p_value_fdr.to_csv("{}.tsv".format(file_path_prefix), sep="\t")
@@ -96,6 +70,8 @@ def make_match_panel(
     if not plot:
 
         return score_moe_p_value_fdr
+
+    print("Plotting...")
 
     if file_path_prefix is None:
 
@@ -109,10 +85,8 @@ def make_match_panel(
         {
             "layout": {
                 "title": {"text": "Statistics"},
-                "xaxis": {"title": {"text": "Rank"}},
-                "yaxis": {
-                    "title": {"text": "Score<br>{}".format(match_function.__name__)}
-                },
+                "xaxis": {"title": {"text": "Rank"}, "automargin": True},
+                "yaxis": {"title": {"text": "Score"}},
             },
             "data": [
                 {
@@ -127,6 +101,8 @@ def make_match_panel(
         html_file_path,
     )
 
+    target_to_plot = target.copy()
+
     score_moe_p_value_fdr_to_plot = score_moe_p_value_fdr.copy()
 
     if n_extreme is not None or fraction_extreme is not None:
@@ -139,11 +115,33 @@ def make_match_panel(
                 fraction=fraction_extreme,
                 plot=False,
             )
-        ].sort_values("Score", ascending=score_ascending)
+        ]
 
     data_to_plot = data.loc[score_moe_p_value_fdr_to_plot.index]
 
-    target_to_plot = target.copy()
+    if target_data_type == "continuous":
+
+        target_to_plot = normalize_series(target_to_plot, "-0-").clip(
+            lower=-plot_std, upper=plot_std
+        )
+
+        target_to_plot_z_magnitude = plot_std
+
+    else:
+
+        target_to_plot_z_magnitude = nan
+
+    if data_data_type == "continuous":
+
+        data_to_plot = normalize_dataframe(data_to_plot, 1, "-0-").clip(
+            lower=-plot_std, upper=plot_std
+        )
+
+        data_to_plot_z_magnitude = plot_std
+
+    else:
+
+        data_to_plot_z_magnitude = nan
 
     if (
         cluster_within_category
@@ -166,78 +164,47 @@ def make_match_panel(
 
         target_to_plot = target_to_plot[data_to_plot.columns]
 
-    if target_type is None:
+    row_fraction = 1 / (1 + 1 + data_to_plot.shape[0])
 
-        target_type = get_data_type(target_to_plot)
-
-    if target_type == "continuous":
-
-        target_to_plot = normalize_series(target_to_plot, "-0-")
-
-        if plot_std is not None:
-
-            target_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
-
-    if data_type is None:
-
-        data_type = get_data_type(data_to_plot)
-
-    if data_type == "continuous":
-
-        data_to_plot = normalize_dataframe(data_to_plot, 1, "-0-")
-
-        if plot_std is not None:
-
-            data_to_plot.clip(lower=-plot_std, upper=plot_std, inplace=True)
-
-    row_fraction = max(0.01, 1 / (data_to_plot.shape[0] + 2))
-
-    target_yaxis_domain = (1 - row_fraction, 1)
-
-    data_yaxis_domain = (0, 1 - 2 * row_fraction)
-
-    data_row_fraction = (
-        data_yaxis_domain[1] - data_yaxis_domain[0]
-    ) / data_to_plot.shape[0]
-
-    annotation_font = {"size": annotation_font_size}
-
-    layout = {
-        "height": max(640, 32 * (data_to_plot.shape[0] + 2)),
-        "margin": {"l": layout_side_margin, "r": layout_side_margin},
-        "title": title,
-        "xaxis": {"anchor": "y", "tickfont": annotation_font},
-        "yaxis": {"domain": data_yaxis_domain, "dtick": 1, "tickfont": annotation_font},
-        "yaxis2": {
-            "domain": target_yaxis_domain,
-            "tickmode": "array",
-            "tickvals": (0,),
-            "ticktext": (target_to_plot.name,),
-            "tickfont": annotation_font,
-        },
+    layout_template = {
+        "margin": {"l": 200, "r": 200},
+        "title": {"xref": "paper", "x": 0.5},
+        "xaxis": {"dtick": 1, "showticklabels": False},
+        "yaxis": {"domain": (0, 1 - 2 * row_fraction), "showticklabels": False},
+        "yaxis2": {"domain": (1 - row_fraction, 1), "showticklabels": False},
         "annotations": [],
     }
+
+    if layout is None:
+
+        layout = layout_template
+
+    else:
+
+        layout = merge_2_dicts_recursively(layout_template, layout)
 
     figure_data = [
         {
             "yaxis": "y2",
             "type": "heatmap",
+            "name": "Target",
             "x": target_to_plot.index,
             "z": target_to_plot.to_frame().T,
-            "colorscale": make_colorscale_from_colors(
-                pick_colors(target_to_plot, data_type=target_type)
-            ),
+            "zmin": -target_to_plot_z_magnitude,
+            "zmax": target_to_plot_z_magnitude,
+            "colorscale": DATA_TYPE_COLORSCALE[target_data_type],
             "showscale": False,
         },
         {
             "yaxis": "y",
             "type": "heatmap",
+            "name": "Data",
             "x": data_to_plot.columns,
             "y": data_to_plot.index[::-1],
             "z": data_to_plot.iloc[::-1],
-            "colorscale": make_colorscale_from_colors(
-                pick_colors(data_to_plot, data_type=data_type)
-            ),
+            "zmin": -data_to_plot_z_magnitude,
+            "zmax": data_to_plot_z_magnitude,
+            "colorscale": DATA_TYPE_COLORSCALE[data_data_type],
             "showscale": False,
         },
     ]
@@ -245,42 +212,62 @@ def make_match_panel(
     layout_annotation_template = {
         "xref": "paper",
         "yref": "paper",
-        "xanchor": "left",
         "yanchor": "middle",
-        "font": annotation_font,
-        "width": 64,
+        "font": {"size": 10},
         "showarrow": False,
     }
 
-    for i, (annotation, strs) in enumerate(
+    layout["annotations"].append(
+        {
+            "x": 0,
+            "y": 1 - (row_fraction / 2),
+            "xanchor": "right",
+            "text": "<b>{}</b>".format(target.name),
+            **layout_annotation_template,
+        }
+    )
+
+    for i, (statistic, values) in enumerate(
         make_match_panel_annotations(score_moe_p_value_fdr_to_plot).items()
     ):
 
-        x = 1.0016 + i / 10
+        x = 1.1 + i / 5
 
         layout["annotations"].append(
             {
                 "x": x,
                 "y": 1 - (row_fraction / 2),
-                "text": "<b>{}</b>".format(annotation),
+                "xanchor": "center",
+                "text": "<b>{}</b>".format(statistic),
                 **layout_annotation_template,
             }
         )
 
-        y = data_yaxis_domain[1] - (data_row_fraction / 2)
+        y = layout["yaxis"]["domain"][1] - (row_fraction / 2)
 
-        for str_ in strs:
+        for index, statistic in zip(data_to_plot.index, values):
+
+            layout["annotations"].append(
+                {
+                    "x": 0,
+                    "y": y,
+                    "xanchor": "right",
+                    "text": index,
+                    **layout_annotation_template,
+                }
+            )
 
             layout["annotations"].append(
                 {
                     "x": x,
                     "y": y,
-                    "text": "<b>{}</b>".format(str_),
+                    "xanchor": "center",
+                    "text": statistic,
                     **layout_annotation_template,
                 }
             )
 
-            y -= data_row_fraction
+            y -= row_fraction
 
     if file_path_prefix is None:
 

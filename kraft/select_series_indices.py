@@ -160,7 +160,6 @@ def select_series_indices(
                         "x": is_selected.values.nonzero()[0],
                         "y": series_no_na_sorted[is_selected],
                         "text": selected_indices,
-                        "marker": {"color": "#20d9ba"},
                     },
                 ],
             },

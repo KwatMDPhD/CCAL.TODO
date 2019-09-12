@@ -6,12 +6,10 @@ from .check_array_for_bad import check_array_for_bad
 from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
 from .COLORBAR import COLORBAR
 from .get_colormap_colors import get_colormap_colors
-from .get_data_type import get_data_type
 from .get_element_x_dimension_triangulation_edges import (
     get_element_x_dimension_triangulation_edges,
 )
-from .make_colorscale_from_colors import make_colorscale_from_colors
-from .pick_colors import pick_colors
+from .guess_data_type import guess_data_type
 from .plot_plotly_figure import plot_plotly_figure
 
 grid_extension = 1 / 1e3
@@ -163,7 +161,7 @@ def plot_gps_map(
 
             if annotation_types is None:
 
-                data_type = get_data_type(element_value)
+                data_type = guess_data_type(element_value)
 
             else:
 

@@ -21,6 +21,6 @@ def check_array_for_bad(array, raise_for_bad=True):
 
     if is_bad.any() and raise_for_bad:
 
-        raise ValueError
+        raise
 
     return is_bad

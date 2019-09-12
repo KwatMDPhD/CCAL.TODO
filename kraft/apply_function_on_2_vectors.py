@@ -31,7 +31,7 @@ def apply_function_on_2_vectors(
 
                 if raise_for_n_less_than_required:
 
-                    raise ValueError
+                    raise
 
                 return nan
 
