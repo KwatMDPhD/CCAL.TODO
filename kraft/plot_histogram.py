@@ -1,5 +1,5 @@
-from numpy.random import choice
-
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
+from .get_colorscale_color import get_colorscale_color
 from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -32,7 +32,9 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
 
     for i, series in enumerate(serieses):
 
-        color = "rgb{}".format(tuple(choice(range(256), size=3)))
+        color = get_colorscale_color(
+            DATA_TYPE_COLORSCALE["categorical"], i / (len(serieses) - 1)
+        )
 
         data.append(
             {

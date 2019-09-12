@@ -1,5 +1,6 @@
 from matplotlib.colors import to_hex
-from plotly.colors import make_colorscale
+
+# from plotly.colors import make_colorscale
 from numpy import arange, asarray, cos, linspace, nan, pi, sin, unique
 from pandas import Series
 
@@ -26,7 +27,7 @@ def plot_gps_map(
     element_label,
     grid_values,
     grid_labels,
-    label_colors,
+    label_colorscale,
     grid_label_opacity,
     annotation_x_element,
     annotation_types,
@@ -127,7 +128,7 @@ def plot_gps_map(
                     "x": x,
                     "y": y,
                     "z": z[::-1],
-                    "colorscale": make_colorscale(("#ffffff", label_colors[label])),
+                    "colorscale": make_colorscale(("#ffffff", label_colorscale[label])),
                     "showscale": False,
                     "opacity": grid_label_opacity,
                 }
@@ -303,7 +304,7 @@ def plot_gps_map(
                     "mode": "markers",
                     "marker": {
                         "size": element_marker_size,
-                        "color": label_colors[label],
+                        "color": label_colorscale[label],
                         "line": element_marker_line,
                     },
                     "opacity": element_opacity,

@@ -1,6 +1,7 @@
 from numpy import arange, diag, exp, full, linspace, mean, nan, rot90
-from plotly.colors.plotlyjs import Portland
-from plotly.colors import make_colorscale
+
+# from plotly.colors.plotlyjs import Portland
+# from plotly.colors import make_colorscale
 from numpy.random import choice, normal, random_sample, seed
 from pandas import DataFrame, Series
 from scipy.spatial import Delaunay
