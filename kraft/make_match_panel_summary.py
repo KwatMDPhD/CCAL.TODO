@@ -56,7 +56,7 @@ def make_match_panel_summary(
         n_row += data_dict["dataframe"].shape[0]
 
     layout_template = {
-        "height": max(250, 25 * n_row),
+        "height": max(500, 25 * n_row),
         "margin": {"l": 200, "r": 200},
         "title": {"xref": "paper", "x": 0.5},
         "xaxis": {"showticklabels": False},

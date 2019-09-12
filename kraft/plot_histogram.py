@@ -1,3 +1,5 @@
+from numpy.random import choice
+
 from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -15,7 +17,7 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
     layout_template = {
         "xaxis": {"anchor": "y"},
         "yaxis": {"domain": (0, 0.1), "dtick": 1, "showticklabels": False},
-        "yaxis2": {"domain": (0.1, 1), "title": {"text": yaxis2_title_text}},
+        "yaxis2": {"domain": (0.15, 1), "title": {"text": yaxis2_title_text}},
     }
 
     if layout is None:
@@ -30,6 +32,8 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
 
     for i, series in enumerate(serieses):
 
+        color = "rgb{}".format(tuple(choice(range(256), size=3)))
+
         data.append(
             {
                 "yaxis": "y2",
@@ -38,6 +42,7 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
                 "name": series.name,
                 "x": series,
                 "histnorm": histnorm,
+                "marker": {"color": color},
             }
         )
 
@@ -47,10 +52,10 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
                 "legendgroup": series.name,
                 "showlegend": False,
                 "x": series,
-                "y": (i,) * series.size,
+                "y": (0,) * series.size,
                 "text": series.index,
                 "mode": "markers",
-                "marker": {"symbol": "line-ns-open"},
+                "marker": {"symbol": "line-ns-open", "color": color},
             }
         )
 

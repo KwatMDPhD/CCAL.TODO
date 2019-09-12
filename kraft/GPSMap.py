@@ -1,4 +1,6 @@
 from numpy import arange, diag, exp, full, linspace, mean, nan, rot90
+from plotly.colors.plotlyjs import Portland
+from plotly.colors import make_colorscale
 from numpy.random import choice, normal, random_sample, seed
 from pandas import DataFrame, Series
 from scipy.spatial import Delaunay
@@ -104,7 +106,7 @@ class GPSMap:
 
         self.w_grid_labels = None
 
-        self.w_label_colors = None
+        self.w_label_colorscale = None
 
         self.h_element_label = None
 
@@ -114,7 +116,7 @@ class GPSMap:
 
         self.h_grid_labels = None
 
-        self.h_label_colors = None
+        self.h_label_colorscale = None
 
         self.w_distance__element_x_element = None
 
@@ -341,7 +343,7 @@ class GPSMap:
 
             grid_labels = self.w_grid_labels
 
-            label_colors = self.w_label_colors
+            label_colorscale = self.w_label_colorscale
 
         elif w_or_h == "h":
 
@@ -357,7 +359,7 @@ class GPSMap:
 
             grid_labels = self.h_grid_labels
 
-            label_colors = self.h_label_colors
+            label_colorscale = self.h_label_colorscale
 
         if annotation_x_element is not None:
 
@@ -388,7 +390,7 @@ class GPSMap:
             element_label,
             grid_values,
             grid_labels,
-            label_colors,
+            label_colorscale,
             grid_label_opacity,
             annotation_x_element,
             annotation_types,
@@ -406,7 +408,7 @@ class GPSMap:
         element_label,
         n_grid=128,
         bandwidth_factor=1,
-        label_colors=None,
+        label_colorscale=None,
         plot=True,
     ):
 
@@ -507,9 +509,9 @@ class GPSMap:
 
                     grid_labels[i, j] = max_label
 
-        if label_colors is None:
+        if label_colorscale is None:
 
-            label_colors = pick_colors(element_label)
+            label_colorscale = make_colorscale(Portland)
 
         if w_or_h == "w":
 
@@ -521,7 +523,7 @@ class GPSMap:
 
             self.w_grid_labels = grid_labels
 
-            self.w_label_colors = label_colors
+            self.w_label_colorscale = label_colorscale
 
         elif w_or_h == "h":
 
@@ -533,7 +535,7 @@ class GPSMap:
 
             self.h_grid_labels = grid_labels
 
-            self.h_label_colors = label_colors
+            self.h_label_colorscale = label_colorscale
 
         if plot:
 
@@ -560,7 +562,7 @@ class GPSMap:
             plot_heat_map(
                 normalize_dataframe(dataframe, 0, "-0-"),
                 column_annotations=column_annotation,
-                # column_annotation_colors=label_colors,
+                column_annotation_colorscale=label_colorscale,
                 layout={
                     "title": {"text": w_or_h.title()},
                     "xaxis": {"title": {"text": element_name}},
@@ -611,7 +613,7 @@ class GPSMap:
 
             grid_labels = self.w_grid_labels
 
-            label_colors = self.w_label_colors
+            label_colorscale = self.w_label_colorscale
 
         elif w_or_h == "h":
 
@@ -633,7 +635,7 @@ class GPSMap:
 
             grid_labels = self.h_grid_labels
 
-            label_colors = self.h_label_colors
+            label_colorscale = self.h_label_colorscale
 
         predicting_element_x_dimension = make_element_x_dimension_from_node_x_element_and_node_dimension(
             node_x_predicting_element.values, self.node_x_dimension, n_pull, pull_power
@@ -690,7 +692,7 @@ class GPSMap:
             element_predicted_label,
             grid_values,
             grid_labels,
-            label_colors,
+            label_colorscale,
             grid_label_opacity,
             annotation_x_element,
             annotation_types,

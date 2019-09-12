@@ -10,11 +10,11 @@ def plot_heat_map(
     dataframe,
     colorscale=None,
     row_annotations=None,
-    row_annotation_colorscale="rainbow",
+    row_annotation_colorscale=None,
     row_annotation_str=None,
     row_annotation=None,
     column_annotations=None,
-    column_annotation_colorscale="rainbow",
+    column_annotation_colorscale=None,
     column_annotation_str=None,
     column_annotation=None,
     layout=None,
@@ -72,11 +72,13 @@ def plot_heat_map(
 
     if row_annotations is not None:
 
+        row_annotations = row_annotations[::-1]
+
         data.append(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
-                "z": tuple((i,) for i in row_annotations[::-1]),
+                "z": tuple((i,) for i in row_annotations),
                 "colorscale": row_annotation_colorscale,
                 "showscale": False,
                 "hoverinfo": "z+y",

@@ -1,11 +1,11 @@
-from matplotlib.colors import LinearSegmentedColormap, to_hex
+from matplotlib.colors import to_hex
+from plotly.colors import make_colorscale
 from numpy import arange, asarray, cos, linspace, nan, pi, sin, unique
 from pandas import Series
 
 from .check_array_for_bad import check_array_for_bad
 from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
 from .COLORBAR import COLORBAR
-from .get_colormap_colors import get_colormap_colors
 from .get_element_x_dimension_triangulation_edges import (
     get_element_x_dimension_triangulation_edges,
 )
@@ -127,13 +127,7 @@ def plot_gps_map(
                     "x": x,
                     "y": y,
                     "z": z[::-1],
-                    "colorscale": make_colorscale_from_colors(
-                        get_colormap_colors(
-                            LinearSegmentedColormap.from_list(
-                                None, ("#ffffff", label_colors[label])
-                            )
-                        )
-                    ),
+                    "colorscale": make_colorscale(("#ffffff", label_colors[label])),
                     "showscale": False,
                     "opacity": grid_label_opacity,
                 }
@@ -195,9 +189,7 @@ def plot_gps_map(
 
             if annotation_colorscales is None:
 
-                colorscale = make_colorscale_from_colors(
-                    pick_colors(element_value, data_type=data_type)
-                )
+                colorscale = make_colorscale(("#0000ff", "#ffffff", "#ff0000"))
 
             else:
 
