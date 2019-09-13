@@ -15,9 +15,7 @@ def make_variant_n_from_vcf_file_path(vcf_file_path, use_only_pass=True):
 
         is_pass = filter_column == "PASS"
 
-        if use_only_pass and not is_pass.any():
-
-            raise
+        assert is_pass.any()
 
         vcf = vcf[is_pass]
 

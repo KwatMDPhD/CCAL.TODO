@@ -6,15 +6,11 @@ def establish_path(path, path_type):
 
     if path_type == "file":
 
-        if path.endswith("/"):
+        assert not path.endswith("/")
 
-            raise
+    elif path_type == "directory" and not path.endswith("/"):
 
-    elif path_type == "directory":
-
-        if not path.endswith("/"):
-
-            path += "/"
+        path += "/"
 
     directory_path, file_name = split(path)
 

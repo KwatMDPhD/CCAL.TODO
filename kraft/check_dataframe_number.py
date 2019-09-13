@@ -3,14 +3,12 @@ from .check_array_for_bad import check_array_for_bad
 
 def check_dataframe_number(dataframe):
 
-    if dataframe.index.has_duplicates or dataframe.columns.has_duplicates:
+    assert not dataframe.index.has_duplicates
 
-        raise
+    assert not dataframe.columns.has_duplicates
 
-    if not dataframe.applymap(
+    assert dataframe.applymap(
         lambda value: isinstance(value, (int, float))
-    ).values.all():
-
-        raise
+    ).values.all()
 
     check_array_for_bad(dataframe.values)

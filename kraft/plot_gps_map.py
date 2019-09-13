@@ -1,8 +1,6 @@
 from numpy import asarray, isnan, nan, unique
-from pandas import Series
 from plotly.colors import make_colorscale
 
-from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
 from .COLORBAR import COLORBAR
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_colorscale_color import get_colorscale_color
@@ -21,13 +19,12 @@ def plot_gps_map(
     element_name,
     element_x_dimension,
     dimension_grid=None,
-    element_labels=None,
-    grid_values=None,
-    grid_labels=None,
+    element_label=None,
+    grid_probability=None,
+    grid_label=None,
     label_colorscale=DATA_TYPE_COLORSCALE["categorical"],
     element_value=None,
     element_value_data_type="continuous",
-    element_value_std_max=None,
     layout=None,
     element_value_binary_annotation=False,
     html_file_path=None,
@@ -41,9 +38,11 @@ def plot_gps_map(
     element_marker_line_width=1,
     element_marker_line_color="#2e211b",
     n_contour=20,
-    grid_label_opacity=0.8,
+    grid_label_opacity=0.7,
 ):
-    axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
+
+    layout_axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
+
     layout_template = {
         "height": 800,
         "width": 800,
@@ -54,28 +53,32 @@ def plot_gps_map(
                 len(nodes), node_name, len(elements), element_name
             ),
         },
-        "xaxis": axis,
-        "yaxis": axis,
+        "xaxis": layout_axis,
+        "yaxis": layout_axis,
     }
+
     if layout is None:
+
         layout = layout_template
+
     else:
+
         layout = merge_2_dicts_recursively(layout_template, layout)
 
     edge_xs, edge_ys = get_element_x_dimension_triangulation_edges(node_x_dimension)
 
+    node_trace = {"type": "scatter", "legendgroup": node_name}
+
     data = [
         {
-            "type": "scatter",
-            "legendgroup": node_name,
+            **node_trace,
             "showlegend": False,
             "x": edge_xs,
             "y": edge_ys,
             "line": {"color": node_line_color},
         },
         {
-            "type": "scatter",
-            "legendgroup": node_name,
+            **node_trace,
             "name": node_name,
             "x": node_x_dimension[:, 0],
             "y": node_x_dimension[:, 1],
@@ -87,7 +90,7 @@ def plot_gps_map(
         },
     ]
 
-    element_template = {
+    element_trace = {
         "type": "scatter",
         "name": element_name,
         "mode": "markers",
@@ -102,15 +105,15 @@ def plot_gps_map(
         "hoverinfo": "text",
     }
 
-    if grid_labels is not None:
+    if grid_label is not None:
 
-        grid_labels_not_nan_unique = unique(grid_labels[~isnan(grid_labels)])
+        grid_label_not_nan_unique = unique(grid_label[~isnan(grid_label)])
 
         label_color = {
             label: get_colorscale_color(
-                label_colorscale, label / (grid_labels_not_nan_unique.size - 1)
+                label_colorscale, label / (grid_label_not_nan_unique.size - 1)
             )
-            for label in grid_labels_not_nan_unique
+            for label in grid_label_not_nan_unique
         }
 
         data.append(
@@ -119,16 +122,19 @@ def plot_gps_map(
                 "showlegend": False,
                 "x": dimension_grid,
                 "y": dimension_grid,
-                "z": grid_values[::-1],
+                "z": grid_probability[::-1],
                 "autocontour": False,
                 "ncontours": n_contour,
                 "contours": {"coloring": "none"},
             }
         )
 
-        for label in grid_labels_not_nan_unique:
-            z = grid_values.copy()
-            z[grid_labels != label] = nan
+        for label in grid_label_not_nan_unique:
+
+            z = grid_probability.copy()
+
+            z[grid_label != label] = nan
+
             data.append(
                 {
                     "type": "heatmap",
@@ -152,23 +158,11 @@ def plot_gps_map(
             [elements.index(element) for element in element_value.index]
         ]
 
-        if (
-            element_value_data_type == "continuous"
-            and element_value_std_max is not None
-        ):
-
-            element_value = Series(
-                clip_array_by_standard_deviation(
-                    element_value.values, element_value_std_max, raise_for_bad=False
-                ),
-                index=element_value.index,
-                name=element_value.name,
-            )
-
         tickvals = element_value.describe()[["min", "25%", "50%", "mean", "75%", "max"]]
+
         data.append(
             merge_2_dicts_recursively(
-                element_template,
+                element_trace,
                 {
                     "x": element_x_dimension_[:, 0],
                     "y": element_x_dimension_[:, 1],
@@ -215,12 +209,15 @@ def plot_gps_map(
                 for i in element_value.values.nonzero()[0]
             ]
 
-    elif element_labels is not None:
-        for label in grid_labels_not_nan_unique:
-            is_label = element_labels == label
+    elif element_label is not None:
+
+        for label in grid_label_not_nan_unique:
+
+            is_label = element_label == label
+
             data.append(
                 merge_2_dicts_recursively(
-                    element_template,
+                    element_trace,
                     {
                         "name": "{:.0f}".format(label),
                         "x": element_x_dimension[is_label, 0],
@@ -232,9 +229,10 @@ def plot_gps_map(
             )
 
     else:
+
         data.append(
             merge_2_dicts_recursively(
-                element_template,
+                element_trace,
                 {
                     "x": element_x_dimension[:, 0],
                     "y": element_x_dimension[:, 1],

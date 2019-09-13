@@ -44,9 +44,7 @@ def normalize_array(array, method, rank_method="average", raise_for_bad=True):
 
     elif method == "sum":
 
-        if array_good.min() < 0:
-
-            raise
+        assert 0 <= array_good.min()
 
         if (array_good == 0).all():
 

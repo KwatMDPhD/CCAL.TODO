@@ -26,17 +26,13 @@ def process_feature_x_sample(
     **summarize_feature_x_sample_keyword_arguments,
 ):
 
+    assert not feature_x_sample.index.has_duplicates
+
+    assert not feature_x_sample.column.has_duplicates
+
     summarize_feature_x_sample(
         feature_x_sample, **summarize_feature_x_sample_keyword_arguments
     )
-
-    if feature_x_sample.index.has_duplicates:
-
-        raise
-
-    elif feature_x_sample.columns.has_duplicates:
-
-        raise
 
     if 0 < len(features_to_drop):
 

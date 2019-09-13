@@ -1,4 +1,4 @@
-from numpy import asarray, full, linspace, mean, nan, rot90
+from numpy import full, linspace, mean, nan, rot90
 from pandas import DataFrame
 from scipy.spatial import Delaunay
 from scipy.spatial.distance import pdist, squareform
@@ -131,6 +131,8 @@ class GPSMap:
 
         if plot:
 
+            layout = {"height": 640, "width": 640}
+
             heat_map_axis = {"title": {"text": self.node_name}}
 
         if w is not None:
@@ -168,6 +170,7 @@ class GPSMap:
                         cluster_matrix(self.w_distance__node_x_node, 1),
                     ],
                     layout={
+                        **layout,
                         "title": {
                             "text": "{0}-{0} Distance in W".format(self.node_name)
                         },
@@ -211,6 +214,7 @@ class GPSMap:
                         cluster_matrix(self.h_distance__node_x_node, 1),
                     ],
                     layout={
+                        **layout,
                         "title": {
                             "text": "{0}-{0} Distance in H".format(self.node_name)
                         },
@@ -246,6 +250,7 @@ class GPSMap:
                         cluster_matrix(self.distance__node_x_node, 1),
                     ],
                     layout={
+                        **layout,
                         "title": {
                             "text": "{0}-{0} Distance in W and H".format(self.node_name)
                         },
@@ -346,6 +351,8 @@ class GPSMap:
 
         assert 3 <= element_label.value_counts().min()
 
+        assert not element_label.isna().any()
+
         if w_or_h == "w":
 
             element_x_dimension = self.w_element_x_dimension
@@ -360,11 +367,17 @@ class GPSMap:
 
         mask_grid = full(grid_shape, nan)
 
-        self.dimension_grid = linspace(-1e-3, 1 + 1e-3, num=self.n_grid)
+        dimension_grid_min = -0.001
 
-        for i in mask_grid.shape[0]:
+        dimension_grid_max = 1.001
 
-            for j in mask_grid.shape[1]:
+        self.dimension_grid = linspace(
+            dimension_grid_min, dimension_grid_max, num=self.n_grid
+        )
+
+        for i in range(mask_grid.shape[0]):
+
+            for j in range(mask_grid.shape[1]):
 
                 mask_grid[i, j] = self.triangulation.find_simplex(
                     (self.dimension_grid[j], self.dimension_grid[-i])
@@ -376,17 +389,17 @@ class GPSMap:
             compute_vector_bandwidth(element_x_dimension[:, i]) for i in range(2)
         )
 
-        for label in set(element_label):
+        for label in element_label.unique():
 
             label_grid_probability[label] = rot90(
                 unmesh(
                     *compute_element_x_dimension_joint_probability(
-                        element_x_dimension[asarray(element_label) == label],
+                        element_x_dimension[element_label == label],
                         plot=False,
                         dimension_bandwidths=dimension_bandwidths,
                         dimension_bandwidth_factors=(bandwidth_factor,) * 2,
-                        dimension_grid_mins=(self.dimension_grid.min(),) * 2,
-                        dimension_grid_maxs=(self.dimension_grid.max(),) * 2,
+                        dimension_grid_mins=(dimension_grid_min,) * 2,
+                        dimension_grid_maxs=(dimension_grid_max,) * 2,
                         dimension_fraction_grid_extensions=(0,) * 2,
                         dimension_n_grids=grid_shape,
                     )
@@ -397,9 +410,9 @@ class GPSMap:
 
         grid_label = full(grid_shape, nan)
 
-        for i in mask_grid.shape[0]:
+        for i in range(mask_grid.shape[0]):
 
-            for j in mask_grid.shape[1]:
+            for j in range(mask_grid.shape[1]):
 
                 if mask_grid[i, j] == -1:
 
@@ -409,9 +422,9 @@ class GPSMap:
 
                 max_label = nan
 
-                for label, grid_probability in label_grid_probability.items():
+                for label, grid_probability_ in label_grid_probability.items():
 
-                    probability = grid_probability[i, j]
+                    probability = grid_probability_[i, j]
 
                     if max_probability < probability:
 
@@ -493,8 +506,6 @@ class GPSMap:
 
         if w_or_h == "w":
 
-            element_name = self.w_element_name
-
             if n_pull is None:
 
                 n_pull = self.w_n_pull
@@ -510,8 +521,6 @@ class GPSMap:
             label_colorscale = self.w_label_colorscale
 
         elif w_or_h == "h":
-
-            element_name = self.h_element_name
 
             if n_pull is None:
 
@@ -532,7 +541,7 @@ class GPSMap:
             self.node_name,
             self.node_x_dimension,
             node_x_predicting_element.columns.tolist(),
-            "Predicting {}".format(element_name),
+            node_x_predicting_element.columns.name,
             make_element_x_dimension_from_node_x_element_and_node_dimension(
                 node_x_predicting_element.values,
                 self.node_x_dimension,

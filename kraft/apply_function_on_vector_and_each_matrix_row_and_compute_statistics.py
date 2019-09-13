@@ -64,9 +64,7 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
         )
     )
 
-    if check_array_for_bad(scores, raise_for_bad=False).all():
-
-        raise
+    assert not check_array_for_bad(scores, raise_for_bad=False).all()
 
     score_moe_p_value_fdr["Score"] = scores
 

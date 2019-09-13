@@ -3,9 +3,7 @@ from plotly.colors import convert_colors_to_same_type, find_intermediate_color
 
 def get_colorscale_color(colorscale, value):
 
-    if not 0 <= value <= 1:
-
-        raise
+    assert 0 <= value <= 1
 
     for i in range(len(colorscale) - 1):
 

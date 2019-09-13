@@ -33,9 +33,7 @@ def read_process_write_gene_x_cell(
 
     gene_x_cell.columns.name = "Cell"
 
-    if gene_x_cell.columns.has_duplicates:
-
-        raise
+    assert not gene_x_cell.columns.has_duplicates
 
     gene_x_cell = gene_x_cell.sort_index().sort_index(axis=1)
 
