@@ -1,4 +1,4 @@
-from numpy import asarray, nonzero, unique
+from numpy import asarray, nonzero, unique, argsort
 
 from .cast_object_to_builtin import cast_object_to_builtin
 from .COLORBAR import COLORBAR
@@ -24,6 +24,22 @@ def plot_heat_map(
     heat_map_axis_template = {"domain": (0, 0.95)}
 
     annotation_axis_template = {"domain": (0.96, 1), "showticklabels": False}
+
+    if row_annotations is not None:
+
+        sorting_indices = argsort(row_annotations)
+
+        row_annotations = [row_annotations[i] for i in sorting_indices]
+
+        dataframe = dataframe.iloc[sorting_indices]
+
+    if column_annotations is not None:
+
+        sorting_indices = argsort(column_annotations)
+
+        column_annotations = [column_annotations[i] for i in sorting_indices]
+
+        dataframe = dataframe.iloc[:, sorting_indices]
 
     layout_template = {
         "xaxis": {"title": dataframe.columns.name, **heat_map_axis_template},
