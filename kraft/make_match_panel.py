@@ -180,7 +180,7 @@ def make_match_panel(
     layout_template = {
         "height": max(500, 25 * n_row),
         "margin": {"l": 200, "r": 200},
-        "title": {"xref": "paper", "x": 0.5},
+        "title": {"x": 0.5},
         "xaxis": {"showticklabels": False},
         "yaxis": {"domain": (0, 1 - 2 * row_fraction), "showticklabels": False},
         "yaxis2": {"domain": (1 - row_fraction, 1), "showticklabels": False},

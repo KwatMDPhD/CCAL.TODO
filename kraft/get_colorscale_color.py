@@ -1,9 +1,19 @@
 from plotly.colors import convert_colors_to_same_type, find_intermediate_color
 
 
-def get_colorscale_color(colorscale, value):
+def get_colorscale_color(colorscale, value, n=None):
 
-    assert 0 <= value <= 1
+    if 1 < value:
+
+        n_block = n - 1
+
+        if value == n_block:
+
+            return 0
+
+        else:
+
+            value = value / n_block
 
     for i in range(len(colorscale) - 1):
 

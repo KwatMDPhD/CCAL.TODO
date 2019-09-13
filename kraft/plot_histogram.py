@@ -4,7 +4,9 @@ from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 
 
-def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
+def plot_histogram(
+    serieses, histnorm=None, plot_rug=True, layout=None, html_file_path=None
+):
 
     if histnorm is None:
 
@@ -14,10 +16,22 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
 
         yaxis2_title_text = histnorm.title()
 
+    if plot_rug:
+
+        yaxis_domain = (0, 0.1)
+
+        yaxis2_domain = (0.15, 1)
+
+    else:
+
+        yaxis_domain = (0, 0)
+
+        yaxis2_domain = (0, 1)
+
     layout_template = {
         "xaxis": {"anchor": "y"},
-        "yaxis": {"domain": (0, 0.1), "dtick": 1, "showticklabels": False},
-        "yaxis2": {"domain": (0.15, 1), "title": {"text": yaxis2_title_text}},
+        "yaxis": {"domain": yaxis_domain, "dtick": 1, "showticklabels": False},
+        "yaxis2": {"domain": yaxis2_domain, "title": {"text": yaxis2_title_text}},
     }
 
     if layout is None:
@@ -33,7 +47,7 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
     for i, series in enumerate(serieses):
 
         color = get_colorscale_color(
-            DATA_TYPE_COLORSCALE["categorical"], i / (len(serieses) - 1)
+            DATA_TYPE_COLORSCALE["categorical"], i, len(serieses)
         )
 
         data.append(
@@ -48,17 +62,20 @@ def plot_histogram(serieses, histnorm=None, layout=None, html_file_path=None):
             }
         )
 
-        data.append(
-            {
-                "type": "scatter",
-                "legendgroup": series.name,
-                "showlegend": False,
-                "x": series,
-                "y": (0,) * series.size,
-                "text": series.index,
-                "mode": "markers",
-                "marker": {"symbol": "line-ns-open", "color": color},
-            }
-        )
+        if plot_rug:
+
+            data.append(
+                {
+                    "type": "scatter",
+                    "legendgroup": series.name,
+                    "showlegend": False,
+                    "x": series,
+                    "y": (0,) * series.size,
+                    "text": series.index,
+                    "mode": "markers",
+                    "marker": {"symbol": "line-ns-open", "color": color},
+                    "hoverinfo": "x+text",
+                }
+            )
 
     plot_plotly_figure({"layout": layout, "data": data}, html_file_path)

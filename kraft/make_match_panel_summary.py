@@ -58,7 +58,7 @@ def make_match_panel_summary(
     layout_template = {
         "height": max(500, 25 * n_row),
         "margin": {"l": 200, "r": 200},
-        "title": {"xref": "paper", "x": 0.5},
+        "title": {"x": 0.5},
         "xaxis": {"showticklabels": False},
         "annotations": [],
     }

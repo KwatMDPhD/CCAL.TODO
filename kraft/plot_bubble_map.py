@@ -20,13 +20,19 @@ def plot_bubble_map(
     y_grid = arange(dataframe_size.shape[0])[::-1]
 
     layout_template = {
+        "height": max(500, marker_size_max * 2 * dataframe_size.shape[0]),
+        "width": max(500, marker_size_max * 2 * dataframe_size.shape[1]),
         "xaxis": {
-            "title": dataframe_size.columns.name,
+            "title": "{} (n={})".format(
+                dataframe_size.columns.name, dataframe_size.columns.size
+            ),
             "tickvals": x_grid,
             "ticktext": dataframe_size.columns,
         },
         "yaxis": {
-            "title": dataframe_size.index.name,
+            "title": "{} (n={})".format(
+                dataframe_size.index.name, dataframe_size.index.size
+            ),
             "tickvals": y_grid,
             "ticktext": dataframe_size.index,
         },

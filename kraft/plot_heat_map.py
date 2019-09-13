@@ -42,8 +42,14 @@ def plot_heat_map(
         dataframe = dataframe.iloc[:, sorting_indices]
 
     layout_template = {
-        "xaxis": {"title": dataframe.columns.name, **heat_map_axis_template},
-        "yaxis": {"title": dataframe.index.name, **heat_map_axis_template},
+        "xaxis": {
+            "title": "{} (n={})".format(dataframe.columns.name, dataframe.columns.size),
+            **heat_map_axis_template,
+        },
+        "yaxis": {
+            "title": "{} (n={})".format(dataframe.index.name, dataframe.index.size),
+            **heat_map_axis_template,
+        },
         "xaxis2": annotation_axis_template,
         "yaxis2": annotation_axis_template,
         "annotations": [],

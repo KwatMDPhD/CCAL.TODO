@@ -47,7 +47,6 @@ def plot_gps_map(
         "height": 800,
         "width": 800,
         "title": {
-            "xref": "paper",
             "x": 0.5,
             "text": "<b>{} {}<br>{} {}</b>".format(
                 len(nodes), node_name, len(elements), element_name
@@ -111,7 +110,7 @@ def plot_gps_map(
 
         label_color = {
             label: get_colorscale_color(
-                label_colorscale, label / (grid_label_not_nan_unique.size - 1)
+                label_colorscale, label, grid_label_not_nan_unique.size
             )
             for label in grid_label_not_nan_unique
         }

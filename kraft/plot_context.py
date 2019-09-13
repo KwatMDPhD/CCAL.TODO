@@ -9,15 +9,28 @@ def plot_context(
     series,
     y_max_is_pdf_max=False,
     n_bin=None,
+    plot_rug=True,
     layout=None,
     html_file_path=None,
     **compute_vector_context_keyword_arguments,
 ):
 
+    if plot_rug:
+
+        yaxis_domain = (0, 0.1)
+
+        yaxis2_domain = (0.15, 1)
+
+    else:
+
+        yaxis_domain = (0, 0)
+
+        yaxis2_domain = (0, 1)
+
     layout_template = {
-        "title": series.name,
-        "yaxis": {"domain": (0, 0.1), "dtick": 1, "showticklabels": False},
-        "yaxis2": {"domain": (0.15, 1)},
+        "title": {"x": 0.5, "text": series.name},
+        "yaxis": {"domain": yaxis_domain, "dtick": 1, "showticklabels": False},
+        "yaxis2": {"domain": yaxis2_domain},
         "legend": {"orientation": "h", "x": 0.5, "y": -0.2, "xanchor": "center"},
         "annotations": [],
     }
@@ -52,7 +65,7 @@ def plot_context(
                 "xref": "paper",
                 "yref": "paper",
                 "x": (i + 1) / (5 + 1),
-                "y": 1.05,
+                "y": 1.1,
                 "xanchor": "center",
                 "text": format_.format(fit_parameter),
                 "showarrow": False,
@@ -72,21 +85,10 @@ def plot_context(
             "type": "histogram",
             "legendgroup": "Data",
             "name": "Data",
-            "x": series.values,
+            "x": series,
             "histnorm": "probability density",
             "marker": {"color": "#20d9ba"},
             "hoverinfo": "x+y",
-        },
-        {
-            "type": "scatter",
-            "legendgroup": "Data",
-            "showlegend": False,
-            "x": series.values,
-            "y": (0,) * series.size,
-            "text": series.index,
-            "mode": "markers",
-            "marker": {"symbol": "line-ns-open", "color": "#20d9ba"},
-            "hoverinfo": "x+text",
         },
         merge_2_dicts_recursively(
             data_template,
@@ -94,16 +96,32 @@ def plot_context(
         ),
     ]
 
+    if plot_rug:
+
+        data.append(
+            {
+                "type": "scatter",
+                "legendgroup": "Data",
+                "showlegend": False,
+                "x": series,
+                "y": (0,) * series.size,
+                "text": series.index,
+                "mode": "markers",
+                "marker": {"symbol": "line-ns-open", "color": "#20d9ba"},
+                "hoverinfo": "x+text",
+            }
+        )
+
     if n_bin is not None:
 
-        series_values_min = series.values.min()
+        series_min = series.min()
 
-        series_values_max = series.values.max()
+        series_max = series.max()
 
         data[0]["xbins"] = {
-            "start": series_values_min,
-            "end": series_values_max,
-            "size": (series_values_max - series_values_min) / n_bin,
+            "start": series_min,
+            "end": series_max,
+            "size": (series_max - series_min) / n_bin,
         }
 
     shape_pdf_reference = context_dict["shape_pdf_reference"]
