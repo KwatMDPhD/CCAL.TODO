@@ -1,4 +1,4 @@
-from numpy import asarray, nonzero, unique, argsort
+from numpy import argsort, asarray, nonzero, unique
 
 from .cast_object_to_builtin import cast_object_to_builtin
 from .COLORBAR import COLORBAR
