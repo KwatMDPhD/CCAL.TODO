@@ -1,6 +1,6 @@
 from numpy import nan
 from numpy.random import choice
-from pandas import DataFrame, Series, Index
+from pandas import DataFrame, Index, Series
 
 from .simulate_array import simulate_array
 
