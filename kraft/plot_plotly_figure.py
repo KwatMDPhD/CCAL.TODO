@@ -15,7 +15,7 @@ def plot_plotly_figure(figure, html_file_path=None):
 
         figure["layout"] = {"template": template}
 
-    config = {"editable": False}
+    config = {"editable": True}
 
     show(figure, config=config)
 

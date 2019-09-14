@@ -2,7 +2,7 @@ from os.path import join
 
 from numpy import full, nan
 from numpy.random import randint, seed
-from pandas import DataFrame, Index, Series
+from pandas import DataFrame, Series
 from scipy.cluster.hierarchy import fcluster, linkage
 from scipy.spatial.distance import pdist, squareform
 
@@ -90,10 +90,6 @@ def hierarchical_consensus_cluster_dataframe(
 
     cluster_x_element = make_binary_dataframe_from_categorical_series(element_cluster)
 
-    cluster_x_element.index = Index(
-        ("Cluster{}".format(i) for i in cluster_x_element.index)
-    )
-
     if directory_path is not None:
 
         cluster_x_element.to_csv(
@@ -132,11 +128,7 @@ def hierarchical_consensus_cluster_dataframe(
 
         plot_heat_map(
             dataframe,
-            layout={
-                "title": {"text": "HCC K={}".format(k)},
-                "xaxis": {"title": {"text": dataframe.columns.name}},
-                "yaxis": {"title": {"text": dataframe.index.name}},
-            },
+            layout={"title": {"text": "HCC K={}".format(k)}},
             html_file_path=html_file_path,
             **{plot_heat_map_keyword: element_cluster_sorted},
         )

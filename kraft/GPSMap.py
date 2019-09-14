@@ -1,5 +1,5 @@
 from numpy import full, linspace, mean, nan, rot90
-from pandas import DataFrame
+from pandas import DataFrame, Index
 from scipy.spatial import Delaunay
 from scipy.spatial.distance import pdist, squareform
 
@@ -43,11 +43,15 @@ class GPSMap:
 
         self.node_name = None
 
+        self.index_node = None
+
         self.w = None
 
         self.w_elements = None
 
         self.w_element_name = None
+
+        self.index_w_element = None
 
         self.w_distance__node_x_node = None
 
@@ -56,6 +60,8 @@ class GPSMap:
         self.h_elements = None
 
         self.h_element_name = None
+
+        self.index_w_element = None
 
         self.h_distance__node_x_node = None
 
@@ -129,11 +135,11 @@ class GPSMap:
 
             self.node_name = h.index.name
 
+        self.index_node = Index(self.nodes, name=self.node_name)
+
         if plot:
 
-            layout = {"height": 640, "width": 640}
-
-            heat_map_axis = {"title": {"text": self.node_name}}
+            distance_heat_map_layout = {"height": 640, "width": 640}
 
         if w is not None:
 
@@ -143,6 +149,8 @@ class GPSMap:
 
             self.w_element_name = w.columns.name
 
+            self.index_w_element = Index(self.w_elements, name=self.w_element_name)
+
             self.w_distance__node_x_node = squareform(
                 pdist(self.w, metric=compute_information_distance_between_2_vectors)
             )
@@ -150,32 +158,26 @@ class GPSMap:
             if plot:
 
                 plot_heat_map(
-                    DataFrame(self.w, index=self.nodes, columns=self.w_elements).iloc[
-                        :, cluster_matrix(self.w, 1)
-                    ],
-                    layout={
-                        "title": {"text": "W"},
-                        "xaxis": {"title": {"text": self.w_element_name}},
-                        "yaxis": heat_map_axis,
-                    },
+                    DataFrame(
+                        self.w, index=self.index_node, columns=self.index_w_element
+                    ).iloc[:, cluster_matrix(self.w, 1)],
+                    layout={"title": {"text": "W"}},
                 )
 
                 plot_heat_map(
                     DataFrame(
                         self.w_distance__node_x_node,
-                        index=self.nodes,
-                        columns=self.nodes,
+                        index=self.index_node,
+                        columns=self.index_node,
                     ).iloc[
                         cluster_matrix(self.w_distance__node_x_node, 0),
                         cluster_matrix(self.w_distance__node_x_node, 1),
                     ],
                     layout={
-                        **layout,
+                        **distance_heat_map_layout,
                         "title": {
                             "text": "{0}-{0} Distance in W".format(self.node_name)
                         },
-                        "xaxis": heat_map_axis,
-                        "yaxis": heat_map_axis,
                     },
                 )
 
@@ -187,6 +189,8 @@ class GPSMap:
 
             self.h_element_name = h.columns.name
 
+            self.index_h_element = Index(self.h_elements, name=self.h_element_name)
+
             self.h_distance__node_x_node = squareform(
                 pdist(self.h, metric=compute_information_distance_between_2_vectors)
             )
@@ -194,32 +198,26 @@ class GPSMap:
             if plot:
 
                 plot_heat_map(
-                    DataFrame(self.h, index=self.nodes, columns=self.h_elements).iloc[
-                        :, cluster_matrix(self.h, 1)
-                    ],
-                    layout={
-                        "title": {"text": "H"},
-                        "xaxis": {"title": {"text": self.h_element_name}},
-                        "yaxis": heat_map_axis,
-                    },
+                    DataFrame(
+                        self.h, index=self.index_node, columns=self.index_h_element
+                    ).iloc[:, cluster_matrix(self.h, 1)],
+                    layout={"title": {"text": "H"}},
                 )
 
                 plot_heat_map(
                     DataFrame(
                         self.h_distance__node_x_node,
-                        index=self.nodes,
-                        columns=self.nodes,
+                        index=self.index_node,
+                        columns=self.index_node,
                     ).iloc[
                         cluster_matrix(self.h_distance__node_x_node, 0),
                         cluster_matrix(self.h_distance__node_x_node, 1),
                     ],
                     layout={
-                        **layout,
+                        **distance_heat_map_layout,
                         "title": {
                             "text": "{0}-{0} Distance in H".format(self.node_name)
                         },
-                        "xaxis": heat_map_axis,
-                        "yaxis": heat_map_axis,
                     },
                 )
 
@@ -244,20 +242,21 @@ class GPSMap:
 
                 plot_heat_map(
                     DataFrame(
-                        self.distance__node_x_node, index=self.nodes, columns=self.nodes
+                        self.distance__node_x_node,
+                        index=self.index_node,
+                        columns=self.index_node,
                     ).iloc[
                         cluster_matrix(self.distance__node_x_node, 0),
                         cluster_matrix(self.distance__node_x_node, 1),
                     ],
                     layout={
-                        **layout,
+                        **distance_heat_map_layout,
                         "title": {
                             "text": "{0}-{0} Distance in W and H".format(self.node_name)
                         },
-                        "xaxis": heat_map_axis,
-                        "yaxis": heat_map_axis,
                     },
                 )
+
         elif w is not None:
 
             self.distance__node_x_node = self.w_distance__node_x_node
@@ -468,29 +467,25 @@ class GPSMap:
 
             if w_or_h == "w":
 
-                dataframe = DataFrame(self.w, index=self.nodes, columns=self.w_elements)
+                dataframe = DataFrame(
+                    self.w, index=self.index_node, columns=self.index_w_element
+                )
 
                 column_annotation = self.w_element_label
 
-                element_name = self.w_element_name
-
             elif w_or_h == "h":
 
-                dataframe = DataFrame(self.h, index=self.nodes, columns=self.h_elements)
+                dataframe = DataFrame(
+                    self.h, index=self.index_node, columns=self.index_h_element
+                )
 
                 column_annotation = self.h_element_label
-
-                element_name = self.h_element_name
 
             plot_heat_map(
                 normalize_dataframe(dataframe, 0, "-0-"),
                 column_annotations=column_annotation,
                 column_annotation_colorscale=label_colorscale,
-                layout={
-                    "title": {"text": w_or_h.title()},
-                    "xaxis": {"title": {"text": element_name}},
-                    "yaxis": {"title": {"text": self.node_name}},
-                },
+                layout={"title": {"text": w_or_h.title()}},
             )
 
     def predict(

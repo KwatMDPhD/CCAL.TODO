@@ -147,12 +147,12 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
             )
 
         plot_heat_map(
-            DataFrame(sort(k_x_element.values, axis=1), index=keys),
-            layout={
-                "title": {"text": "HCC"},
-                "xaxis": {"title": {"text": "Element"}},
-                "yaxis": {"title": {"text": k_x_element.index.name}},
-            },
+            DataFrame(
+                sort(k_x_element.values, axis=1),
+                index=k_x_element.index,
+                columns=k_x_element.columns,
+            ),
+            layout={"title": {"text": "HCC"}},
             html_file_path=html_file_path,
         )
 

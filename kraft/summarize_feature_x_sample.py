@@ -25,12 +25,7 @@ def summarize_feature_x_sample(
         if feature_x_sample.size <= plot_heat_map_max_size:
 
             plot_heat_map(
-                feature_x_sample,
-                layout={
-                    "title": {"text": feature_x_sample_alias},
-                    "xaxis": {"title": {"text": feature_x_sample.columns.name}},
-                    "yaxis": {"title": {"text": feature_x_sample.index.name}},
-                },
+                feature_x_sample, layout={"title": {"text": feature_x_sample_alias}}
             )
 
         feature_x_sample_not_na_values = feature_x_sample.unstack().dropna()

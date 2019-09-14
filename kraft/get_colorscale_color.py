@@ -9,7 +9,7 @@ def get_colorscale_color(colorscale, value, n=None):
 
         if value == n_block:
 
-            return 0
+            value = 0
 
         else:
 

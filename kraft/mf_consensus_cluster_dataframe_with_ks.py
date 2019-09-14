@@ -194,11 +194,7 @@ def mf_consensus_cluster_dataframe_with_ks(
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
-                layout={
-                    "title": {"text": "MFCC {}".format(w_or_h.title())},
-                    "xaxis": {"title": {"text": "Element"}},
-                    "yaxis": {"title": {"text": k_x_element.index.name}},
-                },
+                layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
                 html_file_path=html_file_path,
             )
 

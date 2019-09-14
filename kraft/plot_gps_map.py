@@ -26,7 +26,7 @@ def plot_gps_map(
     element_value=None,
     element_value_data_type="continuous",
     layout=None,
-    element_value_binary_annotation=False,
+    element_value_binary_annotation=None,
     html_file_path=None,
     node_marker_size=30,
     node_marker_color="#2e211b",
@@ -150,6 +150,8 @@ def plot_gps_map(
             )
 
     if element_value is not None:
+
+        element_value = element_value.reindex(index=elements)
 
         element_value = element_value[element_value.abs().sort_values().index]
 

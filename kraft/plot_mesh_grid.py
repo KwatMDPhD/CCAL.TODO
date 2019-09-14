@@ -1,4 +1,4 @@
-from pandas import DataFrame
+from pandas import DataFrame, Index
 
 from .plot_heat_map import plot_heat_map
 from .plot_plotly_figure import plot_plotly_figure
@@ -44,14 +44,16 @@ def plot_mesh_grid(
         plot_heat_map(
             DataFrame(
                 value_reshaped,
-                index=("{:.2e} *".format(i) for i in dimension_grids[0]),
-                columns=("* {:.2e}".format(i) for i in dimension_grids[1]),
+                index=Index(
+                    ("{:.2e} *".format(i) for i in dimension_grids[0]),
+                    name=dimension_names[0],
+                ),
+                columns=Index(
+                    ("* {:.2e}".format(i) for i in dimension_grids[1]),
+                    name=dimension_names[1],
+                ),
             ),
-            layout={
-                "title": {"text": value_name},
-                "xaxis": {"title": {"text": dimension_names[1]}},
-                "yaxis": {"title": {"text": dimension_names[0]}},
-            },
+            layout={"title": {"text": value_name}},
         )
 
     else:
