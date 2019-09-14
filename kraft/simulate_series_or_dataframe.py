@@ -1,6 +1,6 @@
 from numpy import nan
 from numpy.random import choice
-from pandas import DataFrame, Series
+from pandas import DataFrame, Series, Index
 
 from .simulate_array import simulate_array
 
@@ -11,19 +11,22 @@ def simulate_series_or_dataframe(
 
     array = simulate_array(*simulate_array_arguments)
 
-    index = ("{}{}".format(name_0, i) for i in range(array.shape[0]))
-
     if len(array.shape) == 1:
 
-        series_or_dataframe = Series(array, index=index, name=name_1)
+        series_or_dataframe = Series(array, name=name_1)
 
     elif len(array.shape) == 2:
 
         series_or_dataframe = DataFrame(
             array,
-            index=index,
-            columns=("{}{}".format(name_1, i) for i in range(array.shape[1])),
+            columns=Index(
+                ("{}{}".format(name_1, i) for i in range(array.shape[1])), name="Column"
+            ),
         )
+
+    series_or_dataframe.index = Index(
+        ("{}{}".format(name_0, i) for i in range(array.shape[0])), name="Index"
+    )
 
     if len(series_or_dataframe.shape) == 2 and break_dataframe is not None:
 
