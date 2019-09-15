@@ -1,6 +1,7 @@
 from numpy import arange, meshgrid
 
 from .COLORBAR import COLORBAR
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .normalize_array import normalize_array
 from .plot_plotly_figure import plot_plotly_figure
@@ -51,6 +52,10 @@ def plot_bubble_map(
         dataframe_color = dataframe_size
 
     mesh_grid_x, mesh_grid_y = meshgrid(x_grid, y_grid)
+
+    if colorscale is None:
+
+        colorscale = DATA_TYPE_COLORSCALE["continuous"]
 
     plot_plotly_figure(
         {

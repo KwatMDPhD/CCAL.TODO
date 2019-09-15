@@ -2,6 +2,7 @@ from numpy import argsort, asarray, nonzero, unique
 
 from .cast_object_to_builtin import cast_object_to_builtin
 from .COLORBAR import COLORBAR
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -78,6 +79,10 @@ def plot_heat_map(
     else:
 
         y = None
+
+    if colorscale is None:
+
+        colorscale = DATA_TYPE_COLORSCALE["continuous"]
 
     colorbar_x = 1.05
 

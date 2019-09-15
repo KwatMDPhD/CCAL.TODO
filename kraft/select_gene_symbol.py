@@ -54,7 +54,7 @@ def select_gene_symbol(
     )
 
     print(
-        "Removing {}/{} Gene Family Name...".format(
+        "Removing {}/{} based on Gene Family Name...".format(
             remove_by_gene_family_name.sum(), remove_by_gene_family_name.size
         )
     )
@@ -68,7 +68,7 @@ def select_gene_symbol(
     )
 
     print(
-        "Keeping {}/{} Locus Type...".format(
+        "Keeping {}/{} based on Locus Type...".format(
             keep_by_locus_type.sum(), keep_by_locus_type.size
         )
     )

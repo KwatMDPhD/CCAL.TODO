@@ -31,8 +31,7 @@ def plot_gps_map(
     node_marker_size=30,
     node_marker_color="#2e211b",
     node_line_color="#23191e",
-    node_textfont_size=15,
-    node_textfont_color="#ebf6f7",
+    node_text_annotation=None,
     element_marker_size=20,
     element_marker_color="#ebf6f7",
     element_marker_line_width=1,
@@ -57,6 +56,7 @@ def plot_gps_map(
         "title": {"x": 0.5, "text": "<b>{}</b>".format(title_text)},
         "xaxis": layout_axis,
         "yaxis": layout_axis,
+        "annotations": [],
     }
 
     if layout is None:
@@ -85,11 +85,38 @@ def plot_gps_map(
             "x": node_x_dimension[:, 0],
             "y": node_x_dimension[:, 1],
             "text": nodes,
-            "mode": "markers+text",
+            "mode": "markers",
             "marker": {"size": node_marker_size, "color": node_marker_color},
-            "textfont": {"size": node_textfont_size, "color": node_textfont_color},
             "hoverinfo": "text",
         },
+    ]
+
+    node_text_annotation_template = {
+        "font": {"size": 15, "color": "#171412"},
+        "borderpad": 2,
+        "bgcolor": "#ffffff",
+        "bordercolor": "#171412",
+        "showarrow": False,
+    }
+
+    if node_text_annotation is None:
+
+        node_text_annotation = node_text_annotation_template
+
+    else:
+
+        node_text_annotation = merge_2_dicts_recursively(
+            node_text_annotation_template, node_text_annotation
+        )
+
+    layout["annotations"] += [
+        {
+            "x": node_x_dimension[i, 0],
+            "y": node_x_dimension[i, 1],
+            "text": "<b>{}</b>".format(node),
+            **node_text_annotation,
+        }
+        for i, node in enumerate(nodes)
     ]
 
     element_trace = {
@@ -162,7 +189,15 @@ def plot_gps_map(
             [elements.index(element) for element in element_value.index]
         ]
 
-        tickvals = element_value.describe()[["min", "25%", "50%", "mean", "75%", "max"]]
+        if element_value_data_type == "continuous":
+
+            tickvals = element_value.describe()[
+                ["min", "25%", "50%", "mean", "75%", "max"]
+            ]
+
+        else:
+
+            tickvals = element_value.unique()
 
         data.append(
             merge_2_dicts_recursively(
@@ -197,7 +232,7 @@ def plot_gps_map(
             and element_value_binary_annotation is not None
         ):
 
-            layout["annotations"] = [
+            layout["annotations"] += [
                 {
                     "x": element_x_dimension_[i, 0],
                     "y": element_x_dimension_[i, 1],

@@ -56,7 +56,6 @@ def plot_histogram(
                 "type": "histogram",
                 "legendgroup": series.name,
                 "name": series.name,
-                "showlegend": True,
                 "x": series,
                 "histnorm": histnorm,
                 "marker": {"color": color},
