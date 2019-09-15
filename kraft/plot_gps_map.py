@@ -51,8 +51,8 @@ def plot_gps_map(
         title_text += "<br>{}".format(element_value.name)
 
     layout_template = {
-        "height": 800,
-        "width": 800,
+        "height": 1000,
+        "width": 1000,
         "title": {"x": 0.5, "text": "<b>{}</b>".format(title_text)},
         "xaxis": layout_axis,
         "yaxis": layout_axis,

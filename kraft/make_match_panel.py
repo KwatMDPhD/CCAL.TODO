@@ -62,9 +62,7 @@ def make_match_panel(
 
     else:
 
-        score_moe_p_value_fdr = score_moe_p_value_fdr.reindex(
-            data_to_plot_index=data.index
-        )
+        score_moe_p_value_fdr = score_moe_p_value_fdr.reindex(index=data.index)
 
     score_moe_p_value_fdr.sort_values("Score", ascending=score_ascending, inplace=True)
 
@@ -244,7 +242,7 @@ def make_match_panel(
         make_match_panel_annotations(score_moe_p_value_fdr_to_plot).items()
     ):
 
-        x = 1.1 + annotation_index / 5
+        x = 1.05 + annotation_index / 10
 
         layout["annotations"].append(
             {
