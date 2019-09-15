@@ -19,7 +19,7 @@ def apply_function_on_slices_from_2_matrices(
 
     check_array_for_bad(matrix_1, raise_for_bad=raise_for_bad)
 
-    if axis == 1:
+    if axis == 0:
 
         matrix_0 = matrix_0.T
 

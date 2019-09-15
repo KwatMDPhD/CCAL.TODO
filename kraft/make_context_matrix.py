@@ -16,7 +16,7 @@ def make_context_matrix(
     global_scale=None,
     global_degree_of_freedom=None,
     global_shape=None,
-    output_file_path=None,
+    output_tsv_file_path=None,
 ):
 
     context_matrix = concat(
@@ -42,8 +42,8 @@ def make_context_matrix(
         )
     )
 
-    if output_file_path is not None:
+    if output_tsv_file_path is not None:
 
-        context_matrix.to_csv(output_file_path, sep="\t")
+        context_matrix.to_csv(output_tsv_file_path, sep="\t")
 
     return context_matrix

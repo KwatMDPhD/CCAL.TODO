@@ -32,7 +32,7 @@ def plot_gps_map(
     node_marker_color="#2e211b",
     node_line_color="#23191e",
     node_textfont_size=15,
-    node_textfont_color="#ffffff",
+    node_textfont_color="#ebf6f7",
     element_marker_size=20,
     element_marker_color="#ebf6f7",
     element_marker_line_width=1,
@@ -43,15 +43,18 @@ def plot_gps_map(
 
     layout_axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
 
+    title_text = "<b>{} {}<br>{} {}</b>".format(
+        len(nodes), node_name, len(elements), element_name
+    )
+
+    if element_value is not None:
+
+        title_text += "<br>{}".format(element_value.name)
+
     layout_template = {
         "height": 800,
         "width": 800,
-        "title": {
-            "x": 0.5,
-            "text": "<b>{} {}<br>{} {}</b>".format(
-                len(nodes), node_name, len(elements), element_name
-            ),
-        },
+        "title": {"x": 0.5, "text": title_text},
         "xaxis": layout_axis,
         "yaxis": layout_axis,
     }

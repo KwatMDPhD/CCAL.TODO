@@ -37,9 +37,9 @@ def read_process_write_gene_x_cell(
 
     gene_x_cell = gene_x_cell.sort_index().sort_index(axis=1)
 
-    output_file_path = join(output_directory_path, "gene_x_cell.tsv")
+    output_tsv_file_path = join(output_directory_path, "gene_x_cell.tsv")
 
-    gene_x_cell.to_csv(output_file_path, sep="\t")
+    gene_x_cell.to_csv(output_tsv_file_path, sep="\t")
 
     gene_x_cell__clean__log = process_feature_x_sample(
         gene_x_cell,
@@ -51,11 +51,11 @@ def read_process_write_gene_x_cell(
     )
 
     gene_x_cell__clean__log.to_csv(
-        output_file_path.replace(".tsv", ".clean.log.tsv"), sep="\t"
+        output_tsv_file_path.replace(".tsv", ".clean.log.tsv"), sep="\t"
     )
 
     gene_x_cell__clean__log.fillna(0).to_csv(
-        output_file_path.replace(".tsv", ".clean.log.na0.tsv"), sep="\t"
+        output_tsv_file_path.replace(".tsv", ".clean.log.na0.tsv"), sep="\t"
     )
 
     if minimum_fraction_cell_with_gene_signal is None:
@@ -95,5 +95,5 @@ def read_process_write_gene_x_cell(
         )
 
     gene_x_cell__clean__log__selected_gene[cells].to_csv(
-        output_file_path.replace(".tsv", ".clean.log.selected.tsv"), sep="\t"
+        output_tsv_file_path.replace(".tsv", ".clean.log.selected.tsv"), sep="\t"
     )

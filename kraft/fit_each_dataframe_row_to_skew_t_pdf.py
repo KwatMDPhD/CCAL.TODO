@@ -5,7 +5,7 @@ from .fit_each_dataframe_row_to_skew_t_pdf_ import fit_each_dataframe_row_to_ske
 from .split_dataframe import split_dataframe
 
 
-def fit_each_dataframe_row_to_skew_t_pdf(dataframe, n_job=1, output_file_path=None):
+def fit_each_dataframe_row_to_skew_t_pdf(dataframe, n_job=1, output_tsv_file_path=None):
 
     skew_t_pdf_fit_parameter = concat(
         call_function_with_multiprocess(
@@ -20,8 +20,8 @@ def fit_each_dataframe_row_to_skew_t_pdf(dataframe, n_job=1, output_file_path=No
         )
     )
 
-    if output_file_path is not None:
+    if output_tsv_file_path is not None:
 
-        skew_t_pdf_fit_parameter.to_csv(output_file_path, sep="\t")
+        skew_t_pdf_fit_parameter.to_csv(output_tsv_file_path, sep="\t")
 
     return skew_t_pdf_fit_parameter

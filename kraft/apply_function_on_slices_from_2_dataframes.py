@@ -17,11 +17,11 @@ def apply_function_on_slices_from_2_dataframes(
 
     if axis == 0:
 
-        index_and_columns = dataframe_0.index
+        index_and_columns = dataframe_0.columns
 
     elif axis == 1:
 
-        index_and_columns = dataframe_0.columns
+        index_and_columns = dataframe_0.index
 
     comparison = DataFrame(
         comparison, index=index_and_columns, columns=index_and_columns

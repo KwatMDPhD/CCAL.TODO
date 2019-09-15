@@ -79,6 +79,8 @@ def plot_heat_map(
 
         y = None
 
+    colorbar_x = 1.05
+
     data = [
         {
             "type": "heatmap",
@@ -86,7 +88,7 @@ def plot_heat_map(
             "y": y,
             "z": dataframe.values[::-1],
             "colorscale": colorscale,
-            "colorbar": COLORBAR,
+            "colorbar": {**COLORBAR, "x": colorbar_x},
         }
     ]
 
@@ -96,13 +98,15 @@ def plot_heat_map(
 
         row_annotations = row_annotations[::-1]
 
+        colorbar_x += 0.1
+
         data.append(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
                 "z": tuple((i,) for i in row_annotations),
                 "colorscale": row_annotation_colorscale,
-                "showscale": False,
+                "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+y",
             }
         )
@@ -142,6 +146,8 @@ def plot_heat_map(
 
     if column_annotations is not None:
 
+        colorbar_x += 0.1
+
         data.append(
             {
                 "yaxis": "y2",
@@ -149,7 +155,7 @@ def plot_heat_map(
                 "z": tuple((i,) for i in column_annotations),
                 "transpose": True,
                 "colorscale": column_annotation_colorscale,
-                "showscale": False,
+                "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+x",
             }
         )
