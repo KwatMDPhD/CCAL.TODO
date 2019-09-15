@@ -132,7 +132,10 @@ def select_series_indices(
 
     if plot:
 
-        layout_template = {"xaxis": {"title": {"text": "Rank"}}}
+        layout_template = {
+            "title": {"text": series_no_na_sorted.index.name},
+            "xaxis": {"title": {"text": "Rank"}},
+        }
 
         if layout is None:
 

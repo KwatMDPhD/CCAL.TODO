@@ -57,6 +57,7 @@ def make_match_panel_summary(
 
     layout_template = {
         "height": max(500, 25 * n_row),
+        "width": 1000,
         "margin": {"l": 200, "r": 200},
         "title": {"x": 0.5},
         "xaxis": {"showticklabels": False},
