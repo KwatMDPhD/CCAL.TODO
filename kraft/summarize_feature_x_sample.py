@@ -1,4 +1,5 @@
 from numpy import nanmax, nanmin
+from numpy.random import choice
 
 from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
@@ -10,6 +11,7 @@ def summarize_feature_x_sample(
     feature_x_sample_value_name="Feature-x-Sample Value",
     plot_heat_map_=True,
     plot_histogram_=True,
+    plot_histogram_max_size=int(1e5),
 ):
 
     print("Shape: {}".format(feature_x_sample.shape))
@@ -24,9 +26,27 @@ def summarize_feature_x_sample(
             feature_x_sample, layout={"title": {"text": feature_x_sample_alias}}
         )
 
-    feature_x_sample_not_na_values = feature_x_sample.unstack().dropna()
-
     if plot_histogram_:
+
+        feature_x_sample_not_na_values = feature_x_sample.unstack().dropna()
+
+        feature_x_sample_not_na_values.name = feature_x_sample_value_name
+
+        if plot_histogram_max_size < feature_x_sample_not_na_values.size:
+
+            print(
+                "Sampling random {} values for histogram...".format(
+                    plot_histogram_max_size
+                )
+            )
+
+            feature_x_sample_not_na_values = feature_x_sample_not_na_values[
+                choice(
+                    feature_x_sample_not_na_values.index,
+                    size=plot_histogram_max_size,
+                    replace=False,
+                )
+            ]
 
         plot_histogram(
             (feature_x_sample_not_na_values,),
