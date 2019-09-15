@@ -9,6 +9,7 @@ from scipy.spatial.distance import pdist, squareform
 from .cluster_clustering_x_element_and_compute_ccc import (
     cluster_clustering_x_element_and_compute_ccc,
 )
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .make_binary_dataframe_from_categorical_series import (
     make_binary_dataframe_from_categorical_series,
 )
@@ -104,19 +105,20 @@ def hierarchical_consensus_cluster_dataframe(
 
         print("Plotting dataframe.clustered...")
 
-        element_cluster_sorted = element_cluster.sort_values()
-
         if axis == 0:
 
-            dataframe = dataframe.loc[element_cluster_sorted.index]
-
-            plot_heat_map_keyword = "row_annotations"
+            row_or_column = "row"
 
         elif axis == 1:
 
-            dataframe = dataframe[element_cluster_sorted.index]
+            row_or_column = "column"
 
-            plot_heat_map_keyword = "column_annotations"
+        plot_heat_map_keyword_arguments = {
+            "{}_annotations".format(row_or_column): element_cluster,
+            "{}_annotation_colorscale".format(row_or_column): DATA_TYPE_COLORSCALE[
+                "categorical"
+            ],
+        }
 
         if directory_path is None:
 
@@ -130,7 +132,7 @@ def hierarchical_consensus_cluster_dataframe(
             dataframe,
             layout={"title": {"text": "HCC K={}".format(k)}},
             html_file_path=html_file_path,
-            **{plot_heat_map_keyword: element_cluster_sorted},
+            **plot_heat_map_keyword_arguments,
         )
 
     return element_cluster, element_cluster__ccc

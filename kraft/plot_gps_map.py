@@ -43,7 +43,7 @@ def plot_gps_map(
 
     layout_axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
 
-    title_text = "<b>{} {}<br>{} {}</b>".format(
+    title_text = "{} {}<br>{} {}".format(
         len(nodes), node_name, len(elements), element_name
     )
 
@@ -54,7 +54,7 @@ def plot_gps_map(
     layout_template = {
         "height": 800,
         "width": 800,
-        "title": {"x": 0.5, "text": title_text},
+        "title": {"x": 0.5, "text": "<b>{}</b>".format(title_text)},
         "xaxis": layout_axis,
         "yaxis": layout_axis,
     }
@@ -180,7 +180,6 @@ def plot_gps_map(
                         "colorbar": merge_2_dicts_recursively(
                             COLORBAR,
                             {
-                                "title": {"text": element_value.name},
                                 "tickmode": "array",
                                 "tickvals": tickvals,
                                 "ticktext": tuple(
@@ -223,7 +222,8 @@ def plot_gps_map(
                 merge_2_dicts_recursively(
                     element_trace,
                     {
-                        "name": "{:.0f}".format(label),
+                        "legendgroup": "Label {:.0f}".format(label),
+                        "name": "Label {:.0f}".format(label),
                         "x": element_x_dimension[is_label, 0],
                         "y": element_x_dimension[is_label, 1],
                         "text": asarray(elements)[is_label],

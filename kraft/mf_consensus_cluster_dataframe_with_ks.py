@@ -4,6 +4,7 @@ from numpy import asarray, sort
 from pandas import DataFrame, Index
 
 from .call_function_with_multiprocess import call_function_with_multiprocess
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .establish_path import establish_path
 from .mf_consensus_cluster_dataframe import mf_consensus_cluster_dataframe
 from .plot_heat_map import plot_heat_map
@@ -194,6 +195,7 @@ def mf_consensus_cluster_dataframe_with_ks(
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
+                colorscale=DATA_TYPE_COLORSCALE["categorical"],
                 layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
                 html_file_path=html_file_path,
             )

@@ -7,6 +7,7 @@ from .cluster_clustering_x_element_and_compute_ccc import (
     cluster_clustering_x_element_and_compute_ccc,
 )
 from .cluster_matrix import cluster_matrix
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .mf_with_multiplicative_update import mf_with_multiplicative_update
 from .nmf_with_sklearn import nmf_with_sklearn
 from .plot_heat_map import plot_heat_map
@@ -145,10 +146,14 @@ def mf_consensus_cluster_dataframe(
 
             html_file_path = join(directory_path, "dataframe.cluster.html")
 
+        colorscale = DATA_TYPE_COLORSCALE["categorical"]
+
         plot_heat_map(
             dataframe,
             row_annotations=w_element_cluster_sorted,
+            row_annotation_colorscale=colorscale,
             column_annotations=h_element_cluster_sorted,
+            column_annotation_colorscale=colorscale,
             layout={"title": {"text": "MFCC K={}".format(k)}},
             html_file_path=html_file_path,
         )

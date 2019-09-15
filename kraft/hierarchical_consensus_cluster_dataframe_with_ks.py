@@ -5,6 +5,7 @@ from pandas import DataFrame, Index, concat
 from scipy.spatial.distance import pdist, squareform
 
 from .call_function_with_multiprocess import call_function_with_multiprocess
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .establish_path import establish_path
 from .hierarchical_consensus_cluster_dataframe import (
     hierarchical_consensus_cluster_dataframe,
@@ -152,6 +153,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                 index=k_x_element.index,
                 columns=k_x_element.columns,
             ),
+            colorscale=DATA_TYPE_COLORSCALE["categorical"],
             layout={"title": {"text": "HCC"}},
             html_file_path=html_file_path,
         )
