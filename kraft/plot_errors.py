@@ -1,0 +1,35 @@
+from numpy import arange
+
+from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .plot_plotly_figure import plot_plotly_figure
+
+
+def plot_errors(errors, layout=None, html_file_path=None):
+
+    layout_template = {
+        "xaxis": {"title": "Iteration"},
+        "yaxis": {"title": "Error"},
+        "annotations": [
+            {"x": errors_.size, "y": errors_[-1], "text": "{:.2e}".format(errors_[-1])}
+            for i, errors_ in enumerate(errors)
+        ],
+    }
+
+    if layout is None:
+
+        layout = layout_template
+
+    else:
+
+        layout = merge_2_dicts_recursively(layout_template, layout)
+
+    plot_plotly_figure(
+        {
+            "layout": layout,
+            "data": [
+                {"type": "scatter", "name": i, "x": arange(errors_.size), "y": errors_}
+                for i, errors_ in enumerate(errors)
+            ],
+        },
+        html_file_path,
+    )

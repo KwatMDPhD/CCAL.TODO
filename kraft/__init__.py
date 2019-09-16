@@ -145,8 +145,10 @@ from .mf_consensus_cluster_dataframe import mf_consensus_cluster_dataframe
 from .mf_consensus_cluster_dataframe_with_ks import (
     mf_consensus_cluster_dataframe_with_ks,
 )
+from .mf_dataframes import mf_dataframes
+from .mf_vs_w_hs import mf_vs_w_hs
+from .mf_vs_ws_h import mf_vs_ws_h
 from .mf_with_multiplicative_update import mf_with_multiplicative_update
-from .mf_with_vs_and_hs import mf_with_vs_and_hs
 from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .nmf_with_sklearn import nmf_with_sklearn
 from .NONE_STRS import NONE_STRS
@@ -161,10 +163,12 @@ from .normalize_series import normalize_series
 from .plot_bayesian_nomogram import plot_bayesian_nomogram
 from .plot_bubble_map import plot_bubble_map
 from .plot_context import plot_context
+from .plot_errors import plot_errors
 from .plot_gps_map import plot_gps_map
 from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_mesh_grid import plot_mesh_grid
+from .plot_mf import plot_mf
 from .plot_plotly_figure import plot_plotly_figure
 from .print_function_information import print_function_information
 from .print_header_in_terminal import print_header_in_terminal

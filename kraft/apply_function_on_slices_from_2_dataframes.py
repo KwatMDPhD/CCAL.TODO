@@ -17,15 +17,17 @@ def apply_function_on_slices_from_2_dataframes(
 
     if axis == 0:
 
-        index_and_columns = dataframe_0.columns
+        index = dataframe_0.columns
+
+        columns = dataframe_1.columns
 
     elif axis == 1:
 
-        index_and_columns = dataframe_0.index
+        index = dataframe_0.index
 
-    comparison = DataFrame(
-        comparison, index=index_and_columns, columns=index_and_columns
-    )
+        columns = dataframe_1.index
+
+    comparison = DataFrame(comparison, index=index, columns=columns)
 
     if file_path_prefix is None:
 
