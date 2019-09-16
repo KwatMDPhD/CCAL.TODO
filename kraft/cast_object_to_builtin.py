@@ -1,14 +1,14 @@
-def cast_object_to_builtin(object):
+def cast_object_to_builtin(object_):
 
-    if object == "None":
+    if object_ == "None":
 
         return None
 
-    elif object == "True":
+    elif object_ == "True":
 
         return True
 
-    elif object == "False":
+    elif object_ == "False":
 
         return False
 
@@ -16,10 +16,10 @@ def cast_object_to_builtin(object):
 
         try:
 
-            return type_(object)
+            return type_(object_)
 
         except ValueError:
 
             pass
 
-    return object
+    return object_

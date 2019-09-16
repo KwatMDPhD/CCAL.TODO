@@ -21,13 +21,13 @@ def hierarchical_consensus_cluster_dataframe(
     dataframe,
     k,
     axis,
+    directory_path,
     distance__element_x_element=None,
     distance_function="correlation",
     n_clustering=10,
     random_seed=RANDOM_SEED,
     linkage_method="ward",
     plot_dataframe=True,
-    directory_path=None,
 ):
 
     if axis == 1:
@@ -48,11 +48,9 @@ def hierarchical_consensus_cluster_dataframe(
             columns=dataframe.index,
         )
 
-        if directory_path is not None:
-
-            distance__element_x_element.to_csv(
-                join(directory_path, "distance.element_x_element.tsv"), sep="\t"
-            )
+        distance__element_x_element.to_csv(
+            join(directory_path, "distance.element_x_element.tsv"), sep="\t"
+        )
 
     clustering_x_element = full((n_clustering, dataframe.shape[0]), nan)
 
@@ -91,11 +89,7 @@ def hierarchical_consensus_cluster_dataframe(
 
     cluster_x_element = make_binary_dataframe_from_categorical_series(element_cluster)
 
-    if directory_path is not None:
-
-        cluster_x_element.to_csv(
-            join(directory_path, "cluster_x_element.tsv"), sep="\t"
-        )
+    cluster_x_element.to_csv(join(directory_path, "cluster_x_element.tsv"), sep="\t")
 
     if axis == 1:
 
@@ -120,18 +114,10 @@ def hierarchical_consensus_cluster_dataframe(
             ],
         }
 
-        if directory_path is None:
-
-            html_file_path = None
-
-        else:
-
-            html_file_path = join(directory_path, "dataframe.cluster.html")
-
         plot_heat_map(
             dataframe,
             layout={"title": {"text": "HCC K={}".format(k)}},
-            html_file_path=html_file_path,
+            html_file_path=join(directory_path, "dataframe.cluster.html"),
             **plot_heat_map_keyword_arguments,
         )
 

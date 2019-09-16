@@ -10,8 +10,8 @@ from .normalize_file_name import normalize_file_name
 def make_match_panels(
     target_x_sample,
     data_dicts,
+    directory_path,
     drop_negative_target=False,
-    directory_path=None,
     read_score_moe_p_value_fdr=False,
     **make_match_panel_keyword_arguments,
 ):
@@ -32,36 +32,27 @@ def make_match_panels(
 
             score_moe_p_value_fdr = None
 
-            if directory_path is None:
+            file_path_prefix = join(
+                directory_path,
+                normalize_file_name(target_name),
+                normalize_file_name(data_name),
+            )
 
-                file_path_prefix = None
+            establish_path(file_path_prefix, "file")
 
-            else:
+            score_moe_p_value_fdr_file_path = "{}.tsv".format(file_path_prefix)
 
-                file_path_prefix = join(
-                    directory_path,
-                    normalize_file_name(target_name),
-                    normalize_file_name(data_name),
+            if isfile(score_moe_p_value_fdr_file_path) and read_score_moe_p_value_fdr:
+
+                print(
+                    "Reading score_moe_p_value_fdr from {}...".format(
+                        score_moe_p_value_fdr_file_path
+                    )
                 )
 
-                establish_path(file_path_prefix, "file")
-
-                score_moe_p_value_fdr_file_path = "{}.tsv".format(file_path_prefix)
-
-                if (
-                    isfile(score_moe_p_value_fdr_file_path)
-                    and read_score_moe_p_value_fdr
-                ):
-
-                    print(
-                        "Reading score_moe_p_value_fdr from {}...".format(
-                            score_moe_p_value_fdr_file_path
-                        )
-                    )
-
-                    score_moe_p_value_fdr = read_csv(
-                        score_moe_p_value_fdr_file_path, sep="\t", index_col=0
-                    )
+                score_moe_p_value_fdr = read_csv(
+                    score_moe_p_value_fdr_file_path, sep="\t", index_col=0
+                )
 
             make_match_panel(
                 target,

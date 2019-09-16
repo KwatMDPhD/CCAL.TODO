@@ -19,6 +19,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
     dataframe,
     ks,
     axis,
+    directory_path,
     distance__element_x_element=None,
     distance_function="correlation",
     n_job=1,
@@ -26,20 +27,13 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
     random_seed=RANDOM_SEED,
     linkage_method="ward",
     plot_dataframe=True,
-    directory_path=None,
 ):
 
-    if directory_path is None:
+    k_directory_paths = tuple(join(directory_path, str(k)) for k in ks)
 
-        k_directory_paths = tuple(None for k in ks)
+    for k_directory_path in k_directory_paths:
 
-    else:
-
-        k_directory_paths = tuple(join(directory_path, str(k)) for k in ks)
-
-        for k_directory_path in k_directory_paths:
-
-            establish_path(k_directory_path, "directory")
+        establish_path(k_directory_path, "directory")
 
     if distance__element_x_element is None:
 
@@ -59,11 +53,9 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
             columns=dataframe.index,
         )
 
-        if directory_path is not None:
-
-            distance__element_x_element.to_csv(
-                join(directory_path, "distance.element_x_element.tsv"), sep="\t"
-            )
+        distance__element_x_element.to_csv(
+            join(directory_path, "distance.element_x_element.tsv"), sep="\t"
+        )
 
         if axis == 1:
 
@@ -80,13 +72,13 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                     dataframe,
                     ks[i],
                     axis,
+                    k_directory_paths[i],
                     distance__element_x_element,
                     None,
                     n_clustering,
                     random_seed,
                     linkage_method,
                     plot_dataframe,
-                    k_directory_paths[i],
                 )
                 for i in range(len(ks))
             ),
@@ -100,14 +92,6 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
         }
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
-
-    if directory_path is None:
-
-        html_file_path = None
-
-    else:
-
-        html_file_path = join(directory_path, "ccc.html")
 
     plot_plotly_figure(
         {
@@ -124,28 +108,16 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                 }
             ],
         },
-        html_file_path,
+        join(directory_path, "ccc.html"),
     )
 
     k_x_element = concat([k_return[key]["element_cluster"] for key in keys], axis=1).T
 
     k_x_element.index = keys
 
-    if directory_path is not None:
-
-        k_x_element.to_csv(join(directory_path, "k_x_element.tsv"), sep="\t")
+    k_x_element.to_csv(join(directory_path, "k_x_element.tsv"), sep="\t")
 
     if plot_dataframe:
-
-        if directory_path is None:
-
-            html_file_path = None
-
-        else:
-
-            html_file_path = join(
-                directory_path, "k_x_element.cluster_distribution.html"
-            )
 
         plot_heat_map(
             DataFrame(
@@ -155,7 +127,9 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
             ),
             colorscale=DATA_TYPE_COLORSCALE["categorical"],
             layout={"title": {"text": "HCC"}},
-            html_file_path=html_file_path,
+            html_file_path=join(
+                directory_path, "k_x_element.cluster_distribution.html"
+            ),
         )
 
     return k_return

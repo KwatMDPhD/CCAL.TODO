@@ -159,7 +159,7 @@ def download_and_parse_geo(geo_id, directory_path):
                 lambda index: id_gene_symbol.get(str(index), "NO GENE NAME")
             )
 
-            gene_x_sample.drop("NO GENE NAME", inplace=True, errors="ignore")
+            gene_x_sample.drop("NO GENE NAME", errors="ignore", inplace=True)
 
             gene_x_sample.index.name = "Gene"
 

@@ -36,13 +36,11 @@ def process_feature_x_sample(
 
     if 0 < len(features_to_drop):
 
-        features_to_drop = set(features_to_drop) & feature_x_sample.index
-
         print(
             "Dropping {}: {}...".format(feature_x_sample.index.name, features_to_drop)
         )
 
-        feature_x_sample.drop(features_to_drop, inplace=True)
+        feature_x_sample.drop(features_to_drop, errors="ignore", inplace=True)
 
         summarize_feature_x_sample(
             feature_x_sample, **summarize_feature_x_sample_keyword_arguments
@@ -50,13 +48,11 @@ def process_feature_x_sample(
 
     if 0 < len(samples_to_drop):
 
-        samples_to_drop = set(samples_to_drop) & feature_x_sample.columns
-
         print(
             "Dropping {}: {}...".format(feature_x_sample.columns.name, samples_to_drop)
         )
 
-        feature_x_sample.drop(samples_to_drop, axis=1, inplace=True)
+        feature_x_sample.drop(samples_to_drop, axis=1, errors="ignore", inplace=True)
 
         summarize_feature_x_sample(
             feature_x_sample, **summarize_feature_x_sample_keyword_arguments

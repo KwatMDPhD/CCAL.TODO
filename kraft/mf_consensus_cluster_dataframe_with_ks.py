@@ -15,6 +15,7 @@ from .RANDOM_SEED import RANDOM_SEED
 def mf_consensus_cluster_dataframe_with_ks(
     dataframe,
     ks,
+    directory_path,
     mf_function="nmf_with_sklearn",
     n_job=1,
     n_clustering=10,
@@ -24,20 +25,13 @@ def mf_consensus_cluster_dataframe_with_ks(
     plot_w=True,
     plot_h=True,
     plot_dataframe=True,
-    directory_path=None,
 ):
 
-    if directory_path is None:
+    k_directory_paths = tuple(join(directory_path, str(k)) for k in ks)
 
-        k_directory_paths = tuple(None for k in ks)
+    for k_directory_path in k_directory_paths:
 
-    else:
-
-        k_directory_paths = tuple(join(directory_path, str(k)) for k in ks)
-
-        for k_directory_path in k_directory_paths:
-
-            establish_path(k_directory_path, "directory")
+        establish_path(k_directory_path, "directory")
 
     k_return = {}
 
@@ -60,6 +54,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                 (
                     dataframe,
                     ks[i],
+                    k_directory_paths[i],
                     mf_function,
                     n_clustering,
                     n_iteration,
@@ -68,7 +63,6 @@ def mf_consensus_cluster_dataframe_with_ks(
                     plot_w,
                     plot_h,
                     plot_dataframe,
-                    k_directory_paths[i],
                 )
                 for i in range(len(ks))
             ),
@@ -88,14 +82,6 @@ def mf_consensus_cluster_dataframe_with_ks(
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
 
-    if directory_path is None:
-
-        html_file_path = None
-
-    else:
-
-        html_file_path = join(directory_path, "mf_error.html")
-
     plot_plotly_figure(
         {
             "layout": {
@@ -111,7 +97,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                 }
             ],
         },
-        html_file_path,
+        join(directory_path, "mf_error.html"),
     )
 
     w_element_cluster__ccc = tuple(
@@ -121,14 +107,6 @@ def mf_consensus_cluster_dataframe_with_ks(
     h_element_cluster__ccc = tuple(
         k_return[key]["h_element_cluster.ccc"] for key in keys
     )
-
-    if directory_path is None:
-
-        html_file_path = None
-
-    else:
-
-        html_file_path = join(directory_path, "ccc.html")
 
     plot_plotly_figure(
         {
@@ -152,7 +130,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                 {"type": "scatter", "name": "H", "x": ks, "y": h_element_cluster__ccc},
             ],
         },
-        html_file_path,
+        join(directory_path, "ccc.html"),
     )
 
     for w_or_h, k_x_element in (
@@ -174,30 +152,20 @@ def mf_consensus_cluster_dataframe_with_ks(
         ),
     ):
 
-        if directory_path is not None:
-
-            k_x_element.to_csv(
-                join(directory_path, "k_x_{}_element.tsv".format(w_or_h)), sep="\t"
-            )
+        k_x_element.to_csv(
+            join(directory_path, "k_x_{}_element.tsv".format(w_or_h)), sep="\t"
+        )
 
         if plot_dataframe:
-
-            if directory_path is None:
-
-                html_file_path = None
-
-            else:
-
-                html_file_path = join(
-                    directory_path,
-                    "k_x_{}_element.cluster_distribution.html".format(w_or_h),
-                )
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),
                 colorscale=DATA_TYPE_COLORSCALE["categorical"],
                 layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
-                html_file_path=html_file_path,
+                html_file_path=join(
+                    directory_path,
+                    "k_x_{}_element.cluster_distribution.html".format(w_or_h),
+                ),
             )
 
     return k_return

@@ -17,6 +17,7 @@ from .RANDOM_SEED import RANDOM_SEED
 def mf_consensus_cluster_dataframe(
     dataframe,
     k,
+    directory_path,
     mf_function="nmf_with_sklearn",
     n_clustering=10,
     n_iteration=int(1e3),
@@ -25,7 +26,6 @@ def mf_consensus_cluster_dataframe(
     plot_w=True,
     plot_h=True,
     plot_dataframe=True,
-    directory_path=None,
 ):
 
     clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
@@ -66,46 +66,28 @@ def mf_consensus_cluster_dataframe(
 
             h_0 = DataFrame(h_0, index=factors, columns=dataframe.columns)
 
-            if directory_path is not None:
+            w_0.to_csv(join(directory_path, "w.tsv"), sep="\t")
 
-                w_0.to_csv(join(directory_path, "w.tsv"), sep="\t")
-
-                h_0.to_csv(join(directory_path, "h.tsv"), sep="\t")
+            h_0.to_csv(join(directory_path, "h.tsv"), sep="\t")
 
             if plot_w:
 
                 print("Plotting w...")
 
-                if directory_path is None:
-
-                    html_file_path = None
-
-                else:
-
-                    html_file_path = join(directory_path, "w.html")
-
                 plot_heat_map(
                     w_0.iloc[cluster_matrix(w_0.values, 0)],
                     layout={"title": {"text": "MF K={} W".format(k)}},
-                    html_file_path=html_file_path,
+                    html_file_path=join(directory_path, "w.html"),
                 )
 
             if plot_h:
 
                 print("Plotting h...")
 
-                if directory_path is None:
-
-                    html_file_path = None
-
-                else:
-
-                    html_file_path = join(directory_path, "h.html")
-
                 plot_heat_map(
                     h_0.iloc[:, cluster_matrix(h_0.values, 1)],
                     layout={"title": {"text": "MF K={} H".format(k)}},
-                    html_file_path=html_file_path,
+                    html_file_path=join(directory_path, "h.html"),
                 )
 
         clustering_x_w_element[clustering, :] = w.argmax(axis=1)
@@ -138,24 +120,16 @@ def mf_consensus_cluster_dataframe(
             w_element_cluster_sorted.index, h_element_cluster_sorted.index
         ]
 
-        if directory_path is None:
-
-            html_file_path = None
-
-        else:
-
-            html_file_path = join(directory_path, "dataframe.cluster.html")
-
-        colorscale = DATA_TYPE_COLORSCALE["categorical"]
+        annotation_colorscale = DATA_TYPE_COLORSCALE["categorical"]
 
         plot_heat_map(
             dataframe,
             row_annotations=w_element_cluster_sorted,
-            row_annotation_colorscale=colorscale,
+            row_annotation_colorscale=annotation_colorscale,
             column_annotations=h_element_cluster_sorted,
-            column_annotation_colorscale=colorscale,
+            column_annotation_colorscale=annotation_colorscale,
             layout={"title": {"text": "MFCC K={}".format(k)}},
-            html_file_path=html_file_path,
+            html_file_path=join(directory_path, "dataframe.cluster.html"),
         )
 
     return (
