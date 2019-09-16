@@ -1,4 +1,4 @@
-from numpy import asarray, isnan, nan, unique
+from numpy import isnan, nan, unique
 from plotly.colors import make_colorscale
 
 from .COLORBAR import COLORBAR
@@ -12,51 +12,45 @@ from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_gps_map(
-    nodes,
-    node_name,
     node_x_dimension,
-    elements,
-    element_name,
     element_x_dimension,
-    dimension_grid=None,
     element_label=None,
+    dimension_grid=None,
     grid_probability=None,
     grid_label=None,
-    label_colorscale=DATA_TYPE_COLORSCALE["categorical"],
+    label_colorscale=None,
     element_value=None,
     element_value_data_type="continuous",
     layout=None,
-    element_value_binary_annotation=None,
+    element_trace=None,
+    grid_label_opacity=0.8,
+    elements_to_highlight=(),
     html_file_path=None,
-    node_marker_size=35,
-    node_marker_color="#2e211b",
-    node_line_color="#23191e",
-    node_text_annotation=None,
-    element_marker_size=10,
-    element_marker_color="#ebf6f7",
-    element_marker_opacity=0.7,
-    element_marker_line_width=1,
-    element_marker_line_color="#2e211b",
-    n_contour=20,
-    grid_label_opacity=0.7,
 ):
 
-    layout_axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
-
-    title_text = "{} {}<br>{} {}".format(
-        len(nodes), node_name, len(elements), element_name
+    title_text = "{} {} + {} {}".format(
+        node_x_dimension.index.size,
+        node_x_dimension.index.name,
+        element_x_dimension.index.size,
+        element_x_dimension.index.name,
     )
 
     if element_value is not None:
 
         title_text += "<br>{}".format(element_value.name)
 
+    axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
+
     layout_template = {
-        "height": 1000,
-        "width": 1000,
-        "title": {"x": 0.5, "text": "<b>{}</b>".format(title_text)},
-        "xaxis": layout_axis,
-        "yaxis": layout_axis,
+        "height": 800,
+        "width": 800,
+        "title": {
+            "x": 0.5,
+            "text": "<b>{}</b>".format(title_text),
+            "font": {"size": 24, "family": "gravitasone"},
+        },
+        "xaxis": axis,
+        "yaxis": axis,
         "annotations": [],
     }
 
@@ -70,71 +64,65 @@ def plot_gps_map(
 
     edge_xs, edge_ys = get_element_x_dimension_triangulation_edges(node_x_dimension)
 
-    node_trace = {"type": "scatter", "legendgroup": node_name}
-
     data = [
         {
-            **node_trace,
-            "showlegend": False,
+            "type": "scatter",
+            "name": "Triangulation",
             "x": edge_xs,
             "y": edge_ys,
-            "line": {"color": node_line_color},
-        },
-        {
-            **node_trace,
-            "name": node_name,
-            "x": node_x_dimension[:, 0],
-            "y": node_x_dimension[:, 1],
-            "text": nodes,
-            "mode": "markers",
-            "marker": {"size": node_marker_size, "color": node_marker_color},
-            "hoverinfo": "text",
-        },
+            "line": {"color": "#171412"},
+        }
     ]
 
-    node_text_annotation_template = {
-        "font": {"size": 15, "color": "#171412"},
-        "borderpad": 2,
-        "bgcolor": "#ffffff",
-        "bordercolor": "#171412",
-        "showarrow": False,
-    }
-
-    if node_text_annotation is None:
-
-        node_text_annotation = node_text_annotation_template
-
-    else:
-
-        node_text_annotation = merge_2_dicts_recursively(
-            node_text_annotation_template, node_text_annotation
-        )
+    data.append(
+        {
+            "type": "scatter",
+            "name": node_x_dimension.index.name,
+            "x": node_x_dimension["x"],
+            "y": node_x_dimension["y"],
+            "text": node_x_dimension.index,
+            "mode": "markers",
+            "marker": {
+                "size": 30,
+                "color": "#23191e",
+                "line": {"width": 2, "color": "#ffddca"},
+            },
+            "hoverinfo": "text",
+        }
+    )
 
     layout["annotations"] += [
         {
-            "x": node_x_dimension[i, 0],
-            "y": node_x_dimension[i, 1],
+            "x": x,
+            "y": y,
             "text": "<b>{}</b>".format(node),
-            **node_text_annotation,
+            "showarrow": False,
+            "font": {"size": 16, "family": "gravitasone", "color": "#20d9ba"},
+            "yshift": 24,
         }
-        for i, node in enumerate(nodes)
+        for node, (x, y) in node_x_dimension.iterrows()
     ]
 
-    element_trace = {
+    element_trace_template = {
         "type": "scatter",
-        "name": element_name,
+        "name": element_x_dimension.index.name,
         "mode": "markers",
         "marker": {
-            "size": element_marker_size,
-            "color": element_marker_color,
-            "line": {
-                "width": element_marker_line_width,
-                "color": element_marker_line_color,
-            },
-            "opacity": element_marker_opacity,
+            "size": 16,
+            "color": "#ffddca",
+            "line": {"width": 1, "color": "#171412"},
+            "opacity": 0.8,
         },
         "hoverinfo": "text",
     }
+
+    if element_trace is None:
+
+        element_trace = element_trace_template
+
+    else:
+
+        element_trace = merge_2_dicts_recursively(element_trace_template, element_trace)
 
     if grid_label is not None:
 
@@ -155,7 +143,7 @@ def plot_gps_map(
                 "y": dimension_grid,
                 "z": grid_probability[::-1],
                 "autocontour": False,
-                "ncontours": n_contour,
+                "ncontours": 24,
                 "contours": {"coloring": "none"},
             }
         )
@@ -172,10 +160,10 @@ def plot_gps_map(
                     "x": dimension_grid,
                     "y": dimension_grid,
                     "z": z[::-1],
+                    "opacity": grid_label_opacity,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", label_color[label])
                     ),
-                    "opacity": grid_label_opacity,
                     "showscale": False,
                     "hoverinfo": "none",
                 }
@@ -183,13 +171,11 @@ def plot_gps_map(
 
     if element_value is not None:
 
-        element_value = element_value.reindex(index=elements)
+        element_value = element_value.reindex(index=element_x_dimension.index)
 
         element_value = element_value[element_value.abs().sort_values().index]
 
-        element_x_dimension_ = element_x_dimension[
-            [elements.index(element) for element in element_value.index]
-        ]
+        element_x_dimension = element_x_dimension.loc[element_value.index]
 
         if element_value_data_type == "continuous":
 
@@ -205,10 +191,10 @@ def plot_gps_map(
             merge_2_dicts_recursively(
                 element_trace,
                 {
-                    "x": element_x_dimension_[:, 0],
-                    "y": element_x_dimension_[:, 1],
+                    "x": element_x_dimension["x"],
+                    "y": element_x_dimension["y"],
                     "text": tuple(
-                        "{}<br>{:.2f}".format(element, value)
+                        "{} {:.2e}".format(element, value)
                         for element, value in element_value.items()
                     ),
                     "marker": {
@@ -229,41 +215,23 @@ def plot_gps_map(
             )
         )
 
-        if (
-            element_value_data_type == "binary"
-            and element_value_binary_annotation is not None
-        ):
-
-            layout["annotations"] += [
-                {
-                    "x": element_x_dimension_[i, 0],
-                    "y": element_x_dimension_[i, 1],
-                    "text": "<b>{}</b>".format(element_value.index[i]),
-                    "arrowhead": 2,
-                    "arrowwidth": 2,
-                    "arrowcolor": "#c93756",
-                    "standoff": None,
-                    "clicktoshow": "onoff",
-                    **element_value_binary_annotation,
-                }
-                for i in element_value.values.nonzero()[0]
-            ]
-
     elif element_label is not None:
 
         for label in grid_label_not_nan_unique:
 
             is_label = element_label == label
 
+            name = "Label {:.0f}".format(label)
+
             data.append(
                 merge_2_dicts_recursively(
                     element_trace,
                     {
-                        "legendgroup": "Label {:.0f}".format(label),
-                        "name": "Label {:.0f}".format(label),
-                        "x": element_x_dimension[is_label, 0],
-                        "y": element_x_dimension[is_label, 1],
-                        "text": asarray(elements)[is_label],
+                        "legendgroup": name,
+                        "name": name,
+                        "x": element_x_dimension["x"][is_label],
+                        "y": element_x_dimension["y"][is_label],
+                        "text": element_x_dimension.index[is_label],
                         "marker": {"color": label_color[label]},
                     },
                 )
@@ -275,11 +243,25 @@ def plot_gps_map(
             merge_2_dicts_recursively(
                 element_trace,
                 {
-                    "x": element_x_dimension[:, 0],
-                    "y": element_x_dimension[:, 1],
-                    "text": elements,
+                    "x": element_x_dimension["x"],
+                    "y": element_x_dimension["y"],
+                    "text": element_x_dimension.index,
                 },
             )
         )
+
+    layout["annotations"] += [
+        {
+            "x": element_x_dimension.loc[element, "x"],
+            "y": element_x_dimension.loc[element, "y"],
+            "text": "<b>{}</b>".format(element),
+            "arrowhead": 2,
+            "arrowwidth": 2,
+            "arrowcolor": "#c93756",
+            "standoff": None,
+            "clicktoshow": "onoff",
+        }
+        for element in elements_to_highlight
+    ]
 
     plot_plotly_figure({"layout": layout, "data": data}, html_file_path)

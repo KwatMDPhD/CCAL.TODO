@@ -4,23 +4,23 @@ from .normalize_array import normalize_array
 from .normalize_array_on_axis import normalize_array_on_axis
 
 
-def make_element_x_dimension_from_node_x_element_and_node_dimension(
-    node_x_element, node_x_dimension, n_pull, pull_power
+def make_element_x_dimension_from_element_x_node_and_node_x_dimension(
+    element_x_node, node_x_dimension, n_pull, pull_power
 ):
 
     element_x_dimension = full(
-        (node_x_element.shape[1], node_x_dimension.shape[1]), nan
+        (element_x_node.shape[0], node_x_dimension.shape[1]), nan
     )
 
-    node_x_element = normalize_array(node_x_element, "0-1")
+    element_x_node = normalize_array(element_x_node, "0-1")
 
-    if 3 < node_x_element.shape[0]:
+    if 3 < element_x_node.shape[1]:
 
-        node_x_element = normalize_array_on_axis(node_x_element, 0, "0-1")
+        element_x_node = normalize_array_on_axis(element_x_node, 1, "0-1")
 
-    for element_index in range(node_x_element.shape[1]):
+    for element_index in range(element_x_node.shape[0]):
 
-        pulls = node_x_element[:, element_index]
+        pulls = element_x_node[element_index, :]
 
         if n_pull is not None:
 

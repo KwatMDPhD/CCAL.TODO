@@ -20,7 +20,6 @@ from .BAD_VALUES import BAD_VALUES
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .cast_object_to_builtin import cast_object_to_builtin
 from .check_array_for_bad import check_array_for_bad
-from .check_dataframe_number import check_dataframe_number
 from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
 from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
 from .cluster_clustering_x_element_and_compute_ccc import (
@@ -124,8 +123,8 @@ from .make_binary_dataframe_from_categorical_series import (
 from .make_consecutive_group_labels import make_consecutive_group_labels
 from .make_context_matrix import make_context_matrix
 from .make_context_matrix_ import make_context_matrix_
-from .make_element_x_dimension_from_node_x_element_and_node_dimension import (
-    make_element_x_dimension_from_node_x_element_and_node_dimension,
+from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
+    make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )
 from .make_gitkeep import make_gitkeep
 from .make_match_panel import make_match_panel

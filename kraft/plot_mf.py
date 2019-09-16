@@ -1,3 +1,5 @@
+from os.path import join
+
 from pandas import DataFrame
 
 from .cluster_matrix import cluster_matrix
@@ -5,7 +7,7 @@ from .normalize_dataframe import normalize_dataframe
 from .plot_heat_map import plot_heat_map
 
 
-def plot_mf(ws, hs):
+def plot_mf(ws, hs, directory_path=None):
 
     for i, w in enumerate(ws):
 
@@ -13,9 +15,18 @@ def plot_mf(ws, hs):
 
             w = DataFrame(w)
 
+        if directory_path is None:
+
+            html_file_path = None
+
+        else:
+
+            html_file_path = join(directory_path, "{}_w.html".format(i))
+
         plot_heat_map(
             normalize_dataframe(w.iloc[cluster_matrix(w.values, 0), :], 1, "-0-"),
             layout={"title": {"text": "W {}".format(i)}},
+            html_file_path=html_file_path,
         )
 
     for i, h in enumerate(hs):
@@ -24,7 +35,16 @@ def plot_mf(ws, hs):
 
             h = DataFrame(h)
 
+        if directory_path is None:
+
+            html_file_path = None
+
+        else:
+
+            html_file_path = join(directory_path, "{}_h.html".format(i))
+
         plot_heat_map(
             normalize_dataframe(h.iloc[:, cluster_matrix(h.values, 1)], 0, "-0-"),
             layout={"title": {"text": "H {}".format(i)}},
+            html_file_path=html_file_path,
         )

@@ -2,10 +2,10 @@ from os.path import join
 
 from pandas import DataFrame, Index
 
+from .establish_path import establish_path
 from .mf_vs_ws_h import mf_vs_ws_h
 from .plot_errors import plot_errors
 from .plot_mf import plot_mf
-from .establish_path import establish_path
 
 
 def mf_dataframes(dataframes, k, directory_path):
@@ -36,7 +36,7 @@ def mf_dataframes(dataframes, k, directory_path):
 
         h.to_csv(join(directory_path, "{}_h.tsv".format(i)), sep="\t")
 
-    plot_mf(ws, hs)
+    plot_mf(ws, hs, directory_path=directory_path)
 
     plot_errors(errors)
 

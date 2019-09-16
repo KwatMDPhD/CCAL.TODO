@@ -12,7 +12,7 @@ def mf_vs_ws_h(vs, k, weights=None, n_iteration=int(1e3), random_seed=RANDOM_SEE
 
     n = len(vs)
 
-    rs = full((n, n_iteration + 1), nan)
+    errors = full((n, n_iteration + 1), nan)
 
     seed(seed=random_seed)
 
@@ -20,7 +20,7 @@ def mf_vs_ws_h(vs, k, weights=None, n_iteration=int(1e3), random_seed=RANDOM_SEE
 
     h = random_sample(size=(k, vs[0].shape[1]))
 
-    rs[:, 0] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n)]
+    errors[:, 0] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n)]
 
     v_0_norm = compute_matrix_norm(vs[0])
 
@@ -38,6 +38,6 @@ def mf_vs_ws_h(vs, k, weights=None, n_iteration=int(1e3), random_seed=RANDOM_SEE
 
         ws = [update_w_by_multiplicative_update(vs[i], ws[i], h) for i in range(n)]
 
-        rs[:, j + 1] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n)]
+        errors[:, j + 1] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n)]
 
-    return ws, h, rs
+    return ws, h, errors

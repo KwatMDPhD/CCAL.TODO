@@ -70,6 +70,8 @@ def mf_consensus_cluster_dataframe(
 
             h_0.to_csv(join(directory_path, "h.tsv"), sep="\t")
 
+            # TODO: use plot_mf
+
             if plot_w:
 
                 print("Plotting w...")

@@ -14,7 +14,7 @@ def download_and_parse_geo(geo_id, directory_path):
 
     print("Populating {}...".format(directory_path))
 
-    gse = GEOparse.get_GEO(geo=geo_id, destdir=directory_path, silent=True)
+    gse = GEOparse.get_GEO(geo=geo_id, destdir=directory_path)
 
     print("Title: {}".format(gse.get_metadata_attribute("title")))
 
