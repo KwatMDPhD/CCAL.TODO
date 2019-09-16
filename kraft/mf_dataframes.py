@@ -5,9 +5,12 @@ from pandas import DataFrame, Index
 from .mf_vs_ws_h import mf_vs_ws_h
 from .plot_errors import plot_errors
 from .plot_mf import plot_mf
+from .establish_path import establish_path
 
 
 def mf_dataframes(dataframes, k, directory_path):
+
+    establish_path(directory_path, "directory")
 
     ws, h, errors = mf_vs_ws_h(tuple(dataframe.values for dataframe in dataframes), k)
 
