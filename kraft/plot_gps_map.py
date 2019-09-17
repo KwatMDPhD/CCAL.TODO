@@ -2,7 +2,6 @@ from numpy import isnan, nan, unique
 from plotly.colors import make_colorscale
 
 from .COLORBAR import COLORBAR
-from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_colorscale_color import get_colorscale_color
 from .get_element_x_dimension_triangulation_edges import (
     get_element_x_dimension_triangulation_edges,
@@ -20,8 +19,10 @@ def plot_gps_map(
     grid_label=None,
     label_colorscale=None,
     element_value=None,
-    element_value_data_type="continuous",
+    element_value_colorscale=None,
+    ticktext_function=None,
     layout=None,
+    show_node_text=True,
     element_trace=None,
     grid_label_opacity=0.8,
     elements_to_highlight=(),
@@ -47,7 +48,11 @@ def plot_gps_map(
         "title": {
             "x": 0.5,
             "text": "<b>{}</b>".format(title_text),
-            "font": {"size": 24, "family": "gravitasone"},
+            "font": {
+                "size": 32,
+                "color": "#4e40d8",
+                "family": "Times New Roman, sans-serif",
+            },
         },
         "xaxis": axis,
         "yaxis": axis,
@@ -83,25 +88,35 @@ def plot_gps_map(
             "text": node_x_dimension.index,
             "mode": "markers",
             "marker": {
-                "size": 30,
+                "size": 20,
                 "color": "#23191e",
-                "line": {"width": 2, "color": "#ffddca"},
+                "line": {"width": 1, "color": "#ebf6f7"},
             },
             "hoverinfo": "text",
         }
     )
 
-    layout["annotations"] += [
-        {
-            "x": x,
-            "y": y,
-            "text": "<b>{}</b>".format(node),
-            "showarrow": False,
-            "font": {"size": 16, "family": "gravitasone", "color": "#20d9ba"},
-            "yshift": 24,
-        }
-        for node, (x, y) in node_x_dimension.iterrows()
-    ]
+    if show_node_text:
+
+        layout["annotations"] += [
+            {
+                "x": x,
+                "y": y,
+                "text": "<b>{}</b>".format(node),
+                "font": {
+                    "size": 16,
+                    "color": "#23191e",
+                    "family": "Gravitas One, monospace",
+                },
+                "showarrow": False,
+                "yshift": 24,
+                "bgcolor": "#ffffff",
+                "borderpad": 2,
+                "bordercolor": "#23191e",
+                "opacity": 0.8,
+            }
+            for node, (x, y) in node_x_dimension.iterrows()
+        ]
 
     element_trace_template = {
         "type": "scatter",
@@ -109,7 +124,7 @@ def plot_gps_map(
         "mode": "markers",
         "marker": {
             "size": 16,
-            "color": "#ffddca",
+            "color": "#20d9ba",
             "line": {"width": 1, "color": "#171412"},
             "opacity": 0.8,
         },
@@ -177,15 +192,21 @@ def plot_gps_map(
 
         element_x_dimension = element_x_dimension.loc[element_value.index]
 
-        if element_value_data_type == "continuous":
+        if element_value.map(float.is_integer).all():
 
-            tickvals = element_value.describe()[
-                ["min", "25%", "50%", "mean", "75%", "max"]
-            ]
+            tickvals = element_value.unique()
+
+            if ticktext_function is None:
+
+                ticktext_function = "{:.0f}".format
 
         else:
 
-            tickvals = element_value.unique()
+            tickvals = element_value.describe()[
+                ["min", "25%", "50%", "mean", "75%", "max"]
+            ].values
+
+            ticktext_function = "{:.2e}".format
 
         data.append(
             merge_2_dicts_recursively(
@@ -194,19 +215,19 @@ def plot_gps_map(
                     "x": element_x_dimension["x"],
                     "y": element_x_dimension["y"],
                     "text": tuple(
-                        "{} {:.2e}".format(element, value)
+                        "{}<br>{:.2e}".format(element, value)
                         for element, value in element_value.items()
                     ),
                     "marker": {
                         "color": element_value,
-                        "colorscale": DATA_TYPE_COLORSCALE[element_value_data_type],
+                        "colorscale": element_value_colorscale,
                         "colorbar": merge_2_dicts_recursively(
                             COLORBAR,
                             {
                                 "tickmode": "array",
                                 "tickvals": tickvals,
                                 "ticktext": tuple(
-                                    "{:.2e}".format(tickval) for tickval in (tickvals)
+                                    ticktext_function(tickval) for tickval in tickvals
                                 ),
                             },
                         ),

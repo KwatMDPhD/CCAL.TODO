@@ -9,6 +9,10 @@ from .plot_heat_map import plot_heat_map
 
 def plot_mf(ws, hs, directory_path=None):
 
+    axis_size_0 = 500
+
+    axis_size_1 = axis_size_0 * 1.618
+
     for i, w in enumerate(ws):
 
         if not isinstance(w, DataFrame):
@@ -25,7 +29,11 @@ def plot_mf(ws, hs, directory_path=None):
 
         plot_heat_map(
             normalize_dataframe(w.iloc[cluster_matrix(w.values, 0), :], 1, "-0-"),
-            layout={"title": {"text": "W {}".format(i)}},
+            layout={
+                "height": axis_size_1,
+                "width": axis_size_0,
+                "title": {"text": "W {}".format(i)},
+            },
             html_file_path=html_file_path,
         )
 
@@ -45,6 +53,10 @@ def plot_mf(ws, hs, directory_path=None):
 
         plot_heat_map(
             normalize_dataframe(h.iloc[:, cluster_matrix(h.values, 1)], 0, "-0-"),
-            layout={"title": {"text": "H {}".format(i)}},
+            layout={
+                "height": axis_size_0,
+                "width": axis_size_1,
+                "title": {"text": "H {}".format(i)},
+            },
             html_file_path=html_file_path,
         )

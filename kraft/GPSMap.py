@@ -52,8 +52,8 @@ class GPSMap:
                     cluster_matrix(distance__node_x_node, 1),
                 ],
                 layout={
-                    "height": 700,
-                    "width": 700,
+                    "height": 800,
+                    "width": 800,
                     "title": {"text": distance_function.__name__},
                 },
             )
@@ -144,12 +144,12 @@ class GPSMap:
             for axis, coordinate in self.element_x_dimension.items()
         )
 
-        for label in element_label.unique():
+        for label in self.element_label.unique():
 
             label_grid_probability[label] = rot90(
                 unmesh(
                     *compute_element_x_dimension_joint_probability(
-                        self.element_x_dimension[element_label == label].values,
+                        self.element_x_dimension[self.element_label == label].values,
                         plot=False,
                         dimension_bandwidths=dimension_bandwidths,
                         dimension_bandwidth_factors=(bandwidth_factor,) * 2,
