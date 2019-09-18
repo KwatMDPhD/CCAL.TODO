@@ -54,7 +54,7 @@ def plot_histogram(
             {
                 "yaxis": "y2",
                 "type": "histogram",
-                "legendgroup": series.name,
+                "legendgroup": i,
                 "name": series.name,
                 "x": series,
                 "histnorm": histnorm,
@@ -67,7 +67,7 @@ def plot_histogram(
             data.append(
                 {
                     "type": "scatter",
-                    "legendgroup": series.name,
+                    "legendgroup": i,
                     "showlegend": False,
                     "x": series,
                     "y": (0,) * series.size,

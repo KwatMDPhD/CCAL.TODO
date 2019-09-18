@@ -109,7 +109,7 @@ class GPSMap:
     def set_element_label(
         self,
         element_label,
-        n_grid=128,
+        n_grid=64,
         bandwidth_factor=1,
         label_colorscale=None,
         plot=True,

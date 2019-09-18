@@ -3,13 +3,13 @@ from plotly.colors import convert_colors_to_same_type, find_intermediate_color
 
 def get_colorscale_color(colorscale, value, n=None):
 
-    if 1 < value:
+    if 1 < value or (value == 1 and n is not None):
 
         n_block = n - 1
 
         if value == n_block:
 
-            value = 0
+            value = 1
 
         else:
 
