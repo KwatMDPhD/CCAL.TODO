@@ -1,4 +1,4 @@
-from numpy import nanmax, nanmin, median
+from numpy import median, nanmax, nanmin
 from numpy.random import choice
 
 from .plot_heat_map import plot_heat_map
