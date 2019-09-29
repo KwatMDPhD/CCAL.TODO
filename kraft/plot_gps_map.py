@@ -192,7 +192,7 @@ def plot_gps_map(
 
         element_x_dimension = element_x_dimension.loc[element_value.index]
 
-        if element_value.map(float.is_integer).all():
+        if element_value.astype(float).map(float.is_integer).all():
 
             tickvals = element_value.unique()
 

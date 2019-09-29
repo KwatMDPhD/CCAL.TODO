@@ -39,7 +39,7 @@ def summarize_feature_x_sample(
         if plot_histogram_max_size < feature_x_sample_not_na_values.size:
 
             print(
-                "Sampling random {} {} for histogram...".format(
+                "Sampling random {:.2e} {} for histogram...".format(
                     plot_histogram_max_size, feature_x_sample_value_name
                 )
             )
