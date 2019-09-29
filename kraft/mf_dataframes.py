@@ -30,11 +30,11 @@ def mf_dataframes(dataframes, k, directory_path):
 
     for i, w in enumerate(ws):
 
-        w.to_csv(join(directory_path, "{}_w.tsv".format(i)), sep="\t")
+        w.to_csv(join(directory_path, "w{}.tsv".format(i)), sep="\t")
 
     for i, h in enumerate(hs):
 
-        h.to_csv(join(directory_path, "{}_h.tsv".format(i)), sep="\t")
+        h.to_csv(join(directory_path, "h{}.tsv".format(i)), sep="\t")
 
     plot_mf(ws, hs, directory_path=directory_path)
 

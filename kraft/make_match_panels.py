@@ -22,20 +22,18 @@ def make_match_panels(
 
             target = target[0 < target]
 
-        for data_name, data_dict in data_dicts.items():
+        for data_dict in data_dicts:
 
             print(
                 "Making match panel with target {} and data {}...".format(
-                    target_name, data_name
+                    target_name, data_dict["name"]
                 )
             )
-
-            score_moe_p_value_fdr = None
 
             file_path_prefix = join(
                 directory_path,
                 normalize_file_name(target_name),
-                normalize_file_name(data_name),
+                normalize_file_name(data_dict["name"]),
             )
 
             establish_path(file_path_prefix, "file")
@@ -54,12 +52,18 @@ def make_match_panels(
                     score_moe_p_value_fdr_file_path, sep="\t", index_col=0
                 )
 
+            else:
+
+                score_moe_p_value_fdr = None
+
             make_match_panel(
                 target,
                 data_dict["dataframe"],
                 score_moe_p_value_fdr=score_moe_p_value_fdr,
                 data_data_type=data_dict["data_type"],
-                layout={"title": {"text": "{}<br>{}".format(target_name, data_name)}},
+                layout={
+                    "title": {"text": "{}<br>{}".format(target_name, data_dict["name"])}
+                },
                 file_path_prefix=file_path_prefix,
                 **make_match_panel_keyword_arguments,
             )

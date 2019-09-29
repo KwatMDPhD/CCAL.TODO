@@ -25,14 +25,14 @@ def plot_mf(ws, hs, directory_path=None):
 
         else:
 
-            html_file_path = join(directory_path, "{}_w.html".format(i))
+            html_file_path = join(directory_path, "w{}.html".format(i))
 
         plot_heat_map(
             normalize_dataframe(w.iloc[cluster_matrix(w.values, 0), :], 1, "-0-"),
             layout={
                 "height": axis_size_1,
                 "width": axis_size_0,
-                "title": {"text": "W {}".format(i)},
+                "title": {"text": "W{}".format(i)},
             },
             html_file_path=html_file_path,
         )
@@ -49,14 +49,14 @@ def plot_mf(ws, hs, directory_path=None):
 
         else:
 
-            html_file_path = join(directory_path, "{}_h.html".format(i))
+            html_file_path = join(directory_path, "h{}.html".format(i))
 
         plot_heat_map(
             normalize_dataframe(h.iloc[:, cluster_matrix(h.values, 1)], 0, "-0-"),
             layout={
                 "height": axis_size_0,
                 "width": axis_size_1,
-                "title": {"text": "H {}".format(i)},
+                "title": {"text": "H{}".format(i)},
             },
             html_file_path=html_file_path,
         )

@@ -126,6 +126,7 @@ from .make_context_matrix_ import make_context_matrix_
 from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
     make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )
+from .make_feature_x_sample_signal import make_feature_x_sample_signal
 from .make_gitkeep import make_gitkeep
 from .make_match_panel import make_match_panel
 from .make_match_panel_annotations import make_match_panel_annotations

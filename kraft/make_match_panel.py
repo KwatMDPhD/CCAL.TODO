@@ -242,7 +242,7 @@ def make_match_panel(
         make_match_panel_annotations(score_moe_p_value_fdr_to_plot).items()
     ):
 
-        x = 1.08 + annotation_index / 6.4
+        x = 1.1 + annotation_index / 6.4
 
         layout["annotations"].append(
             {
