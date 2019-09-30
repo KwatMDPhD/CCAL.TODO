@@ -29,35 +29,35 @@ def infer(
         dimension_names=dimension_names,
     )
 
-    target__dimension_grid = unique(mesh_grid_point_x_dimension[:, -1])
+    target_dimension_grid = unique(mesh_grid_point_x_dimension[:, -1])
 
-    target__value_index = absolute(
-        target__dimension_grid - target_dimension_value
+    target_value_index = absolute(
+        target_dimension_grid - target_dimension_value
     ).argmin()
 
-    no_target__mesh_grid_point_x_dimension = mesh_grid_point_x_dimension[
-        target__value_index :: target__dimension_grid.size, :-1
+    no_target_mesh_grid_point_x_dimension = mesh_grid_point_x_dimension[
+        target_value_index :: target_dimension_grid.size, :-1
     ]
 
-    no_target__mesh_grid_point_posterior_probability = mesh_grid_point_posterior_probability[
-        target__value_index :: target__dimension_grid.size
+    no_target_mesh_grid_point_posterior_probability = mesh_grid_point_posterior_probability[
+        target_value_index :: target_dimension_grid.size
     ]
 
     if plot:
 
         plot_mesh_grid(
-            no_target__mesh_grid_point_x_dimension,
-            no_target__mesh_grid_point_posterior_probability,
+            no_target_mesh_grid_point_x_dimension,
+            no_target_mesh_grid_point_posterior_probability,
             dimension_names=dimension_names,
             value_name="P({} = {:.2e} (~{}) | {})".format(
                 dimension_names[-1],
-                target__dimension_grid[target__value_index],
+                target_dimension_grid[target_value_index],
                 target_dimension_value,
                 *dimension_names[:-1],
             ),
         )
 
     return (
-        no_target__mesh_grid_point_x_dimension,
-        no_target__mesh_grid_point_posterior_probability,
+        no_target_mesh_grid_point_x_dimension,
+        no_target_mesh_grid_point_posterior_probability,
     )

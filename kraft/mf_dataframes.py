@@ -36,7 +36,7 @@ def mf_dataframes(dataframes, k, directory_path):
 
         h.to_csv(join(directory_path, "h{}.tsv".format(i)), sep="\t")
 
-    plot_mf(ws, hs, directory_path=directory_path)
+    plot_mf(ws, hs, directory_path)
 
     plot_errors(errors)
 

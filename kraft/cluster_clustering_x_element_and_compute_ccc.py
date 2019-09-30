@@ -7,7 +7,7 @@ def cluster_clustering_x_element_and_compute_ccc(
     clustering_x_element, k, linkage_method
 ):
 
-    n_coclustering__element_x_element = zeros((clustering_x_element.shape[1],) * 2)
+    element_x_element_n_coclustering = zeros((clustering_x_element.shape[1],) * 2)
 
     for clustering in range(clustering_x_element.shape[0]):
 
@@ -17,19 +17,19 @@ def cluster_clustering_x_element_and_compute_ccc(
 
                 if element_0 == element_1:
 
-                    n_coclustering__element_x_element[element_0, element_1] += 1
+                    element_x_element_n_coclustering[element_0, element_1] += 1
 
                 elif (
                     clustering_x_element[clustering, element_0]
                     == clustering_x_element[clustering, element_1]
                 ):
 
-                    n_coclustering__element_x_element[element_0, element_1] += 1
+                    element_x_element_n_coclustering[element_0, element_1] += 1
 
-                    n_coclustering__element_x_element[element_1, element_0] += 1
+                    element_x_element_n_coclustering[element_1, element_0] += 1
 
     clustering_distance = squareform(
-        1 - n_coclustering__element_x_element / clustering_x_element.shape[0]
+        1 - element_x_element_n_coclustering / clustering_x_element.shape[0]
     )
 
     clustering_distance_linkage = linkage(clustering_distance, method=linkage_method)

@@ -42,9 +42,9 @@ def mf_consensus_cluster_dataframe_with_ks(
             h_0,
             e_0,
             w_element_cluster,
-            w_element_cluster__ccc,
+            w_element_cluster_ccc,
             h_element_cluster,
-            h_element_cluster__ccc,
+            h_element_cluster_ccc,
         ),
     ) in zip(
         ks,
@@ -75,9 +75,9 @@ def mf_consensus_cluster_dataframe_with_ks(
             "h": h_0,
             "e": e_0,
             "w_element_cluster": w_element_cluster,
-            "w_element_cluster.ccc": w_element_cluster__ccc,
+            "w_element_cluster.ccc": w_element_cluster_ccc,
             "h_element_cluster": h_element_cluster,
-            "h_element_cluster.ccc": h_element_cluster__ccc,
+            "h_element_cluster.ccc": h_element_cluster_ccc,
         }
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
@@ -100,11 +100,11 @@ def mf_consensus_cluster_dataframe_with_ks(
         join(directory_path, "mf_error.html"),
     )
 
-    w_element_cluster__ccc = tuple(
+    w_element_cluster_ccc = tuple(
         k_return[key]["w_element_cluster.ccc"] for key in keys
     )
 
-    h_element_cluster__ccc = tuple(
+    h_element_cluster_ccc = tuple(
         k_return[key]["h_element_cluster.ccc"] for key in keys
     )
 
@@ -121,13 +121,12 @@ def mf_consensus_cluster_dataframe_with_ks(
                     "name": "Mean",
                     "x": ks,
                     "y": (
-                        asarray(w_element_cluster__ccc)
-                        + asarray(h_element_cluster__ccc)
+                        asarray(w_element_cluster_ccc) + asarray(h_element_cluster_ccc)
                     )
                     / 2,
                 },
-                {"type": "scatter", "name": "W", "x": ks, "y": w_element_cluster__ccc},
-                {"type": "scatter", "name": "H", "x": ks, "y": h_element_cluster__ccc},
+                {"type": "scatter", "name": "W", "x": ks, "y": w_element_cluster_ccc},
+                {"type": "scatter", "name": "H", "x": ks, "y": h_element_cluster_ccc},
             ],
         },
         join(directory_path, "ccc.html"),

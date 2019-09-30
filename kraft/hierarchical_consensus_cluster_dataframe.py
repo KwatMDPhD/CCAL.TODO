@@ -22,7 +22,7 @@ def hierarchical_consensus_cluster_dataframe(
     k,
     axis,
     directory_path,
-    distance__element_x_element=None,
+    element_x_element_distance=None,
     distance_function="correlation",
     n_clustering=10,
     random_seed=RANDOM_SEED,
@@ -34,21 +34,19 @@ def hierarchical_consensus_cluster_dataframe(
 
         dataframe = dataframe.T
 
-    if distance__element_x_element is None:
+    if element_x_element_distance is None:
 
         print(
-            "Computing distance__element_x_element distance with {}...".format(
-                distance_function
-            )
+            "Computing element_x_element_distance with {}...".format(distance_function)
         )
 
-        distance__element_x_element = DataFrame(
+        element_x_element_distance = DataFrame(
             squareform(pdist(dataframe.values, distance_function)),
             index=dataframe.index,
             columns=dataframe.index,
         )
 
-        distance__element_x_element.to_csv(
+        element_x_element_distance.to_csv(
             join(directory_path, "distance.element_x_element.tsv"), sep="\t"
         )
 
@@ -71,7 +69,7 @@ def hierarchical_consensus_cluster_dataframe(
         clustering_x_element[clustering, random_elements_with_repeat] = fcluster(
             linkage(
                 squareform(
-                    distance__element_x_element.iloc[
+                    element_x_element_distance.iloc[
                         random_elements_with_repeat, random_elements_with_repeat
                     ]
                 ),
@@ -81,7 +79,7 @@ def hierarchical_consensus_cluster_dataframe(
             criterion="maxclust",
         )
 
-    element_cluster, element_cluster__ccc = cluster_clustering_x_element_and_compute_ccc(
+    element_cluster, element_cluster_ccc = cluster_clustering_x_element_and_compute_ccc(
         clustering_x_element, k, linkage_method
     )
 
@@ -121,4 +119,4 @@ def hierarchical_consensus_cluster_dataframe(
             **plot_heat_map_keyword_arguments,
         )
 
-    return element_cluster, element_cluster__ccc
+    return element_cluster, element_cluster_ccc

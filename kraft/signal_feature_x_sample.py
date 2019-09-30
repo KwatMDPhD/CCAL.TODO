@@ -22,20 +22,20 @@ def signal_feature_x_sample(
         **summarize_feature_x_sample_keyword_arguments,
     )
 
-    tsv_file_path = "{}/{}_prepare.tsv".format(
-        output_directory_path, feature_x_sample_alias
+    tsv_file_path = "{}/{}.tsv".format(output_directory_path, feature_x_sample_alias)
+
+    feature_x_sample_prepare.to_csv(
+        tsv_file_path.replace(".tsv", "_prepare.tsv"), sep="\t"
     )
-
-    feature_x_sample_prepare.to_csv(tsv_file_path, sep="\t")
-
-    html_file_path = tsv_file_path.replace(".tsv", "_select_feature.html")
 
     feature_x_sample_prepare_select_feature = feature_x_sample_prepare.loc[
         select_series_indices(
             feature_x_sample_prepare.std(axis=1),
             ">",
             layout={"yaxis": {"title": {"text": "Standard Deviation"}}},
-            html_file_path=html_file_path,
+            html_file_path=tsv_file_path.replace(
+                ".tsv", "_prepare_select_feature.html"
+            ),
             **select_series_index_keyword_arguments,
         )
     ]
@@ -73,9 +73,9 @@ def signal_feature_x_sample(
         feature_x_sample_prepare_select_feature_signal, 1, "0-1"
     )
 
-    tsv_file_path = html_file_path.replace(".html", "_signal.tsv")
-
-    feature_x_sample_prepare_select_feature_signal.to_csv(tsv_file_path, sep="\t")
+    feature_x_sample_prepare_select_feature_signal.to_csv(
+        tsv_file_path.replace(".tsv", "_prepare_select_feature_signal.tsv"), sep="\t"
+    )
 
     summarize_feature_x_sample(
         feature_x_sample_prepare_select_feature_signal,

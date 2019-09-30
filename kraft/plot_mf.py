@@ -7,9 +7,9 @@ from .normalize_dataframe import normalize_dataframe
 from .plot_heat_map import plot_heat_map
 
 
-def plot_mf(ws, hs, directory_path=None):
+def plot_mf(ws, hs, directory_path):
 
-    axis_size_0 = 500
+    axis_size_0 = 640
 
     axis_size_1 = axis_size_0 * 1.618
 
@@ -19,20 +19,22 @@ def plot_mf(ws, hs, directory_path=None):
 
             w = DataFrame(w)
 
-        if directory_path is None:
+        title_text = "W"
 
-            html_file_path = None
+        html_file_path = join(directory_path, "w.html")
 
-        else:
+        if 1 < len(ws):
 
-            html_file_path = join(directory_path, "w{}.html".format(i))
+            title_text = "{}{}".format(title_text, i)
+
+            html_file_path = html_file_path.replace(".html", "{}.html".format(i))
 
         plot_heat_map(
             normalize_dataframe(w.iloc[cluster_matrix(w.values, 0), :], 1, "-0-"),
             layout={
                 "height": axis_size_1,
                 "width": axis_size_0,
-                "title": {"text": "W{}".format(i)},
+                "title": {"text": title_text},
             },
             html_file_path=html_file_path,
         )
@@ -43,20 +45,22 @@ def plot_mf(ws, hs, directory_path=None):
 
             h = DataFrame(h)
 
-        if directory_path is None:
+        title_text = "H"
 
-            html_file_path = None
+        html_file_path = join(directory_path, "h.html")
 
-        else:
+        if 1 < len(hs):
 
-            html_file_path = join(directory_path, "h{}.html".format(i))
+            title_text = "{}{}".format(title_text, i)
+
+            html_file_path = html_file_path.replace(".html", "{}.html".format(i))
 
         plot_heat_map(
             normalize_dataframe(h.iloc[:, cluster_matrix(h.values, 1)], 0, "-0-"),
             layout={
                 "height": axis_size_0,
                 "width": axis_size_1,
-                "title": {"text": "H{}".format(i)},
+                "title": {"text": title_text},
             },
             html_file_path=html_file_path,
         )

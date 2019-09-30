@@ -1,9 +1,9 @@
 from pandas import DataFrame
 
-from .solve_ax_b__x import solve_ax_b__x
+from .solve_ax_b_x import solve_ax_b_x
 
 
-def solve_v_wh__h(v, w, method="pinv"):
+def solve_v_wh_h(v, w, method="pinv"):
 
     print(
         "Solving V{} = W{} * H{} H...".format(
@@ -12,7 +12,7 @@ def solve_v_wh__h(v, w, method="pinv"):
     )
 
     return DataFrame(
-        solve_ax_b__x(w.values, v.values, method=method),
+        solve_ax_b_x(w.values, v.values, method=method),
         index=w.columns,
         columns=v.columns,
     )

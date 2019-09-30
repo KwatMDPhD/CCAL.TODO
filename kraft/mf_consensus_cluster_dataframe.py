@@ -96,13 +96,13 @@ def mf_consensus_cluster_dataframe(
 
         clustering_x_h_element[clustering, :] = h.argmax(axis=0)
 
-    w_element_cluster, w_element_cluster__ccc = cluster_clustering_x_element_and_compute_ccc(
+    w_element_cluster, w_element_cluster_ccc = cluster_clustering_x_element_and_compute_ccc(
         clustering_x_w_element, k, linkage_method
     )
 
     w_element_cluster = Series(w_element_cluster, name="Cluster", index=dataframe.index)
 
-    h_element_cluster, h_element_cluster__ccc = cluster_clustering_x_element_and_compute_ccc(
+    h_element_cluster, h_element_cluster_ccc = cluster_clustering_x_element_and_compute_ccc(
         clustering_x_h_element, k, linkage_method
     )
 
@@ -139,7 +139,7 @@ def mf_consensus_cluster_dataframe(
         h_0,
         e_0,
         w_element_cluster,
-        w_element_cluster__ccc,
+        w_element_cluster_ccc,
         h_element_cluster,
-        h_element_cluster__ccc,
+        h_element_cluster_ccc,
     )

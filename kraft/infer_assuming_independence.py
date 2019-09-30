@@ -30,7 +30,7 @@ def infer_assuming_independence(
             "Dimension {} Variable".format(i) for i in range(n_dimension)
         )
 
-    target__mesh_grid_point_x_dimension, target__mesh_grid_point_posterior_probability = compute_element_x_dimension_joint_probability(
+    target_mesh_grid_point_x_dimension, target_mesh_grid_point_posterior_probability = compute_element_x_dimension_joint_probability(
         element_x_dimension[:, -1:],
         dimension_fraction_grid_extensions=(fraction_grid_extension,),
         dimension_n_grids=(n_grid,),
@@ -38,15 +38,14 @@ def infer_assuming_independence(
         dimension_names=dimension_names[-1:],
     )
 
-    target__dimensino_grids, target__probability = unmesh(
-        target__mesh_grid_point_x_dimension,
-        target__mesh_grid_point_posterior_probability,
+    target_dimensino_grids, target_probability = unmesh(
+        target_mesh_grid_point_x_dimension, target_mesh_grid_point_posterior_probability
     )
 
-    target__dimension_grid = target__dimensino_grids[0]
+    target_dimension_grid = target_dimensino_grids[0]
 
-    target__value_index = absolute(
-        target__dimension_grid - target_dimension_value
+    target_value_index = absolute(
+        target_dimension_grid - target_dimension_value
     ).argmin()
 
     infer_returns = tuple(
@@ -61,33 +60,33 @@ def infer_assuming_independence(
         for i in range(n_dimension - 1)
     )
 
-    no_target__mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
+    no_target_mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
         tuple(infer_return[0] for infer_return in infer_returns)
     )
 
-    no_target__mesh_grid_point_posterior_probability = apply_along_axis(
+    no_target_mesh_grid_point_posterior_probability = apply_along_axis(
         product,
         1,
         make_mesh_grid_point_x_dimension(
             tuple(infer_return[1] for infer_return in infer_returns)
         ),
-    ) / (target__probability[target__value_index] ** (n_dimension - 2))
+    ) / (target_probability[target_value_index] ** (n_dimension - 2))
 
     if plot:
 
         plot_mesh_grid(
-            no_target__mesh_grid_point_x_dimension,
-            no_target__mesh_grid_point_posterior_probability,
+            no_target_mesh_grid_point_x_dimension,
+            no_target_mesh_grid_point_posterior_probability,
             dimension_names=dimension_names,
             value_name="P({} = {:.2e} (~{}) | {})".format(
                 dimension_names[-1],
-                target__dimension_grid[target__value_index],
+                target_dimension_grid[target_value_index],
                 target_dimension_value,
                 *dimension_names[:-1],
             ),
         )
 
     return (
-        no_target__mesh_grid_point_x_dimension,
-        no_target__mesh_grid_point_posterior_probability,
+        no_target_mesh_grid_point_x_dimension,
+        no_target_mesh_grid_point_posterior_probability,
     )
