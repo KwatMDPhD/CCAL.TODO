@@ -7,7 +7,7 @@ from .RANDOM_SEED import RANDOM_SEED
 def scale_element_x_dimension_dimension(
     n_target_dimension,
     point_x_dimension=None,
-    distance__point_x_point=None,
+    point_x_point_distance=None,
     distance_function="euclidean",
     metric=True,
     n_init=int(1e3),
@@ -29,7 +29,7 @@ def scale_element_x_dimension_dimension(
         "random_state": random_seed,
     }
 
-    if distance__point_x_point is None and not callable(distance_function):
+    if point_x_point_distance is None and not callable(distance_function):
 
         mds = MDS(dissimilarity=distance_function, **mds_keyword_arguments)
 
@@ -39,12 +39,12 @@ def scale_element_x_dimension_dimension(
 
         mds = MDS(dissimilarity="precomputed", **mds_keyword_arguments)
 
-        if distance__point_x_point is None:
+        if point_x_point_distance is None:
 
-            distance__point_x_point = squareform(
+            point_x_point_distance = squareform(
                 pdist(point_x_dimension, distance_function)
             )
 
-        point_x_target_dimension = mds.fit_transform(distance__point_x_point)
+        point_x_target_dimension = mds.fit_transform(point_x_point_distance)
 
     return point_x_target_dimension

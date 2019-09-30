@@ -27,7 +27,7 @@ class GPSMap:
     def __init__(
         self,
         element_x_node,
-        distance__node_x_node=None,
+        node_x_node_distance=None,
         distance_function=compute_information_distance_between_2_vectors,
         mds_random_seed=RANDOM_SEED,
         n_pull=None,
@@ -36,20 +36,20 @@ class GPSMap:
 
         self.element_x_node = element_x_node
 
-        if distance__node_x_node is None:
+        if node_x_node_distance is None:
 
-            distance__node_x_node = squareform(
+            node_x_node_distance = squareform(
                 pdist(self.element_x_node.values.T, metric=distance_function)
             )
 
             plot_heat_map(
                 DataFrame(
-                    distance__node_x_node,
+                    node_x_node_distance,
                     index=self.element_x_node.columns,
                     columns=self.element_x_node.columns,
                 ).iloc[
-                    cluster_matrix(distance__node_x_node, 0),
-                    cluster_matrix(distance__node_x_node, 1),
+                    cluster_matrix(node_x_node_distance, 0),
+                    cluster_matrix(node_x_node_distance, 1),
                 ],
                 layout={
                     "height": 800,
@@ -62,7 +62,7 @@ class GPSMap:
             DataFrame(
                 scale_element_x_dimension_dimension(
                     2,
-                    distance__point_x_point=distance__node_x_node,
+                    point_x_point_distance=node_x_node_distance,
                     random_seed=mds_random_seed,
                 ),
                 index=self.element_x_node.columns,

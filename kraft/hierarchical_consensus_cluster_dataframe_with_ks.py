@@ -20,7 +20,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
     ks,
     axis,
     directory_path,
-    distance__element_x_element=None,
+    element_x_element_distance=None,
     distance_function="correlation",
     n_job=1,
     n_clustering=10,
@@ -35,25 +35,23 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
         establish_path(k_directory_path, "directory")
 
-    if distance__element_x_element is None:
+    if element_x_element_distance is None:
 
         if axis == 1:
 
             dataframe = dataframe.T
 
         print(
-            "Computing distance__element_x_element distance with {}...".format(
-                distance_function
-            )
+            "Computing element_x_element_distance with {}...".format(distance_function)
         )
 
-        distance__element_x_element = DataFrame(
+        element_x_element_distance = DataFrame(
             squareform(pdist(dataframe.values, distance_function)),
             index=dataframe.index,
             columns=dataframe.index,
         )
 
-        distance__element_x_element.to_csv(
+        element_x_element_distance.to_csv(
             join(directory_path, "distance.element_x_element.tsv"), sep="\t"
         )
 
@@ -63,7 +61,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
     k_return = {}
 
-    for k, (element_cluster, element_cluster__ccc) in zip(
+    for k, (element_cluster, element_cluster_ccc) in zip(
         ks,
         call_function_with_multiprocess(
             hierarchical_consensus_cluster_dataframe,
@@ -73,7 +71,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                     ks[i],
                     axis,
                     k_directory_paths[i],
-                    distance__element_x_element,
+                    element_x_element_distance,
                     None,
                     n_clustering,
                     random_seed,
@@ -88,7 +86,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
         k_return["K{}".format(k)] = {
             "element_cluster": element_cluster,
-            "element_cluster.ccc": element_cluster__ccc,
+            "element_cluster.ccc": element_cluster_ccc,
         }
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
