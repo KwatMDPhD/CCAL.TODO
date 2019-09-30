@@ -41,9 +41,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
             dataframe = dataframe.T
 
-        print(
-            "Computing element_x_element_distance with {}...".format(distance_function)
-        )
+        print("Computing element-element distance with {}...".format(distance_function))
 
         element_x_element_distance = DataFrame(
             squareform(pdist(dataframe.values, distance_function)),
@@ -52,7 +50,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
         )
 
         element_x_element_distance.to_csv(
-            join(directory_path, "distance.element_x_element.tsv"), sep="\t"
+            join(directory_path, "element_x_element_distance.tsv"), sep="\t"
         )
 
         if axis == 1:
@@ -86,7 +84,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
         k_return["K{}".format(k)] = {
             "element_cluster": element_cluster,
-            "element_cluster.ccc": element_cluster_ccc,
+            "element_cluster_ccc": element_cluster_ccc,
         }
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
@@ -102,7 +100,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                 {
                     "type": "scatter",
                     "x": ks,
-                    "y": tuple(k_return[key]["element_cluster.ccc"] for key in keys),
+                    "y": tuple(k_return[key]["element_cluster_ccc"] for key in keys),
                 }
             ],
         },
@@ -126,7 +124,7 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
             colorscale=DATA_TYPE_COLORSCALE["categorical"],
             layout={"title": {"text": "HCC"}},
             html_file_path=join(
-                directory_path, "k_x_element.cluster_distribution.html"
+                directory_path, "k_x_element_cluster_distribution.html"
             ),
         )
 

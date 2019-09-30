@@ -22,8 +22,6 @@ def mf_consensus_cluster_dataframe_with_ks(
     n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
     linkage_method="ward",
-    plot_w=True,
-    plot_h=True,
     plot_dataframe=True,
 ):
 
@@ -60,8 +58,6 @@ def mf_consensus_cluster_dataframe_with_ks(
                     n_iteration,
                     random_seed,
                     linkage_method,
-                    plot_w,
-                    plot_h,
                     plot_dataframe,
                 )
                 for i in range(len(ks))
@@ -75,9 +71,9 @@ def mf_consensus_cluster_dataframe_with_ks(
             "h": h_0,
             "e": e_0,
             "w_element_cluster": w_element_cluster,
-            "w_element_cluster.ccc": w_element_cluster_ccc,
+            "w_element_cluster_ccc": w_element_cluster_ccc,
             "h_element_cluster": h_element_cluster,
-            "h_element_cluster.ccc": h_element_cluster_ccc,
+            "h_element_cluster_ccc": h_element_cluster_ccc,
         }
 
     keys = Index(("K{}".format(k) for k in ks), name="K")
@@ -101,11 +97,11 @@ def mf_consensus_cluster_dataframe_with_ks(
     )
 
     w_element_cluster_ccc = tuple(
-        k_return[key]["w_element_cluster.ccc"] for key in keys
+        k_return[key]["w_element_cluster_ccc"] for key in keys
     )
 
     h_element_cluster_ccc = tuple(
-        k_return[key]["h_element_cluster.ccc"] for key in keys
+        k_return[key]["h_element_cluster_ccc"] for key in keys
     )
 
     plot_plotly_figure(
@@ -163,7 +159,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                 layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
                 html_file_path=join(
                     directory_path,
-                    "k_x_{}_element.cluster_distribution.html".format(w_or_h),
+                    "k_x_{}_element_cluster_distribution.html".format(w_or_h),
                 ),
             )
 

@@ -6,11 +6,11 @@ from pandas import DataFrame, Index, Series
 from .cluster_clustering_x_element_and_compute_ccc import (
     cluster_clustering_x_element_and_compute_ccc,
 )
-from .cluster_matrix import cluster_matrix
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .mf_with_multiplicative_update import mf_with_multiplicative_update
 from .nmf_with_sklearn import nmf_with_sklearn
 from .plot_heat_map import plot_heat_map
+from .plot_mf import plot_mf
 from .RANDOM_SEED import RANDOM_SEED
 
 
@@ -23,8 +23,6 @@ def mf_consensus_cluster_dataframe(
     n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
     linkage_method="ward",
-    plot_w=True,
-    plot_h=True,
     plot_dataframe=True,
 ):
 
@@ -70,27 +68,7 @@ def mf_consensus_cluster_dataframe(
 
             h_0.to_csv(join(directory_path, "h.tsv"), sep="\t")
 
-            # TODO: use plot_mf
-
-            if plot_w:
-
-                print("Plotting w...")
-
-                plot_heat_map(
-                    w_0.iloc[cluster_matrix(w_0.values, 0)],
-                    layout={"title": {"text": "MF K={} W".format(k)}},
-                    html_file_path=join(directory_path, "w.html"),
-                )
-
-            if plot_h:
-
-                print("Plotting h...")
-
-                plot_heat_map(
-                    h_0.iloc[:, cluster_matrix(h_0.values, 1)],
-                    layout={"title": {"text": "MF K={} H".format(k)}},
-                    html_file_path=join(directory_path, "h.html"),
-                )
+            plot_mf((w_0,), (h_0,), directory_path)
 
         clustering_x_w_element[clustering, :] = w.argmax(axis=1)
 
@@ -112,26 +90,16 @@ def mf_consensus_cluster_dataframe(
 
     if plot_dataframe:
 
-        print("Plotting dataframe.clustered...")
-
-        w_element_cluster_sorted = w_element_cluster.sort_values()
-
-        h_element_cluster_sorted = h_element_cluster.sort_values()
-
-        dataframe = dataframe.loc[
-            w_element_cluster_sorted.index, h_element_cluster_sorted.index
-        ]
-
         annotation_colorscale = DATA_TYPE_COLORSCALE["categorical"]
 
         plot_heat_map(
             dataframe,
-            row_annotations=w_element_cluster_sorted,
+            row_annotations=w_element_cluster,
             row_annotation_colorscale=annotation_colorscale,
-            column_annotations=h_element_cluster_sorted,
+            column_annotations=h_element_cluster,
             column_annotation_colorscale=annotation_colorscale,
             layout={"title": {"text": "MFCC K={}".format(k)}},
-            html_file_path=join(directory_path, "dataframe.cluster.html"),
+            html_file_path=join(directory_path, "dataframe_cluster.html"),
         )
 
     return (

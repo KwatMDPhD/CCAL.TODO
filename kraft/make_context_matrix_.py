@@ -5,7 +5,7 @@ from .compute_vector_context import compute_vector_context
 
 
 def make_context_matrix_(
-    dataframe_,
+    dataframe,
     skew_t_pdf_fit_parameter,
     n_grid,
     degree_of_freedom_for_tail_reduction,
@@ -16,13 +16,13 @@ def make_context_matrix_(
     global_shape,
 ):
 
-    context_matrix = full(dataframe_.shape, nan)
+    context_matrix = full(dataframe.shape, nan)
 
-    n = dataframe_.shape[0]
+    n = dataframe.shape[0]
 
     n_per_print = max(1, n // 10)
 
-    for i, (index, series) in enumerate(dataframe_.iterrows()):
+    for i, (index, series) in enumerate(dataframe.iterrows()):
 
         if i % n_per_print == 0:
 
@@ -54,4 +54,4 @@ def make_context_matrix_(
             global_shape=global_shape,
         )["context_like_array"]
 
-    return DataFrame(context_matrix, index=dataframe_.index, columns=dataframe_.columns)
+    return DataFrame(context_matrix, index=dataframe.index, columns=dataframe.columns)

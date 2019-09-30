@@ -36,9 +36,7 @@ def hierarchical_consensus_cluster_dataframe(
 
     if element_x_element_distance is None:
 
-        print(
-            "Computing element_x_element_distance with {}...".format(distance_function)
-        )
+        print("Computing element-element distance with {}...".format(distance_function))
 
         element_x_element_distance = DataFrame(
             squareform(pdist(dataframe.values, distance_function)),
@@ -47,7 +45,7 @@ def hierarchical_consensus_cluster_dataframe(
         )
 
         element_x_element_distance.to_csv(
-            join(directory_path, "distance.element_x_element.tsv"), sep="\t"
+            join(directory_path, "element_x_element_distance.tsv"), sep="\t"
         )
 
     clustering_x_element = full((n_clustering, dataframe.shape[0]), nan)
@@ -95,8 +93,6 @@ def hierarchical_consensus_cluster_dataframe(
 
     if plot_dataframe:
 
-        print("Plotting dataframe.clustered...")
-
         if axis == 0:
 
             row_or_column = "row"
@@ -115,7 +111,7 @@ def hierarchical_consensus_cluster_dataframe(
         plot_heat_map(
             dataframe,
             layout={"title": {"text": "HCC K={}".format(k)}},
-            html_file_path=join(directory_path, "dataframe.cluster.html"),
+            html_file_path=join(directory_path, "dataframe_cluster.html"),
             **plot_heat_map_keyword_arguments,
         )
 

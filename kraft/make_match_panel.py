@@ -82,13 +82,13 @@ def make_match_panel(
 
     else:
 
-        html_file_path = "{}.statistics.html".format(file_path_prefix)
+        html_file_path = "{}_statistics.html".format(file_path_prefix)
 
     plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "Statistics"},
-                "xaxis": {"title": {"text": "Rank"}, "automargin": True},
+                "xaxis": {"title": {"text": "Rank"}},
                 "yaxis": {"title": {"text": "Score"}},
             },
             "data": [

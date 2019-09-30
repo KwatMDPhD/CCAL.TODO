@@ -9,7 +9,7 @@ from .plot_heat_map import plot_heat_map
 
 def plot_mf(ws, hs, directory_path):
 
-    axis_size_0 = 640
+    axis_size_0 = 400
 
     axis_size_1 = axis_size_0 * 1.618
 
