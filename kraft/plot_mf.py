@@ -19,24 +19,14 @@ def plot_mf(ws, hs, directory_path):
 
             w = DataFrame(w)
 
-        title_text = "W"
-
-        html_file_path = join(directory_path, "w.html")
-
-        if 1 < len(ws):
-
-            title_text = "{}{}".format(title_text, i)
-
-            html_file_path = html_file_path.replace(".html", "{}.html".format(i))
-
         plot_heat_map(
             normalize_dataframe(w.iloc[cluster_matrix(w.values, 0), :], 1, "-0-"),
             layout={
                 "height": axis_size_1,
                 "width": axis_size_0,
-                "title": {"text": title_text},
+                "title": {"text": "W{}".format(i)},
             },
-            html_file_path=html_file_path,
+            html_file_path=join(directory_path, "w{}.html".format(i)),
         )
 
     for i, h in enumerate(hs):
@@ -45,22 +35,12 @@ def plot_mf(ws, hs, directory_path):
 
             h = DataFrame(h)
 
-        title_text = "H"
-
-        html_file_path = join(directory_path, "h.html")
-
-        if 1 < len(hs):
-
-            title_text = "{}{}".format(title_text, i)
-
-            html_file_path = html_file_path.replace(".html", "{}.html".format(i))
-
         plot_heat_map(
             normalize_dataframe(h.iloc[:, cluster_matrix(h.values, 1)], 0, "-0-"),
             layout={
                 "height": axis_size_0,
                 "width": axis_size_1,
-                "title": {"text": title_text},
+                "title": {"text": "H{}".format(i)},
             },
-            html_file_path=html_file_path,
+            html_file_path=join(directory_path, "h{}.html".format(i)),
         )
