@@ -41,7 +41,7 @@ def read_process_write_gene_x_cell(
 
     gene_x_cell.to_csv(tsv_file_path, sep="\t")
 
-    gene_x_cell_clean_log = process_feature_x_sample(
+    gene_x_cell_prepare = process_feature_x_sample(
         gene_x_cell,
         nanize=0,
         min_n_not_na_value=3,
@@ -50,22 +50,20 @@ def read_process_write_gene_x_cell(
         plot=False,
     )
 
-    gene_x_cell_clean_log.to_csv(
-        tsv_file_path.replace(".tsv", "_clean_log.tsv"), sep="\t"
-    )
+    gene_x_cell_prepare.to_csv(tsv_file_path.replace(".tsv", "_prepare.tsv"), sep="\t")
 
-    gene_x_cell_clean_log.fillna(0).to_csv(
-        tsv_file_path.replace(".tsv", "_clean_log_na0.tsv"), sep="\t"
+    gene_x_cell_prepare.fillna(0).to_csv(
+        tsv_file_path.replace(".tsv", "_prepare_na0.tsv"), sep="\t"
     )
 
     if minimum_fraction_cell_with_gene_signal is None:
 
-        genes = gene_x_cell_clean_log.index
+        genes = gene_x_cell_prepare.index
 
     else:
 
         genes = select_series_indices(
-            get_dataframe_fraction_good_on_axis(gene_x_cell_clean_log, 1),
+            get_dataframe_fraction_good_on_axis(gene_x_cell_prepare, 1),
             ">",
             thresholds=(minimum_fraction_cell_with_gene_signal,),
             layout={
@@ -74,16 +72,16 @@ def read_process_write_gene_x_cell(
             },
         )
 
-    gene_x_cell_clean_log_selected_gene = gene_x_cell_clean_log.loc[genes]
+    gene_x_cell_prepare_select_gene = gene_x_cell_prepare.loc[genes]
 
     if minimum_fraction_gene_z_score is None:
 
-        cells = gene_x_cell_clean_log_selected_gene.columns
+        cells = gene_x_cell_prepare_select_gene.columns
 
     else:
 
         cells = select_series_indices(
-            get_dataframe_fraction_good_on_axis(gene_x_cell_clean_log_selected_gene, 0),
+            get_dataframe_fraction_good_on_axis(gene_x_cell_prepare_select_gene, 0),
             ">",
             standard_deviation=minimum_fraction_gene_z_score,
             layout={
@@ -92,6 +90,6 @@ def read_process_write_gene_x_cell(
             },
         )
 
-    gene_x_cell_clean_log_selected_gene[cells].to_csv(
-        tsv_file_path.replace(".tsv", "_clean_log_selected.tsv"), sep="\t"
+    gene_x_cell_prepare_select_gene[cells].to_csv(
+        tsv_file_path.replace(".tsv", "_prepare_select_gene_cell.tsv"), sep="\t"
     )
