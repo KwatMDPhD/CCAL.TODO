@@ -8,7 +8,7 @@ from .plot_errors import plot_errors
 from .plot_mf import plot_mf
 
 
-def mf_dataframes(dataframes, k, directory_path):
+def mf_dataframes(dataframes, k, directory_path, plot_heat_map=True):
 
     establish_path(directory_path, "directory")
 
@@ -36,7 +36,9 @@ def mf_dataframes(dataframes, k, directory_path):
 
         h.to_csv(join(directory_path, "h{}.tsv".format(i)), sep="\t")
 
-    plot_mf(ws, hs, directory_path)
+    if plot_heat_map:
+
+        plot_mf(ws, hs, directory_path)
 
     plot_errors(errors)
 

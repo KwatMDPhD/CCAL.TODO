@@ -23,7 +23,7 @@ def mf_consensus_cluster_dataframe(
     n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
     linkage_method="ward",
-    plot_dataframe=True,
+    plot_heat_map_=True,
 ):
 
     clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
@@ -68,7 +68,9 @@ def mf_consensus_cluster_dataframe(
 
             h_0.to_csv(join(directory_path, "h.tsv"), sep="\t")
 
-            plot_mf((w_0,), (h_0,), directory_path)
+            if plot_heat_map_:
+
+                plot_mf((w_0,), (h_0,), directory_path)
 
         clustering_x_w_element[clustering, :] = w.argmax(axis=1)
 
@@ -88,7 +90,7 @@ def mf_consensus_cluster_dataframe(
         h_element_cluster, name="Cluster", index=dataframe.columns
     )
 
-    if plot_dataframe:
+    if plot_heat_map_:
 
         annotation_colorscale = DATA_TYPE_COLORSCALE["categorical"]
 

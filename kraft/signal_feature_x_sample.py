@@ -77,7 +77,7 @@ def signal_feature_x_sample(
 
     feature_x_sample_prepare_select_feature_signal = normalize_dataframe(
         feature_x_sample_prepare_select_feature_signal, 1, "0-1"
-    )
+    ).dropna()
 
     feature_x_sample_prepare_select_feature_signal.to_csv(
         tsv_file_path.replace(".tsv", "_prepare_select_feature_signal.tsv"), sep="\t"

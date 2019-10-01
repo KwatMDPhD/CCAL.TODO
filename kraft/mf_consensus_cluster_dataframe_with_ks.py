@@ -22,7 +22,8 @@ def mf_consensus_cluster_dataframe_with_ks(
     n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
     linkage_method="ward",
-    plot_dataframe=True,
+    plot_heat_map_=True,
+    **plot_mf_keyword_arguments,
 ):
 
     k_directory_paths = tuple(join(directory_path, str(k)) for k in ks)
@@ -58,7 +59,7 @@ def mf_consensus_cluster_dataframe_with_ks(
                     n_iteration,
                     random_seed,
                     linkage_method,
-                    plot_dataframe,
+                    plot_heat_map_,
                 )
                 for i in range(len(ks))
             ),
@@ -151,7 +152,7 @@ def mf_consensus_cluster_dataframe_with_ks(
             join(directory_path, "k_x_{}_element.tsv".format(w_or_h)), sep="\t"
         )
 
-        if plot_dataframe:
+        if plot_heat_map_:
 
             plot_heat_map(
                 DataFrame(sort(k_x_element.values, axis=1), index=keys),

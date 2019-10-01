@@ -18,37 +18,19 @@ def normalize_array(array, method, rank_method="average", raise_for_bad=True):
 
     if method == "-0-":
 
-        array_good_std = array_good.std()
-
-        if array_good_std == 0:
-
-            array_[is_good] = 0
-
-        else:
-
-            array_[is_good] = (array_good - array_good.mean()) / array_good_std
+        array_[is_good] = (array_good - array_good.mean()) / array_good.std()
 
     elif method == "0-1":
 
         array_good_min = array_good.min()
 
-        array_good_range = array_good.max() - array_good_min
-
-        if array_good_range == 0:
-
-            array_[is_good] = nan
-
-        else:
-
-            array_[is_good] = (array_good - array_good_min) / array_good_range
+        array_[is_good] = (array_good - array_good_min) / (
+            array_good.max() - array_good_min
+        )
 
     elif method == "sum":
 
         assert 0 <= array_good.min()
-
-        if (array_good == 0).all():
-
-            array_[is_good] = 0
 
         array_[is_good] = array_good / array_good.sum()
 
