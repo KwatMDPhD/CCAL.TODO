@@ -7,7 +7,7 @@ from .plot_histogram import plot_histogram
 
 def summarize_feature_x_sample(
     feature_x_sample,
-    feature_x_sample_alias="Feature-x-Sample",
+    feature_x_sample_name="Feature-x-Sample",
     feature_x_sample_value_name="Feature-x-Sample Value",
     plot_heat_map_max_size=1e6,
     plot_histogram_max_size=1e3,
@@ -26,7 +26,7 @@ def summarize_feature_x_sample(
     if feature_x_sample.size <= plot_heat_map_max_size:
 
         plot_heat_map(
-            feature_x_sample, layout={"title": {"text": feature_x_sample_alias}}
+            feature_x_sample, layout={"title": {"text": feature_x_sample_name}}
         )
 
     feature_x_sample_not_na_values = feature_x_sample.unstack().dropna()
@@ -53,7 +53,7 @@ def summarize_feature_x_sample(
         (feature_x_sample_not_na_values,),
         plot_rug=False,
         layout={
-            "title": {"text": feature_x_sample_alias},
+            "title": {"text": feature_x_sample_name},
             "xaxis": {"title": {"text": "Not-NA Value"}},
         },
     )
@@ -77,7 +77,7 @@ def summarize_feature_x_sample(
         plot_histogram(
             (feature_n_na, sample_n_na),
             layout={
-                "title": {"text": feature_x_sample_alias},
+                "title": {"text": feature_x_sample_name},
                 "xaxis": {"title": {"text": "N NA"}},
             },
         )

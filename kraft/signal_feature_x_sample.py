@@ -28,22 +28,28 @@ def signal_feature_x_sample(
         tsv_file_path.replace(".tsv", "_prepare.tsv"), sep="\t"
     )
 
-    feature_x_sample_prepare_select_feature = feature_x_sample_prepare.loc[
-        select_series_indices(
-            feature_x_sample_prepare.std(axis=1),
-            ">",
-            layout={"yaxis": {"title": {"text": "Standard Deviation"}}},
-            html_file_path=tsv_file_path.replace(
-                ".tsv", "_prepare_select_feature.html"
-            ),
-            **select_series_index_keyword_arguments,
-        )
-    ]
+    if select_series_index_keyword_arguments is None:
 
-    summarize_feature_x_sample(
-        feature_x_sample_prepare_select_feature,
-        **summarize_feature_x_sample_keyword_arguments,
-    )
+        feature_x_sample_prepare_select_feature = feature_x_sample_prepare
+
+    else:
+
+        feature_x_sample_prepare_select_feature = feature_x_sample_prepare.loc[
+            select_series_indices(
+                feature_x_sample_prepare.std(axis=1),
+                ">",
+                layout={"yaxis": {"title": {"text": "Standard Deviation"}}},
+                html_file_path=tsv_file_path.replace(
+                    ".tsv", "_prepare_select_feature.html"
+                ),
+                **select_series_index_keyword_arguments,
+            )
+        ]
+
+        summarize_feature_x_sample(
+            feature_x_sample_prepare_select_feature,
+            **summarize_feature_x_sample_keyword_arguments,
+        )
 
     if signal_type == "raw":
 

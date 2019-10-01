@@ -198,9 +198,9 @@ class GPSMap:
         self.label_colorscale = label_colorscale
 
         plot_heat_map(
-            normalize_dataframe(self.element_x_node, 1, "-0-"),
-            row_annotations=self.element_label,
-            row_annotation_colorscale=self.label_colorscale,
+            normalize_dataframe(self.element_x_node, 1, "-0-").T,
+            column_annotations=self.element_label,
+            column_annotation_colorscale=self.label_colorscale,
         )
 
     def predict(
