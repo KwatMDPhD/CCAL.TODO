@@ -47,7 +47,6 @@ def read_process_write_gene_x_cell(
         min_n_not_na_value=3,
         shift_as_necessary_to_achieve_min_before_logging=1,
         log_base=2,
-        plot=False,
     )
 
     gene_x_cell_prepare.to_csv(tsv_file_path.replace(".tsv", "_prepare.tsv"), sep="\t")
@@ -91,5 +90,5 @@ def read_process_write_gene_x_cell(
         )
 
     gene_x_cell_prepare_select_gene[cells].to_csv(
-        tsv_file_path.replace(".tsv", "_prepare_select_gene_cell.tsv"), sep="\t"
+        tsv_file_path.replace(".tsv", "_prepare_select.tsv"), sep="\t"
     )
