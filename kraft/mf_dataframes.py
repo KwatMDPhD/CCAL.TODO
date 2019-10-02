@@ -13,9 +13,9 @@ def mf_dataframes(dataframes, k, method, directory_path, plot_heat_map=True):
 
     establish_path(directory_path, "directory")
 
-    if method == "vs_ws_h":
+    vs = tuple(dataframe.values for dataframe in dataframes)
 
-        vs = tuple(dataframe.values for dataframe in dataframes)
+    if method == "vs_ws_h":
 
         ws, h, errors = mf_vs_ws_h(vs, k)
 
