@@ -61,8 +61,6 @@ def summarize_feature_x_sample(
 
     n_na = feature_x_sample_isna.values.sum()
 
-    print("Fraction NA: {:.2e}".format(n_na / feature_x_sample.size))
-
     if 0 < n_na:
 
         feature_n_na = feature_x_sample_isna.sum(axis=1)
@@ -77,7 +75,11 @@ def summarize_feature_x_sample(
             (feature_n_na, sample_n_na),
             plot_rug=False,
             layout={
-                "title": {"text": feature_x_sample_name},
+                "title": {
+                    "text": "{}<br>Fraction NA: {:.2e}".format(
+                        feature_x_sample_name, n_na / feature_x_sample.size
+                    )
+                },
                 "xaxis": {"title": {"text": "N NA"}},
             },
         )
