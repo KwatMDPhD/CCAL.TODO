@@ -1,4 +1,3 @@
-from numpy import median, nanmax, nanmin
 from numpy.random import choice
 
 from .plot_heat_map import plot_heat_map
@@ -15,14 +14,6 @@ def summarize_feature_x_sample(
 
     print("Shape: {}".format(feature_x_sample.shape))
 
-    print("Not-NaN min: {:.2e}".format(nanmin(feature_x_sample.values)))
-
-    print("Not-NaN median: {:.2e}".format(median(feature_x_sample.values)))
-
-    print("Not-NaN mean: {:.2e}".format(feature_x_sample.values.mean()))
-
-    print("Not-NaN max: {:.2e}".format(nanmax(feature_x_sample.values)))
-
     if feature_x_sample.size <= plot_heat_map_max_size:
 
         plot_heat_map(
@@ -32,6 +23,14 @@ def summarize_feature_x_sample(
     feature_x_sample_not_na_values = feature_x_sample.unstack().dropna()
 
     feature_x_sample_not_na_values.name = feature_x_sample_value_name
+
+    print("Not-NA min: {:.2e}".format(feature_x_sample_not_na_values.min()))
+
+    print("Not-NA median: {:.2e}".format(feature_x_sample_not_na_values.median()))
+
+    print("Not-NA mean: {:.2e}".format(feature_x_sample_not_na_values.mean()))
+
+    print("Not-NA max: {:.2e}".format(feature_x_sample_not_na_values.max()))
 
     if plot_histogram_max_size < feature_x_sample_not_na_values.size:
 
