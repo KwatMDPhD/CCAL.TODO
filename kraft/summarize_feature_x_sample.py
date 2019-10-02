@@ -75,6 +75,7 @@ def summarize_feature_x_sample(
 
         plot_histogram(
             (feature_n_na, sample_n_na),
+            plot_rug=False,
             layout={
                 "title": {"text": feature_x_sample_name},
                 "xaxis": {"title": {"text": "N NA"}},
