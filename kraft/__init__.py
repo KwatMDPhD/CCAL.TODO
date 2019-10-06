@@ -203,8 +203,8 @@ from .summarize_feature_x_sample import summarize_feature_x_sample
 from .title_str import title_str
 from .train_and_classify import train_and_classify
 from .train_and_regress import train_and_regress
-from .unmesh import unmesh
 from .unify_dataframes_axis import unify_dataframes_axis
+from .unmesh import unmesh
 from .untitle_str import untitle_str
 from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
 from .update_variant_dict import update_variant_dict

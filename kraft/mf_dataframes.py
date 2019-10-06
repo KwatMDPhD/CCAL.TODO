@@ -3,8 +3,8 @@ from os.path import join
 from pandas import DataFrame, Index
 
 from .establish_path import establish_path
-from .mf_vs_ws_h import mf_vs_ws_h
 from .mf_vs_w_hs import mf_vs_w_hs
+from .mf_vs_ws_h import mf_vs_ws_h
 from .plot_errors import plot_errors
 from .plot_mf import plot_mf
 
