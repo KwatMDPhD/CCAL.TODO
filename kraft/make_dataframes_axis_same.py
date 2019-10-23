@@ -1,4 +1,4 @@
-def unify_dataframes_axis(dataframes, axis):
+def make_dataframes_axis_same(dataframes, axis):
 
     if axis == 0:
 
@@ -20,7 +20,7 @@ def unify_dataframes_axis(dataframes, axis):
 
     elements = elements.sort_values()
 
-    assert 0 < elements.size
+    print("Keeping {} axis-{} elements...".format(elements.size, axis))
 
     if axis == 0:
 

@@ -84,6 +84,8 @@ def process_feature_x_sample(
 
             drop_function = drop_dataframe_slice
 
+        feature_x_sample_shape = feature_x_sample.shape
+
         feature_x_sample = drop_function(
             feature_x_sample,
             drop_axis,
@@ -92,9 +94,11 @@ def process_feature_x_sample(
             min_n_not_na_unique_value=min_n_not_na_unique_value,
         )
 
-        summarize_feature_x_sample(
-            feature_x_sample, **summarize_feature_x_sample_keyword_arguments
-        )
+        if feature_x_sample_shape != feature_x_sample.shape:
+
+            summarize_feature_x_sample(
+                feature_x_sample, **summarize_feature_x_sample_keyword_arguments
+            )
 
     if log_base is not None:
 

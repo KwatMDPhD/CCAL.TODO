@@ -123,6 +123,8 @@ from .make_binary_dataframe_from_categorical_series import (
 from .make_consecutive_group_labels import make_consecutive_group_labels
 from .make_context_matrix import make_context_matrix
 from .make_context_matrix_ import make_context_matrix_
+from .make_dataframes_axis_different import make_dataframes_axis_different
+from .make_dataframes_axis_same import make_dataframes_axis_same
 from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
     make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )
@@ -192,7 +194,6 @@ from .select_gene_symbol import select_gene_symbol
 from .select_series_indices import select_series_indices
 from .separate_information_x_sample import separate_information_x_sample
 from .shuffle_each_matrix_slice import shuffle_each_matrix_slice
-from .signal_feature_x_sample import signal_feature_x_sample
 from .simulate_array import simulate_array
 from .simulate_series_or_dataframe import simulate_series_or_dataframe
 from .skip_quote_and_split_str import skip_quote_and_split_str
@@ -203,7 +204,6 @@ from .summarize_feature_x_sample import summarize_feature_x_sample
 from .title_str import title_str
 from .train_and_classify import train_and_classify
 from .train_and_regress import train_and_regress
-from .unify_dataframes_axis import unify_dataframes_axis
 from .unmesh import unmesh
 from .untitle_str import untitle_str
 from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
