@@ -1,7 +1,7 @@
 from json import dump
 
 
-def write_json(dict_, json_file_path, indent=2):
+def write_json(json_file_path, dict_, indent=2):
 
     with open(json_file_path, mode="w") as io:
 
