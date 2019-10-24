@@ -4,7 +4,7 @@ from scipy.spatial.distance import squareform
 
 
 def cluster_clustering_x_element_and_compute_ccc(
-    clustering_x_element, k, linkage_method
+    clustering_x_element, r, linkage_method
 ):
 
     element_x_element_n_coclustering = zeros((clustering_x_element.shape[1],) * 2)
@@ -35,6 +35,6 @@ def cluster_clustering_x_element_and_compute_ccc(
     clustering_distance_linkage = linkage(clustering_distance, method=linkage_method)
 
     return (
-        fcluster(clustering_distance_linkage, k, criterion="maxclust") - 1,
+        fcluster(clustering_distance_linkage, r, criterion="maxclust") - 1,
         cophenet(clustering_distance_linkage, clustering_distance)[0],
     )

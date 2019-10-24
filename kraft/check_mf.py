@@ -1,6 +1,6 @@
-from .sample_dataframe import sample_dataframe
-from .plot_heat_map import plot_heat_map
 from .compute_matrix_norm import compute_matrix_norm
+from .plot_heat_map import plot_heat_map
+from .sample_dataframe import sample_dataframe
 
 
 def check_mf(v, w, h, *sample_dataframe_arguments):

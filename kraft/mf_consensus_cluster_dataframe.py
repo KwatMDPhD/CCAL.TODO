@@ -16,7 +16,7 @@ from .RANDOM_SEED import RANDOM_SEED
 
 def mf_consensus_cluster_dataframe(
     dataframe,
-    k,
+    r,
     directory_path,
     mf_function="nmf_with_sklearn",
     n_clustering=10,
@@ -41,11 +41,11 @@ def mf_consensus_cluster_dataframe(
 
         if clustering % n_per_print == 0:
 
-            print("\t(K={}) {}/{}...".format(k, clustering + 1, n_clustering))
+            print("\t(r={}) {}/{}...".format(r, clustering + 1, n_clustering))
 
         w, h, e = mf_function(
             dataframe.values,
-            k,
+            r,
             n_iteration=n_iteration,
             random_seed=random_seed + clustering,
         )
@@ -58,7 +58,7 @@ def mf_consensus_cluster_dataframe(
 
             e_0 = e
 
-            factors = Index(("Factor{}".format(i) for i in range(k)), name="Factor")
+            factors = Index(("f{}".format(i) for i in range(r)), name="Factor")
 
             w_0 = DataFrame(w_0, index=dataframe.index, columns=factors)
 
@@ -77,13 +77,13 @@ def mf_consensus_cluster_dataframe(
         clustering_x_h_element[clustering, :] = h.argmax(axis=0)
 
     w_element_cluster, w_element_cluster_ccc = cluster_clustering_x_element_and_compute_ccc(
-        clustering_x_w_element, k, linkage_method
+        clustering_x_w_element, r, linkage_method
     )
 
     w_element_cluster = Series(w_element_cluster, name="Cluster", index=dataframe.index)
 
     h_element_cluster, h_element_cluster_ccc = cluster_clustering_x_element_and_compute_ccc(
-        clustering_x_h_element, k, linkage_method
+        clustering_x_h_element, r, linkage_method
     )
 
     h_element_cluster = Series(
@@ -100,7 +100,7 @@ def mf_consensus_cluster_dataframe(
             row_annotation_colorscale=annotation_colorscale,
             column_annotations=h_element_cluster,
             column_annotation_colorscale=annotation_colorscale,
-            layout={"title": {"text": "MFCC K={}".format(k)}},
+            layout={"title": {"text": "MFCC r={}".format(r)}},
             html_file_path=join(directory_path, "dataframe_cluster.html"),
         )
 

@@ -19,7 +19,7 @@ from .RANDOM_SEED import RANDOM_SEED
 
 def hierarchical_consensus_cluster_dataframe(
     dataframe,
-    k,
+    r,
     axis,
     directory_path,
     element_x_element_distance=None,
@@ -58,7 +58,7 @@ def hierarchical_consensus_cluster_dataframe(
 
         if clustering % n_per_print == 0:
 
-            print("\t(K={}) {}/{}...".format(k, clustering + 1, n_clustering))
+            print("\t(r={}) {}/{}...".format(r, clustering + 1, n_clustering))
 
         random_elements_with_repeat = randint(
             0, high=dataframe.index.size, size=dataframe.index.size
@@ -73,12 +73,12 @@ def hierarchical_consensus_cluster_dataframe(
                 ),
                 method=linkage_method,
             ),
-            k,
+            r,
             criterion="maxclust",
         )
 
     element_cluster, element_cluster_ccc = cluster_clustering_x_element_and_compute_ccc(
-        clustering_x_element, k, linkage_method
+        clustering_x_element, r, linkage_method
     )
 
     element_cluster = Series(element_cluster, name="Cluster", index=dataframe.index)
@@ -110,7 +110,7 @@ def hierarchical_consensus_cluster_dataframe(
 
         plot_heat_map(
             dataframe,
-            layout={"title": {"text": "HCC K={}".format(k)}},
+            layout={"title": {"text": "HCC r={}".format(r)}},
             html_file_path=join(directory_path, "dataframe_cluster.html"),
             **plot_heat_map_keyword_arguments,
         )

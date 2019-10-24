@@ -125,7 +125,7 @@ def plot_gps_map(
         "marker": {
             "size": 16,
             "color": "#20d9ba",
-            "line": {"width": 0.08, "color": "#ebf6f7"},
+            "line": {"width": 0.16, "color": "#ebf6f7"},
             "opacity": 0.8,
         },
         "hoverinfo": "text",

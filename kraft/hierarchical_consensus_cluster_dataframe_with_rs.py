@@ -15,9 +15,9 @@ from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def hierarchical_consensus_cluster_dataframe_with_ks(
+def hierarchical_consensus_cluster_dataframe_with_rs(
     dataframe,
-    ks,
+    rs,
     axis,
     directory_path,
     element_x_element_distance=None,
@@ -29,11 +29,11 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
     plot_dataframe=True,
 ):
 
-    k_directory_paths = tuple(join(directory_path, str(k)) for k in ks)
+    r_directory_paths = tuple(join(directory_path, str(r)) for r in rs)
 
-    for k_directory_path in k_directory_paths:
+    for r_directory_path in r_directory_paths:
 
-        establish_path(k_directory_path, "directory")
+        establish_path(r_directory_path, "directory")
 
     if element_x_element_distance is None:
 
@@ -57,18 +57,18 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
 
             dataframe = dataframe.T
 
-    k_return = {}
+    r_return = {}
 
-    for k, (element_cluster, element_cluster_ccc) in zip(
-        ks,
+    for r, (element_cluster, element_cluster_ccc) in zip(
+        rs,
         call_function_with_multiprocess(
             hierarchical_consensus_cluster_dataframe,
             (
                 (
                     dataframe,
-                    ks[i],
+                    rs[i],
                     axis,
-                    k_directory_paths[i],
+                    r_directory_paths[i],
                     element_x_element_distance,
                     None,
                     n_clustering,
@@ -76,56 +76,56 @@ def hierarchical_consensus_cluster_dataframe_with_ks(
                     linkage_method,
                     plot_dataframe,
                 )
-                for i in range(len(ks))
+                for i in range(len(rs))
             ),
             n_job=n_job,
         ),
     ):
 
-        k_return["K{}".format(k)] = {
+        r_return["r{}".format(r)] = {
             "element_cluster": element_cluster,
             "element_cluster_ccc": element_cluster_ccc,
         }
 
-    keys = Index(("K{}".format(k) for k in ks), name="K")
+    keys = Index(("r{}".format(r) for r in rs), name="r")
 
     plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "HCC"},
-                "xaxis": {"title": {"text": "K"}},
+                "xaxis": {"title": {"text": "r"}},
                 "yaxis": {"title": {"text": "Cophenetic Correlation Coefficient"}},
             },
             "data": [
                 {
                     "type": "scatter",
-                    "x": ks,
-                    "y": tuple(k_return[key]["element_cluster_ccc"] for key in keys),
+                    "x": rs,
+                    "y": tuple(r_return[key]["element_cluster_ccc"] for key in keys),
                 }
             ],
         },
         join(directory_path, "ccc.html"),
     )
 
-    k_x_element = concat([k_return[key]["element_cluster"] for key in keys], axis=1).T
+    r_x_element = concat([r_return[key]["element_cluster"] for key in keys], axis=1).T
 
-    k_x_element.index = keys
+    r_x_element.index = keys
 
-    k_x_element.to_csv(join(directory_path, "k_x_element.tsv"), sep="\t")
+    r_x_element.to_csv(join(directory_path, "r_x_element.tsv"), sep="\t")
 
     if plot_dataframe:
 
         plot_heat_map(
             DataFrame(
-                sort(k_x_element.values, axis=1),
-                index=k_x_element.index,
-                columns=k_x_element.columns,
+                sort(r_x_element.values, axis=1),
+                index=r_x_element.index,
+                columns=r_x_element.columns,
             ),
             colorscale=DATA_TYPE_COLORSCALE["categorical"],
             layout={"title": {"text": "HCC"}},
             html_file_path=join(
-                directory_path, "k_x_element_cluster_distribution.html"
+                directory_path, "r_x_element_cluster_distribution.html"
             ),
         )
 
-    return k_return
+    return r_return

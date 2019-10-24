@@ -12,9 +12,9 @@ from .plot_plotly_figure import plot_plotly_figure
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def mf_consensus_cluster_dataframe_with_ks(
+def mf_consensus_cluster_dataframe_with_rs(
     dataframe,
-    ks,
+    rs,
     directory_path,
     mf_function="nmf_with_sklearn",
     n_job=1,
@@ -26,16 +26,16 @@ def mf_consensus_cluster_dataframe_with_ks(
     **plot_mf_keyword_arguments,
 ):
 
-    k_directory_paths = tuple(join(directory_path, str(k)) for k in ks)
+    r_directory_paths = tuple(join(directory_path, str(r)) for r in rs)
 
-    for k_directory_path in k_directory_paths:
+    for r_directory_path in r_directory_paths:
 
-        establish_path(k_directory_path, "directory")
+        establish_path(r_directory_path, "directory")
 
-    k_return = {}
+    r_return = {}
 
     for (
-        k,
+        r,
         (
             w_0,
             h_0,
@@ -46,14 +46,14 @@ def mf_consensus_cluster_dataframe_with_ks(
             h_element_cluster_ccc,
         ),
     ) in zip(
-        ks,
+        rs,
         call_function_with_multiprocess(
             mf_consensus_cluster_dataframe,
             (
                 (
                     dataframe,
-                    ks[i],
-                    k_directory_paths[i],
+                    rs[i],
+                    r_directory_paths[i],
                     mf_function,
                     n_clustering,
                     n_iteration,
@@ -61,13 +61,13 @@ def mf_consensus_cluster_dataframe_with_ks(
                     linkage_method,
                     plot_heat_map_,
                 )
-                for i in range(len(ks))
+                for i in range(len(rs))
             ),
             n_job=n_job,
         ),
     ):
 
-        k_return["K{}".format(k)] = {
+        r_return["r{}".format(r)] = {
             "w": w_0,
             "h": h_0,
             "e": e_0,
@@ -77,20 +77,20 @@ def mf_consensus_cluster_dataframe_with_ks(
             "h_element_cluster_ccc": h_element_cluster_ccc,
         }
 
-    keys = Index(("K{}".format(k) for k in ks), name="K")
+    keys = Index(("r{}".format(r) for r in rs), name="r")
 
     plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "MF"},
-                "xaxis": {"title": {"text": "K"}},
+                "xaxis": {"title": {"text": "r"}},
                 "yaxis": {"title": {"text": "Error"}},
             },
             "data": [
                 {
                     "type": "scatter",
-                    "x": ks,
-                    "y": tuple(k_return[key]["e"] for key in keys),
+                    "x": rs,
+                    "y": tuple(r_return[key]["e"] for key in keys),
                 }
             ],
         },
@@ -98,42 +98,42 @@ def mf_consensus_cluster_dataframe_with_ks(
     )
 
     w_element_cluster_ccc = tuple(
-        k_return[key]["w_element_cluster_ccc"] for key in keys
+        r_return[key]["w_element_cluster_ccc"] for key in keys
     )
 
     h_element_cluster_ccc = tuple(
-        k_return[key]["h_element_cluster_ccc"] for key in keys
+        r_return[key]["h_element_cluster_ccc"] for key in keys
     )
 
     plot_plotly_figure(
         {
             "layout": {
                 "title": {"text": "MFCC"},
-                "xaxis": {"title": "K"},
+                "xaxis": {"title": "r"},
                 "yaxis": {"title": {"text": "Cophenetic Correlation Coefficient"}},
             },
             "data": [
                 {
                     "type": "scatter",
                     "name": "Mean",
-                    "x": ks,
+                    "x": rs,
                     "y": (
                         asarray(w_element_cluster_ccc) + asarray(h_element_cluster_ccc)
                     )
                     / 2,
                 },
-                {"type": "scatter", "name": "W", "x": ks, "y": w_element_cluster_ccc},
-                {"type": "scatter", "name": "H", "x": ks, "y": h_element_cluster_ccc},
+                {"type": "scatter", "name": "W", "x": rs, "y": w_element_cluster_ccc},
+                {"type": "scatter", "name": "H", "x": rs, "y": h_element_cluster_ccc},
             ],
         },
         join(directory_path, "ccc.html"),
     )
 
-    for w_or_h, k_x_element in (
+    for w_or_h, r_x_element in (
         (
             "w",
             DataFrame(
-                [k_return[key]["w_element_cluster"] for key in keys],
+                [r_return[key]["w_element_cluster"] for key in keys],
                 index=keys,
                 columns=w_0.index,
             ),
@@ -141,27 +141,27 @@ def mf_consensus_cluster_dataframe_with_ks(
         (
             "h",
             DataFrame(
-                [k_return[key]["h_element_cluster"] for key in keys],
+                [r_return[key]["h_element_cluster"] for key in keys],
                 index=keys,
                 columns=h_0.columns,
             ),
         ),
     ):
 
-        k_x_element.to_csv(
-            join(directory_path, "k_x_{}_element.tsv".format(w_or_h)), sep="\t"
+        r_x_element.to_csv(
+            join(directory_path, "r_x_{}_element.tsv".format(w_or_h)), sep="\t"
         )
 
         if plot_heat_map_:
 
             plot_heat_map(
-                DataFrame(sort(k_x_element.values, axis=1), index=keys),
+                DataFrame(sort(r_x_element.values, axis=1), index=keys),
                 colorscale=DATA_TYPE_COLORSCALE["categorical"],
                 layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
                 html_file_path=join(
                     directory_path,
-                    "k_x_{}_element_cluster_distribution.html".format(w_or_h),
+                    "r_x_{}_element_cluster_distribution.html".format(w_or_h),
                 ),
             )
 
-    return k_return
+    return r_return
