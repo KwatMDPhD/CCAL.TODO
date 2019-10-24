@@ -51,10 +51,6 @@ def read_process_write_gene_x_cell(
 
     gene_x_cell_prepare.to_csv(tsv_file_path.replace(".tsv", "_prepare.tsv"), sep="\t")
 
-    gene_x_cell_prepare.fillna(0).to_csv(
-        tsv_file_path.replace(".tsv", "_prepare_na0.tsv"), sep="\t"
-    )
-
     if minimum_fraction_cell_with_gene_signal is None:
 
         genes = gene_x_cell_prepare.index
