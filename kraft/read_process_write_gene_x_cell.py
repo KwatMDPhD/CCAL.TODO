@@ -27,7 +27,7 @@ def read_process_write_gene_x_cell(
 
     if gene_x_cell.index.has_duplicates:
 
-        print("Gene duplicated; merging duplicates with median...")
+        print("Merging duplicated genes with median...")
 
         gene_x_cell = gene_x_cell.groupby(level=0).median()
 
