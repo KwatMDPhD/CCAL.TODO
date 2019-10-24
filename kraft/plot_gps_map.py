@@ -221,9 +221,7 @@ def plot_gps_map(
                         for element, value in element_value.items()
                     ),
                     "marker": {
-                        "opacity": element_value.where(isnan, other=1).fillna(
-                            value=0.08
-                        ),
+                        "opacity": element_value.where(isnan, other=1).fillna(value=0),
                         "color": element_value,
                         "colorscale": element_value_colorscale,
                         "colorbar": merge_2_dicts_recursively(

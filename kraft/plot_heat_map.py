@@ -77,6 +77,7 @@ def plot_heat_map(
         y = dataframe.index[::-1]
 
     else:
+        print('wtf')
 
         y = None
 

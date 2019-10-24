@@ -31,7 +31,6 @@ class GPSMap:
         distance_function=compute_information_distance_between_2_vectors,
         mds_random_seed=RANDOM_SEED,
         n_pull=None,
-        pull_power=None,
     ):
 
         self.element_x_node = element_x_node
@@ -74,10 +73,7 @@ class GPSMap:
 
         self.element_x_dimension = DataFrame(
             make_element_x_dimension_from_element_x_node_and_node_x_dimension(
-                self.element_x_node.values,
-                self.node_x_dimension.values,
-                n_pull,
-                pull_power,
+                self.element_x_node.values, self.node_x_dimension.values, n_pull
             ),
             index=self.element_x_node.index,
             columns=self.node_x_dimension.columns,
@@ -204,21 +200,14 @@ class GPSMap:
         )
 
     def predict(
-        self,
-        new_element_x_node,
-        n_pull=None,
-        pull_power=None,
-        **plot_gps_map_keyword_arguments,
+        self, new_element_x_node, n_pull=None, **plot_gps_map_keyword_arguments
     ):
 
         plot_gps_map(
             self.node_x_dimension,
             DataFrame(
                 make_element_x_dimension_from_element_x_node_and_node_x_dimension(
-                    new_element_x_node.values,
-                    self.node_x_dimension.values,
-                    n_pull,
-                    pull_power,
+                    new_element_x_node.values, self.node_x_dimension.values, n_pull
                 ),
                 index=new_element_x_node.index,
                 columns=self.node_x_dimension.columns,
