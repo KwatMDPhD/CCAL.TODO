@@ -125,7 +125,7 @@ def plot_gps_map(
         "marker": {
             "size": 16,
             "color": "#20d9ba",
-            "line": {"width": 1, "color": "#171412"},
+            "line": {"width": 0.08, "color": "#ebf6f7"},
             "opacity": 0.8,
         },
         "hoverinfo": "text",
@@ -188,7 +188,9 @@ def plot_gps_map(
 
         element_value = element_value.reindex(index=element_x_dimension.index)
 
-        element_value = element_value[element_value.abs().sort_values().index]
+        element_value = element_value[
+            element_value.abs().sort_values(na_position="first").index
+        ]
 
         element_x_dimension = element_x_dimension.loc[element_value.index]
 
@@ -219,6 +221,9 @@ def plot_gps_map(
                         for element, value in element_value.items()
                     ),
                     "marker": {
+                        "opacity": element_value.where(isnan, other=1).fillna(
+                            value=0.08
+                        ),
                         "color": element_value,
                         "colorscale": element_value_colorscale,
                         "colorbar": merge_2_dicts_recursively(
