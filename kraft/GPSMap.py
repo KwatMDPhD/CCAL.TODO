@@ -1,5 +1,5 @@
-from numpy import full, linspace, nan, rot90
-from pandas import DataFrame, Index
+from numpy import full, linspace, nan
+from pandas import DataFrame
 from scipy.spatial import Delaunay
 from scipy.spatial.distance import pdist, squareform
 
@@ -27,6 +27,7 @@ class GPSMap:
     def __init__(
         self,
         element_x_node,
+        #
         node_x_node_distance=None,
         distance_function=compute_information_distance_between_2_vectors,
         mds_random_seed=RANDOM_SEED,
@@ -51,8 +52,8 @@ class GPSMap:
                     cluster_matrix(node_x_node_distance, 1),
                 ],
                 layout={
-                    "height": 800,
-                    "width": 800,
+                    "height": 640,
+                    "width": 640,
                     "title": {"text": distance_function.__name__},
                 },
             )
@@ -65,11 +66,12 @@ class GPSMap:
                     random_seed=mds_random_seed,
                 ),
                 index=self.element_x_node.columns,
-                columns=Index(("x", "y"), name="Axis"),
             ),
             0,
             "0-1",
         )
+
+        self.node_x_dimension.columns.name = "Dimension"
 
         self.element_x_dimension = DataFrame(
             make_element_x_dimension_from_element_x_node_and_node_x_dimension(
@@ -87,8 +89,6 @@ class GPSMap:
 
         self.grid_label = None
 
-        self.label_colorscale = None
-
     def plot(self, **plot_gps_map_keyword_arguments):
 
         plot_gps_map(
@@ -98,18 +98,10 @@ class GPSMap:
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,
             grid_label=self.grid_label,
-            label_colorscale=self.label_colorscale,
             **plot_gps_map_keyword_arguments,
         )
 
-    def set_element_label(
-        self,
-        element_label,
-        n_grid=64,
-        bandwidth_factor=1,
-        label_colorscale=None,
-        plot=True,
-    ):
+    def set_element_label(self, element_label, n_grid=64, bandwidth_factor=1):
 
         assert 3 <= element_label.value_counts().min()
 
@@ -130,7 +122,7 @@ class GPSMap:
             for j in range(mask_grid.shape[1]):
 
                 mask_grid[i, j] = triangulation.find_simplex(
-                    (self.dimension_grid[j], self.dimension_grid[-i])
+                    (self.dimension_grid[i], self.dimension_grid[j])
                 )
 
         label_grid_probability = {}
@@ -142,20 +134,18 @@ class GPSMap:
 
         for label in self.element_label.unique():
 
-            label_grid_probability[label] = rot90(
-                unmesh(
-                    *compute_element_x_dimension_joint_probability(
-                        self.element_x_dimension[self.element_label == label].values,
-                        plot=False,
-                        dimension_bandwidths=dimension_bandwidths,
-                        dimension_bandwidth_factors=(bandwidth_factor,) * 2,
-                        dimension_grid_mins=(self.dimension_grid.min(),) * 2,
-                        dimension_grid_maxs=(self.dimension_grid.max(),) * 2,
-                        dimension_fraction_grid_extensions=(0,) * 2,
-                        dimension_n_grids=grid_shape,
-                    )
-                )[1]
-            )
+            label_grid_probability[label] = unmesh(
+                *compute_element_x_dimension_joint_probability(
+                    self.element_x_dimension[self.element_label == label].values,
+                    plot=False,
+                    dimension_bandwidths=dimension_bandwidths,
+                    dimension_bandwidth_factors=(bandwidth_factor,) * 2,
+                    dimension_grid_mins=(self.dimension_grid.min(),) * 2,
+                    dimension_grid_maxs=(self.dimension_grid.max(),) * 2,
+                    dimension_fraction_grid_extensions=(0,) * 2,
+                    dimension_n_grids=grid_shape,
+                )
+            )[1]
 
         self.grid_probability = full(grid_shape, nan)
 
@@ -165,38 +155,30 @@ class GPSMap:
 
             for j in range(mask_grid.shape[1]):
 
-                if mask_grid[i, j] == -1:
+                if mask_grid[i, j] != -1:
 
-                    continue
+                    max_probability = 0
 
-                max_probability = 0
+                    max_label = nan
 
-                max_label = nan
+                    for label, grid_probability_ in label_grid_probability.items():
 
-                for label, grid_probability_ in label_grid_probability.items():
+                        probability = grid_probability_[i, j]
 
-                    probability = grid_probability_[i, j]
+                        if max_probability < probability:
 
-                    if max_probability < probability:
+                            max_probability = probability
 
-                        max_probability = probability
+                            max_label = label
 
-                        max_label = label
+                    self.grid_probability[i, j] = max_probability
 
-                self.grid_probability[i, j] = max_probability
-
-                self.grid_label[i, j] = max_label
-
-        if label_colorscale is None:
-
-            label_colorscale = DATA_TYPE_COLORSCALE["categorical"]
-
-        self.label_colorscale = label_colorscale
+                    self.grid_label[i, j] = max_label
 
         plot_heat_map(
             normalize_dataframe(self.element_x_node, 1, "-0-").T,
             column_annotations=self.element_label,
-            column_annotation_colorscale=self.label_colorscale,
+            column_annotation_colorscale=DATA_TYPE_COLORSCALE["categorical"],
         )
 
     def predict(
@@ -216,6 +198,5 @@ class GPSMap:
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,
             grid_label=self.grid_label,
-            label_colorscale=self.label_colorscale,
             **plot_gps_map_keyword_arguments,
         )

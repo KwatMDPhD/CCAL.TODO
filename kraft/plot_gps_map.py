@@ -1,7 +1,9 @@
 from numpy import isnan, nan, unique
+from pandas import DataFrame
 from plotly.colors import make_colorscale
 
 from .COLORBAR import COLORBAR
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_colorscale_color import get_colorscale_color
 from .get_element_x_dimension_triangulation_edges import (
     get_element_x_dimension_triangulation_edges,
@@ -13,23 +15,38 @@ from .plot_plotly_figure import plot_plotly_figure
 def plot_gps_map(
     node_x_dimension,
     element_x_dimension,
+    node_marker_size=16,
     element_label=None,
     dimension_grid=None,
     grid_probability=None,
     grid_label=None,
-    label_colorscale=None,
     element_value=None,
     element_value_colorscale=None,
     ticktext_function=None,
     layout=None,
     show_node_text=True,
     element_trace=None,
-    grid_label_opacity=0.8,
     elements_to_highlight=(),
     html_file_path=None,
 ):
 
-    title_text = "{} {} + {} {}".format(
+    node_x_dimension = DataFrame(
+        {
+            "x": node_x_dimension.iloc[:, 1].values,
+            "y": 1 - node_x_dimension.iloc[::1, 0].values,
+        },
+        index=node_x_dimension.index,
+    )
+
+    element_x_dimension = DataFrame(
+        {
+            "x": element_x_dimension.iloc[:, 1].values,
+            "y": 1 - element_x_dimension.iloc[::1, 0].values,
+        },
+        index=element_x_dimension.index,
+    )
+
+    title_text = "{} {} & {} {}".format(
         node_x_dimension.index.size,
         node_x_dimension.index.name,
         element_x_dimension.index.size,
@@ -38,18 +55,18 @@ def plot_gps_map(
 
     if element_value is not None:
 
-        title_text += "<br>{}".format(element_value.name)
+        title_text = "{}<br>{}".format(title_text, element_value.name)
 
     axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
 
     layout_template = {
-        "height": 800,
-        "width": 800,
+        "height": 880,
+        "width": 880,
         "title": {
             "x": 0.5,
             "text": "<b>{}</b>".format(title_text),
             "font": {
-                "size": 32,
+                "size": 24,
                 "color": "#4e40d8",
                 "family": "Times New Roman, sans-serif",
             },
@@ -88,7 +105,7 @@ def plot_gps_map(
             "text": node_x_dimension.index,
             "mode": "markers",
             "marker": {
-                "size": 20,
+                "size": node_marker_size,
                 "color": "#23191e",
                 "line": {"width": 1, "color": "#ebf6f7"},
             },
@@ -97,6 +114,10 @@ def plot_gps_map(
     )
 
     if show_node_text:
+
+        border_arrow_width = 1.6
+
+        border_arrow_color = "#ebf6f7"
 
         layout["annotations"] += [
             {
@@ -108,11 +129,12 @@ def plot_gps_map(
                     "color": "#23191e",
                     "family": "Gravitas One, monospace",
                 },
-                "showarrow": False,
-                "yshift": 24,
                 "bgcolor": "#ffffff",
                 "borderpad": 2,
-                "bordercolor": "#23191e",
+                "borderwidth": border_arrow_width,
+                "bordercolor": border_arrow_color,
+                "arrowwidth": border_arrow_width,
+                "arrowcolor": border_arrow_color,
                 "opacity": 0.8,
             }
             for node, (x, y) in node_x_dimension.iterrows()
@@ -125,7 +147,7 @@ def plot_gps_map(
         "marker": {
             "size": 16,
             "color": "#20d9ba",
-            "line": {"width": 0.16, "color": "#ebf6f7"},
+            "line": {"width": 0.8, "color": "#ebf6f7"},
             "opacity": 0.8,
         },
         "hoverinfo": "text",
@@ -139,13 +161,15 @@ def plot_gps_map(
 
         element_trace = merge_2_dicts_recursively(element_trace_template, element_trace)
 
-    if grid_label is not None:
+    if element_label is not None:
 
         grid_label_not_nan_unique = unique(grid_label[~isnan(grid_label)])
 
+        n_unique_label = grid_label_not_nan_unique.size
+
         label_color = {
             label: get_colorscale_color(
-                label_colorscale, label, grid_label_not_nan_unique.size
+                DATA_TYPE_COLORSCALE["categorical"], label, n_unique_label
             )
             for label in grid_label_not_nan_unique
         }
@@ -155,8 +179,8 @@ def plot_gps_map(
                 "type": "contour",
                 "showlegend": False,
                 "x": dimension_grid,
-                "y": dimension_grid,
-                "z": grid_probability[::-1],
+                "y": 1 - dimension_grid,
+                "z": grid_probability,
                 "autocontour": False,
                 "ncontours": 24,
                 "contours": {"coloring": "none"},
@@ -173,9 +197,9 @@ def plot_gps_map(
                 {
                     "type": "heatmap",
                     "x": dimension_grid,
-                    "y": dimension_grid,
-                    "z": z[::-1],
-                    "opacity": grid_label_opacity,
+                    "y": 1 - dimension_grid,
+                    "z": z,
+                    "opacity": 0.8,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", label_color[label])
                     ),
@@ -221,7 +245,9 @@ def plot_gps_map(
                         for element, value in element_value.items()
                     ),
                     "marker": {
-                        "opacity": element_value.where(isnan, other=1).fillna(value=0),
+                        "opacity": element_value.where(isnan, other=1).fillna(
+                            value=0.08
+                        ),
                         "color": element_value,
                         "colorscale": element_value_colorscale,
                         "colorbar": merge_2_dicts_recursively(
