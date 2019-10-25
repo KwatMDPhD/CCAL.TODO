@@ -9,7 +9,7 @@ from .plot_errors import plot_errors
 from .plot_mf import plot_mf
 
 
-def mf_dataframes(dataframes, k, method, directory_path, plot_heat_map=True):
+def mf_dataframes(dataframes, r, method, directory_path, plot_heat_map=True):
 
     establish_path(directory_path, "directory")
 
@@ -17,17 +17,17 @@ def mf_dataframes(dataframes, k, method, directory_path, plot_heat_map=True):
 
     if method == "vs_ws_h":
 
-        ws, h, errors = mf_vs_ws_h(vs, k)
+        ws, h, errors = mf_vs_ws_h(vs, r)
 
         hs = (h,)
 
     elif method == "vs_w_hs":
 
-        w, hs, errors = mf_vs_w_hs(vs, k)
+        w, hs, errors = mf_vs_w_hs(vs, r)
 
         ws = (w,)
 
-    index_factors = Index(("Factor{}".format(i) for i in range(k)), name="Factor")
+    index_factors = Index(("r{}_f{}".format(r, i) for i in range(r)), name="Factor")
 
     ws = tuple(
         DataFrame(w, index=dataframe.index, columns=index_factors)

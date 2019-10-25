@@ -58,11 +58,11 @@ def mf_consensus_cluster_dataframe(
 
             e_0 = e
 
-            factors = Index(("f{}".format(i) for i in range(r)), name="Factor")
+            index_factors = Index(("r{}_f{}".format(r, i) for i in range(r)), name="Factor")
 
-            w_0 = DataFrame(w_0, index=dataframe.index, columns=factors)
+            w_0 = DataFrame(w_0, index=dataframe.index, columns=index_factors)
 
-            h_0 = DataFrame(h_0, index=factors, columns=dataframe.columns)
+            h_0 = DataFrame(h_0, index=index_factors, columns=dataframe.columns)
 
             w_0.to_csv(join(directory_path, "w.tsv"), sep="\t")
 
