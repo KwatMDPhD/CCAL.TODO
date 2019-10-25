@@ -6,21 +6,19 @@ from .RANDOM_SEED import RANDOM_SEED
 from .update_w_by_multiplicative_update import update_w_by_multiplicative_update
 
 
-def mf_vs_ws_h(vs, k, weights=None, n_iteration=int(1e2), random_seed=RANDOM_SEED):
+def mf_vs_ws_h(vs, r, weights=None, n_iteration=int(1e2), random_seed=RANDOM_SEED):
 
     assert len(set(v.shape[1] for v in vs)) == 1
 
     n = len(vs)
 
-    errors = full((n, n_iteration + 1), nan)
+    errors = full((n, n_iteration), nan)
 
     seed(seed=random_seed)
 
-    ws = [random_sample(size=(v.shape[0], k)) for v in vs]
+    ws = [random_sample(size=(v.shape[0], r)) for v in vs]
 
-    h = random_sample(size=(k, vs[0].shape[1]))
-
-    errors[:, 0] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n)]
+    h = random_sample(size=(r, vs[0].shape[1]))
 
     v_0_norm = compute_matrix_norm(vs[0])
 
@@ -38,6 +36,6 @@ def mf_vs_ws_h(vs, k, weights=None, n_iteration=int(1e2), random_seed=RANDOM_SEE
 
         ws = [update_w_by_multiplicative_update(vs[i], ws[i], h) for i in range(n)]
 
-        errors[:, j + 1] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n)]
+        errors[:, j] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n)]
 
     return ws, h, errors

@@ -27,7 +27,12 @@ def plot_errors(errors, layout=None, html_file_path=None):
         {
             "layout": layout,
             "data": [
-                {"type": "scatter", "name": i, "x": arange(errors_.size), "y": errors_}
+                {
+                    "type": "scatter",
+                    "name": i,
+                    "x": 1 + arange(errors_.size),
+                    "y": errors_,
+                }
                 for i, errors_ in enumerate(errors)
             ],
         },
