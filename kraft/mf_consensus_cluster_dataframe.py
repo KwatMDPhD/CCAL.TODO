@@ -58,7 +58,9 @@ def mf_consensus_cluster_dataframe(
 
             e_0 = e
 
-            index_factors = Index(("r{}_f{}".format(r, i) for i in range(r)), name="Factor")
+            index_factors = Index(
+                ("r{}_f{}".format(r, i) for i in range(r)), name="Factor"
+            )
 
             w_0 = DataFrame(w_0, index=dataframe.index, columns=index_factors)
 
