@@ -9,7 +9,7 @@ from .plot_errors import plot_errors
 from .plot_mf import plot_mf
 
 
-def mf_dataframes(dataframes, r, method, directory_path, plot_heat_map=True):
+def mf_dataframes(dataframes, method, r, directory_path, plot_heat_map=True):
 
     establish_path(directory_path, "directory")
 
@@ -51,6 +51,8 @@ def mf_dataframes(dataframes, r, method, directory_path, plot_heat_map=True):
 
         plot_mf(ws, hs, directory_path)
 
-    plot_errors(errors)
+    plot_errors(
+        errors, layout={"title": {"text": "MF<br>method {} & r {} ".format(method, r)}}
+    )
 
     return ws, hs

@@ -5,14 +5,19 @@ from .plot_histogram import plot_histogram
 
 
 def summarize_feature_x_sample(
-    feature_x_sample, plot_heat_map_max_size=1e6, plot_histogram_max_size=1e3
+    feature_x_sample,
+    feature_x_sample_name=None,
+    plot_heat_map_max_size=1e6,
+    plot_histogram_max_size=1e3,
 ):
 
     print("Shape: {}".format(feature_x_sample.shape))
 
     if feature_x_sample.size <= plot_heat_map_max_size:
 
-        plot_heat_map(feature_x_sample)
+        plot_heat_map(
+            feature_x_sample, layout={"title": {"text": feature_x_sample_name}}
+        )
 
     feature_x_sample_not_na_values = feature_x_sample.unstack().dropna()
 
@@ -43,7 +48,10 @@ def summarize_feature_x_sample(
     plot_histogram(
         (feature_x_sample_not_na_values,),
         plot_rug=False,
-        layout={"xaxis": {"title": {"text": "Not-NA Value"}}},
+        layout={
+            "title": {"text": feature_x_sample_name},
+            "xaxis": {"title": {"text": "Not-NA Value"}},
+        },
     )
 
     feature_x_sample_isna = feature_x_sample.isna()
@@ -65,7 +73,9 @@ def summarize_feature_x_sample(
             plot_rug=False,
             layout={
                 "title": {
-                    "text": "Fraction NA: {:.2e}".format(n_na / feature_x_sample.size)
+                    "text": "{}<br>Fraction NA: {:.2e}".format(
+                        feature_x_sample_name, n_na / feature_x_sample.size
+                    )
                 },
                 "xaxis": {"title": {"text": "N NA"}},
             },
