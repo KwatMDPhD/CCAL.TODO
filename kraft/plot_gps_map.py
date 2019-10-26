@@ -3,7 +3,6 @@ from pandas import DataFrame
 from plotly.colors import make_colorscale
 
 from .COLORBAR import COLORBAR
-from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_colorscale_color import get_colorscale_color
 from .get_element_x_dimension_triangulation_edges import (
     get_element_x_dimension_triangulation_edges,
@@ -20,6 +19,7 @@ def plot_gps_map(
     dimension_grid=None,
     grid_probability=None,
     grid_label=None,
+    element_label_colorscale=None,
     element_value=None,
     element_value_colorscale=None,
     ticktext_function=None,
@@ -161,16 +161,14 @@ def plot_gps_map(
 
         element_trace = merge_2_dicts_recursively(element_trace_template, element_trace)
 
-    if element_label is not None:
+    if grid_label is not None:
 
         grid_label_not_nan_unique = unique(grid_label[~isnan(grid_label)])
 
         n_unique_label = grid_label_not_nan_unique.size
 
         label_color = {
-            label: get_colorscale_color(
-                DATA_TYPE_COLORSCALE["categorical"], label, n_unique_label
-            )
+            label: get_colorscale_color(element_label_colorscale, label, n_unique_label)
             for label in grid_label_not_nan_unique
         }
 

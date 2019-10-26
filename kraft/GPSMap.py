@@ -1,11 +1,11 @@
 from numpy import full, linspace, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
+
 from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
 )
 from .compute_vector_bandwidth import compute_vector_bandwidth
-from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
     make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )
@@ -41,8 +41,6 @@ class GPSMap:
             "0-1",
         )
 
-        self.node_x_dimension.columns.name = "Dimension"
-
         self.node_marker_size = node_marker_size
 
         self.element_x_dimension = DataFrame(
@@ -61,6 +59,8 @@ class GPSMap:
 
         self.grid_label = None
 
+        self.element_label_colorscale = None
+
     def plot(self, **plot_gps_map_keyword_arguments):
 
         plot_gps_map(
@@ -71,10 +71,17 @@ class GPSMap:
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,
             grid_label=self.grid_label,
+            element_label_colorscale=self.element_label_colorscale,
             **plot_gps_map_keyword_arguments,
         )
 
-    def set_element_label(self, element_label, n_grid=64, bandwidth_factor=1):
+    def set_element_label(
+        self,
+        element_label,
+        element_label_colorscale=None,
+        n_grid=64,
+        bandwidth_factor=1,
+    ):
 
         assert 3 <= element_label.value_counts().min()
 
@@ -148,21 +155,21 @@ class GPSMap:
 
                     self.grid_label[i, j] = max_label
 
+        self.element_label_colorscale = element_label_colorscale
+
         plot_heat_map(
             normalize_dataframe(self.element_x_node, 1, "-0-").T,
             column_annotations=self.element_label,
-            column_annotation_colorscale=DATA_TYPE_COLORSCALE["categorical"],
+            column_annotation_colorscale=self.element_label_colorscale,
         )
 
-    def predict(
-        self, new_element_x_node, n_pull=None, **plot_gps_map_keyword_arguments
-    ):
+    def predict(self, new_element_x_node, **plot_gps_map_keyword_arguments):
 
         plot_gps_map(
             self.node_x_dimension,
             DataFrame(
                 make_element_x_dimension_from_element_x_node_and_node_x_dimension(
-                    new_element_x_node.values, self.node_x_dimension.values, n_pull
+                    new_element_x_node.values, self.node_x_dimension.values
                 ),
                 index=new_element_x_node.index,
                 columns=self.node_x_dimension.columns,
@@ -172,5 +179,6 @@ class GPSMap:
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,
             grid_label=self.grid_label,
+            element_label_colorscale=self.element_label_colorscale,
             **plot_gps_map_keyword_arguments,
         )
