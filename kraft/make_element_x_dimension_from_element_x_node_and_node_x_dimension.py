@@ -1,8 +1,8 @@
-from numpy import full, nan, sort
+from numpy import full, nan
 
 
 def make_element_x_dimension_from_element_x_node_and_node_x_dimension(
-    element_x_node, node_x_dimension, n_pull
+    element_x_node, node_x_dimension
 ):
 
     element_x_dimension = full(
@@ -12,10 +12,6 @@ def make_element_x_dimension_from_element_x_node_and_node_x_dimension(
     for element_index in range(element_x_node.shape[0]):
 
         pulls = element_x_node[element_index, :]
-
-        if n_pull is not None:
-
-            pulls[pulls < sort(pulls)[-n_pull]] = 0
 
         for dimension_index in range(node_x_dimension.shape[1]):
 

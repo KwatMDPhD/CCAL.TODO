@@ -1,14 +1,8 @@
 from numpy import full, linspace, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
-from scipy.spatial.distance import pdist, squareform
-
-from .cluster_matrix import cluster_matrix
 from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
-)
-from .compute_information_distance_between_2_vectors import (
-    compute_information_distance_between_2_vectors,
 )
 from .compute_vector_bandwidth import compute_vector_bandwidth
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
@@ -27,36 +21,12 @@ class GPSMap:
     def __init__(
         self,
         element_x_node,
-        #
-        node_x_node_distance=None,
-        distance_function=compute_information_distance_between_2_vectors,
+        node_x_node_distance,
         mds_random_seed=RANDOM_SEED,
-        n_pull=None,
+        node_marker_size=16,
     ):
 
         self.element_x_node = element_x_node
-
-        if node_x_node_distance is None:
-
-            node_x_node_distance = squareform(
-                pdist(self.element_x_node.values.T, metric=distance_function)
-            )
-
-            plot_heat_map(
-                DataFrame(
-                    node_x_node_distance,
-                    index=self.element_x_node.columns,
-                    columns=self.element_x_node.columns,
-                ).iloc[
-                    cluster_matrix(node_x_node_distance, 0),
-                    cluster_matrix(node_x_node_distance, 1),
-                ],
-                layout={
-                    "height": 640,
-                    "width": 640,
-                    "title": {"text": distance_function.__name__},
-                },
-            )
 
         self.node_x_dimension = normalize_dataframe(
             DataFrame(
@@ -73,9 +43,11 @@ class GPSMap:
 
         self.node_x_dimension.columns.name = "Dimension"
 
+        self.node_marker_size = node_marker_size
+
         self.element_x_dimension = DataFrame(
             make_element_x_dimension_from_element_x_node_and_node_x_dimension(
-                self.element_x_node.values, self.node_x_dimension.values, n_pull
+                self.element_x_node.values, self.node_x_dimension.values
             ),
             index=self.element_x_node.index,
             columns=self.node_x_dimension.columns,
@@ -94,6 +66,7 @@ class GPSMap:
         plot_gps_map(
             self.node_x_dimension,
             self.element_x_dimension,
+            node_marker_size=self.node_marker_size,
             element_label=self.element_label,
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,
@@ -194,6 +167,7 @@ class GPSMap:
                 index=new_element_x_node.index,
                 columns=self.node_x_dimension.columns,
             ),
+            node_marker_size=self.node_marker_size,
             element_label=None,
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,
