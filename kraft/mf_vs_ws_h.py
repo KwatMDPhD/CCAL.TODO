@@ -6,7 +6,7 @@ from .RANDOM_SEED import RANDOM_SEED
 from .update_w_by_multiplicative_update import update_w_by_multiplicative_update
 
 
-def mf_vs_ws_h(vs, r, weights=None, n_iteration=int(1e2), random_seed=RANDOM_SEED):
+def mf_vs_ws_h(vs, r, weights=None, n_iteration=int(1e3), random_seed=RANDOM_SEED):
 
     assert len(set(v.shape[1] for v in vs)) == 1
 

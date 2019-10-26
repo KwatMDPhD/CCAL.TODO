@@ -9,7 +9,9 @@ from .plot_errors import plot_errors
 from .plot_mf import plot_mf
 
 
-def mf_dataframes(dataframes, method, r, directory_path, plot_heat_map=True):
+def mf_dataframes(
+    dataframes, method, r, directory_path, plot_w_h=True, **mf_vs_keyword_arguments
+):
 
     establish_path(directory_path, "directory")
 
@@ -17,13 +19,13 @@ def mf_dataframes(dataframes, method, r, directory_path, plot_heat_map=True):
 
     if method == "vs_ws_h":
 
-        ws, h, errors = mf_vs_ws_h(vs, r)
+        ws, h, errors = mf_vs_ws_h(vs, r, **mf_vs_keyword_arguments)
 
         hs = (h,)
 
     elif method == "vs_w_hs":
 
-        w, hs, errors = mf_vs_w_hs(vs, r)
+        w, hs, errors = mf_vs_w_hs(vs, r, **mf_vs_keyword_arguments)
 
         ws = (w,)
 
@@ -47,7 +49,7 @@ def mf_dataframes(dataframes, method, r, directory_path, plot_heat_map=True):
 
         h.to_csv(join(directory_path, "h{}.tsv".format(i)), sep="\t")
 
-    if plot_heat_map:
+    if plot_w_h:
 
         plot_mf(ws, hs, directory_path)
 
