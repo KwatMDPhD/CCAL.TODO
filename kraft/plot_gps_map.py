@@ -208,7 +208,7 @@ def plot_gps_map(
 
     if element_value is not None:
 
-        element_value = element_value.reindex(index=element_x_dimension.index)
+        element_value = element_value.reindex(index=element_x_dimension.index).dropna()
 
         element_value = element_value[
             element_value.abs().sort_values(na_position="first").index
