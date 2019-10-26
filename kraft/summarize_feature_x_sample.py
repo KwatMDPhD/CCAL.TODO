@@ -42,7 +42,11 @@ def summarize_feature_x_sample(
                 feature_x_sample_not_na_values.index,
                 size=int(plot_histogram_max_size),
                 replace=False,
-            )
+            ).tolist()
+            + [
+                feature_x_sample_not_na_values.idxmin(),
+                feature_x_sample_not_na_values.idxmax(),
+            ]
         ]
 
     plot_histogram(
