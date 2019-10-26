@@ -52,7 +52,7 @@ def mf_dataframes(dataframes, method, r, directory_path, plot_heat_map=True):
         plot_mf(ws, hs, directory_path)
 
     plot_errors(
-        errors, layout={"title": {"text": "MF<br>method {} & r {} ".format(method, r)}}
+        errors, layout={"title": {"text": "MF method {} r {} ".format(method, r)}}
     )
 
     return ws, hs
