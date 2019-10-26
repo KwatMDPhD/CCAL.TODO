@@ -15,12 +15,14 @@ def plot_gps_map(
     node_x_dimension,
     element_x_dimension,
     node_marker_size=16,
+    opacity=0.8,
     element_label=None,
     dimension_grid=None,
     grid_probability=None,
     grid_label=None,
     element_label_colorscale=None,
     element_value=None,
+    element_value_na_opacity=None,
     element_value_colorscale=None,
     ticktext_function=None,
     layout=None,
@@ -135,7 +137,7 @@ def plot_gps_map(
                 "bordercolor": border_arrow_color,
                 "arrowwidth": border_arrow_width,
                 "arrowcolor": border_arrow_color,
-                "opacity": 0.8,
+                "opacity": opacity,
             }
             for node, (x, y) in node_x_dimension.iterrows()
         ]
@@ -148,7 +150,7 @@ def plot_gps_map(
             "size": 16,
             "color": "#20d9ba",
             "line": {"width": 0.8, "color": "#ebf6f7"},
-            "opacity": 0.8,
+            "opacity": opacity,
         },
         "hoverinfo": "text",
     }
@@ -197,7 +199,7 @@ def plot_gps_map(
                     "x": dimension_grid,
                     "y": 1 - dimension_grid,
                     "z": z,
-                    "opacity": 0.8,
+                    "opacity": opacity,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", label_color[label])
                     ),
@@ -208,7 +210,19 @@ def plot_gps_map(
 
     if element_value is not None:
 
-        element_value = element_value.reindex(index=element_x_dimension.index).dropna()
+        element_value = element_value.reindex(index=element_x_dimension.index)
+
+        element_value_opacity = opacity
+
+        if element_value_na_opacity is None:
+
+            element_value.dropna(inplace=True)
+
+        else:
+
+            element_value_opacity = element_value.where(
+                isnan, other=element_value_opacity
+            ).fillna(value=element_value_na_opacity)
 
         element_value = element_value[
             element_value.abs().sort_values(na_position="first").index
@@ -243,9 +257,7 @@ def plot_gps_map(
                         for element, value in element_value.items()
                     ),
                     "marker": {
-                        "opacity": element_value.where(isnan, other=1).fillna(
-                            value=0.08
-                        ),
+                        "opacity": element_value_opacity,
                         "color": element_value,
                         "colorscale": element_value_colorscale,
                         "colorbar": merge_2_dicts_recursively(
