@@ -1,6 +1,7 @@
 from os.path import join
 
 from pandas import DataFrame, Index
+from numpy import isnan
 
 from .establish_path import establish_path
 from .mf_vs_w_hs import mf_vs_w_hs
@@ -54,7 +55,8 @@ def mf_dataframes(
         plot_mf(ws, hs, directory_path)
 
     plot_errors(
-        errors, layout={"title": {"text": "MF method {} r {} ".format(method, r)}}
+        tuple(errors_[~isnan(errors_)] for errors_ in errors),
+        layout={"title": {"text": "MF method {} r {} ".format(method, r)}},
     )
 
     return ws, hs
