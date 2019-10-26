@@ -33,8 +33,8 @@ def read_process_write_gene_x_cell(
 
     gene_x_cell.to_csv(tsv_file_path, sep="\t")
 
-    gene_x_cell_prepare = process_feature_x_sample(
+    gene_x_cell_log = process_feature_x_sample(
         gene_x_cell, shift_as_necessary_to_achieve_min_before_logging=1, log_base=2
     )
 
-    gene_x_cell_prepare.to_csv(tsv_file_path.replace(".tsv", "log2.tsv"), sep="\t")
+    gene_x_cell_log.to_csv(tsv_file_path.replace(".tsv", "log2.tsv"), sep="\t")
