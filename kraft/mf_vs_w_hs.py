@@ -7,7 +7,7 @@ from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
 
 
 def mf_vs_w_hs(
-    vs, r, weights=None, tolerance=1e-6, n_iteration=int(1e4), random_seed=RANDOM_SEED
+    vs, r, weights=None, tolerance=1e-3, n_iteration=int(1e3), random_seed=RANDOM_SEED
 ):
 
     assert len(set(v.shape[0] for v in vs)) == 1
