@@ -6,8 +6,8 @@ from .plot_histogram import plot_histogram
 
 def summarize_feature_x_sample(
     feature_x_sample,
-    feature_x_sample_name=None,
     plot=True,
+    feature_x_sample_name=None,
     plot_heat_map_max_size=1e6,
     plot_histogram_max_size=1e3,
 ):
