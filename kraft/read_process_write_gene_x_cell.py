@@ -1,8 +1,9 @@
 from os.path import join
-from .process_feature_x_sample import process_feature_x_sample
 
 from pandas import DataFrame, read_csv
 from scipy.io import mmread
+
+from .process_feature_x_sample import process_feature_x_sample
 
 
 def read_process_write_gene_x_cell(

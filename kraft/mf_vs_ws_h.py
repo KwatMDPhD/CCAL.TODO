@@ -1,4 +1,4 @@
-from numpy import full, nan, sum, asarray
+from numpy import asarray, full, nan, sum
 from numpy.random import random_sample, seed
 
 from .compute_matrix_norm import compute_matrix_norm

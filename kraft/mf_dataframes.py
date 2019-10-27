@@ -1,7 +1,7 @@
 from os.path import join
 
-from pandas import DataFrame, Index
 from numpy import isnan
+from pandas import DataFrame, Index
 
 from .establish_path import establish_path
 from .mf_vs_w_hs import mf_vs_w_hs
