@@ -30,7 +30,7 @@ def mf_vs_w_hs(
 
         weights = [v_0_norm / compute_matrix_norm(v) for v in vs]
 
-    n_per_print = max(1, n_iteration // 10)
+    n_per_print = max(1, n_iteration // 100)
 
     for j in range(n_iteration):
 
