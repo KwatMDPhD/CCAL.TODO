@@ -4,7 +4,7 @@ from pandas import read_csv
 
 from .establish_path import establish_path
 from .make_match_panel import make_match_panel
-from .normalize_file_name import normalize_file_name
+from .normalize_name import normalize_name
 
 
 def make_match_panels(
@@ -32,8 +32,8 @@ def make_match_panels(
 
             file_path_prefix = "{}/{}/{}".format(
                 directory_path,
-                normalize_file_name(target_name),
-                normalize_file_name(data_dict["name"]),
+                normalize_name(target_name),
+                normalize_name(data_dict["name"]),
             )
 
             establish_path(file_path_prefix, "file")

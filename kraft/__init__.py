@@ -1,45 +1,30 @@
 from .ALMOST_ZERO import ALMOST_ZERO
-from .apply_function_on_2_vectors import apply_function_on_2_vectors
-from .apply_function_on_permuted_vector_and_each_matrix_row import (
-    apply_function_on_permuted_vector_and_each_matrix_row,
-)
-from .apply_function_on_slices_from_2_dataframes import (
-    apply_function_on_slices_from_2_dataframes,
-)
-from .apply_function_on_slices_from_2_matrices import (
-    apply_function_on_slices_from_2_matrices,
-)
-from .apply_function_on_vector_and_each_matrix_row import (
-    apply_function_on_vector_and_each_matrix_row,
-)
-from .apply_function_on_vector_and_each_matrix_row_and_compute_statistics import (
-    apply_function_on_vector_and_each_matrix_row_and_compute_statistics,
-)
 from .BAD_VALUES import BAD_VALUES
+from .COLORBAR import COLORBAR
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
+from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY
+from .GPSMap import GPSMap
+from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
+from .RANDOM_SEED import RANDOM_SEED
+from .apply_function_on_2_vectors import apply_function_on_2_vectors
+from .apply_function_on_permuted_vector_and_each_matrix_row import apply_function_on_permuted_vector_and_each_matrix_row
+from .apply_function_on_slices_from_2_dataframes import apply_function_on_slices_from_2_dataframes
+from .apply_function_on_slices_from_2_matrices import apply_function_on_slices_from_2_matrices
+from .apply_function_on_vector_and_each_matrix_row import apply_function_on_vector_and_each_matrix_row
+from .apply_function_on_vector_and_each_matrix_row_and_compute_statistics import apply_function_on_vector_and_each_matrix_row_and_compute_statistics
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .cast_object_to_builtin import cast_object_to_builtin
 from .check_array_for_bad import check_array_for_bad
 from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
 from .clip_array_by_standard_deviation import clip_array_by_standard_deviation
-from .cluster_clustering_x_element_and_compute_ccc import (
-    cluster_clustering_x_element_and_compute_ccc,
-)
+from .cluster_clustering_x_element_and_compute_ccc import cluster_clustering_x_element_and_compute_ccc
 from .cluster_matrix import cluster_matrix
-from .COLORBAR import COLORBAR
-from .compute_element_x_dimension_joint_probability import (
-    compute_element_x_dimension_joint_probability,
-)
-from .compute_element_x_dimension_posterior_probability import (
-    compute_element_x_dimension_posterior_probability,
-)
+from .compute_element_x_dimension_joint_probability import compute_element_x_dimension_joint_probability
+from .compute_element_x_dimension_posterior_probability import compute_element_x_dimension_posterior_probability
 from .compute_empirical_p_value import compute_empirical_p_value
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
-from .compute_information_coefficient_between_2_vectors import (
-    compute_information_coefficient_between_2_vectors,
-)
-from .compute_information_distance_between_2_vectors import (
-    compute_information_distance_between_2_vectors,
-)
+from .compute_information_coefficient_between_2_vectors import compute_information_coefficient_between_2_vectors
+from .compute_information_distance_between_2_vectors import compute_information_distance_between_2_vectors
 from .compute_kullback_leibler_divergence import compute_kullback_leibler_divergence
 from .compute_matrix_norm import compute_matrix_norm
 from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
@@ -48,59 +33,37 @@ from .compute_vector_bandwidth import compute_vector_bandwidth
 from .compute_vector_context import compute_vector_context
 from .compute_vector_entropy import compute_vector_entropy
 from .correlate_2_vectors import correlate_2_vectors
-from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .download_and_parse_geo import download_and_parse_geo
 from .download_url import download_url
 from .download_url_and_extract import download_url_and_extract
 from .drop_dataframe_slice import drop_dataframe_slice
 from .drop_dataframe_slice_greedily import drop_dataframe_slice_greedily
 from .establish_path import establish_path
-from .estimate_element_x_dimension_kernel_density import (
-    estimate_element_x_dimension_kernel_density,
-)
+from .estimate_element_x_dimension_kernel_density import estimate_element_x_dimension_kernel_density
 from .fit_each_dataframe_row_to_skew_t_pdf import fit_each_dataframe_row_to_skew_t_pdf
 from .fit_each_dataframe_row_to_skew_t_pdf_ import fit_each_dataframe_row_to_skew_t_pdf_
 from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
 from .flatten_nested_iterable import flatten_nested_iterable
-from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
-    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
-)
 from .get_child_paths import get_child_paths
 from .get_colorscale_color import get_colorscale_color
-from .get_dataframe_fraction_good_on_axis import get_dataframe_fraction_good_on_axis
-from .get_element_x_dimension_triangulation_edges import (
-    get_element_x_dimension_triangulation_edges,
-)
+from .get_element_x_dimension_triangulation_edges import get_element_x_dimension_triangulation_edges
 from .get_intersections_between_2_vectors import get_intersections_between_2_vectors
-from .get_mesh_grid_point_x_dimension_d_dimensions import (
-    get_mesh_grid_point_x_dimension_d_dimensions,
-)
-from .GPSMap import GPSMap
+from .get_mesh_grid_point_x_dimension_d_dimensions import get_mesh_grid_point_x_dimension_d_dimensions
 from .guess_data_type import guess_data_type
-from .hierarchical_consensus_cluster_dataframe import (
-    hierarchical_consensus_cluster_dataframe,
-)
-from .hierarchical_consensus_cluster_dataframe_with_rs import (
-    hierarchical_consensus_cluster_dataframe_with_rs,
-)
-from .ignore_bad_and_compute_euclidean_distance import (
-    ignore_bad_and_compute_euclidean_distance,
-)
+from .hierarchical_consensus_cluster_dataframe import hierarchical_consensus_cluster_dataframe
+from .hierarchical_consensus_cluster_dataframe_with_rs import hierarchical_consensus_cluster_dataframe_with_rs
+from .ignore_bad_and_compute_euclidean_distance import ignore_bad_and_compute_euclidean_distance
 from .infer import infer
 from .infer_assuming_independence import infer_assuming_independence
 from .is_sorted_array import is_sorted_array
 from .log_array import log_array
-from .make_binary_dataframe_from_categorical_series import (
-    make_binary_dataframe_from_categorical_series,
-)
+from .make_binary_dataframe_from_categorical_series import make_binary_dataframe_from_categorical_series
 from .make_consecutive_group_labels import make_consecutive_group_labels
 from .make_context_matrix import make_context_matrix
 from .make_context_matrix_ import make_context_matrix_
 from .make_dataframes_axis_different import make_dataframes_axis_different
 from .make_dataframes_axis_same import make_dataframes_axis_same
-from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
-    make_element_x_dimension_from_element_x_node_and_node_x_dimension,
-)
+from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import make_element_x_dimension_from_element_x_node_and_node_x_dimension
 from .make_match_panel import make_match_panel
 from .make_match_panel_annotations import make_match_panel_annotations
 from .make_match_panel_summary import make_match_panel_summary
@@ -108,24 +71,19 @@ from .make_match_panels import make_match_panels
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .make_reflecting_grid import make_reflecting_grid
 from .make_vector_grid import make_vector_grid
-from .map_objects_to_ints import map_objects_to_ints
 from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .merge_2_dicts_with_function import merge_2_dicts_with_function
 from .mf_consensus_cluster_dataframe import mf_consensus_cluster_dataframe
-from .mf_consensus_cluster_dataframe_with_rs import (
-    mf_consensus_cluster_dataframe_with_rs,
-)
+from .mf_consensus_cluster_dataframe_with_rs import mf_consensus_cluster_dataframe_with_rs
 from .mf_dataframes import mf_dataframes
 from .mf_vs_w_hs import mf_vs_w_hs
 from .mf_vs_ws_h import mf_vs_ws_h
 from .mf_with_multiplicative_update import mf_with_multiplicative_update
-from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .nmf_with_sklearn import nmf_with_sklearn
 from .normalize_array import normalize_array
 from .normalize_array_on_axis import normalize_array_on_axis
 from .normalize_dataframe import normalize_dataframe
-from .normalize_file_name import normalize_file_name
-from .normalize_path import normalize_path
+from .normalize_name import normalize_name
 from .normalize_series import normalize_series
 from .plot_bayesian_nomogram import plot_bayesian_nomogram
 from .plot_bubble_map import plot_bubble_map
@@ -137,36 +95,28 @@ from .plot_histogram import plot_histogram
 from .plot_mesh_grid import plot_mesh_grid
 from .plot_mf import plot_mf
 from .plot_plotly_figure import plot_plotly_figure
-from .print_function_information import print_function_information
 from .process_dataframe import process_dataframe
-from .RANDOM_SEED import RANDOM_SEED
 from .read_gmt import read_gmt
 from .read_gps_map import read_gps_map
 from .read_json import read_json
 from .read_process_write_gene_x_cell import read_process_write_gene_x_cell
-from .rescale_x_y_coordiantes_in_polar_coordiante import (
-    rescale_x_y_coordiantes_in_polar_coordiante,
-)
+from .rescale_x_y_coordiantes_in_polar_coordiante import rescale_x_y_coordiantes_in_polar_coordiante
 from .run_command import run_command
 from .sample_dataframe import sample_dataframe
-from .sample_from_each_series_value import sample_from_each_series_value
+from .sample_series_index_for_each_value import sample_series_index_for_each_value
 from .scale_element_x_dimension_dimension import scale_element_x_dimension_dimension
-from .select_and_group_feature_x_tcga_sample_by_sample_type import (
-    select_and_group_feature_x_tcga_sample_by_sample_type,
-)
+from .select_and_group_feature_x_tcga_sample_by_sample_type import select_and_group_feature_x_tcga_sample_by_sample_type
 from .select_series_indices import select_series_indices
 from .separate_information_x_sample import separate_information_x_sample
 from .shuffle_each_matrix_slice import shuffle_each_matrix_slice
 from .simulate_array import simulate_array
 from .simulate_series_or_dataframe import simulate_series_or_dataframe
-from .skip_quote_and_split_str import skip_quote_and_split_str
 from .solve_ax_b_x import solve_ax_b_x
 from .solve_v_wh_h import solve_v_wh_h
 from .split_dataframe import split_dataframe
 from .summarize_dataframe import summarize_dataframe
 from .title_str import title_str
 from .unmesh import unmesh
-from .untitle_str import untitle_str
 from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
 from .update_w_by_multiplicative_update import update_w_by_multiplicative_update
 from .write_gps_map import write_gps_map
