@@ -1,5 +1,3 @@
-from os.path import join
-
 from pandas import DataFrame
 
 from .cluster_matrix import cluster_matrix
@@ -26,7 +24,7 @@ def plot_mf(ws, hs, directory_path):
                 "width": axis_size_0,
                 "title": {"text": "W{}".format(i)},
             },
-            html_file_path=join(directory_path, "w{}.html".format(i)),
+            html_file_path="{}/w{}.html".format(directory_path, i),
         )
 
     for i, h in enumerate(hs):
@@ -42,5 +40,5 @@ def plot_mf(ws, hs, directory_path):
                 "width": axis_size_1,
                 "title": {"text": "H{}".format(i)},
             },
-            html_file_path=join(directory_path, "h{}.html".format(i)),
+            html_file_path="{}/h{}.html".format(directory_path, i),
         )

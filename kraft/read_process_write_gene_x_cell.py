@@ -1,9 +1,7 @@
-from os.path import join
-
 from pandas import DataFrame, read_csv
 from scipy.io import mmread
 
-from .process_feature_x_sample import process_feature_x_sample
+from .process_dataframe import process_dataframe
 
 
 def read_process_write_gene_x_cell(
@@ -30,12 +28,12 @@ def read_process_write_gene_x_cell(
 
     gene_x_cell = gene_x_cell.sort_index().sort_index(axis=1)
 
-    tsv_file_path = join(output_directory_path, "gene_x_cell.tsv")
+    file_path = "{}/gene_x_cell.tsv".format(output_directory_path)
 
-    gene_x_cell.to_csv(tsv_file_path, sep="\t")
+    gene_x_cell.to_csv(file_path, sep="\t")
 
-    gene_x_cell_log = process_feature_x_sample(
+    gene_x_cell_log = process_dataframe(
         gene_x_cell, shift_as_necessary_to_achieve_min_before_logging=1, log_base=2
     )
 
-    gene_x_cell_log.to_csv(tsv_file_path.replace(".tsv", "_log2.tsv"), sep="\t")
+    gene_x_cell_log.to_csv(file_path.replace(".tsv", "_log.tsv"), sep="\t")

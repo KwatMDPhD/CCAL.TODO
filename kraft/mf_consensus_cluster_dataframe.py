@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import full, nan
 from pandas import DataFrame, Index, Series
 
@@ -66,9 +64,9 @@ def mf_consensus_cluster_dataframe(
 
             h_0 = DataFrame(h_0, index=index_factors, columns=dataframe.columns)
 
-            w_0.to_csv(join(directory_path, "w.tsv"), sep="\t")
+            w_0.to_csv("{}/w.tsv".format(directory_path), sep="\t")
 
-            h_0.to_csv(join(directory_path, "h.tsv"), sep="\t")
+            h_0.to_csv("{}/h.tsv".format(directory_path), sep="\t")
 
             if plot_heat_map_:
 
@@ -103,7 +101,7 @@ def mf_consensus_cluster_dataframe(
             column_annotations=h_element_cluster,
             column_annotation_colorscale=annotation_colorscale,
             layout={"title": {"text": "MFCC r={}".format(r)}},
-            html_file_path=join(directory_path, "dataframe_cluster.html"),
+            html_file_path="{}/dataframe_cluster.html".format(directory_path),
         )
 
     return (

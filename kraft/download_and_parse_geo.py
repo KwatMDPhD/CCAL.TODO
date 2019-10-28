@@ -1,4 +1,3 @@
-from os.path import join
 from re import sub
 
 import GEOparse
@@ -10,7 +9,7 @@ from .separate_information_x_sample import separate_information_x_sample
 
 def download_and_parse_geo(geo_id, directory_path):
 
-    directory_path = join(directory_path, geo_id)
+    directory_path = "{}/{}".format(directory_path, geo_id)
 
     print("Populating {}...".format(directory_path))
 
@@ -32,7 +31,7 @@ def download_and_parse_geo(geo_id, directory_path):
     geo_dict["information_x_sample"] = clean_and_write_dataframe_to_tsv(
         gse.phenotype_data.T,
         "Information",
-        join(directory_path, "information_x_sample.tsv"),
+        "{}/information_x_sample.tsv".format(directory_path),
     )
 
     for information_x_sample_name, information_x_sample in zip(
@@ -56,7 +55,7 @@ def download_and_parse_geo(geo_id, directory_path):
         geo_dict[information_x_sample_name] = clean_and_write_dataframe_to_tsv(
             information_x_sample,
             information_x_sample.index.name,
-            join(directory_path, "{}.tsv".format(information_x_sample_name)),
+            "{}/{}.tsv".format(directory_path, information_x_sample_name),
         )
 
     if any(gsm.table.empty for gsm in gse.gsms.values()):
@@ -90,7 +89,7 @@ def download_and_parse_geo(geo_id, directory_path):
         values.append(sample_values)
 
     geo_dict["id_x_sample"] = clean_and_write_dataframe_to_tsv(
-        concat(values, axis=1), "ID", join(directory_path, "id_x_sample.tsv")
+        concat(values, axis=1), "ID", "{}/id_x_sample.tsv".format(directory_path)
     )
 
     id_gene_symbol = None

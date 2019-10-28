@@ -1,7 +1,9 @@
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def sample_from_each_series_value(series, n_per_value=None, random_seed=RANDOM_SEED):
+def sample_series_index_for_each_value(
+    series, n_per_value=None, random_seed=RANDOM_SEED
+):
 
     if n_per_value is None:
 

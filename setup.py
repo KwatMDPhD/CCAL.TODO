@@ -1,5 +1,4 @@
 from os import walk
-from os.path import join
 
 from setuptools import setup
 
@@ -14,11 +13,11 @@ def get_child_paths(parent_directory_path, relative=True):
 
         for directory_name in directory_names:
 
-            child_paths.append(join(directory_path, "{}/".format(directory_name)))
+            child_paths.append("{}/{}/".format(directory_path, directory_name))
 
         for file_name in file_names:
 
-            child_paths.append(join(directory_path, file_name))
+            child_paths.append("{}/{}".format(directory_path, file_name))
 
     if relative:
 
@@ -30,6 +29,8 @@ def get_child_paths(parent_directory_path, relative=True):
 
         return tuple(child_paths)
 
+
+data_directory_name = "data"
 
 setup(
     name=name,
@@ -53,6 +54,9 @@ setup(
     ),
     packages=(name,),
     package_data={
-        name: tuple(join("data", path) for path in get_child_paths(join(name, "data")))
+        name: tuple(
+            "{}/{}".format(data_directory_name, path)
+            for path in get_child_paths("{}/{}".format(name, data_directory_name))
+        )
     },
 )

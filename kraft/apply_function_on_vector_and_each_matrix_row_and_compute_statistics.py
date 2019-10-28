@@ -28,11 +28,11 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
     match_function=compute_information_coefficient_between_2_vectors,
     n_required_for_match_function=2,
     raise_for_n_less_than_required=False,
-    n_extreme=8,
+    n_extreme=16,
     fraction_extreme=None,
     random_seed=RANDOM_SEED,
-    n_sampling=10,
-    n_permutation=10,
+    n_sampling=0,
+    n_permutation=0,
 ):
 
     score_moe_p_value_fdr = DataFrame(

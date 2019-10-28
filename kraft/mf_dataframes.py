@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import isnan
 from pandas import DataFrame, Index
 
@@ -44,11 +42,11 @@ def mf_dataframes(
 
     for i, w in enumerate(ws):
 
-        w.to_csv(join(directory_path, "w{}.tsv".format(i)), sep="\t")
+        w.to_csv("{}/w{}.tsv".format(directory_path, i), sep="\t")
 
     for i, h in enumerate(hs):
 
-        h.to_csv(join(directory_path, "h{}.tsv".format(i)), sep="\t")
+        h.to_csv("{}/h{}.tsv".format(directory_path, i), sep="\t")
 
     if plot_w_h:
 

@@ -1,1 +1,20 @@
-BAD_VALUES = ("N/A", "n/a", "NA", "na", "None", "none", "?", "Missing", "missing")
+BAD_VALUES = (
+    "--",
+    "?",
+    "Missing",
+    "N/A",
+    "N/A",
+    "NA",
+    "NA",
+    "NAN",
+    "NaN",
+    "None",
+    "missing",
+    "n/a",
+    "n/a",
+    "na",
+    "na",
+    "nan",
+    "none",
+    "unknown",
+)

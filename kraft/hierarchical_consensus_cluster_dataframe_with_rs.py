@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import sort
 from pandas import DataFrame, Index, concat
 from scipy.spatial.distance import pdist, squareform
@@ -29,7 +27,7 @@ def hierarchical_consensus_cluster_dataframe_with_rs(
     plot_dataframe=True,
 ):
 
-    r_directory_paths = tuple(join(directory_path, str(r)) for r in rs)
+    r_directory_paths = tuple("{}/{}".format(directory_path, r) for r in rs)
 
     for r_directory_path in r_directory_paths:
 
@@ -50,7 +48,7 @@ def hierarchical_consensus_cluster_dataframe_with_rs(
         )
 
         element_x_element_distance.to_csv(
-            join(directory_path, "element_x_element_distance.tsv"), sep="\t"
+            "{}/element_x_element_distance.tsv".format(directory_path), sep="\t"
         )
 
         if axis == 1:
@@ -104,14 +102,14 @@ def hierarchical_consensus_cluster_dataframe_with_rs(
                 }
             ],
         },
-        join(directory_path, "ccc.html"),
+        "{}/ccc.html".format(directory_path),
     )
 
     r_x_element = concat([r_return[key]["element_cluster"] for key in keys], axis=1).T
 
     r_x_element.index = keys
 
-    r_x_element.to_csv(join(directory_path, "r_x_element.tsv"), sep="\t")
+    r_x_element.to_csv("{}/r_x_element.tsv".format(directory_path), sep="\t")
 
     if plot_dataframe:
 
@@ -123,8 +121,8 @@ def hierarchical_consensus_cluster_dataframe_with_rs(
             ),
             colorscale=DATA_TYPE_COLORSCALE["categorical"],
             layout={"title": {"text": "HCC"}},
-            html_file_path=join(
-                directory_path, "r_x_element_cluster_distribution.html"
+            html_file_path="{}/r_x_element_cluster_distribution.html".format(
+                directory_path
             ),
         )
 

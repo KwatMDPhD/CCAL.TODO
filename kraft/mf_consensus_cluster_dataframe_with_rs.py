@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import asarray, sort
 from pandas import DataFrame, Index
 
@@ -26,7 +24,7 @@ def mf_consensus_cluster_dataframe_with_rs(
     **plot_mf_keyword_arguments,
 ):
 
-    r_directory_paths = tuple(join(directory_path, str(r)) for r in rs)
+    r_directory_paths = tuple("{}/{}".format(directory_path, r) for r in rs)
 
     for r_directory_path in r_directory_paths:
 
@@ -94,7 +92,7 @@ def mf_consensus_cluster_dataframe_with_rs(
                 }
             ],
         },
-        join(directory_path, "mf_error.html"),
+        "{}/mf_error.html".format(directory_path),
     )
 
     w_element_cluster_ccc = tuple(
@@ -126,7 +124,7 @@ def mf_consensus_cluster_dataframe_with_rs(
                 {"type": "scatter", "name": "H", "x": rs, "y": h_element_cluster_ccc},
             ],
         },
-        join(directory_path, "ccc.html"),
+        "{}/ccc.html".format(directory_path),
     )
 
     for w_or_h, r_x_element in (
@@ -149,7 +147,7 @@ def mf_consensus_cluster_dataframe_with_rs(
     ):
 
         r_x_element.to_csv(
-            join(directory_path, "r_x_{}_element.tsv".format(w_or_h)), sep="\t"
+            "{}/r_x_{}_element.tsv".format(directory_path, w_or_h), sep="\t"
         )
 
         if plot_heat_map_:
@@ -158,9 +156,8 @@ def mf_consensus_cluster_dataframe_with_rs(
                 DataFrame(sort(r_x_element.values, axis=1), index=keys),
                 colorscale=DATA_TYPE_COLORSCALE["categorical"],
                 layout={"title": {"text": "MFCC {}".format(w_or_h.title())}},
-                html_file_path=join(
-                    directory_path,
-                    "r_x_{}_element_cluster_distribution.html".format(w_or_h),
+                html_file_path="{}/r_x_{}_element_cluster_distribution.html".format(
+                    directory_path, w_or_h
                 ),
             )
 

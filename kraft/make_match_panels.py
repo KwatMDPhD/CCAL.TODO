@@ -1,4 +1,4 @@
-from os.path import isfile, join
+from os.path import isfile
 
 from pandas import read_csv
 
@@ -30,7 +30,7 @@ def make_match_panels(
                 )
             )
 
-            file_path_prefix = join(
+            file_path_prefix = "{}/{}/{}".format(
                 directory_path,
                 normalize_file_name(target_name),
                 normalize_file_name(data_dict["name"]),
@@ -61,9 +61,7 @@ def make_match_panels(
                 data_dict["dataframe"],
                 score_moe_p_value_fdr=score_moe_p_value_fdr,
                 data_data_type=data_dict["data_type"],
-                layout={
-                    "title": {"text": "{}<br>{}".format(target_name, data_dict["name"])}
-                },
+                layout={"title": {"text": data_dict["name"]}},
                 file_path_prefix=file_path_prefix,
                 **make_match_panel_keyword_arguments,
             )

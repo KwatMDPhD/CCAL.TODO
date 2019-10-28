@@ -1,5 +1,4 @@
 from os import walk
-from os.path import join
 
 
 def get_child_paths(parent_directory_path, relative=True):
@@ -10,11 +9,11 @@ def get_child_paths(parent_directory_path, relative=True):
 
         for directory_name in directory_names:
 
-            child_paths.append(join(directory_path, "{}/".format(directory_name)))
+            child_paths.append("{}/{}/".format(directory_path, directory_name))
 
         for file_name in file_names:
 
-            child_paths.append(join(directory_path, file_name))
+            child_paths.append("{}/{}".format(directory_path, file_name))
 
     if relative:
 

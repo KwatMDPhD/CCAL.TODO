@@ -1,4 +1,4 @@
-from os.path import basename, join
+from os.path import basename
 from urllib.parse import urlsplit
 
 from requests import get
@@ -6,7 +6,7 @@ from requests import get
 
 def download_url(url, directory_path):
 
-    file_path = join(directory_path, basename(urlsplit(url).path))
+    file_path = "{}/{}".format(directory_path, basename(urlsplit(url).path))
 
     print("{} =(download)=> {}...".format(url, file_path))
 

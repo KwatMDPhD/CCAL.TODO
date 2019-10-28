@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import full, nan
 from numpy.random import randint, seed
 from pandas import DataFrame, Series
@@ -45,7 +43,7 @@ def hierarchical_consensus_cluster_dataframe(
         )
 
         element_x_element_distance.to_csv(
-            join(directory_path, "element_x_element_distance.tsv"), sep="\t"
+            "{}/element_x_element_distance.tsv".format(directory_path), sep="\t"
         )
 
     clustering_x_element = full((n_clustering, dataframe.shape[0]), nan)
@@ -85,7 +83,9 @@ def hierarchical_consensus_cluster_dataframe(
 
     cluster_x_element = make_binary_dataframe_from_categorical_series(element_cluster)
 
-    cluster_x_element.to_csv(join(directory_path, "cluster_x_element.tsv"), sep="\t")
+    cluster_x_element.to_csv(
+        "{}/cluster_x_element.tsv".format(directory_path), sep="\t"
+    )
 
     if axis == 1:
 
@@ -111,7 +111,7 @@ def hierarchical_consensus_cluster_dataframe(
         plot_heat_map(
             dataframe,
             layout={"title": {"text": "HCC r={}".format(r)}},
-            html_file_path=join(directory_path, "dataframe_cluster.html"),
+            html_file_path="{}/dataframe_cluster.html".format(directory_path),
             **plot_heat_map_keyword_arguments,
         )
 
