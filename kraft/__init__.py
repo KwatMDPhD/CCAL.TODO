@@ -95,6 +95,7 @@ from .plot_histogram import plot_histogram
 from .plot_mesh_grid import plot_mesh_grid
 from .plot_mf import plot_mf
 from .plot_plotly_figure import plot_plotly_figure
+from .plot_scatter import plot_scatter
 from .process_dataframe import process_dataframe
 from .read_gmt import read_gmt
 from .read_gps_map import read_gps_map
