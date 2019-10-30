@@ -1,5 +1,6 @@
-from .plot_plotly_figure import plot_plotly_figure
 from pandas import Series
+
+from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_scatter(xs, ys, layout=None):
@@ -48,4 +49,3 @@ def plot_scatter(xs, ys, layout=None):
         layout = {}
 
     plot_plotly_figure({"layout": layout, "data": data})
-
