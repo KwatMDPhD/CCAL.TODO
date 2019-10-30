@@ -5,7 +5,7 @@ from .plot_plotly_figure import plot_plotly_figure
 
 
 def plot_histogram(
-    serieses, histnorm=None, plot_rug=True, layout=None, html_file_path=None
+    serieses, histnorm=None, plot_rug=None, layout=None, html_file_path=None
 ):
 
     if histnorm is None:
@@ -15,6 +15,10 @@ def plot_histogram(
     else:
 
         yaxis2_title_text = histnorm.title()
+
+    if plot_rug is None:
+
+        plot_rug = all(series.size < 1e3 for series in serieses)
 
     if plot_rug:
 

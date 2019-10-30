@@ -17,6 +17,8 @@ def plot_scatter(xs, ys, layout=None):
 
     texts = []
 
+    modes = []
+
     for y in ys:
 
         if isinstance(y, Series):
@@ -31,6 +33,20 @@ def plot_scatter(xs, ys, layout=None):
 
             texts.append(None)
 
+        y_size = len(y)
+
+        if y_size < 64:
+
+            modes.append("markers+text")
+
+        elif y_size < 256:
+
+            modes.append("markers")
+
+        else:
+
+            modes.append("lines")
+
     data = [
         {
             "type": "scatter",
@@ -38,10 +54,10 @@ def plot_scatter(xs, ys, layout=None):
             "x": x,
             "y": y,
             "text": text,
-            "mode": "lines",
-            "marker": {"size": 1},
+            "mode": mode,
+            "marker": {"size": 3.2},
         }
-        for name, x, y, text in zip(names, xs, ys, texts)
+        for name, x, y, text, mode in zip(names, xs, ys, texts, modes)
     ]
 
     if layout is None:
