@@ -3,7 +3,7 @@ from pandas import Series
 from .plot_plotly_figure import plot_plotly_figure
 
 
-def plot_scatter(coordinates_s, layout=None):
+def plot_scatter(coordinates_s, traces=(), layout=None):
 
     data = []
 
@@ -25,19 +25,35 @@ def plot_scatter(coordinates_s, layout=None):
 
             text = y.index
 
-        y_size = len(y)
+        else:
 
-        if y_size < 64:
+            name = None
 
-            mode = "markers+text"
+            text = None
 
-        elif y_size < 256:
+        if 0 < len(traces):
 
-            mode = "markers"
+            trace_template = traces[i]
 
         else:
 
-            mode = "lines"
+            y_size = len(y)
+
+            if y_size < 64:
+
+                mode = "markers+text"
+
+            elif y_size < 256:
+
+                mode = "markers"
+
+            else:
+
+                mode = "lines"
+
+            trace_template = {
+                "mode": mode,
+            }
 
         data.append(
             {
@@ -46,9 +62,8 @@ def plot_scatter(coordinates_s, layout=None):
                 "x": x,
                 "y": y,
                 "text": text,
-                "mode": mode,
-                "marker": {"size": 3.2},
-            }
+                **trace_template,
+            },
         )
 
     if layout is None:
