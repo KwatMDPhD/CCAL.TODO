@@ -3,62 +3,53 @@ from pandas import Series
 from .plot_plotly_figure import plot_plotly_figure
 
 
-def plot_scatter(xs, ys, layout=None):
+def plot_scatter(coordinates_s, layout=None):
 
-    if xs is None:
+    data = []
 
-        xs = tuple(tuple(range(len(y))) for y in ys)
+    for i, coordinates in enumerate(coordinates_s):
 
-    elif len(xs) == 1:
+        if len(coordinates) == 1:
 
-        xs = xs * len(ys)
+            y = coordinates[0]
 
-    names = []
-
-    texts = []
-
-    modes = []
-
-    for y in ys:
-
-        if isinstance(y, Series):
-
-            names.append(y.name)
-
-            texts.append(y.index)
+            x = tuple(range(len(y)))
 
         else:
 
-            names.append(None)
+            x, y = coordinates
 
-            texts.append(None)
+        if isinstance(y, Series):
+
+            name = y.name
+
+            text = y.index
 
         y_size = len(y)
 
         if y_size < 64:
 
-            modes.append("markers+text")
+            mode = "markers+text"
 
         elif y_size < 256:
 
-            modes.append("markers")
+            mode = "markers"
 
         else:
 
-            modes.append("lines")
+            mode = "lines"
 
-    data = [
-        {
-            "type": "scatter",
-            "name": name,
-            "x": x,
-            "y": y,
-            "text": text,
-            "mode": mode,
-            "marker": {"size": 3.2},
-        }
-        for name, x, y, text, mode in zip(names, xs, ys, texts, modes)
-    ]
+        data.append(
+            {
+                "type": "scatter",
+                "name": name,
+                "x": x,
+                "y": y,
+                "text": text,
+                "mode": mode,
+                "marker": {"size": 3.2},
+            }
+        )
 
     if layout is None:
 

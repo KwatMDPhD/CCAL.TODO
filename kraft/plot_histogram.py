@@ -1,12 +1,12 @@
+from pandas import Series
+
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_colorscale_color import get_colorscale_color
 from .merge_2_dicts_recursively import merge_2_dicts_recursively
 from .plot_plotly_figure import plot_plotly_figure
 
 
-def plot_histogram(
-    serieses, histnorm=None, plot_rug=None, layout=None, html_file_path=None
-):
+def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path=None):
 
     if histnorm is None:
 
@@ -18,23 +18,36 @@ def plot_histogram(
 
     if plot_rug is None:
 
-        plot_rug = all(series.size < 1e3 for series in serieses)
+        plot_rug = all(len(x) < 1e3 for x in xs)
+
+    n = len(xs)
 
     if plot_rug:
 
-        yaxis_domain = (0, 0.1)
+        rug_height = 0.039
 
-        yaxis2_domain = (0.15, 1)
+        yaxis_domain_max = n * rug_height
+
+        yaxis2_domain_min = yaxis_domain_max + rug_height
 
     else:
 
-        yaxis_domain = (0, 0)
+        yaxis_domain_max = 0
 
-        yaxis2_domain = (0, 1)
+        yaxis2_domain_min = 0
+
+    yaxis_domain = (0, yaxis_domain_max)
+
+    yaxis2_domain = (yaxis2_domain_min, 1)
 
     layout_template = {
         "xaxis": {"anchor": "y"},
-        "yaxis": {"domain": yaxis_domain, "dtick": 1, "showticklabels": False},
+        "yaxis": {
+            "domain": yaxis_domain,
+            "zeroline": False,
+            "dtick": 1,
+            "showticklabels": False,
+        },
         "yaxis2": {"domain": yaxis2_domain, "title": {"text": yaxis2_title_text}},
     }
 
@@ -48,19 +61,29 @@ def plot_histogram(
 
     data = []
 
-    for i, series in enumerate(serieses):
+    for i, x in enumerate(xs):
 
-        color = get_colorscale_color(
-            DATA_TYPE_COLORSCALE["categorical"], i, len(serieses)
-        )
+        if isinstance(x, Series):
+
+            name = x.name
+
+            text = x.index
+
+        else:
+
+            name = None
+
+            text = None
+
+        color = get_colorscale_color(DATA_TYPE_COLORSCALE["categorical"], i, n)
 
         data.append(
             {
                 "yaxis": "y2",
                 "type": "histogram",
                 "legendgroup": i,
-                "name": series.name,
-                "x": series,
+                "name": name,
+                "x": x,
                 "histnorm": histnorm,
                 "marker": {"color": color},
             }
@@ -73,9 +96,9 @@ def plot_histogram(
                     "type": "scatter",
                     "legendgroup": i,
                     "showlegend": False,
-                    "x": series,
-                    "y": (0,) * series.size,
-                    "text": series.index,
+                    "x": x,
+                    "y": (i,) * len(x),
+                    "text": text,
                     "mode": "markers",
                     "marker": {"symbol": "line-ns-open", "color": color},
                     "hoverinfo": "x+text",
