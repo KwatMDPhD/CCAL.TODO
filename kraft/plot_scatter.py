@@ -51,9 +51,7 @@ def plot_scatter(coordinates_s, traces=(), layout=None):
 
                 mode = "lines"
 
-            trace_template = {
-                "mode": mode,
-            }
+            trace_template = {"mode": mode}
 
         data.append(
             {
@@ -63,7 +61,7 @@ def plot_scatter(coordinates_s, traces=(), layout=None):
                 "y": y,
                 "text": text,
                 **trace_template,
-            },
+            }
         )
 
     if layout is None:
