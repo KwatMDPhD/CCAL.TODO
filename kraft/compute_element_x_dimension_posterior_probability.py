@@ -17,7 +17,10 @@ def compute_element_x_dimension_posterior_probability(
     **estimate_element_x_dimension_kernel_density_keyword_arguments,
 ):
 
-    mesh_grid_point_x_dimension, mesh_grid_point_joint_probability = compute_element_x_dimension_joint_probability(
+    (
+        mesh_grid_point_x_dimension,
+        mesh_grid_point_joint_probability,
+    ) = compute_element_x_dimension_joint_probability(
         element_x_dimension,
         plot=plot,
         dimension_names=dimension_names,

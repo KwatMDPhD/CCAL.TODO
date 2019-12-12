@@ -34,7 +34,13 @@ def make_context_matrix_(
 
         else:
 
-            n_data, location, scale, degree_of_freedom, shape = skew_t_pdf_fit_parameter.loc[
+            (
+                n_data,
+                location,
+                scale,
+                degree_of_freedom,
+                shape,
+            ) = skew_t_pdf_fit_parameter.loc[
                 index, ["N Data", "Location", "Scale", "Degree of Freedom", "Shape"]
             ]
 

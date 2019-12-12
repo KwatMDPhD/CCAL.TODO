@@ -21,7 +21,10 @@ def infer(
 
     n_dimension = element_x_dimension.shape[1]
 
-    mesh_grid_point_x_dimension, mesh_grid_point_posterior_probability = compute_element_x_dimension_posterior_probability(
+    (
+        mesh_grid_point_x_dimension,
+        mesh_grid_point_posterior_probability,
+    ) = compute_element_x_dimension_posterior_probability(
         element_x_dimension,
         dimension_fraction_grid_extensions=(fraction_grid_extension,) * n_dimension,
         dimension_n_grids=(n_grid,) * n_dimension,

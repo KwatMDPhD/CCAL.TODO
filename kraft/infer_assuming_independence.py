@@ -30,7 +30,10 @@ def infer_assuming_independence(
             "Dimension {} Variable".format(i) for i in range(n_dimension)
         )
 
-    target_mesh_grid_point_x_dimension, target_mesh_grid_point_posterior_probability = compute_element_x_dimension_joint_probability(
+    (
+        target_mesh_grid_point_x_dimension,
+        target_mesh_grid_point_posterior_probability,
+    ) = compute_element_x_dimension_joint_probability(
         element_x_dimension[:, -1:],
         dimension_fraction_grid_extensions=(fraction_grid_extension,),
         dimension_n_grids=(n_grid,),
