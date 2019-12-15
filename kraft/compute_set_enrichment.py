@@ -28,7 +28,7 @@ def compute_set_enrichment(
             dimension_grid_mins=(vector.min(),),
             dimension_grid_maxs=(vector.max(),),
             dimension_fraction_grid_extensions=(1 / 8,),
-            dimension_n_grids=(512,),
+            dimension_n_grids=(64,),
             plot=False,
         )
 
@@ -89,7 +89,7 @@ def compute_set_enrichment(
     )
 
     #######
-    h_s_v = r_h * element_score.values
+    h_s_v = element_score.values[where(r_h)]
 
     h_s_g, h_s_d = estimate_vector_density(h_s_v.reshape(h_s_v.size, 1))
 
@@ -100,7 +100,7 @@ def compute_set_enrichment(
     h_s_c = h_s_p.cumsum()
 
     #######
-    m_s_v = r_m * element_score.values
+    m_s_v = element_score.values[where(r_m)]
 
     m_s_g, m_s_d = estimate_vector_density(m_s_v.reshape(m_s_v.size, 1))
 
