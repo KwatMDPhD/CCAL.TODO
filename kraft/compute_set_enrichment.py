@@ -6,13 +6,12 @@ from .plot_plotly_figure import plot_plotly_figure
 def compute_set_enrichment(
     element_score,
     set_elements,
-    statistic="auc",
     plot=True,
-    title="SEA Mountain Plot",
+    title="Set Enrichment",
     element_score_name="Element Score",
-    annotation_text_font_size=10,
-    annotation_text_width=100,
-    annotation_text_yshift=50,
+    annotation_text_font_size=8,
+    annotation_text_width=80,
+    annotation_text_yshift=32,
     html_file_path=None,
 ):
 
@@ -46,14 +45,14 @@ def compute_set_enrichment(
         "title": {"text": title, "x": 0.5, "xanchor": "center"},
         "xaxis": {"anchor": "y", "title": "Rank"},
         "yaxis": {"domain": (0, 0.16), "title": element_score_name},
-        "yaxis2": {"domain": (0.20, 1), "title": "Enrichment"},
+        "yaxis2": {"domain": (0.18, 1), "title": "Enrichment"},
     }
 
     data = []
 
     grid = arange(cumsum.size)
 
-    line_width = 3.2
+    line_width = 2.4
 
     data.append(
         {
@@ -89,7 +88,7 @@ def compute_set_enrichment(
             "x": (grid[peek_index],),
             "y": (cumsum[peek_index],),
             "mode": "markers",
-            "marker": {"size": 12, "color": color},
+            "marker": {"size": 8, "color": color},
         }
     )
 
@@ -110,9 +109,9 @@ def compute_set_enrichment(
             "mode": "markers",
             "marker": {
                 "symbol": "line-ns-open",
-                "size": 16,
+                "size": 8,
                 "color": "#9017e6",
-                "line": {"width": line_width},
+                "line": {"width": line_width / 2},
             },
             "hoverinfo": "x+text",
         }
