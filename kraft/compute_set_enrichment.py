@@ -1,4 +1,4 @@
-from numpy import absolute, arange, asarray, where
+from numpy import absolute, asarray, where
 
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -6,51 +6,164 @@ from .plot_plotly_figure import plot_plotly_figure
 def compute_set_enrichment(
     element_score,
     set_elements,
+    statistic="rcks",
     plot=True,
     title="Set Enrichment",
     element_score_name="Element Score",
     annotation_text_font_size=8,
-    annotation_text_width=80,
+    annotation_text_width=160,
     annotation_text_yshift=32,
     html_file_path=None,
 ):
 
+    ############################################################################
+    from .estimate_element_x_dimension_kernel_density import (
+        estimate_element_x_dimension_kernel_density,
+    )
+
+    def estimate_vector_density(vector):
+
+        return estimate_element_x_dimension_kernel_density(
+            vector,
+            dimension_grid_mins=(vector.min(),),
+            dimension_grid_maxs=(vector.max(),),
+            dimension_fraction_grid_extensions=(1 / 8,),
+            dimension_n_grids=(512,),
+            plot=False,
+        )
+
+    trace_tempalte = {
+        "mode": "lines",
+        "opacity": 0.64,
+    }
+
+    ########
     set_element_ = {set_element: None for set_element in set_elements}
 
-    hit = asarray(
+    ########
+    r_h = asarray(
         [
             element_score_element in set_element_
             for element_score_element in element_score.index
         ],
-        dtype=int,
+        dtype=float,
     )
 
-    up = hit * absolute(element_score.values)
+    r_m = 1 - r_h
 
-    up /= up.sum()
+    ########
+    h_r_v = r_h * absolute(element_score.values)
 
-    down = 1.0 - hit
+    h_r_p = h_r_v / h_r_v.sum()
 
-    down /= down.sum()
+    h_r_c = h_r_p.cumsum()
 
-    cumsum = (up - down).cumsum()
+    ########
+    m_r_v = r_m
 
-    gsea_score = cumsum.sum()
+    m_r_p = m_r_v / m_r_v.sum()
 
+    m_r_c = m_r_p.cumsum()
+
+    ########
+    plot_plotly_figure(
+        {
+            "layout": {"title": {"text": "PDF(rank | hit-miss)"}},
+            "data": [
+                {"type": "scatter", "y": h_r_p, **trace_tempalte},
+                {"type": "scatter", "y": m_r_p, **trace_tempalte},
+            ],
+        },
+        None,
+    )
+
+    plot_plotly_figure(
+        {
+            "layout": {"title": {"text": "CDF(rank | hit-miss)"}},
+            "data": [
+                {"type": "scatter", "y": h_r_c, **trace_tempalte},
+                {"type": "scatter", "y": m_r_c, **trace_tempalte},
+            ],
+        },
+        None,
+    )
+
+    #######
+    h_s_v = r_h * element_score.values
+
+    h_s_g, h_s_d = estimate_vector_density(h_s_v.reshape(h_s_v.size, 1))
+
+    h_s_g = h_s_g.reshape(h_s_g.size)
+
+    h_s_p = h_s_d / h_s_d.sum()
+
+    h_s_c = h_s_p.cumsum()
+
+    #######
+    m_s_v = r_m * element_score.values
+
+    m_s_g, m_s_d = estimate_vector_density(m_s_v.reshape(m_s_v.size, 1))
+
+    m_s_g = m_s_g.reshape(m_s_g.size)
+
+    m_s_p = m_s_d / m_s_d.sum()
+
+    m_s_c = m_s_p.cumsum()
+
+    ########
+    plot_plotly_figure(
+        {
+            "layout": {"title": {"text": "PDF(score | hit-miss)"}},
+            "data": [
+                {"type": "scatter", "x": h_s_g, "y": h_s_p, **trace_tempalte},
+                {"type": "scatter", "x": m_s_g, "y": m_s_p, **trace_tempalte},
+            ],
+        },
+        None,
+    )
+
+    plot_plotly_figure(
+        {
+            "layout": {"title": {"text": "CDF(score | hit-miss)"}},
+            "data": [
+                {"type": "scatter", "x": h_s_g, "y": h_s_c, **trace_tempalte},
+                {"type": "scatter", "x": m_s_g, "y": m_s_c, **trace_tempalte},
+            ],
+        },
+        None,
+    )
+
+    ########
+    if statistic == "rcks":
+
+        signals = h_r_c - m_r_c
+
+    ########
+    elif statistic == "scks":
+
+        signals = h_s_c - m_s_c
+
+    signal_i = absolute(signals).argmax()
+
+    signal = signals[signal_i]
+
+    ########
     if not plot:
 
-        return gsea_score
+        return signal
+
+    ########
+    y_fraction = 0.16
 
     layout = {
         "title": {"text": title, "x": 0.5, "xanchor": "center"},
         "xaxis": {"anchor": "y", "title": "Rank"},
-        "yaxis": {"domain": (0, 0.16), "title": element_score_name},
-        "yaxis2": {"domain": (0.18, 1), "title": "Enrichment"},
+        "yaxis": {"domain": (0, y_fraction), "title": element_score_name},
+        "yaxis2": {"domain": (y_fraction + 0.08, 1), "title": "Enrichment"},
     }
 
+    ########
     data = []
-
-    grid = arange(cumsum.size)
 
     line_width = 2.4
 
@@ -59,52 +172,24 @@ def compute_set_enrichment(
             "yaxis": "y2",
             "type": "scatter",
             "name": "Cumulative Sum",
-            "x": grid,
-            "y": cumsum,
+            "y": signals,
             "line": {"width": line_width, "color": "#20d9ba"},
             "fill": "tozeroy",
         }
     )
 
-    peek_index = absolute(cumsum).argmax()
+    ########
+    r_h_i = where(r_h)[0]
 
-    negative_color = "#4e40d8"
-
-    positive_color = "#ff1968"
-
-    if gsea_score < 0:
-
-        color = negative_color
-
-    else:
-
-        color = positive_color
-
-    data.append(
-        {
-            "yaxis": "y2",
-            "type": "scatter",
-            "name": "Peak ({:.3f})".format(gsea_score),
-            "x": (grid[peek_index],),
-            "y": (cumsum[peek_index],),
-            "mode": "markers",
-            "marker": {"size": 8, "color": color},
-        }
-    )
-
-    in_indices = where(hit)[0]
-
-    element_xs = grid[in_indices]
-
-    element_texts = element_score[in_indices].index
+    element_texts = element_score[r_h_i].index
 
     data.append(
         {
             "yaxis": "y2",
             "type": "scatter",
             "name": "Element",
-            "x": element_xs,
-            "y": (0,) * element_xs.size,
+            "x": r_h_i,
+            "y": (0,) * r_h_i.size,
             "text": element_texts,
             "mode": "markers",
             "marker": {
@@ -117,24 +202,18 @@ def compute_set_enrichment(
         }
     )
 
-    is_negative = element_score < 0
+    ########
+    data.append(
+        {
+            "type": "scatter",
+            "name": "Element Score",
+            "y": element_score,
+            "line": {"width": line_width, "color": "#4e40d8"},
+            "fill": "tozeroy",
+        }
+    )
 
-    for indices, name, color in (
-        (is_negative, "- Element Score", negative_color),
-        (~is_negative, "+ Element Score", positive_color),
-    ):
-
-        data.append(
-            {
-                "type": "scatter",
-                "name": name,
-                "x": grid[indices],
-                "y": element_score[indices],
-                "line": {"width": line_width, "color": color},
-                "fill": "tozeroy",
-            }
-        )
-
+    ########
     layout["annotations"] = [
         {
             "x": x,
@@ -149,9 +228,10 @@ def compute_set_enrichment(
             "borderpad": 0,
             "yshift": (-annotation_text_yshift, annotation_text_yshift)[i % 2],
         }
-        for i, (x, str_) in enumerate(zip(element_xs, element_texts))
+        for i, (x, str_) in enumerate(zip(r_h_i, element_texts))
     ]
 
+    ########
     plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
 
-    return gsea_score
+    return signal
