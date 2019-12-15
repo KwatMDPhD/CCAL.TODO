@@ -29,6 +29,7 @@ from .compute_kullback_leibler_divergence import compute_kullback_leibler_diverg
 from .compute_matrix_norm import compute_matrix_norm
 from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
 from .compute_pdf_and_pdf_reference_context import compute_pdf_and_pdf_reference_context
+from .compute_set_enrichment import compute_set_enrichment
 from .compute_vector_bandwidth import compute_vector_bandwidth
 from .compute_vector_context import compute_vector_context
 from .compute_vector_entropy import compute_vector_entropy
@@ -98,6 +99,7 @@ from .plot_plotly_figure import plot_plotly_figure
 from .plot_scatter import plot_scatter
 from .process_dataframe import process_dataframe
 from .read_fcs import read_fcs
+from .read_gct import read_gct
 from .read_gmt import read_gmt
 from .read_gps_map import read_gps_map
 from .read_json import read_json
