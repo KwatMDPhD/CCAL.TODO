@@ -1,4 +1,4 @@
-from numpy import absolute, asarray, where
+from numpy import absolute, asarray, where, log
 
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -16,19 +16,23 @@ def compute_set_enrichment(
     html_file_path=None,
 ):
 
-    ############################################################################
+    ########
     from .estimate_element_x_dimension_kernel_density import (
         estimate_element_x_dimension_kernel_density,
     )
+
+    element_score_min = element_score.values.min()
+
+    element_score_max = element_score.values.max()
 
     def estimate_vector_density(vector):
 
         return estimate_element_x_dimension_kernel_density(
             vector,
-            dimension_grid_mins=(vector.min(),),
-            dimension_grid_maxs=(vector.max(),),
+            dimension_grid_mins=(element_score_min,),
+            dimension_grid_maxs=(element_score_max,),
             dimension_fraction_grid_extensions=(1 / 8,),
-            dimension_n_grids=(64,),
+            dimension_n_grids=(2 ** 8,),
             plot=False,
         )
 
@@ -91,9 +95,7 @@ def compute_set_enrichment(
     #######
     h_s_v = element_score.values[where(r_h)]
 
-    h_s_g, h_s_d = estimate_vector_density(h_s_v.reshape(h_s_v.size, 1))
-
-    h_s_g = h_s_g.reshape(h_s_g.size)
+    s_g, h_s_d = estimate_vector_density(h_s_v.reshape(h_s_v.size, 1))
 
     h_s_p = h_s_d / h_s_d.sum()
 
@@ -102,21 +104,22 @@ def compute_set_enrichment(
     #######
     m_s_v = element_score.values[where(r_m)]
 
-    m_s_g, m_s_d = estimate_vector_density(m_s_v.reshape(m_s_v.size, 1))
-
-    m_s_g = m_s_g.reshape(m_s_g.size)
+    s_g, m_s_d = estimate_vector_density(m_s_v.reshape(m_s_v.size, 1))
 
     m_s_p = m_s_d / m_s_d.sum()
 
     m_s_c = m_s_p.cumsum()
 
     ########
+    s_g = s_g.reshape(s_g.size)
+
+    ########
     plot_plotly_figure(
         {
             "layout": {"title": {"text": "PDF(score | hit-miss)"}},
             "data": [
-                {"type": "scatter", "x": h_s_g, "y": h_s_p, **trace_tempalte},
-                {"type": "scatter", "x": m_s_g, "y": m_s_p, **trace_tempalte},
+                {"type": "scatter", "x": s_g, "y": h_s_p, **trace_tempalte},
+                {"type": "scatter", "x": s_g, "y": m_s_p, **trace_tempalte},
             ],
         },
         None,
@@ -126,31 +129,36 @@ def compute_set_enrichment(
         {
             "layout": {"title": {"text": "CDF(score | hit-miss)"}},
             "data": [
-                {"type": "scatter", "x": h_s_g, "y": h_s_c, **trace_tempalte},
-                {"type": "scatter", "x": m_s_g, "y": m_s_c, **trace_tempalte},
+                {"type": "scatter", "x": s_g, "y": h_s_c, **trace_tempalte},
+                {"type": "scatter", "x": s_g, "y": m_s_c, **trace_tempalte},
             ],
         },
         None,
     )
 
     ########
-    if statistic == "rcks":
+    if statistic == "rcks":  # GSEA, ssGSEA
 
         signals = h_r_c - m_r_c
+
+    ########
+    elif statistic == "spkl":  # KL_PDF
+
+        s_g_signals = h_s_p * log(h_s_p / m_s_p)
+
+        signals = asarray(
+            [s_g_signals[absolute(s_g - score).argmin()] for score in element_score]
+        )
 
     ########
     elif statistic == "scks":
 
         signals = h_s_c - m_s_c
 
-    signal_i = absolute(signals).argmax()
-
-    signal = signals[signal_i]
-
     ########
     if not plot:
 
-        return signal
+        return
 
     ########
     y_fraction = 0.16
@@ -234,4 +242,4 @@ def compute_set_enrichment(
     ########
     plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
 
-    return signal
+    return
