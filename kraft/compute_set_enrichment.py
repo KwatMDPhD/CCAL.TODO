@@ -6,7 +6,7 @@ from .plot_plotly_figure import plot_plotly_figure
 def compute_set_enrichment(
     element_score,
     set_elements,
-    statistic="rcks",
+    statistic,
     plot=True,
     title="Set Enrichment",
     element_score_name="Element Score",
@@ -15,6 +15,99 @@ def compute_set_enrichment(
     annotation_text_yshift=32,
     html_file_path=None,
 ):
+
+    ########
+    trace_tempalte = {
+        "mode": "lines",
+        "opacity": 0.8,
+    }
+
+    ########
+    element_score = element_score.sort_values(ascending=False)
+
+    ########
+    plot_plotly_figure(
+        {
+            "layout": {
+                "title": {"text": "Element Score"},
+                "xaxis": {"title": {"text": "Rank"}},
+                "yaxis": {"title": {"text": "Score"}},
+            },
+            "data": [
+                {
+                    "type": "scatter",
+                    "y": element_score,
+                    "marker": {"color": "#20d8ba"},
+                    **trace_tempalte,
+                }
+            ],
+        },
+        None,
+    )
+
+    ########
+    set_element_ = {set_element: None for set_element in set_elements}
+
+    ########
+    r_h = asarray(
+        [
+            element_score_element in set_element_
+            for element_score_element in element_score.index
+        ],
+        dtype=int,
+    )
+
+    r_m = 1 - r_h
+
+    ########
+    r_h_i = where(r_h)[0]
+
+    r_m_i = where(r_m)[0]
+
+    ########
+    r_h_v = r_h
+
+    r_h_p = r_h_v / r_h_v.sum()
+
+    r_h_c = r_h_p.cumsum()
+
+    ########
+    r_m_v = r_m
+
+    r_m_p = r_m_v / r_m_v.sum()
+
+    r_m_c = r_m_p.cumsum()
+
+    ########
+    plot_plotly_figure(
+        {
+            "layout": {
+                "title": {"text": "PDF(rank | hit-miss)"},
+                "xaxis": {"title": {"text": "Rank"}},
+                "yaxis": {"title": {"text": "Probability"}},
+            },
+            "data": [
+                {"type": "scatter", "name": "Hit", "y": r_h_p, **trace_tempalte},
+                {"type": "scatter", "name": "Miss", "y": r_m_p, **trace_tempalte},
+            ],
+        },
+        None,
+    )
+
+    plot_plotly_figure(
+        {
+            "layout": {
+                "title": {"text": "CDF(rank | hit-miss)"},
+                "xaxis": {"title": {"text": "Rank"}},
+                "yaxis": {"title": {"text": "Cumulative Probability"}},
+            },
+            "data": [
+                {"type": "scatter", "name": "Hit", "y": r_h_c, **trace_tempalte},
+                {"type": "scatter", "name": "Miss", "y": r_m_c, **trace_tempalte},
+            ],
+        },
+        None,
+    )
 
     ########
     from .estimate_element_x_dimension_kernel_density import (
@@ -28,7 +121,7 @@ def compute_set_enrichment(
     def estimate_vector_density(vector):
 
         return estimate_element_x_dimension_kernel_density(
-            vector,
+            vector.reshape(vector.size, 1),
             dimension_grid_mins=(element_score_min,),
             dimension_grid_maxs=(element_score_max,),
             dimension_fraction_grid_extensions=(1 / 8,),
@@ -36,79 +129,23 @@ def compute_set_enrichment(
             plot=False,
         )
 
-    trace_tempalte = {
-        "mode": "lines",
-        "opacity": 0.64,
-    }
+    #######
+    s_h_v = element_score.values[r_h_i]
 
-    ########
-    set_element_ = {set_element: None for set_element in set_elements}
+    s_g, s_h_d = estimate_vector_density(s_h_v)
 
-    ########
-    r_h = asarray(
-        [
-            element_score_element in set_element_
-            for element_score_element in element_score.index
-        ],
-        dtype=float,
-    )
+    s_h_p = s_h_d / s_h_d.sum()
 
-    r_m = 1 - r_h
-
-    ########
-    h_r_v = r_h * absolute(element_score.values)
-
-    h_r_p = h_r_v / h_r_v.sum()
-
-    h_r_c = h_r_p.cumsum()
-
-    ########
-    m_r_v = r_m
-
-    m_r_p = m_r_v / m_r_v.sum()
-
-    m_r_c = m_r_p.cumsum()
-
-    ########
-    plot_plotly_figure(
-        {
-            "layout": {"title": {"text": "PDF(rank | hit-miss)"}},
-            "data": [
-                {"type": "scatter", "y": h_r_p, **trace_tempalte},
-                {"type": "scatter", "y": m_r_p, **trace_tempalte},
-            ],
-        },
-        None,
-    )
-
-    plot_plotly_figure(
-        {
-            "layout": {"title": {"text": "CDF(rank | hit-miss)"}},
-            "data": [
-                {"type": "scatter", "y": h_r_c, **trace_tempalte},
-                {"type": "scatter", "y": m_r_c, **trace_tempalte},
-            ],
-        },
-        None,
-    )
+    s_h_c = s_h_p.cumsum()
 
     #######
-    h_s_v = element_score.values[where(r_h)]
+    s_m_v = element_score.values[r_m_i]
 
-    s_g, h_s_d = estimate_vector_density(h_s_v.reshape(h_s_v.size, 1))
+    s_g, s_m_d = estimate_vector_density(s_m_v)
 
-    h_s_p = h_s_d / h_s_d.sum()
+    s_m_p = s_m_d / s_m_d.sum()
 
-    h_s_c = h_s_p.cumsum()
-
-    #######
-    m_s_v = element_score.values[where(r_m)]
-
-    s_g, m_s_d = estimate_vector_density(m_s_v.reshape(m_s_v.size, 1))
-
-    m_s_p = m_s_d / m_s_d.sum()
-
-    m_s_c = m_s_p.cumsum()
+    s_m_c = s_m_p.cumsum()
 
     ########
     s_g = s_g.reshape(s_g.size)
@@ -116,10 +153,26 @@ def compute_set_enrichment(
     ########
     plot_plotly_figure(
         {
-            "layout": {"title": {"text": "PDF(score | hit-miss)"}},
+            "layout": {
+                "title": {"text": "PDF(score | hit-miss)"},
+                "xaxis": {"title": {"text": "Score"}},
+                "yaxis": {"title": {"text": "Probability"}},
+            },
             "data": [
-                {"type": "scatter", "x": s_g, "y": h_s_p, **trace_tempalte},
-                {"type": "scatter", "x": s_g, "y": m_s_p, **trace_tempalte},
+                {
+                    "type": "scatter",
+                    "name": "Hit",
+                    "x": s_g,
+                    "y": s_h_p,
+                    **trace_tempalte,
+                },
+                {
+                    "type": "scatter",
+                    "name": "Miss",
+                    "x": s_g,
+                    "y": s_m_p,
+                    **trace_tempalte,
+                },
             ],
         },
         None,
@@ -127,24 +180,89 @@ def compute_set_enrichment(
 
     plot_plotly_figure(
         {
-            "layout": {"title": {"text": "CDF(score | hit-miss)"}},
+            "layout": {
+                "title": {"text": "CDF(score | hit-miss)"},
+                "xaxis": {"title": {"text": "Score"}},
+                "yaxis": {"title": {"text": "Cumulative Probability"}},
+            },
             "data": [
-                {"type": "scatter", "x": s_g, "y": h_s_c, **trace_tempalte},
-                {"type": "scatter", "x": s_g, "y": m_s_c, **trace_tempalte},
+                {
+                    "type": "scatter",
+                    "name": "Hit",
+                    "x": s_g,
+                    "y": s_h_c,
+                    **trace_tempalte,
+                },
+                {
+                    "type": "scatter",
+                    "name": "Miss",
+                    "x": s_g,
+                    "y": s_m_c,
+                    **trace_tempalte,
+                },
             ],
         },
         None,
     )
+    raise
 
     ########
     if statistic == "rcks":  # GSEA, ssGSEA
 
-        signals = h_r_c - m_r_c
+        signals = r_h_c - r_m_c
 
     ########
     elif statistic == "spkl":  # KL_PDF
 
-        s_g_signals = h_s_p * log(h_s_p / m_s_p)
+        s_g_signals = s_h_p * log(s_h_p / s_m_p)
+
+        signals = asarray(
+            [s_g_signals[absolute(s_g - score).argmin()] for score in element_score]
+        )
+
+    ########
+    elif statistic == "rckl":  # KL_CDF
+
+        signals = r_h_c * log(r_h_c / r_m_c)
+
+    ########
+    elif statistic == "spjs0.5":  # JS_PDF
+
+        s_p = (s_h_p + s_m_p) / 2
+
+        s_p /= s_p.sum()
+
+        s_g_signals = s_h_p * log(s_h_p / s_p) + s_m_p * log(s_m_p / s_p)
+
+        signals = asarray(
+            [s_g_signals[absolute(s_g - score).argmin()] for score in element_score]
+        )
+
+    ########
+    elif statistic == "spjsp":  # JS_PDF_p
+
+        s_p = (s_h_p + s_m_p) / 2
+
+        s_p /= s_p.sum()
+
+        s_g_signals = r_h.sum() / r_h.size * s_h_p * log(
+            s_h_p / s_p
+        ) + r_m.sum() / r_m.size * s_m_p * log(s_m_p / s_p)
+
+        signals = asarray(
+            [s_g_signals[absolute(s_g - score).argmin()] for score in element_score]
+        )
+
+    ########
+    elif statistic == "spjsp":  # JS_PDF_p
+
+        s_p = (s_h_p + s_m_p) / 2
+
+        s_p /= s_p.sum()
+
+        s_g_signals = r_h.sum() / r_h.size * s_h_p * log(
+            s_h_p / s_p
+        ) + r_m.sum() / r_m.size * s_m_p * log(s_m_p / s_p)
 
         signals = asarray(
             [s_g_signals[absolute(s_g - score).argmin()] for score in element_score]
@@ -153,7 +271,7 @@ def compute_set_enrichment(
     ########
     elif statistic == "scks":
 
-        signals = h_s_c - m_s_c
+        signals = s_h_c - s_m_c
 
     ########
     if not plot:
