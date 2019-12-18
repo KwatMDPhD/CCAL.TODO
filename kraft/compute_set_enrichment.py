@@ -1,4 +1,4 @@
-from numpy import absolute, asarray, where, log, argmax, argmin
+from numpy import absolute, argmax, argmin, asarray, log, where
 
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -6,9 +6,8 @@ from .plot_plotly_figure import plot_plotly_figure
 def compute_set_enrichment(
     element_score,
     set_elements,
-    method="rank cdf ks",
-    plot_data=False,
-    plot_enrichment=True,
+    power=0,
+    plot=True,
     title="Set Enrichment",
     element_score_name="Element Score",
     annotation_text_font_size=8,
@@ -20,14 +19,14 @@ def compute_set_enrichment(
     ########
     trace_tempalte = {
         "mode": "lines",
-        "opacity": 0.8,
+        "opacity": 0.64,
     }
 
     ########
     element_score = element_score.sort_values(ascending=False)
 
     ########
-    if plot_data:
+    if plot:
 
         plot_plotly_figure(
             {
@@ -40,7 +39,7 @@ def compute_set_enrichment(
                     {
                         "type": "scatter",
                         "y": element_score.values,
-                        "marker": {"color": "#20d8ba"},
+                        "marker": {"color": "#4e40d8"},
                         **trace_tempalte,
                     }
                 ],
@@ -73,7 +72,7 @@ def compute_set_enrichment(
     r_m_i = where(r_m)[0]
 
     ########
-    r_h_v = r_h * absolute(element_score.values)
+    r_h_v = r_h * absolute(element_score.values) ** power
 
     r_h_p = r_h_v / r_h_v.sum()
 
@@ -87,7 +86,14 @@ def compute_set_enrichment(
     r_m_c = r_m_p.cumsum()
 
     ########
-    if plot_data:
+    r_c_p = r_h_p * p_h + r_m_p * p_m
+
+    r_c_c = r_h_c * p_h + r_m_c * p_m
+
+    # /=.sum()
+
+    ########
+    if plot:
 
         plot_plotly_figure(
             {
@@ -99,6 +105,7 @@ def compute_set_enrichment(
                 "data": [
                     {"type": "scatter", "name": "Hit", "y": r_h_p, **trace_tempalte},
                     {"type": "scatter", "name": "Miss", "y": r_m_p, **trace_tempalte},
+                    {"type": "scatter", "name": "Center", "y": r_c_p, **trace_tempalte},
                 ],
             },
             None,
@@ -114,6 +121,7 @@ def compute_set_enrichment(
                 "data": [
                     {"type": "scatter", "name": "Hit", "y": r_h_c, **trace_tempalte},
                     {"type": "scatter", "name": "Miss", "y": r_m_c, **trace_tempalte},
+                    {"type": "scatter", "name": "Center", "y": r_c_c, **trace_tempalte},
                 ],
             },
             None,
@@ -161,7 +169,12 @@ def compute_set_enrichment(
     s_g = s_g.reshape(s_g.size)
 
     ########
-    if plot_data:
+    s_c_p = s_h_p * p_h + s_m_p * p_m
+
+    s_c_c = s_h_c * p_h + s_m_c * p_m
+
+    ########
+    if plot:
 
         plot_plotly_figure(
             {
@@ -183,6 +196,13 @@ def compute_set_enrichment(
                         "name": "Miss",
                         "x": s_g,
                         "y": s_m_p,
+                        **trace_tempalte,
+                    },
+                    {
+                        "type": "scatter",
+                        "name": "Center",
+                        "x": s_g,
+                        "y": s_c_p,
                         **trace_tempalte,
                     },
                 ],
@@ -212,100 +232,87 @@ def compute_set_enrichment(
                         "y": s_m_c,
                         **trace_tempalte,
                     },
+                    {
+                        "type": "scatter",
+                        "name": "Center",
+                        "x": s_g,
+                        "y": s_c_c,
+                        **trace_tempalte,
+                    },
                 ],
             },
             None,
         )
 
     ########
-    value, distribution, statistic = method.split()
+    str_signals = {}
 
-    if value == "rank":
+    for (h, m, c, str_) in (
+        (r_h_p, r_m_p, r_c_p, "rank pdf"),
+        (r_h_c, r_m_c, r_c_c, "rank cdf"),
+        (s_h_p, s_m_p, s_c_p, "score pdf"),
+        (s_h_c, s_m_c, s_c_c, "score cdf"),
+    ):
 
-        if distribution == "pdf":
+        ks = h - m
 
-            x = r_h_p
+        str_signals["{} ks".format(str_)] = ks
 
-            y = r_m_p
+        h += 1e-8
 
-        elif distribution == "cdf":
+        m += 1e-8
 
-            x = r_h_c
+        c += 1e-8
 
-            y = r_m_c
+        jsh = h * log(h / c)
 
-    elif value == "score":
+        str_signals["{} jsh".format(str_)] = jsh
 
-        if distribution == "pdf":
+        jsm = m * log(m / c)
 
-            x = s_h_p
+        str_signals["{} jsm".format(str_)] = jsm
 
-            y = s_m_p
+        js = jsh + jsm
 
-        elif distribution == "cdf":
+        str_signals["{} js".format(str_)] = js
 
-            x = s_h_c
+        jsp = jsh + (m - h) / 2
 
-            y = s_m_c
+        str_signals["{} jsp".format(str_)] = jsp
 
-    if statistic == "ks":
+    ########
+    for str_, signals in str_signals.items():
 
-        signals = x - y
+        if str_.startswith("score"):
 
-    else:
+            str_signals[str_] = asarray(
+                [
+                    signals[argmin(absolute(s_g - score))]
+                    for score in element_score.values
+                ]
+            )
 
-        x += 1e-6
+    ########
+    plot_plotly_figure(
+        {
+            "layout": {
+                "xaxis": {"title": {"text": "Rank"}},
+                "yaxis": {"title": {"text": "Enrichment"}},
+            },
+            "data": [
+                {"type": "scatter", "name": str_, "y": signals, **trace_tempalte}
+                for str_, signals in str_signals.items()
+            ],
+        },
+        None,
+    )
 
-        y += 1e-6
-
-        if statistic == "kl":
-
-            signals = x * log(x / y)
-
-        elif statistic.startswith("js"):
-
-            if statistic == "jsw":
-
-                z = p_h * x + p_m * y
-
-            else:
-
-                z = (x + y) / 2
-
-            z /= z.sum()
-
-            z += 1e-6
-
-            if statistic == "jsx":
-
-                signals = x * log(x / z)
-
-            elif statistic == "jsy":
-
-                signals = y * log(y / z)
-
-            elif statistic.endswith("0.5"):
-
-                signals = x * log(x / z) * 0.5 + y * log(y / z) * 0.5
-
-            elif statistic.endswith("p"):
-
-                signals = x * log(x / z) * p_h + y * log(y / z) * p_m
-
-            elif statistic == "jsw":
-
-                signals = x * log(x / z) + (y - x) / 2
-
-    if value == "score":
-
-        signals = asarray(
-            [signals[argmin(absolute(s_g - score))] for score in element_score.values]
-        )
+    signals = str_signals["rank cdf ks"]
 
     enrichment = signals[argmax(absolute(signals))]
 
     ########
-    if not plot_enrichment:
+    if not plot:
 
         return enrichment
 
@@ -374,7 +381,7 @@ def compute_set_enrichment(
     ########
     layout["annotations"] = [
         {
-            "x": x,
+            "x": h,
             "y": 0,
             "yref": "y2",
             "clicktoshow": "onoff",
@@ -386,7 +393,7 @@ def compute_set_enrichment(
             "borderpad": 0,
             "yshift": (-annotation_text_yshift, annotation_text_yshift)[i % 2],
         }
-        for i, (x, str_) in enumerate(zip(r_h_i, element_texts))
+        for i, (h, str_) in enumerate(zip(r_h_i, element_texts))
     ]
 
     ########
