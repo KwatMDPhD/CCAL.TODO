@@ -2,7 +2,7 @@ from numpy import arange, prod
 from numpy.random import normal, randint, sample
 
 
-def simulate_array(shape, how):
+def simulate_array(shape, how, sort=False):
 
     if how == "uniform":
 
@@ -19,5 +19,9 @@ def simulate_array(shape, how):
     else:
 
         array = randint(0, how, size=shape)
+
+    if sort:
+
+        array.sort()
 
     return array

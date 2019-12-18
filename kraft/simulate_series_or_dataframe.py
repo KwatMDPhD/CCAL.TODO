@@ -6,10 +6,16 @@ from .simulate_array import simulate_array
 
 
 def simulate_series_or_dataframe(
-    name_0, name_1, *simulate_array_arguments, break_dataframe=None
+    name_0,
+    name_1,
+    *simulate_array_arguments,
+    break_dataframe=None,
+    **simulate_array_keyword_arguments
 ):
 
-    array = simulate_array(*simulate_array_arguments)
+    array = simulate_array(
+        *simulate_array_arguments, **simulate_array_keyword_arguments
+    )
 
     if len(array.shape) == 1:
 
@@ -19,13 +25,11 @@ def simulate_series_or_dataframe(
 
         series_or_dataframe = DataFrame(
             array,
-            columns=Index(
-                ("{}{}".format(name_1, i) for i in range(array.shape[1])), name="Column"
-            ),
+            columns=Index(("{}{}".format(name_1, i) for i in range(array.shape[1])),),
         )
 
     series_or_dataframe.index = Index(
-        ("{}{}".format(name_0, i) for i in range(array.shape[0])), name="Index"
+        ("{}{}".format(name_0, i) for i in range(array.shape[0]))
     )
 
     if len(series_or_dataframe.shape) == 2 and break_dataframe is not None:
