@@ -23,7 +23,7 @@ def compute_set_enrichment(
     }
 
     ########
-    element_score = element_score.sort_values(ascending=False)
+    element_score = element_score.sort_values()
 
     ########
     if plot:
@@ -78,14 +78,14 @@ def compute_set_enrichment(
 
     r_h_p = r_h_v / r_h_v.sum()
 
-    r_h_c = r_h_p.cumsum()
+    r_h_c = r_h_p[::-1].cumsum()[::-1]
 
     ########
     r_m_v = r_m
 
     r_m_p = r_m_v / r_m_v.sum()
 
-    r_m_c = r_m_p.cumsum()
+    r_m_c = r_m_p[::-1].cumsum()[::-1]
 
     ########
     r_c_p = (r_h_p + r_m_p) / 2
@@ -142,8 +142,8 @@ def compute_set_enrichment(
             vector.reshape(vector.size, 1),
             dimension_grid_mins=(element_score_min,),
             dimension_grid_maxs=(element_score_max,),
-            dimension_fraction_grid_extensions=(1e-16,),
-            dimension_n_grids=(1024,),
+            dimension_fraction_grid_extensions=(1e-8,),
+            dimension_n_grids=(256,),
             plot=False,
         )
 
@@ -154,7 +154,7 @@ def compute_set_enrichment(
 
     s_h_p = s_h_d / s_h_d.sum()
 
-    s_h_c = s_h_p.cumsum()
+    s_h_c = s_h_p[::-1].cumsum()[::-1]
 
     ########
     s_m_v = element_score.values[r_m_i]
@@ -163,7 +163,7 @@ def compute_set_enrichment(
 
     s_m_p = s_m_d / s_m_d.sum()
 
-    s_m_c = s_m_p.cumsum()
+    s_m_c = s_m_p[::-1].cumsum()[::-1]
 
     ########
     s_g = s_g.reshape(s_g.size)
@@ -248,15 +248,12 @@ def compute_set_enrichment(
     str_signals = {}
 
     for (h, m, c, str_) in (
-        # (r_h_p, r_m_p, r_c_p, "rank pdf"),
-        # (r_h_c, r_m_c, r_c_c, "rank cdf"),
-        (s_h_p, s_m_p, s_c_p, "score pdf"),
+        (r_h_c, r_m_c, r_c_c, "rank cdf"),
+        # (s_h_p, s_m_p, s_c_p, "score pdf"),
         (s_h_c, s_m_c, s_c_c, "score cdf"),
     ):
 
-        ks = h - m
-
-        str_signals["{} ks".format(str_)] = ks
+        str_signals["{} ks".format(str_)] = h - m
 
         h += 1e-8
 
@@ -266,13 +263,15 @@ def compute_set_enrichment(
 
         str_signals["{} kl".format(str_)] = h * log(h / m)
 
-        str_signals["{} jsh".format(str_)] = h * log(h / c)
+        jsh = h * log(h / c)
 
-        str_signals["{} jsm".format(str_)] = m * log(m / c)
+        str_signals["{} jsh".format(str_)] = jsh
 
-        str_signals["{} js".format(str_)] = (
-            str_signals["{} jsh".format(str_)] + str_signals["{} jsm".format(str_)]
-        )
+        jsm = m * log(m / c)
+
+        str_signals["{} jsm".format(str_)] = jsm
+
+        str_signals["{} js".format(str_)] = jsh + jsm
 
     ########
     for str_, signals in str_signals.items():
