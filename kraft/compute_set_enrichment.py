@@ -1,4 +1,4 @@
-from numpy import absolute, argmax, argmin, asarray, log, where
+from numpy import absolute, argmax, argmin, asarray, cumsum, isnan, log, where
 
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -7,6 +7,7 @@ def compute_set_enrichment(
     element_score,
     set_elements,
     power=0,
+    method="rank cdf ks",
     plot=True,
     title="Set Enrichment",
     element_score_name="Element Score",
@@ -17,13 +18,13 @@ def compute_set_enrichment(
 ):
 
     ########
+    element_score = element_score.sort_values()
+
+    ########
     trace_tempalte = {
         "mode": "lines",
         "opacity": 0.64,
     }
-
-    ########
-    element_score = element_score.sort_values()
 
     ########
     if plot:
@@ -66,26 +67,19 @@ def compute_set_enrichment(
 
     p_m = r_m.sum() / r_m.size
 
-    print(p_h, p_m)
-
-    ########
-    r_h_i = where(r_h)[0]
-
-    r_m_i = where(r_m)[0]
-
     ########
     r_h_v = r_h * absolute(element_score.values) ** power
 
     r_h_p = r_h_v / r_h_v.sum()
 
-    r_h_c = r_h_p[::-1].cumsum()[::-1]
+    r_h_c = cumsum(r_h_p)
 
     ########
     r_m_v = r_m
 
     r_m_p = r_m_v / r_m_v.sum()
 
-    r_m_c = r_m_p[::-1].cumsum()[::-1]
+    r_m_c = cumsum(r_m_p)
 
     ########
     r_c_p = (r_h_p + r_m_p) / 2
@@ -143,27 +137,27 @@ def compute_set_enrichment(
             dimension_grid_mins=(element_score_min,),
             dimension_grid_maxs=(element_score_max,),
             dimension_fraction_grid_extensions=(1e-8,),
-            dimension_n_grids=(256,),
+            dimension_n_grids=(1e3,),
             plot=False,
         )
 
     ########
-    s_h_v = element_score.values[r_h_i]
+    s_h_v = element_score.values[where(r_h)]
 
     s_g, s_h_d = estimate_vector_density(s_h_v)
 
     s_h_p = s_h_d / s_h_d.sum()
 
-    s_h_c = s_h_p[::-1].cumsum()[::-1]
+    s_h_c = cumsum(s_h_p[::-1])[::-1]
 
     ########
-    s_m_v = element_score.values[r_m_i]
+    s_m_v = element_score.values[where(r_m)]
 
     s_g, s_m_d = estimate_vector_density(s_m_v)
 
     s_m_p = s_m_d / s_m_d.sum()
 
-    s_m_c = s_m_p[::-1].cumsum()[::-1]
+    s_m_c = cumsum(s_m_p[::-1])[::-1]
 
     ########
     s_g = s_g.reshape(s_g.size)
@@ -249,34 +243,34 @@ def compute_set_enrichment(
 
     for (h, m, c, str_) in (
         (r_h_c, r_m_c, r_c_c, "rank cdf"),
-        # (s_h_p, s_m_p, s_c_p, "score pdf"),
+        (s_h_p, s_m_p, s_c_p, "score pdf"),
         (s_h_c, s_m_c, s_c_c, "score cdf"),
     ):
 
-        str_signals["{} ks".format(str_)] = h - m
+        ks = h - m
 
-        h += 1e-8
-
-        m += 1e-8
-
-        c += 1e-8
-
-        str_signals["{} kl".format(str_)] = h * log(h / m)
+        str_signals["{} ks".format(str_)] = ks
 
         jsh = h * log(h / c)
+
+        jsh[isnan(jsh)] = 0
 
         str_signals["{} jsh".format(str_)] = jsh
 
         jsm = m * log(m / c)
 
+        jsm[isnan(jsm)] = 0
+
         str_signals["{} jsm".format(str_)] = jsm
 
-        str_signals["{} js".format(str_)] = jsh + jsm
+        js = jsh + jsm
+
+        str_signals["{} js".format(str_)] = js
 
     ########
     for str_, signals in str_signals.items():
 
-        if str_.startswith("score"):
+        if str_.startswith("score "):
 
             str_signals[str_] = asarray(
                 [
@@ -300,7 +294,7 @@ def compute_set_enrichment(
         None,
     )
 
-    signals = str_signals["rank cdf ks"]
+    signals = str_signals[method]
 
     enrichment = signals[argmax(absolute(signals))]
 
@@ -324,13 +318,26 @@ def compute_set_enrichment(
 
     line_width = 2.4
 
+    ########
+    data.append(
+        {
+            "type": "scatter",
+            "name": "Element Score",
+            "y": element_score.values,
+            "text": element_score.index,
+            "line": {"width": line_width, "color": "#4e40d8"},
+            "fill": "tozeroy",
+        }
+    )
+
+    ########
     data.append(
         {
             "yaxis": "y2",
             "type": "scatter",
-            "name": "Cumulative Sum",
+            "name": method,
             "y": signals,
-            "line": {"width": line_width, "color": "#20d9ba"},
+            "line": {"width": line_width, "color": "#20d8ba"},
             "fill": "tozeroy",
         }
     )
@@ -352,7 +359,7 @@ def compute_set_enrichment(
             "marker": {
                 "symbol": "line-ns-open",
                 "size": 8,
-                "color": "#9017e6",
+                "color": "#9016e6",
                 "line": {"width": line_width / 2},
             },
             "hoverinfo": "x+text",
@@ -360,21 +367,9 @@ def compute_set_enrichment(
     )
 
     ########
-    data.append(
-        {
-            "type": "scatter",
-            "name": "Element Score",
-            "y": element_score.values,
-            "text": element_score.index,
-            "line": {"width": line_width, "color": "#4e40d8"},
-            "fill": "tozeroy",
-        }
-    )
-
-    ########
     layout["annotations"] = [
         {
-            "x": h,
+            "x": r_h_i_,
             "y": 0,
             "yref": "y2",
             "clicktoshow": "onoff",
@@ -386,7 +381,7 @@ def compute_set_enrichment(
             "borderpad": 0,
             "yshift": (-annotation_text_yshift, annotation_text_yshift)[i % 2],
         }
-        for i, (h, str_) in enumerate(zip(r_h_i, element_texts))
+        for i, (r_h_i_, str_) in enumerate(zip(r_h_i, element_texts))
     ]
 
     ########
