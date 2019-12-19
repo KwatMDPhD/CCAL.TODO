@@ -1,11 +1,4 @@
-from numpy import (
-    absolute,
-    asarray,
-    log,
-    where,
-    full,
-)
-from .ALMOST_ZERO import ALMOST_ZERO
+from numpy import absolute, asarray, isnan, log, where
 
 from .plot_plotly_figure import plot_plotly_figure
 
@@ -80,16 +73,12 @@ def compute_set_enrichment(
 
     r_h_p = r_h_v / r_h_v.sum()
 
-    # r_h_p = r_h_p.clip(min=ALMOST_ZERO)
-
     r_h_c = r_h_p[::-1].cumsum()[::-1]
 
     ########
     r_m_v = r_m
 
     r_m_p = r_m_v / r_m_v.sum()
-
-    # r_m_p = r_m_p.clip(min=ALMOST_ZERO)
 
     r_m_c = r_m_p[::-1].cumsum()[::-1]
 
@@ -160,8 +149,6 @@ def compute_set_enrichment(
 
     s_h_p = s_h_d / s_h_d.sum()
 
-    # s_h_p = s_h_p.clip(min=ALMOST_ZERO)
-
     s_h_c = s_h_p[::-1].cumsum()[::-1]
 
     ########
@@ -170,8 +157,6 @@ def compute_set_enrichment(
     s_g, s_m_d = estimate_vector_density(s_m_v)
 
     s_m_p = s_m_d / s_m_d.sum()
-
-    # s_m_p = s_m_p.clip(min=ALMOST_ZERO)
 
     s_m_c = s_m_p[::-1].cumsum()[::-1]
 
@@ -269,25 +254,16 @@ def compute_set_enrichment(
         str_signals["{} ks".format(str_)] = ks
 
         ########
-        c_not_0 = c != 0
+        jsh = h * log(h / c)
 
-        c_ = c[c_not_0]
-
-        ########
-        jsh = full(c.size, 0)
-
-        h_ = h[c_not_0]
-
-        jsh[c_not_0] = h_ * log(h_ / c_)
+        jsh[isnan(jsh)] = 0
 
         str_signals["{} jsh".format(str_)] = jsh
 
         ########
-        jsm = full(c.size, 0)
+        jsm = m * log(m / c)
 
-        m_ = m[c_not_0]
-
-        jsm[c_not_0] = m_ * log(m_ / c_)
+        jsm[isnan(jsm)] = 0
 
         str_signals["{} jsm".format(str_)] = jsm
 
@@ -314,6 +290,7 @@ def compute_set_enrichment(
         plot_plotly_figure(
             {
                 "layout": {
+                    "title": {"text": "Statistics"},
                     "xaxis": {"title": {"text": "Rank"}},
                     "yaxis": {"title": {"text": "Enrichment"}},
                 },
