@@ -2,4 +2,6 @@
 
 ## Install
 
-`pip install git+https://github.com/KwatME/kraft`
+```bash
+pip install git+https://github.com/KwatME/kraft
+```
