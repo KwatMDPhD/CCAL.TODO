@@ -2,12 +2,10 @@ from KDEpy import FFTKDE
 
 from .ALMOST_ZERO import ALMOST_ZERO
 from .compute_vector_bandwidth import compute_vector_bandwidth
-from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
-    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
-)
+from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
+from .DIMENSION_N_GRID import DIMENSION_N_GRID
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .make_vector_grid import make_vector_grid
-from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .plot_mesh_grid import plot_mesh_grid
 
 
@@ -50,12 +48,12 @@ def estimate_element_x_dimension_kernel_density(
     if dimension_fraction_grid_extensions is None:
 
         dimension_fraction_grid_extensions = (
-            FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
+            DIMENSION_FRACTION_GRID_EXTENSION,
         ) * n_dimension
 
     if dimension_n_grids is None:
 
-        dimension_n_grids = (N_GRID_FOR_ESTIMATING_KERNEL_DENSITY,) * n_dimension
+        dimension_n_grids = (DIMENSION_N_GRID,) * n_dimension
 
     mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
         (

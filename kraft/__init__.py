@@ -50,6 +50,8 @@ from .compute_vector_context import compute_vector_context
 from .compute_vector_entropy import compute_vector_entropy
 from .correlate_2_vectors import correlate_2_vectors
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
+from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
+from .DIMENSION_N_GRID import DIMENSION_N_GRID
 from .download_and_parse_geo import download_and_parse_geo
 from .download_url import download_url
 from .download_url_and_extract import download_url_and_extract
@@ -63,9 +65,6 @@ from .fit_each_dataframe_row_to_skew_t_pdf import fit_each_dataframe_row_to_skew
 from .fit_each_dataframe_row_to_skew_t_pdf_ import fit_each_dataframe_row_to_skew_t_pdf_
 from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
 from .flatten_nested_iterable import flatten_nested_iterable
-from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
-    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
-)
 from .get_child_paths import get_child_paths
 from .get_colorscale_color import get_colorscale_color
 from .get_element_x_dimension_triangulation_edges import (
@@ -118,7 +117,6 @@ from .mf_dataframes import mf_dataframes
 from .mf_vs_w_hs import mf_vs_w_hs
 from .mf_vs_ws_h import mf_vs_ws_h
 from .mf_with_multiplicative_update import mf_with_multiplicative_update
-from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .nmf_with_sklearn import nmf_with_sklearn
 from .normalize_array import normalize_array
 from .normalize_array_on_axis import normalize_array_on_axis

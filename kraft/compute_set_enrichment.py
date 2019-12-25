@@ -100,7 +100,7 @@ def compute_set_enrichment(
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": {"text": "PDF(rank | hit-miss)"},
+                    "title": {"text": "PDF(rank | event)"},
                     "xaxis": {"title": {"text": "Rank"}},
                     "yaxis": {"title": {"text": "Probability"}},
                 },
@@ -116,7 +116,7 @@ def compute_set_enrichment(
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": {"text": "CDF(rank | hit-miss)"},
+                    "title": {"text": "CDF(rank | event)"},
                     "xaxis": {"title": {"text": "Rank"}},
                     "yaxis": {"title": {"text": "Cumulative Probability"}},
                 },
@@ -150,9 +150,18 @@ def compute_set_enrichment(
         )
 
     #
+    s_g, s_d = estimate_vector_density(element_score.values)
+
+    s_g = s_g.reshape(s_g.size)
+
+    s_p = s_d / s_d.sum()
+
+    s_c = s_p[::-1].cumsum()[::-1]
+
+    #
     s_h_v = element_score.values[where(r_h)]
 
-    s_g, s_h_d = estimate_vector_density(s_h_v)
+    s_h_d = estimate_vector_density(s_h_v)[1]
 
     s_h_p = s_h_d / s_h_d.sum()
 
@@ -161,14 +170,11 @@ def compute_set_enrichment(
     #
     s_m_v = element_score.values[where(r_m)]
 
-    s_g, s_m_d = estimate_vector_density(s_m_v)
+    s_m_d = estimate_vector_density(s_m_v)[1]
 
     s_m_p = s_m_d / s_m_d.sum()
 
     s_m_c = s_m_p[::-1].cumsum()[::-1]
-
-    #
-    s_g = s_g.reshape(s_g.size)
 
     #
     s_c_p = (s_h_p + s_m_p) / 2
@@ -181,14 +187,21 @@ def compute_set_enrichment(
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": {"text": "PDF(score | hit-miss)"},
+                    "title": {"text": "PDF(score | event)"},
                     "xaxis": {"title": {"text": "Score"}},
                     "yaxis": {"title": {"text": "Probability"}},
                 },
                 "data": [
-                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_p,},
-                    {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_p,},
-                    {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_p,},
+                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_p},
+                    {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_p},
+                    {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_p},
+                    {"type": "scatter", "name": "Hit | Miss (fit)", "x": s_g, "y": s_p},
+                    {
+                        "type": "scatter",
+                        "name": "Hit | Miss (weight)",
+                        "x": s_g,
+                        "y": s_h_p * p_h + s_m_p * p_m,
+                    },
                 ],
             },
             None,
@@ -197,14 +210,15 @@ def compute_set_enrichment(
         plot_plotly_figure(
             {
                 "layout": {
-                    "title": {"text": "CDF(score | hit-miss)"},
+                    "title": {"text": "CDF(score | event)"},
                     "xaxis": {"title": {"text": "Score"}},
                     "yaxis": {"title": {"text": "Cumulative Probability"}},
                 },
                 "data": [
-                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_c,},
-                    {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_c,},
-                    {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_c,},
+                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_c},
+                    {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_c},
+                    {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_c},
+                    {"type": "scatter", "name": "Hit | Miss", "x": s_g, "y": s_c},
                 ],
             },
             None,
@@ -214,15 +228,15 @@ def compute_set_enrichment(
     str_signals = {}
 
     for (h, m, c, str_) in (
-        (r_h_c, r_m_c, r_c_c, "rank cdf"),
+        # (r_h_c, r_m_c, r_c_c, "rank cdf"),
         (s_h_p, s_m_p, s_c_p, "score pdf"),
-        (s_h_c, s_m_c, s_c_c, "score cdf"),
+        # (s_h_c, s_m_c, s_c_c, "score cdf"),
     ):
 
-        #
-        ks = h - m
+        # #
+        # ks = h - m
 
-        str_signals["{} ks".format(str_)] = ks
+        # str_signals["{} ks".format(str_)] = ks
 
         #
         jsh = h * log(h / c)
@@ -239,9 +253,40 @@ def compute_set_enrichment(
         str_signals["{} jsm".format(str_)] = jsm
 
         #
-        js = jsh + jsm
+        js = (jsh + jsm) / 2
 
         str_signals["{} js".format(str_)] = js
+
+        #
+        r = s_p
+
+        #
+        jsh_ = h * log(h / r)
+
+        jsh_[isnan(jsh_)] = 0
+
+        str_signals["{} jsh_".format(str_)] = jsh_
+
+        #
+        jsm_ = m * log(m / r)
+
+        jsm_[isnan(jsm_)] = 0
+
+        str_signals["{} jsm_".format(str_)] = jsm_
+
+        #
+        js_ = jsh_ * p_h + jsm_ * p_m
+
+        str_signals["{} js_".format(str_)] = js_
+
+        from .compute_information_coefficient_between_2_vectors import (
+            compute_information_coefficient_between_2_vectors,
+        )
+
+        print(js_.sum())
+        print(r_h.shape)
+        print(s_p.shape)
+        print(compute_information_coefficient_between_2_vectors(r_h, s_p))
 
     #
     for str_, signals in str_signals.items():
@@ -343,7 +388,6 @@ def compute_set_enrichment(
         }
     )
 
-    #
     layout["annotations"] = [
         {
             "x": r_h_i_,

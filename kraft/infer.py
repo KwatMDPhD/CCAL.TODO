@@ -3,18 +3,16 @@ from numpy import absolute, unique
 from .compute_element_x_dimension_posterior_probability import (
     compute_element_x_dimension_posterior_probability,
 )
-from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
-    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
-)
-from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
+from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
+from .DIMENSION_N_GRID import DIMENSION_N_GRID
 from .plot_mesh_grid import plot_mesh_grid
 
 
 def infer(
     element_x_dimension,
     target_dimension_value,
-    fraction_grid_extension=FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
-    n_grid=N_GRID_FOR_ESTIMATING_KERNEL_DENSITY,
+    fraction_grid_extension=DIMENSION_FRACTION_GRID_EXTENSION,
+    n_grid=DIMENSION_N_GRID,
     plot=True,
     dimension_names=None,
 ):

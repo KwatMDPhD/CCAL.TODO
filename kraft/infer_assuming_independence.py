@@ -3,12 +3,10 @@ from numpy import absolute, apply_along_axis, product
 from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
 )
-from .FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY import (
-    FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
-)
+from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
+from .DIMENSION_N_GRID import DIMENSION_N_GRID
 from .infer import infer
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
-from .N_GRID_FOR_ESTIMATING_KERNEL_DENSITY import N_GRID_FOR_ESTIMATING_KERNEL_DENSITY
 from .plot_mesh_grid import plot_mesh_grid
 from .unmesh import unmesh
 
@@ -16,8 +14,8 @@ from .unmesh import unmesh
 def infer_assuming_independence(
     element_x_dimension,
     target_dimension_value,
-    fraction_grid_extension=FRACTION_GRID_EXTENSION_FOR_ESTIMATING_KERNEL_DENSITY,
-    n_grid=N_GRID_FOR_ESTIMATING_KERNEL_DENSITY,
+    fraction_grid_extension=DIMENSION_FRACTION_GRID_EXTENSION,
+    n_grid=DIMENSION_N_GRID,
     plot=True,
     dimension_names=None,
 ):
