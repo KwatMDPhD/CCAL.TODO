@@ -13,8 +13,8 @@ from .apply_function_on_vector_and_each_matrix_row import (
 from .call_function_with_multiprocess import call_function_with_multiprocess
 from .check_array_for_bad import check_array_for_bad
 from .compute_empirical_p_values_and_fdrs import compute_empirical_p_values_and_fdrs
-from .compute_information_coefficient_between_2_vectors import (
-    compute_information_coefficient_between_2_vectors,
+from .compute_information_correlation_between_2_vectors import (
+    compute_information_correlation_between_2_vectors,
 )
 from .compute_normal_pdf_margin_of_error import compute_normal_pdf_margin_of_error
 from .RANDOM_SEED import RANDOM_SEED
@@ -25,7 +25,7 @@ def apply_function_on_vector_and_each_matrix_row_and_compute_statistics(
     vector,
     matrix,
     n_job=1,
-    match_function=compute_information_coefficient_between_2_vectors,
+    match_function=compute_information_correlation_between_2_vectors,
     n_required_for_match_function=2,
     raise_for_n_less_than_required=False,
     n_extreme=16,

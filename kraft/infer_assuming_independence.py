@@ -3,8 +3,6 @@ from numpy import absolute, apply_along_axis, product
 from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
 )
-from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
-from .DIMENSION_N_GRID import DIMENSION_N_GRID
 from .infer import infer
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
 from .plot_mesh_grid import plot_mesh_grid
@@ -12,12 +10,7 @@ from .unmesh import unmesh
 
 
 def infer_assuming_independence(
-    element_x_dimension,
-    target_dimension_value,
-    fraction_grid_extension=DIMENSION_FRACTION_GRID_EXTENSION,
-    n_grid=DIMENSION_N_GRID,
-    plot=True,
-    dimension_names=None,
+    element_x_dimension, target_dimension_value, plot=True, dimension_names=None,
 ):
 
     n_dimension = element_x_dimension.shape[1]
@@ -32,11 +25,7 @@ def infer_assuming_independence(
         target_mesh_grid_point_x_dimension,
         target_mesh_grid_point_posterior_probability,
     ) = compute_element_x_dimension_joint_probability(
-        element_x_dimension[:, -1:],
-        dimension_fraction_grid_extensions=(fraction_grid_extension,),
-        dimension_n_grids=(n_grid,),
-        plot=plot,
-        dimension_names=dimension_names[-1:],
+        element_x_dimension[:, -1:], plot=plot, dimension_names=dimension_names[-1:],
     )
 
     target_dimensino_grids, target_probability = unmesh(
@@ -53,8 +42,6 @@ def infer_assuming_independence(
         infer(
             element_x_dimension[:, [i, -1]],
             target_dimension_value,
-            fraction_grid_extension=fraction_grid_extension,
-            n_grid=n_grid,
             plot=plot,
             dimension_names=(dimension_names[i], dimension_names[-1]),
         )

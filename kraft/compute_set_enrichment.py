@@ -279,14 +279,14 @@ def compute_set_enrichment(
 
         str_signals["{} js_".format(str_)] = js_
 
-        from .compute_information_coefficient_between_2_vectors import (
-            compute_information_coefficient_between_2_vectors,
+        from .compute_information_correlation_between_2_vectors import (
+            compute_information_correlation_between_2_vectors,
         )
 
         print(js_.sum())
         print(r_h.shape)
         print(s_p.shape)
-        print(compute_information_coefficient_between_2_vectors(r_h, s_p))
+        print(compute_information_correlation_between_2_vectors(r_h, s_p))
 
     #
     for str_, signals in str_signals.items():

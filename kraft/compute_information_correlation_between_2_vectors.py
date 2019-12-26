@@ -4,16 +4,11 @@ from scipy.stats import pearsonr
 from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
 )
-from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
-from .DIMENSION_N_GRID import DIMENSION_N_GRID
 from .unmesh import unmesh
 
 
-def compute_information_coefficient_between_2_vectors(
-    vector_0,
-    vector_1,
-    fraction_grid_extension=DIMENSION_FRACTION_GRID_EXTENSION,
-    n_grid=DIMENSION_N_GRID,
+def compute_information_correlation_between_2_vectors(
+    vector_0, vector_1, fraction_grid_extension=0.1, n_grid=24,
 ):
 
     if unique(vector_0).size == 1 or unique(vector_1).size == 1:

@@ -1,14 +1,9 @@
-from numpy import asarray, unique
+from numpy import apply_along_axis, unique
 
 
 def unmesh(mesh_grid_point_x_dimension, mesh_grid_point_value):
 
-    dimension_grids = asarray(
-        tuple(
-            unique(mesh_grid_point_x_dimension[:, i])
-            for i in range(mesh_grid_point_x_dimension.shape[1])
-        )
-    )
+    dimension_grids = apply_along_axis(unique, 0, mesh_grid_point_x_dimension).T
 
     return (
         dimension_grids,

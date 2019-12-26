@@ -1,18 +1,15 @@
 from KDEpy import FFTKDE
 
-from .ALMOST_ZERO import ALMOST_ZERO
 from .compute_vector_bandwidth import compute_vector_bandwidth
-from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
-from .DIMENSION_N_GRID import DIMENSION_N_GRID
+from .make_dimension_grid import make_dimension_grid
 from .make_mesh_grid_point_x_dimension import make_mesh_grid_point_x_dimension
-from .make_vector_grid import make_vector_grid
 from .plot_mesh_grid import plot_mesh_grid
 
 
 def estimate_element_x_dimension_kernel_density(
     element_x_dimension,
     dimension_bandwidths=None,
-    dimension_bandwidth_factors=None,
+    dimension_grids=None,
     dimension_grid_mins=None,
     dimension_grid_maxs=None,
     dimension_fraction_grid_extensions=None,
@@ -30,35 +27,30 @@ def estimate_element_x_dimension_kernel_density(
             for i in range(n_dimension)
         )
 
-    if dimension_bandwidth_factors is not None:
+    if dimension_grids is None:
 
-        dimension_bandwidths = tuple(
-            dimension_bandwidths[i] * dimension_bandwidth_factors[i]
-            for i in range(n_dimension)
-        )
+        if dimension_grid_mins is None:
 
-    if dimension_grid_mins is None:
+            dimension_grid_mins = tuple(
+                element_x_dimension[:, i].min() for i in range(n_dimension)
+            )
 
-        dimension_grid_mins = (None,) * n_dimension
+        if dimension_grid_maxs is None:
 
-    if dimension_grid_maxs is None:
+            dimension_grid_maxs = tuple(
+                element_x_dimension[:, i].max() for i in range(n_dimension)
+            )
 
-        dimension_grid_maxs = (None,) * n_dimension
+        if dimension_fraction_grid_extensions is None:
 
-    if dimension_fraction_grid_extensions is None:
+            dimension_fraction_grid_extensions = (0,) * n_dimension
 
-        dimension_fraction_grid_extensions = (
-            DIMENSION_FRACTION_GRID_EXTENSION,
-        ) * n_dimension
+        if dimension_n_grids is None:
 
-    if dimension_n_grids is None:
+            dimension_n_grids = (8,) * n_dimension
 
-        dimension_n_grids = (DIMENSION_N_GRID,) * n_dimension
-
-    mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(
-        (
-            make_vector_grid(
-                element_x_dimension[:, i],
+        dimension_grids = (
+            make_dimension_grid(
                 dimension_grid_mins[i],
                 dimension_grid_maxs[i],
                 dimension_fraction_grid_extensions[i],
@@ -66,15 +58,14 @@ def estimate_element_x_dimension_kernel_density(
             )
             for i in range(n_dimension)
         )
-    )
+
+    mesh_grid_point_x_dimension = make_mesh_grid_point_x_dimension(dimension_grids)
 
     mesh_grid_point_kernel_density = (
-        (
-            FFTKDE(bw=dimension_bandwidths)
-            .fit(element_x_dimension)
-            .evaluate(mesh_grid_point_x_dimension)
-        )
-    ).clip(min=ALMOST_ZERO)
+        FFTKDE(bw=dimension_bandwidths)
+        .fit(element_x_dimension)
+        .evaluate(mesh_grid_point_x_dimension)
+    )
 
     if plot:
 

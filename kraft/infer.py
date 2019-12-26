@@ -3,31 +3,18 @@ from numpy import absolute, unique
 from .compute_element_x_dimension_posterior_probability import (
     compute_element_x_dimension_posterior_probability,
 )
-from .DIMENSION_FRACTION_GRID_EXTENSION import DIMENSION_FRACTION_GRID_EXTENSION
-from .DIMENSION_N_GRID import DIMENSION_N_GRID
 from .plot_mesh_grid import plot_mesh_grid
 
 
 def infer(
-    element_x_dimension,
-    target_dimension_value,
-    fraction_grid_extension=DIMENSION_FRACTION_GRID_EXTENSION,
-    n_grid=DIMENSION_N_GRID,
-    plot=True,
-    dimension_names=None,
+    element_x_dimension, target_dimension_value, plot=True, dimension_names=None,
 ):
-
-    n_dimension = element_x_dimension.shape[1]
 
     (
         mesh_grid_point_x_dimension,
         mesh_grid_point_posterior_probability,
     ) = compute_element_x_dimension_posterior_probability(
-        element_x_dimension,
-        dimension_fraction_grid_extensions=(fraction_grid_extension,) * n_dimension,
-        dimension_n_grids=(n_grid,) * n_dimension,
-        plot=plot,
-        dimension_names=dimension_names,
+        element_x_dimension, plot=plot, dimension_names=dimension_names,
     )
 
     target_dimension_grid = unique(mesh_grid_point_x_dimension[:, -1])
