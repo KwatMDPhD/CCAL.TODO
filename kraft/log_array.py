@@ -1,38 +1,21 @@
-from numpy import full, log as loge, log2, log10, nan
-
-from .check_array_for_bad import check_array_for_bad
+from numpy import log as loge, log2, log10
 
 
 def log_array(
-    array,
-    shift_as_necessary_to_achieve_min_before_logging=None,
-    log_base="e",
-    raise_for_bad=True,
+    array, shift_as_necessary_to_achieve_min_before_logging=None, log_base="e",
 ):
-
-    is_good = ~check_array_for_bad(array, raise_for_bad=raise_for_bad)
-
-    array_ = full(array.shape, nan)
-
-    if not is_good.any():
-
-        return array_
-
-    array_good = array[is_good]
 
     if shift_as_necessary_to_achieve_min_before_logging is not None:
 
         if shift_as_necessary_to_achieve_min_before_logging == "0<":
 
-            shift_as_necessary_to_achieve_min_before_logging = array_good[
-                0 < array_good
-            ].min()
+            shift_as_necessary_to_achieve_min_before_logging = array[0 < array].min()
 
-        min_ = array_good.min()
+        array_good_min = array.min()
 
-        if min_ < shift_as_necessary_to_achieve_min_before_logging:
+        if array_good_min < shift_as_necessary_to_achieve_min_before_logging:
 
-            array_good += shift_as_necessary_to_achieve_min_before_logging - min_
+            array += shift_as_necessary_to_achieve_min_before_logging - array_good_min
 
     if str(log_base) == "2":
 
@@ -46,6 +29,4 @@ def log_array(
 
         log_ = log10
 
-    array_[is_good] = log_(array_good)
-
-    return array_
+    return log_(array)

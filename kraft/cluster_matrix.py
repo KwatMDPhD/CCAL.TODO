@@ -2,9 +2,8 @@ from numpy import concatenate, where
 from pandas import unique
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-from .check_array_for_bad import check_array_for_bad
-from .ignore_bad_and_compute_euclidean_distance import (
-    ignore_bad_and_compute_euclidean_distance,
+from .ignore_nan_and_apply_function_on_2_vectors import (
+    ignore_nan_and_apply_function_on_2_vectors,
 )
 
 
@@ -12,19 +11,26 @@ def cluster_matrix(
     matrix,
     axis,
     groups=None,
-    distance_function=ignore_bad_and_compute_euclidean_distance,
+    distance_function=None,
     linkage_method="average",
     optimal_ordering=True,
-    raise_for_bad=True,
 ):
-
-    check_array_for_bad(matrix, raise_for_bad=raise_for_bad)
 
     if axis == 1:
 
         matrix = matrix.T
 
-    def _linkage_dendrogram_leaves(matrix):
+    if distance_function is None:
+
+        def distance_function(vector_0, vector_1):
+
+            return ignore_nan_and_apply_function_on_2_vectors(
+                vector_0,
+                vector_1,
+                lambda vector_0, vector_1: ((vector_0 - vector_1) ** 2).sum() ** 0.5,
+            )
+
+    def get_linkage_dendrogram_leaves(matrix):
 
         return dendrogram(
             linkage(
@@ -38,18 +44,18 @@ def cluster_matrix(
 
     if groups is None:
 
-        return _linkage_dendrogram_leaves(matrix)
+        return get_linkage_dendrogram_leaves(matrix)
 
     else:
 
-        indices = []
+        index = []
 
         for group in unique(groups):
 
-            group_indices = where(groups == group)[0]
+            group_index = where(groups == group)[0]
 
-            clustered_indices = _linkage_dendrogram_leaves(matrix[group_indices, :])
+            clustered_index = get_linkage_dendrogram_leaves(matrix[group_index, :])
 
-            indices.append(group_indices[clustered_indices])
+            index.append(group_index[clustered_index])
 
-        return concatenate(indices)
+        return concatenate(index)
