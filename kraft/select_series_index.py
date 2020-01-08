@@ -28,7 +28,7 @@ def select_series_index(
 
             n = min(n, series_no_na_sorted.size // 2)
 
-    if fraction is not None:
+    elif fraction is not None:
 
         if direction in ("<", ">"):
 

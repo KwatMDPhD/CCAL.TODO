@@ -1,7 +1,7 @@
 from KDEpy import FFTKDE
 
 from .compute_vector_bandwidth import compute_vector_bandwidth
-from .make_dimension_grid import make_dimension_grid
+from .make_dimension_grid import make_grid
 from .mesh_dimension_grids_into_mesh_grid_point_x_dimension import (
     mesh_dimension_grids_into_mesh_grid_point_x_dimension,
 )
@@ -26,7 +26,7 @@ def estimate_element_x_dimension_kernel_density(
     if dimension_grids is None:
 
         dimension_grids = tuple(
-            make_dimension_grid(
+            make_grid(
                 element_x_dimension[:, i].min(), element_x_dimension[:, i].max(), 0, 8,
             )
             for i in range(element_x_dimension.shape[1])

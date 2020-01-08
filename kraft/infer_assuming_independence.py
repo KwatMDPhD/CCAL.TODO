@@ -4,7 +4,7 @@ from .compute_element_x_dimension_joint_probability import (
     compute_element_x_dimension_joint_probability,
 )
 from .infer import infer
-from .mesh_grid_point_x_dimension import mesh_grid_point_x_dimension
+from .mesh_grid_point_x_dimension import mesh_grids_into_point_x_dimension
 from .plot_mesh_grid import plot_mesh_grid
 from .unmesh import unmesh
 
@@ -48,14 +48,14 @@ def infer_assuming_independence(
         for i in range(n_dimension - 1)
     )
 
-    no_target_mesh_grid_point_x_dimension = mesh_grid_point_x_dimension(
+    no_target_mesh_grid_point_x_dimension = mesh_grids_into_point_x_dimension(
         tuple(infer_return[0] for infer_return in infer_returns)
     )
 
     no_target_mesh_grid_point_posterior_probability = apply_along_axis(
         product,
         1,
-        mesh_grid_point_x_dimension(
+        mesh_grids_into_point_x_dimension(
             tuple(infer_return[1] for infer_return in infer_returns)
         ),
     ) / (target_probability[target_value_index] ** (n_dimension - 2))

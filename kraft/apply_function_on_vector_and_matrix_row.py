@@ -27,24 +27,23 @@ def apply_function_on_vector_and_matrix_row(
     matrix,
     function,
     vector_ascending=True,
+    statistics=None,
     n_job=1,
     random_seed=RANDOM_SEED,
     n_sampling=10,
     n_permutation=10,
-    statistics=None,
     score_ascending=False,
+    plot=True,
     n_extreme=8,
     fraction_extreme=None,
-    plot=True,
-    series_data_type="continuous",
-    dataframe_data_type="continuous",
+    vector_data_type="continuous",
+    matrix_data_type="continuous",
     plot_std=nan,
     cluster_within_category=True,
     layout=None,
     file_path_prefix=None,
 ):
 
-    #
     intersection = vector.index & matrix.columns
 
     print(
@@ -61,26 +60,28 @@ def apply_function_on_vector_and_matrix_row(
 
     matrix = matrix[vector.index]
 
-    #
     if statistics is None:
 
-        #
-        statistics = DataFrame(index=matrix.index)
+        statistics = DataFrame(
+            index=matrix.index,
+            columns=(
+                "Score",
+                "0.95 Margin of Error",
+                "P-Value",
+                "False Discovery Rate",
+            ),
+        )
 
-        #
         seed(seed=random_seed)
 
-        #
         n_matrix_row, n_matrix_column = matrix.shape
 
-        #
         print("Computing statistics using {} process...".format(n_job))
 
         n_job = min(n_matrix_row, n_job)
 
         pool = Pool(n_job)
 
-        #
         print("Scoring...")
 
         vector_ = vector.values
@@ -92,70 +93,71 @@ def apply_function_on_vector_and_matrix_row(
             )
         )
 
-        #
-        print("Computing 0.95 margin of error with {} sampling...".format(n_sampling))
+        if 0 < n_sampling:
 
-        row_x_sampling = full((n_matrix_row, n_sampling), nan)
+            print(
+                "Computing 0.95 margin of error with {} sampling...".format(n_sampling)
+            )
 
-        n_column_to_sample = ceil(0.632 * n_matrix_column)
+            row_x_sampling = full((n_matrix_row, n_sampling), nan)
 
-        for sampling_index in range(n_sampling):
+            n_column_to_sample = ceil(0.632 * n_matrix_column)
 
-            columns = choice(n_matrix_column, size=n_column_to_sample)
+            for sampling_index in range(n_sampling):
 
-            vector_ = vector.values[columns]
+                columns = choice(n_matrix_column, size=n_column_to_sample)
 
-            row_x_sampling[:, sampling_index] = pool.starmap(
-                ignore_nan_and_apply_function_on_2_vectors,
-                (
-                    (vector_, matrix_row, function)
-                    for matrix_row in matrix.values[:, columns]
+                vector_ = vector.values[columns]
+
+                row_x_sampling[:, sampling_index] = pool.starmap(
+                    ignore_nan_and_apply_function_on_2_vectors,
+                    (
+                        (vector_, matrix_row, function)
+                        for matrix_row in matrix.values[:, columns]
+                    ),
+                )
+
+            statistics["0.95 Margin of Error"] = apply_along_axis(
+                lambda sampled_scores: compute_margin_of_error(
+                    sampled_scores[sampled_scores != nan]
                 ),
+                1,
+                row_x_sampling,
             )
 
-        statistics["0.95 Margin of Error"] = apply_along_axis(
-            lambda sampled_scores: compute_margin_of_error(
-                sampled_scores[sampled_scores != nan]
-            ),
-            1,
-            row_x_sampling,
-        )
+        if 0 < n_permutation:
 
-        #
-        print(
-            "Computing p-value and false discovery rate with {} permutation...".format(
-                n_sampling
-            )
-        )
-
-        row_x_permutation = full((n_matrix_row, n_permutation), nan)
-
-        vector_ = vector.values.copy()
-
-        for permuting_index in range(n_permutation):
-
-            shuffle(vector_)
-
-            row_x_permutation[:, permuting_index] = pool.starmap(
-                ignore_nan_and_apply_function_on_2_vectors,
-                ((vector_, matrix_row, function) for matrix_row in matrix.values),
+            print(
+                "Computing p-value and false discovery rate with {} permutation...".format(
+                    n_sampling
+                )
             )
 
-        (
-            statistics["P-Value"],
-            statistics["False Discovery Rate"],
-        ) = compute_p_values_and_false_discovery_rates(
-            statistics["Score"].values, row_x_permutation.flatten(), "<>"
-        )
+            row_x_permutation = full((n_matrix_row, n_permutation), nan)
 
-        #
+            vector_ = vector.values.copy()
+
+            for permuting_index in range(n_permutation):
+
+                shuffle(vector_)
+
+                row_x_permutation[:, permuting_index] = pool.starmap(
+                    ignore_nan_and_apply_function_on_2_vectors,
+                    ((vector_, matrix_row, function) for matrix_row in matrix.values),
+                )
+
+            statistics[
+                ["P-Value", "False Discovery Rate"]
+            ] = compute_p_values_and_false_discovery_rates(
+                statistics["Score"].values, row_x_permutation.flatten(), "<>"
+            )
+
         pool.terminate()
 
     else:
 
         statistics = statistics.reindex(index=matrix.index)
 
-    #
     statistics.sort_values("Score", ascending=score_ascending, inplace=True)
 
     if file_path_prefix is not None:
@@ -166,7 +168,6 @@ def apply_function_on_vector_and_matrix_row(
 
         return statistics
 
-    #
     print("Plotting...")
 
     plot_plotly(
@@ -187,7 +188,6 @@ def apply_function_on_vector_and_matrix_row(
         },
     )
 
-    #
     vector_plot = vector.copy()
 
     statistics_plot = statistics.copy()
@@ -206,8 +206,7 @@ def apply_function_on_vector_and_matrix_row(
 
     dataframe_plot = matrix.loc[statistics_plot.index]
 
-    #
-    if series_data_type == "continuous":
+    if vector_data_type == "continuous":
 
         vector_plot = Series(
             normalize_array(vector_plot.values, "-0-"),
@@ -215,7 +214,7 @@ def apply_function_on_vector_and_matrix_row(
             index=vector_plot.index,
         ).clip(lower=-plot_std, upper=plot_std)
 
-    if dataframe_data_type == "continuous":
+    if matrix_data_type == "continuous":
 
         dataframe_plot = DataFrame(
             apply_along_axis(normalize_array, 1, dataframe_plot.values, "-0-"),
@@ -223,7 +222,6 @@ def apply_function_on_vector_and_matrix_row(
             columns=dataframe_plot.columns,
         ).clip(lower=-plot_std, upper=plot_std)
 
-    #
     if (
         cluster_within_category
         and not vector_plot.isna().any()
@@ -239,7 +237,6 @@ def apply_function_on_vector_and_matrix_row(
 
         vector_plot = vector_plot[dataframe_plot.columns]
 
-    #
     n_row = 1 + 1 + dataframe_plot.shape[0]
 
     row_fraction = 1 / n_row
@@ -249,7 +246,6 @@ def apply_function_on_vector_and_matrix_row(
         "width": 800,
         "margin": {"l": 200, "r": 200},
         "title": {"x": 0.5},
-        # "xaxis": {"showticklabels": False},
         "yaxis": {"domain": (0, 1 - 2 * row_fraction), "showticklabels": False},
         "yaxis2": {"domain": (1 - row_fraction, 1), "showticklabels": False},
         "annotations": [],
@@ -263,7 +259,6 @@ def apply_function_on_vector_and_matrix_row(
 
         layout = merge_2_dicts_recursively(layout_template, layout)
 
-    #
     heatmap_trace_template = {
         "type": "heatmap",
         "zmin": -plot_std,
@@ -277,7 +272,7 @@ def apply_function_on_vector_and_matrix_row(
             "name": "Target",
             "x": vector_plot.index,
             "z": vector_plot.to_frame().T,
-            "colorscale": DATA_TYPE_COLORSCALE[series_data_type],
+            "colorscale": DATA_TYPE_COLORSCALE[vector_data_type],
             **heatmap_trace_template,
         },
         {
@@ -286,12 +281,11 @@ def apply_function_on_vector_and_matrix_row(
             "x": dataframe_plot.columns,
             "y": dataframe_plot.index[::-1],
             "z": dataframe_plot.iloc[::-1],
-            "colorscale": DATA_TYPE_COLORSCALE[dataframe_data_type],
+            "colorscale": DATA_TYPE_COLORSCALE[matrix_data_type],
             **heatmap_trace_template,
         },
     ]
 
-    #
     layout_annotation_template = {
         "xref": "paper",
         "yref": "paper",
@@ -300,7 +294,6 @@ def apply_function_on_vector_and_matrix_row(
         "showarrow": False,
     }
 
-    #
     layout["annotations"].append(
         {
             "x": 0,
@@ -329,7 +322,6 @@ def apply_function_on_vector_and_matrix_row(
             }
         )
 
-    #
     y -= 2 * row_fraction
 
     for (
@@ -367,7 +359,6 @@ def apply_function_on_vector_and_matrix_row(
 
         y -= row_fraction
 
-    #
     if file_path_prefix is None:
 
         html_file_path = None

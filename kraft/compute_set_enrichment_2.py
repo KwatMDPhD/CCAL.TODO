@@ -1,9 +1,9 @@
 from numpy import absolute, asarray, isnan, log, where
 
-from ..plot.plot_plotly import plot_plotly
+from .plot_plotly import plot_plotly
 
 
-def compute_set_enrichment(
+def compute_set_enrichment_2(
     element_score,
     set_elements,
     method="rank cdf ks",
