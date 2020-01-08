@@ -1,7 +1,7 @@
 from numpy import asarray, meshgrid
 
 
-def mesh_grids_into_point_x_dimension(grids):
+def mesh(grids):
 
     return asarray(
         tuple(
