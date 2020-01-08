@@ -1,53 +1,40 @@
 from numpy import apply_along_axis
 
-from .compute_element_x_dimension_joint_probability import (
-    compute_element_x_dimension_joint_probability,
-)
-from .get_mesh_grid_point_x_dimension_d_dimensions import (
-    get_mesh_grid_point_x_dimension_d_dimensions,
-)
+from .compute_joint_probability import compute_joint_probability
+from .get_dimension_resolutions import get_resolutions
 from .plot_mesh_grid import plot_mesh_grid
 from .unmesh import unmesh
 
 
-def compute_element_x_dimension_posterior_probability(
+def compute_posterior_probability(
     element_x_dimension,
     plot=True,
-    dimension_names=None,
-    **estimate_element_x_dimension_kernel_density_keyword_arguments,
+    names=None,
+    **estimate_kernel_density_keyword_arguments,
 ):
 
-    (
-        mesh_grid_point_x_dimension,
-        mesh_grid_point_joint_probability,
-    ) = compute_element_x_dimension_joint_probability(
+    point_x_dimension, joint_probabilities = compute_joint_probability(
         element_x_dimension,
         plot=plot,
-        dimension_names=dimension_names,
-        **estimate_element_x_dimension_kernel_density_keyword_arguments,
+        names=names,
+        **estimate_kernel_density_keyword_arguments,
     )
 
-    d_target_dimension = get_mesh_grid_point_x_dimension_d_dimensions(
-        mesh_grid_point_x_dimension
-    )[-1]
+    target_dimension_resolution = get_resolutions(point_x_dimension)[-1]
 
-    joint_probability = unmesh(
-        mesh_grid_point_x_dimension, mesh_grid_point_joint_probability
-    )[1]
-
-    mesh_grid_point_posterior_probability = apply_along_axis(
-        lambda vector: vector / (vector.sum() * d_target_dimension),
+    posterior_probabilities = apply_along_axis(
+        lambda vector: vector / (vector.sum() * target_dimension_resolution),
         -1,
-        joint_probability,
-    ).reshape(mesh_grid_point_joint_probability.shape)
+        unmesh(point_x_dimension, joint_probabilities)[1],
+    ).reshape(joint_probabilities.shape)
 
     if plot:
 
         plot_mesh_grid(
-            mesh_grid_point_x_dimension,
-            mesh_grid_point_posterior_probability,
-            dimension_names=dimension_names,
+            point_x_dimension,
+            posterior_probabilities,
+            names=names,
             value_name="Posterior Probability",
         )
 
-    return mesh_grid_point_x_dimension, mesh_grid_point_posterior_probability
+    return point_x_dimension, posterior_probabilities

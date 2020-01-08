@@ -7,7 +7,7 @@ from .ignore_nan_and_apply_function_on_2_vectors import (
 )
 
 
-def cluster_matrix(
+def get_clustering_index(
     matrix,
     axis,
     groups=None,

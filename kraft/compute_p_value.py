@@ -13,6 +13,4 @@ def compute_p_value(value, random_values, direction):
 
         n_significant_random_value = (value <= random_values).sum()
 
-    n_random_values = random_values.size
-
-    return max(1, n_significant_random_value) / n_random_values
+    return max(1, n_significant_random_value) / random_values.size

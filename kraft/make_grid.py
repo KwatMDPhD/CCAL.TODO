@@ -1,16 +1,14 @@
 from numpy import linspace
 
 
-def make_grid(
-    grid_min, grid_max, fraction_grid_extension, n_grid,
-):
+def make_grid(min_, max_, fraction_extension, n):
 
-    if 0 < fraction_grid_extension:
+    if 0 < fraction_extension:
 
-        grid_extension = (grid_max - grid_min) * fraction_grid_extension
+        extension = (max_ - min_) * fraction_extension
 
-        grid_min -= grid_extension
+        min_ -= extension
 
-        grid_max += grid_extension
+        max_ += extension
 
-    return linspace(grid_min, grid_max, num=n_grid)
+    return linspace(min_, max_, num=n)

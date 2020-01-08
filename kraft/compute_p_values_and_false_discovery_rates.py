@@ -11,7 +11,7 @@ def compute_p_values_and_false_discovery_rates(
     if "<" in direction:
 
         p_values_less = asarray(
-            tuple(compute_p_value(v, random_values, "<") for v in values)
+            tuple(compute_p_value(value, random_values, "<") for value in values)
         )
 
         false_discovery_rates_less = multipletests(p_values_less, method=method)[1]
@@ -19,7 +19,7 @@ def compute_p_values_and_false_discovery_rates(
     if ">" in direction:
 
         p_values_great = asarray(
-            tuple(compute_p_value(v, random_values, ">") for v in values)
+            tuple(compute_p_value(value, random_values, ">") for value in values)
         )
 
         false_discovery_rates_great = multipletests(p_values_great, method=method)[1]

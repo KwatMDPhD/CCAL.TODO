@@ -2,10 +2,10 @@ from numpy import full, linspace, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
 
-from .compute_element_x_dimension_joint_probability import (
-    compute_element_x_dimension_joint_probability,
+from .compute_joint_probability import (
+    compute_joint_probability,
 )
-from .compute_vector_bandwidth import compute_vector_bandwidth
+from .compute_bandwidth import compute_bandwidth
 from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
     make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )
@@ -108,14 +108,14 @@ class GPSMap:
         label_grid_probability = {}
 
         dimension_bandwidths = tuple(
-            compute_vector_bandwidth(coordinate.values)
+            compute_bandwidth(coordinate.values)
             for axis, coordinate in self.element_x_dimension.items()
         )
 
         for label in self.element_label.unique():
 
             label_grid_probability[label] = unmesh(
-                *compute_element_x_dimension_joint_probability(
+                *compute_joint_probability(
                     self.element_x_dimension[self.element_label == label].values,
                     plot=False,
                     dimension_bandwidths=dimension_bandwidths,
