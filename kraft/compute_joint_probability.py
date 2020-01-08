@@ -1,33 +1,27 @@
 from numpy import product
 
-from .estimate_element_x_dimension_kernel_density import (
-    estimate_element_x_dimension_kernel_density,
-)
-from .get_point_x_dimension_d_dimensions import get_point_x_dimension_d_dimensions
+from .estimate_kernel_density import estimate_kernel_density
+from .get_dimension_resolutions import get_dimension_resolutions
 from .plot_mesh_grid import plot_mesh_grid
 
 
-def compute_element_x_dimension_joint_probability(
+def compute_joint_probability(
     element_x_dimension,
     plot=True,
     dimension_names=None,
-    **estimate_element_x_dimension_kernel_density_keyword_arguments,
+    **estimate_kernel_density_keyword_arguments,
 ):
 
-    (
-        point_x_dimension,
-        point_kernel_density,
-    ) = estimate_element_x_dimension_kernel_density(
+    point_x_dimension, point_kernel_density = estimate_kernel_density(
         element_x_dimension,
         plot=plot,
         dimension_names=dimension_names,
-        **estimate_element_x_dimension_kernel_density_keyword_arguments,
+        **estimate_kernel_density_keyword_arguments,
     )
 
-    d_dimensions = get_point_x_dimension_d_dimensions(point_x_dimension)
-
     point_joint_probability = point_kernel_density / (
-        point_kernel_density.sum() * product(d_dimensions)
+        point_kernel_density.sum()
+        * product(get_dimension_resolutions(point_x_dimension))
     )
 
     if plot:

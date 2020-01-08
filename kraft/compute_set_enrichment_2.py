@@ -130,8 +130,8 @@ def compute_set_enrichment_2(
         )
 
     #
-    from .estimate_element_x_dimension_kernel_density import (
-        estimate_element_x_dimension_kernel_density,
+    from .estimate_kernel_density import (
+        estimate_kernel_density,
     )
 
     element_score_min = element_score.values.min()
@@ -140,7 +140,7 @@ def compute_set_enrichment_2(
 
     def estimate_vector_density(vector):
 
-        return estimate_element_x_dimension_kernel_density(
+        return estimate_kernel_density(
             vector.reshape(vector.size, 1),
             dimension_grid_mins=(element_score_min,),
             dimension_grid_maxs=(element_score_max,),

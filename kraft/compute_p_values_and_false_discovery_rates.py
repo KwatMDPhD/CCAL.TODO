@@ -11,7 +11,7 @@ def compute_p_values_and_false_discovery_rates(
     if "<" in direction:
 
         p_values_less = asarray(
-            tuple(compute_p_value(value, random_values, "<") for value in values)
+            tuple(compute_p_value(v, random_values, "<") for v in values)
         )
 
         false_discovery_rates_less = multipletests(p_values_less, method=method)[1]
@@ -19,31 +19,26 @@ def compute_p_values_and_false_discovery_rates(
     if ">" in direction:
 
         p_values_great = asarray(
-            tuple(compute_p_value(value, random_values, ">") for value in values)
+            tuple(compute_p_value(v, random_values, ">") for v in values)
         )
 
         false_discovery_rates_great = multipletests(p_values_great, method=method)[1]
 
-    if direction == "<>":
+    if direction == "<":
 
-        p_values = where(p_values_less < p_values_great, p_values_less, p_values_great)
-
-        false_discovery_rates = where(
-            false_discovery_rates_less < false_discovery_rates_great,
-            false_discovery_rates_less,
-            false_discovery_rates_great,
-        )
-
-    elif direction == "<":
-
-        p_values = p_values_less
-
-        false_discovery_rates = false_discovery_rates_less
+        return p_values_less, false_discovery_rates_less
 
     elif direction == ">":
 
-        p_values = p_values_great
+        return p_values_great, false_discovery_rates_great
 
-        false_discovery_rates = false_discovery_rates_great
+    elif direction == "<>":
 
-    return p_values, false_discovery_rates
+        return (
+            where(p_values_less < p_values_great, p_values_less, p_values_great),
+            where(
+                false_discovery_rates_less < false_discovery_rates_great,
+                false_discovery_rates_less,
+                false_discovery_rates_great,
+            ),
+        )
