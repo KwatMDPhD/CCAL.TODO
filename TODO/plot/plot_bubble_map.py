@@ -3,7 +3,7 @@ from numpy import arange, meshgrid
 from .COLORBAR import COLORBAR
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .merge_2_dicts import merge_2_dicts
-from .normalize_array import normalize_array
+from .normalize import normalize
 from .plot_plotly import plot_plotly
 
 
@@ -68,7 +68,7 @@ def plot_bubble_map(
                     "text": dataframe_size.values.ravel(),
                     "mode": "markers",
                     "marker": {
-                        "size": normalize_array(dataframe_size.values, "0-1").ravel()
+                        "size": normalize(dataframe_size.values, "0-1").ravel()
                         * marker_size_max,
                         "color": dataframe_color.values.ravel(),
                         "colorscale": colorscale,

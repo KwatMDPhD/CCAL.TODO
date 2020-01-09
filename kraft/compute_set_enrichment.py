@@ -1,4 +1,5 @@
 from numpy import absolute, asarray, where
+from .plot_plotly import plot_plotly
 
 
 def compute_set_enrichment(
@@ -68,89 +69,87 @@ def compute_set_enrichment(
     enrichment = signals[absolute(signals).argmax()]
 
     #
-    if not plot:
+    if plot:
 
-        return enrichment
+        #
+        y_fraction = 0.16
 
-    #
-    y_fraction = 0.16
-
-    layout = {
-        "title": {"text": title, "x": 0.5, "xanchor": "center"},
-        "xaxis": {"anchor": "y", "title": "Rank"},
-        "yaxis": {"domain": (0, y_fraction), "title": element_score_name},
-        "yaxis2": {"domain": (y_fraction + 0.08, 1), "title": "Enrichment"},
-    }
-
-    #
-    data = []
-
-    line_width = 2.4
-
-    #
-    data.append(
-        {
-            "type": "scatter",
-            "name": "Element Score",
-            "y": element_score.values,
-            "text": element_score.index,
-            "line": {"width": line_width, "color": "#4e40d8"},
-            "fill": "tozeroy",
+        layout = {
+            "title": {"text": title, "x": 0.5, "xanchor": "center"},
+            "xaxis": {"anchor": "y", "title": "Rank"},
+            "yaxis": {"domain": (0, y_fraction), "title": element_score_name},
+            "yaxis2": {"domain": (y_fraction + 0.08, 1), "title": "Enrichment"},
         }
-    )
 
-    #
-    data.append(
-        {
-            "yaxis": "y2",
-            "type": "scatter",
-            "name": method,
-            "y": signals,
-            "line": {"width": line_width, "color": "#20d8ba"},
-            "fill": "tozeroy",
-        }
-    )
+        #
+        data = []
 
-    #
-    element_texts = element_score.index.values[r_h_i]
+        line_width = 2.4
 
-    data.append(
-        {
-            "yaxis": "y2",
-            "type": "scatter",
-            "name": "Element",
-            "x": r_h_i,
-            "y": (0,) * r_h_i.size,
-            "text": element_texts,
-            "mode": "markers",
-            "marker": {
-                "symbol": "line-ns-open",
-                "size": 8,
-                "color": "#9016e6",
-                "line": {"width": line_width / 2},
-            },
-            "hoverinfo": "x+text",
-        }
-    )
+        #
+        data.append(
+            {
+                "type": "scatter",
+                "name": "Element Score",
+                "y": element_score.values,
+                "text": element_score.index,
+                "line": {"width": line_width, "color": "#4e40d8"},
+                "fill": "tozeroy",
+            }
+        )
 
-    layout["annotations"] = [
-        {
-            "x": r_h_i_,
-            "y": 0,
-            "yref": "y2",
-            "clicktoshow": "onoff",
-            "text": "<b>{}</b>".format(str_),
-            "showarrow": False,
-            "font": {"size": annotation_text_font_size},
-            "textangle": -90,
-            "width": annotation_text_width,
-            "borderpad": 0,
-            "yshift": (-annotation_text_yshift, annotation_text_yshift)[i % 2],
-        }
-        for i, (r_h_i_, str_) in enumerate(zip(r_h_i, element_texts))
-    ]
+        #
+        data.append(
+            {
+                "yaxis": "y2",
+                "type": "scatter",
+                "name": method,
+                "y": signals,
+                "line": {"width": line_width, "color": "#20d8ba"},
+                "fill": "tozeroy",
+            }
+        )
 
-    #
-    plot({"layout": layout, "data": data}, html_file_path)
+        #
+        element_texts = element_score.index.values[r_h_i]
+
+        data.append(
+            {
+                "yaxis": "y2",
+                "type": "scatter",
+                "name": "Element",
+                "x": r_h_i,
+                "y": (0,) * r_h_i.size,
+                "text": element_texts,
+                "mode": "markers",
+                "marker": {
+                    "symbol": "line-ns-open",
+                    "size": 8,
+                    "color": "#9016e6",
+                    "line": {"width": line_width / 2},
+                },
+                "hoverinfo": "x+text",
+            }
+        )
+
+        layout["annotations"] = [
+            {
+                "x": r_h_i_,
+                "y": 0,
+                "yref": "y2",
+                "clicktoshow": "onoff",
+                "text": "<b>{}</b>".format(str_),
+                "showarrow": False,
+                "font": {"size": annotation_text_font_size},
+                "textangle": -90,
+                "width": annotation_text_width,
+                "borderpad": 0,
+                "yshift": (-annotation_text_yshift, annotation_text_yshift)[i % 2],
+            }
+            for i, (r_h_i_, str_) in enumerate(zip(r_h_i, element_texts))
+        ]
+
+        #
+        plot_plotly({"layout": layout, "data": data}, html_file_path)
 
     return enrichment

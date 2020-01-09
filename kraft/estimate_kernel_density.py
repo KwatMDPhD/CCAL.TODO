@@ -1,9 +1,9 @@
 from KDEpy import FFTKDE
 
 from .compute_bandwidth import compute_bandwidth
-from .make_dimension_grid import make_grid
+from .make_grid import make_grid
 from .mesh import mesh
-from .plot_mesh_grid import plot_mesh_grid
+from .plot_mesh import plot_mesh
 
 
 def estimate_kernel_density(
@@ -31,7 +31,7 @@ def estimate_kernel_density(
 
     if plot:
 
-        plot_mesh_grid(
+        plot_mesh(
             point_x_dimension,
             kernel_densities,
             names=names,

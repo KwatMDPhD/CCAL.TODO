@@ -1,8 +1,8 @@
 from numpy import product
+from numpy import diff, unique
 
 from .estimate_kernel_density import estimate_kernel_density
-from .get_resolutions import get_resolutions
-from .plot_mesh_grid import plot_mesh_grid
+from .plot_mesh import plot_mesh
 
 
 def compute_joint_probability(
@@ -20,12 +20,13 @@ def compute_joint_probability(
     )
 
     joint_probabilities = kernel_densities / (
-        kernel_densities.sum() * product(get_resolutions(point_x_dimension))
+        kernel_densities.sum()
+        * product(tuple(diff(unique(vector)).min() for vector in point_x_dimension.T))
     )
 
     if plot:
 
-        plot_mesh_grid(
+        plot_mesh(
             point_x_dimension,
             joint_probabilities,
             names=names,

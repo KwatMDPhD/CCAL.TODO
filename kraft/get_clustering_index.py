@@ -2,7 +2,7 @@ from numpy import concatenate, where
 from pandas import unique
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-from .ignore_nan_and_function import function_ignoring_nan
+from .function_ignoring_nan import function_ignoring_nan
 
 
 def get_clustering_index(

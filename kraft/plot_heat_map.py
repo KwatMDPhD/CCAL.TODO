@@ -1,6 +1,6 @@
 from numpy import argsort, asarray, nonzero, unique
 
-from .cast_object_to_builtin import cast_object_to_builtin
+from .cast_builtin import cast_builtin
 from .COLORBAR import COLORBAR
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .merge_2_dicts import merge_2_dicts
@@ -64,7 +64,7 @@ def plot_heat_map(
 
         layout = merge_2_dicts(layout_template, layout)
 
-    if any(isinstance(cast_object_to_builtin(i), str) for i in dataframe.columns):
+    if any(isinstance(cast_builtin(i), str) for i in dataframe.columns):
 
         x = dataframe.columns
 
@@ -72,7 +72,7 @@ def plot_heat_map(
 
         x = None
 
-    if any(isinstance(cast_object_to_builtin(i), str) for i in dataframe.index):
+    if any(isinstance(cast_builtin(i), str) for i in dataframe.index):
 
         y = dataframe.index[::-1]
 

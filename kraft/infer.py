@@ -1,9 +1,7 @@
 from numpy import absolute, unique
 
-from .compute_element_x_dimension_posterior_probability import (
-    compute_element_x_dimension_posterior_probability,
-)
-from .plot_mesh_grid import plot_mesh_grid
+from .compute_posterior_probability import compute_posterior_probability
+from .plot_mesh import plot_mesh
 
 
 def infer(
@@ -13,9 +11,7 @@ def infer(
     (
         mesh_grid_point_x_dimension,
         mesh_grid_point_posterior_probability,
-    ) = compute_element_x_dimension_posterior_probability(
-        element_x_dimension, plot=plot, names=names,
-    )
+    ) = compute_posterior_probability(element_x_dimension, plot=plot, names=names,)
 
     target_dimension_grid = unique(mesh_grid_point_x_dimension[:, -1])
 
@@ -31,7 +27,7 @@ def infer(
 
     if plot:
 
-        plot_mesh_grid(
+        plot_mesh(
             no_target_mesh_grid_point_x_dimension,
             no_target_mesh_grid_point_posterior_probability,
             names=names,

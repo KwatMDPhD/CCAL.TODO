@@ -3,7 +3,7 @@ from re import match, sub
 from numpy import fromfile
 from pandas import DataFrame
 
-from .cast_object_to_builtin import cast_object_to_builtin
+from .cast_builtin import cast_builtin
 
 
 def read_fcs(fcs_file_path, print_header=False):
@@ -45,7 +45,7 @@ def read_fcs(fcs_file_path, print_header=False):
 
     for key, value in zip(text[::2], text[1::2]):
 
-        value = cast_object_to_builtin(value)
+        value = cast_builtin(value)
 
         if key in meta_dict:
 

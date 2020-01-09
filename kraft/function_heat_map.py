@@ -11,10 +11,11 @@ from .compute_p_values_and_false_discovery_rates import (
 )
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_clustering_index import get_clustering_index
-from .ignore_nan_and_function import function_ignoring_nan
+from .function_ignoring_nan import function_ignoring_nan
 from .is_sorted import is_sorted
 from .merge_2_dicts import merge_2_dicts
-from .normalize_array import normalize_array
+from .normalize import normalize
+from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
 from .select_index import select_index
 
@@ -143,9 +144,10 @@ def function_heat_map(
                     ((vector_, matrix_row, function) for matrix_row in matrix.values),
                 )
 
-            statistics[
-                ["P-Value", "False Discovery Rate"]
-            ] = compute_p_values_and_false_discovery_rates(
+            (
+                statistics["P-Value"],
+                statistics["False Discovery Rate"],
+            ) = compute_p_values_and_false_discovery_rates(
                 statistics["Score"].values, row_x_permutation.flatten(), "<>"
             )
 
@@ -165,7 +167,7 @@ def function_heat_map(
 
         print("Plotting...")
 
-        plot(
+        plot_plotly(
             {
                 "layout": {
                     "title": {"text": "Statistics"},
@@ -204,7 +206,7 @@ def function_heat_map(
         if vector_data_type == "continuous":
 
             vector_ = Series(
-                normalize_array(vector_.values, "-0-"),
+                normalize(vector_.values, "-0-"),
                 name=vector_.name,
                 index=vector_.index,
             ).clip(lower=-plot_std, upper=plot_std)
@@ -212,7 +214,7 @@ def function_heat_map(
         if matrix_data_type == "continuous":
 
             dataframe_ = DataFrame(
-                apply_along_axis(normalize_array, 1, dataframe_.values, "-0-"),
+                apply_along_axis(normalize, 1, dataframe_.values, "-0-"),
                 index=dataframe_.index,
                 columns=dataframe_.columns,
             ).clip(lower=-plot_std, upper=plot_std)
@@ -342,7 +344,7 @@ def function_heat_map(
 
             html_file_path = "{}.html".format(file_path_prefix)
 
-        plot(
+        plot_plotly(
             {
                 "layout": layout,
                 "data": [

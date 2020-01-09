@@ -1,4 +1,4 @@
-def cast_object_to_builtin(object_):
+def cast_builtin(object_):
 
     if object_ == "None":
 
