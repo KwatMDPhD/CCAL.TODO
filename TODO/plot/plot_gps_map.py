@@ -7,7 +7,7 @@ from .get_colorscale_color import get_colorscale_color
 from .get_element_x_dimension_triangulation_edges import (
     get_element_x_dimension_triangulation_edges,
 )
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 
@@ -84,7 +84,7 @@ def plot_gps_map(
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     edge_xs, edge_ys = get_element_x_dimension_triangulation_edges(node_x_dimension)
 
@@ -161,7 +161,7 @@ def plot_gps_map(
 
     else:
 
-        element_trace = merge_2_dicts_recursively(element_trace_template, element_trace)
+        element_trace = merge_2_dicts(element_trace_template, element_trace)
 
     if grid_label is not None:
 
@@ -247,7 +247,7 @@ def plot_gps_map(
             ticktext_function = "{:.2e}".format
 
         data.append(
-            merge_2_dicts_recursively(
+            merge_2_dicts(
                 element_trace,
                 {
                     "x": element_x_dimension["x"],
@@ -260,7 +260,7 @@ def plot_gps_map(
                         "opacity": element_value_opacity,
                         "color": element_value,
                         "colorscale": element_value_colorscale,
-                        "colorbar": merge_2_dicts_recursively(
+                        "colorbar": merge_2_dicts(
                             COLORBAR,
                             {
                                 "tickmode": "array",
@@ -284,7 +284,7 @@ def plot_gps_map(
             name = "Label {:.0f}".format(label)
 
             data.append(
-                merge_2_dicts_recursively(
+                merge_2_dicts(
                     element_trace,
                     {
                         "legendgroup": name,
@@ -300,7 +300,7 @@ def plot_gps_map(
     else:
 
         data.append(
-            merge_2_dicts_recursively(
+            merge_2_dicts(
                 element_trace,
                 {
                     "x": element_x_dimension["x"],

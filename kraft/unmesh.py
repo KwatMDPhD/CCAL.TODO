@@ -1,11 +1,11 @@
 from numpy import unique
 
 
-def unmesh(point_x_dimension, point_value):
+def unmesh(point_x_dimension, values):
 
-    grids = tuple(unique(dimension_values) for dimension_values in point_x_dimension.T)
+    grids = tuple(unique(vector) for vector in point_x_dimension.T)
 
     return (
         grids,
-        point_value.reshape(tuple(grid.size for grid in grids)),
+        values.reshape(tuple(grid.size for grid in grids)),
     )

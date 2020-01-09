@@ -1,10 +1,9 @@
 from numpy import arange
 
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
-from .plot_plotly import plot_plotly
+from .merge_2_dicts import merge_2_dicts
 
 
-def select_series_index(
+def select_index(
     series,
     direction,
     thresholds=None,
@@ -146,7 +145,7 @@ def select_series_index(
 
         else:
 
-            layout = merge_2_dicts_recursively(layout_template, layout)
+            layout = merge_2_dicts(layout_template, layout)
 
         n_selected = is_selected.sum()
 
@@ -162,7 +161,7 @@ def select_series_index(
 
             mode = "lines"
 
-        plot_plotly(
+        plot(
             {
                 "layout": layout,
                 "data": [

@@ -1,7 +1,7 @@
 from numpy import absolute, nanmax
 
 from .compute_vector_context import compute_vector_context
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 
@@ -41,7 +41,7 @@ def plot_context(
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     context_dict = compute_vector_context(
         series.values, **compute_vector_context_keyword_arguments
@@ -90,7 +90,7 @@ def plot_context(
             "marker": {"color": "#20d9ba"},
             "hoverinfo": "x+y",
         },
-        merge_2_dicts_recursively(
+        merge_2_dicts(
             data_template,
             {"name": "PDF", "y": context_dict["pdf"], "line": {"color": "#24e7c0"}},
         ),
@@ -129,7 +129,7 @@ def plot_context(
     shape_pdf_reference[context_dict["pdf"] <= shape_pdf_reference] = None
 
     data.append(
-        merge_2_dicts_recursively(
+        merge_2_dicts(
             data_template,
             {
                 "name": "Shape Reference",
@@ -146,7 +146,7 @@ def plot_context(
         location_pdf_reference[context_dict["pdf"] <= location_pdf_reference] = None
 
         data.append(
-            merge_2_dicts_recursively(
+            merge_2_dicts(
                 data_template,
                 {
                     "name": "Location Reference",
@@ -174,7 +174,7 @@ def plot_context(
     ):
 
         data.append(
-            merge_2_dicts_recursively(
+            merge_2_dicts(
                 data_template,
                 {
                     "name": name,

@@ -1,9 +1,7 @@
 from numpy import asarray, exp, log, nan, sign, sqrt, unique
 from scipy.stats import pearsonr
 
-from .compute_joint_probability import (
-    compute_joint_probability,
-)
+from .compute_joint_probability import compute_joint_probability
 from .unmesh import unmesh
 
 

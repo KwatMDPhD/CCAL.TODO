@@ -3,7 +3,7 @@ from numpy.random import seed, shuffle
 from sklearn.linear_model import LinearRegression
 
 from .compute_p_value import compute_p_value
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
 
@@ -85,7 +85,7 @@ def correlate_2_vectors(
 
         else:
 
-            layout = merge_2_dicts_recursively(layout_template, layout)
+            layout = merge_2_dicts(layout_template, layout)
 
         plot_plotly(
             {

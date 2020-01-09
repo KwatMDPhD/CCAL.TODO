@@ -1,7 +1,5 @@
 from numpy import absolute, asarray, isnan, log, where
 
-from .plot_plotly import plot_plotly
-
 
 def compute_set_enrichment_2(
     element_score,
@@ -47,7 +45,7 @@ def compute_set_enrichment_2(
     #
     if plot:
 
-        plot_plotly(
+        plot(
             {
                 "layout": {
                     "title": {"text": "Element Score"},
@@ -97,7 +95,7 @@ def compute_set_enrichment_2(
     #
     if plot:
 
-        plot_plotly(
+        plot(
             {
                 "layout": {
                     "title": {"text": "PDF(rank | event)"},
@@ -113,7 +111,7 @@ def compute_set_enrichment_2(
             None,
         )
 
-        plot_plotly(
+        plot(
             {
                 "layout": {
                     "title": {"text": "CDF(rank | event)"},
@@ -130,9 +128,7 @@ def compute_set_enrichment_2(
         )
 
     #
-    from .estimate_kernel_density import (
-        estimate_kernel_density,
-    )
+    from .estimate_kernel_density import estimate_kernel_density
 
     element_score_min = element_score.values.min()
 
@@ -184,7 +180,7 @@ def compute_set_enrichment_2(
     #
     if plot:
 
-        plot_plotly(
+        plot(
             {
                 "layout": {
                     "title": {"text": "PDF(score | event)"},
@@ -207,7 +203,7 @@ def compute_set_enrichment_2(
             None,
         )
 
-        plot_plotly(
+        plot(
             {
                 "layout": {
                     "title": {"text": "CDF(score | event)"},
@@ -294,7 +290,7 @@ def compute_set_enrichment_2(
     #
     if plot:
 
-        plot_plotly(
+        plot(
             {
                 "layout": {
                     "title": {"text": "Statistics"},
@@ -397,6 +393,6 @@ def compute_set_enrichment_2(
     ]
 
     #
-    plot_plotly({"layout": layout, "data": data}, html_file_path)
+    plot({"layout": layout, "data": data}, html_file_path)
 
     return enrichment

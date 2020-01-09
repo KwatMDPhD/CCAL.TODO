@@ -1,7 +1,7 @@
 from numpy import diff
 
 
-def is_sorted_array(array):
+def is_sorted(array):
 
     diff_ = diff(array)
 

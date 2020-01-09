@@ -1,7 +1,5 @@
 from numpy import absolute, asarray, where
 
-from .plot_plotly import plot_plotly
-
 
 def compute_set_enrichment(
     element_score,
@@ -153,6 +151,6 @@ def compute_set_enrichment(
     ]
 
     #
-    plot_plotly({"layout": layout, "data": data}, html_file_path)
+    plot({"layout": layout, "data": data}, html_file_path)
 
     return enrichment

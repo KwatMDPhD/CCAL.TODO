@@ -2,10 +2,8 @@ from numpy import full, linspace, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
 
-from .compute_joint_probability import (
-    compute_joint_probability,
-)
 from .compute_bandwidth import compute_bandwidth
+from .compute_joint_probability import compute_joint_probability
 from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
     make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )

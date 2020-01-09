@@ -2,7 +2,7 @@ from pandas import Series
 
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_colorscale_color import get_colorscale_color
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 
@@ -57,7 +57,7 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     data = []
 

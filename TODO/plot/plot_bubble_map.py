@@ -2,7 +2,7 @@ from numpy import arange, meshgrid
 
 from .COLORBAR import COLORBAR
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .normalize_array import normalize_array
 from .plot_plotly import plot_plotly
 
@@ -45,7 +45,7 @@ def plot_bubble_map(
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     if dataframe_color is None:
 

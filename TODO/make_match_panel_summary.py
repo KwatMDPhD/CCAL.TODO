@@ -2,7 +2,7 @@ from numpy import nan
 
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .make_match_panel_annotations import make_match_panel_annotations
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .normalize_dataframe import normalize_dataframe
 from .normalize_series import normalize_series
 from .plot_plotly import plot_plotly
@@ -70,7 +70,7 @@ def make_match_panel_summary(
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     row_fraction = 1 / n_row
 

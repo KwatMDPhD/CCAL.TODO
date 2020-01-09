@@ -1,4 +1,4 @@
-def merge_2_dicts_recursively(dict_0, dict_1):
+def merge_2_dicts(dict_0, dict_1):
 
     dict_ = {}
 

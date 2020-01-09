@@ -1,7 +1,7 @@
 from numpy import nan
 
 
-def ignore_nan_and_function(
+def function_ignoring_nan(
     vector_0, vector_1, function, **function_keyword_arguments,
 ):
 

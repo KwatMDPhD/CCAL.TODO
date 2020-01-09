@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from .cluster_matrix import cluster_matrix
+from .get_clustering_index import get_clustering_index
 from .normalize_dataframe import normalize_dataframe
 from .plot_heat_map import plot_heat_map
 
@@ -18,7 +18,7 @@ def plot_mf(ws, hs, directory_path):
             w = DataFrame(w)
 
         plot_heat_map(
-            normalize_dataframe(w.iloc[cluster_matrix(w.values, 0), :], 1, "-0-"),
+            normalize_dataframe(w.iloc[get_clustering_index(w.values, 0), :], 1, "-0-"),
             layout={
                 "height": axis_size_1,
                 "width": axis_size_0,
@@ -34,7 +34,7 @@ def plot_mf(ws, hs, directory_path):
             h = DataFrame(h)
 
         plot_heat_map(
-            normalize_dataframe(h.iloc[:, cluster_matrix(h.values, 1)], 0, "-0-"),
+            normalize_dataframe(h.iloc[:, get_clustering_index(h.values, 1)], 0, "-0-"),
             layout={
                 "height": axis_size_0,
                 "width": axis_size_1,

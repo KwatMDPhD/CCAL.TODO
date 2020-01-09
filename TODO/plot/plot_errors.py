@@ -1,6 +1,6 @@
 from numpy import arange
 
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 
@@ -21,7 +21,7 @@ def plot_errors(errors, layout=None, html_file_path=None):
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     plot_plotly(
         {

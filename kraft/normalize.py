@@ -1,7 +1,7 @@
 from scipy.stats import rankdata
 
 
-def normalize_array(array, method, rank_method="average"):
+def normalize(array, method, rank_method="average"):
 
     if method == "-0-":
 

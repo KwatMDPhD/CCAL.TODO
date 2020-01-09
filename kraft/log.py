@@ -1,7 +1,7 @@
 from numpy import log as loge, log2, log10
 
 
-def log_array(array, min_before_logging=None, log_base="e"):
+def log(array, min_before_logging=None, log_base="e"):
 
     if min_before_logging is not None:
 

@@ -3,7 +3,7 @@ from numpy import argsort, asarray, nonzero, unique
 from .cast_object_to_builtin import cast_object_to_builtin
 from .COLORBAR import COLORBAR
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
+from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 
@@ -62,7 +62,7 @@ def plot_heat_map(
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     if any(isinstance(cast_object_to_builtin(i), str) for i in dataframe.columns):
 
@@ -131,9 +131,7 @@ def plot_heat_map(
 
             else:
 
-                row_annotation = merge_2_dicts_recursively(
-                    row_annotation_template, row_annotation
-                )
+                row_annotation = merge_2_dicts(row_annotation_template, row_annotation)
 
             for i in unique(row_annotations):
 
@@ -181,7 +179,7 @@ def plot_heat_map(
 
             else:
 
-                column_annotation = merge_2_dicts_recursively(
+                column_annotation = merge_2_dicts(
                     column_annotation_template, column_annotation
                 )
 

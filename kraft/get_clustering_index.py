@@ -2,9 +2,7 @@ from numpy import concatenate, where
 from pandas import unique
 from scipy.cluster.hierarchy import dendrogram, linkage
 
-from .ignore_nan_and_apply_function_on_2_vectors import (
-    ignore_nan_and_apply_function_on_2_vectors,
-)
+from .ignore_nan_and_function import function_ignoring_nan
 
 
 def get_clustering_index(
@@ -24,7 +22,7 @@ def get_clustering_index(
 
         def distance_function(vector_0, vector_1):
 
-            return ignore_nan_and_apply_function_on_2_vectors(
+            return function_ignoring_nan(
                 vector_0,
                 vector_1,
                 lambda vector_0, vector_1: ((vector_0 - vector_1) ** 2).sum() ** 0.5,

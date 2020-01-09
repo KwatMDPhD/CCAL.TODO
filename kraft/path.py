@@ -2,7 +2,7 @@ from os import mkdir
 from os.path import isdir, split
 
 
-def establish_path(path, path_type):
+def path(path, path_type):
 
     if path_type == "file":
 
