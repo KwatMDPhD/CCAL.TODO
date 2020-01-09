@@ -4,14 +4,6 @@ from os.path import isdir, split
 
 def path(path, path_type):
 
-    if path_type == "file":
-
-        assert not path.endswith("/")
-
-    elif path_type == "directory" and not path.endswith("/"):
-
-        path += "/"
-
     directory_path, file_name = split(path)
 
     missing_directory_paths = []
@@ -26,4 +18,4 @@ def path(path, path_type):
 
         mkdir(directory_path)
 
-        print("Made directory {}.".format(directory_path))
+        print("Made {}/.".format(directory_path))

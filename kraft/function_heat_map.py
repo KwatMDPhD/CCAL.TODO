@@ -161,207 +161,211 @@ def function_heat_map(
 
         statistics.to_csv("{}.tsv".format(file_path_prefix), sep="\t")
 
-    if not plot:
+    if plot:
 
-        return statistics
+        print("Plotting...")
 
-    print("Plotting...")
-
-    plot(
-        {
-            "layout": {
-                "title": {"text": "Statistics"},
-                "xaxis": {"title": {"text": "Rank"}},
+        plot(
+            {
+                "layout": {
+                    "title": {"text": "Statistics"},
+                    "xaxis": {"title": {"text": "Rank"}},
+                },
+                "data": [
+                    {
+                        "type": "scatter",
+                        "name": statistics_name,
+                        "x": statistics_column.index,
+                        "y": statistics_column.values,
+                    }
+                    for statistics_name, statistics_column in statistics.items()
+                ],
             },
-            "data": [
-                {
-                    "type": "scatter",
-                    "name": statistics_name,
-                    "x": statistics_column.index,
-                    "y": statistics_column.values,
-                }
-                for statistics_name, statistics_column in statistics.items()
-            ],
-        },
-    )
+        )
 
-    vector_ = vector.copy()
+        vector_ = vector.copy()
 
-    statistics_ = statistics.copy()
+        statistics_ = statistics.copy()
 
-    if n_extreme is not None or fraction_extreme is not None:
+        if n_extreme is not None or fraction_extreme is not None:
 
-        statistics_ = statistics_.loc[
-            select_index(
-                statistics_["Score"],
-                "<>",
-                n=n_extreme,
-                fraction=fraction_extreme,
-                plot=False,
-            )
-        ].sort_values("Score", ascending=score_ascending)
+            statistics_ = statistics_.loc[
+                select_index(
+                    statistics_["Score"],
+                    "<>",
+                    n=n_extreme,
+                    fraction=fraction_extreme,
+                    plot=False,
+                )
+            ].sort_values("Score", ascending=score_ascending)
 
-    dataframe_ = matrix.loc[statistics_.index]
+        dataframe_ = matrix.loc[statistics_.index]
 
-    if vector_data_type == "continuous":
+        if vector_data_type == "continuous":
 
-        vector_ = Series(
-            normalize_array(vector_.values, "-0-"),
-            name=vector_.name,
-            index=vector_.index,
-        ).clip(lower=-plot_std, upper=plot_std)
+            vector_ = Series(
+                normalize_array(vector_.values, "-0-"),
+                name=vector_.name,
+                index=vector_.index,
+            ).clip(lower=-plot_std, upper=plot_std)
 
-    if matrix_data_type == "continuous":
+        if matrix_data_type == "continuous":
 
-        dataframe_ = DataFrame(
-            apply_along_axis(normalize_array, 1, dataframe_.values, "-0-"),
-            index=dataframe_.index,
-            columns=dataframe_.columns,
-        ).clip(lower=-plot_std, upper=plot_std)
+            dataframe_ = DataFrame(
+                apply_along_axis(normalize_array, 1, dataframe_.values, "-0-"),
+                index=dataframe_.index,
+                columns=dataframe_.columns,
+            ).clip(lower=-plot_std, upper=plot_std)
 
-    if (
-        cluster_within_category
-        and not vector_.isna().any()
-        and is_sorted(vector_.values)
-        and (1 < vector_.value_counts()).all()
-    ):
+        if (
+            cluster_within_category
+            and not vector_.isna().any()
+            and is_sorted(vector_.values)
+            and (1 < vector_.value_counts()).all()
+        ):
 
-        print("Clustering within category...")
+            print("Clustering within category...")
 
-        dataframe_ = dataframe_.iloc[
-            :, get_clustering_index(dataframe_.values, 1, groups=vector_.values),
-        ]
+            dataframe_ = dataframe_.iloc[
+                :, get_clustering_index(dataframe_.values, 1, groups=vector_.values),
+            ]
 
-        vector_ = vector_[dataframe_.columns]
+            vector_ = vector_[dataframe_.columns]
 
-    n_row = 1 + 1 + dataframe_.shape[0]
+        n_row = 1 + 1 + dataframe_.shape[0]
 
-    fraction_row = 1 / n_row
+        fraction_row = 1 / n_row
 
-    layout_template = {
-        "height": max(500, 25 * n_row),
-        "width": 800,
-        "margin": {"l": 200, "r": 200},
-        "title": {"x": 0.5},
-        "yaxis": {"domain": (0, 1 - 2 * fraction_row), "showticklabels": False},
-        "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
-        "annotations": [],
-    }
-
-    if layout is None:
-
-        layout = layout_template
-
-    else:
-
-        layout = merge_2_dicts(layout_template, layout)
-
-    heatmap_trace_template = {
-        "type": "heatmap",
-        "zmin": -plot_std,
-        "zmax": plot_std,
-        "showscale": False,
-    }
-
-    annotation_template = {
-        "xref": "paper",
-        "yref": "paper",
-        "yanchor": "middle",
-        "font": {"size": 10},
-        "showarrow": False,
-    }
-
-    layout["annotations"].append(
-        {
-            "x": 0,
-            "y": 1 - (fraction_row / 2),
-            "xanchor": "right",
-            "text": "<b>{}</b>".format(vector_.name),
-            **annotation_template,
+        layout_template = {
+            "height": max(500, 25 * n_row),
+            "width": 800,
+            "margin": {"l": 200, "r": 200},
+            "title": {"x": 0.5},
+            "yaxis": {"domain": (0, 1 - 2 * fraction_row), "showticklabels": False},
+            "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
+            "annotations": [],
         }
-    )
 
-    def get_x(ix):
+        if layout is None:
 
-        return 1.1 + ix / 6.4
+            layout = layout_template
 
-    y = 1 - (fraction_row / 2)
+        else:
 
-    for ix, str_ in enumerate(("Score(\u0394)", "P-Value", "FDR")):
+            layout = merge_2_dicts(layout_template, layout)
+
+        heatmap_trace_template = {
+            "type": "heatmap",
+            "zmin": -plot_std,
+            "zmax": plot_std,
+            "showscale": False,
+        }
+
+        annotation_template = {
+            "xref": "paper",
+            "yref": "paper",
+            "yanchor": "middle",
+            "font": {"size": 10},
+            "showarrow": False,
+        }
 
         layout["annotations"].append(
             {
-                "x": get_x(ix),
-                "y": y,
-                "xanchor": "center",
-                "text": "<b>{}</b>".format(str_),
+                "x": 0,
+                "y": 1 - (fraction_row / 2),
+                "xanchor": "right",
+                "text": "<b>{}</b>".format(vector_.name),
                 **annotation_template,
             }
         )
 
-    y -= 2 * fraction_row
+        def get_x(ix):
 
-    for (
-        index,
-        (score, margin_of_error, p_value, false_discovery_rate),
-    ) in statistics_.iterrows():
+            return 1.1 + ix / 6.4
 
-        layout["annotations"].append(
-            {"x": 0, "y": y, "xanchor": "right", "text": index, **annotation_template,}
-        )
+        y = 1 - (fraction_row / 2)
 
-        for ix, str_ in enumerate(
-            (
-                "{:.2f}({:.2f})".format(score, margin_of_error),
-                "{:.2e}".format(p_value),
-                "{:.2e}".format(false_discovery_rate),
-            )
-        ):
+        for ix, str_ in enumerate(("Score(\u0394)", "P-Value", "FDR")):
 
             layout["annotations"].append(
                 {
                     "x": get_x(ix),
                     "y": y,
                     "xanchor": "center",
-                    "text": str_,
+                    "text": "<b>{}</b>".format(str_),
                     **annotation_template,
                 }
             )
 
-        y -= fraction_row
+        y -= 2 * fraction_row
 
-    if file_path_prefix is None:
+        for (
+            index,
+            (score, margin_of_error, p_value, false_discovery_rate),
+        ) in statistics_.iterrows():
 
-        html_file_path = None
-
-    else:
-
-        html_file_path = "{}.html".format(file_path_prefix)
-
-    plot(
-        {
-            "layout": layout,
-            "data": [
+            layout["annotations"].append(
                 {
-                    "yaxis": "y2",
-                    "name": "Target",
-                    "x": vector_.index,
-                    "z": vector_.to_frame().T,
-                    "colorscale": DATA_TYPE_COLORSCALE[vector_data_type],
-                    **heatmap_trace_template,
-                },
-                {
-                    "yaxis": "y",
-                    "name": "Data",
-                    "x": dataframe_.columns,
-                    "y": dataframe_.index[::-1],
-                    "z": dataframe_.iloc[::-1],
-                    "colorscale": DATA_TYPE_COLORSCALE[matrix_data_type],
-                    **heatmap_trace_template,
-                },
-            ],
-        },
-        html_file_path,
-    )
+                    "x": 0,
+                    "y": y,
+                    "xanchor": "right",
+                    "text": index,
+                    **annotation_template,
+                }
+            )
+
+            for ix, str_ in enumerate(
+                (
+                    "{:.2f}({:.2f})".format(score, margin_of_error),
+                    "{:.2e}".format(p_value),
+                    "{:.2e}".format(false_discovery_rate),
+                )
+            ):
+
+                layout["annotations"].append(
+                    {
+                        "x": get_x(ix),
+                        "y": y,
+                        "xanchor": "center",
+                        "text": str_,
+                        **annotation_template,
+                    }
+                )
+
+            y -= fraction_row
+
+        if file_path_prefix is None:
+
+            html_file_path = None
+
+        else:
+
+            html_file_path = "{}.html".format(file_path_prefix)
+
+        plot(
+            {
+                "layout": layout,
+                "data": [
+                    {
+                        "yaxis": "y2",
+                        "name": "Target",
+                        "x": vector_.index,
+                        "z": vector_.to_frame().T,
+                        "colorscale": DATA_TYPE_COLORSCALE[vector_data_type],
+                        **heatmap_trace_template,
+                    },
+                    {
+                        "yaxis": "y",
+                        "name": "Data",
+                        "x": dataframe_.columns,
+                        "y": dataframe_.index[::-1],
+                        "z": dataframe_.iloc[::-1],
+                        "colorscale": DATA_TYPE_COLORSCALE[matrix_data_type],
+                        **heatmap_trace_template,
+                    },
+                ],
+            },
+            html_file_path,
+        )
 
     return statistics

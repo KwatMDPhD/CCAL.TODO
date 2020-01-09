@@ -1,5 +1,3 @@
-from numpy import arange
-
 from .merge_2_dicts import merge_2_dicts
 
 
@@ -17,125 +15,70 @@ def select_index(
 
     series_no_na_sorted = series.dropna().sort_values()
 
-    if n is not None:
+    if thresholds is None:
 
-        if direction in ("<", ">"):
+        if n is not None:
 
-            n = min(n, series_no_na_sorted.size)
+            if direction in ("<", ">"):
 
-        elif direction == "<>":
+                n = min(n, series_no_na_sorted.size)
 
-            n = min(n, series_no_na_sorted.size // 2)
+            elif direction == "<>":
 
-    elif fraction is not None:
+                n = min(n, series_no_na_sorted.size // 2)
 
-        if direction in ("<", ">"):
+            threshold_low = series_no_na_sorted.iloc[n - 1]
 
-            fraction = min(fraction, 1)
+            threshold_high = series_no_na_sorted.iloc[-n]
 
-        elif direction == "<>":
+        elif fraction is not None:
 
-            fraction = min(fraction, 1 / 2)
+            if direction in ("<", ">"):
 
-    if direction == "<":
+                fraction = min(fraction, 1)
 
-        if thresholds is None:
+            elif direction == "<>":
 
-            if n is not None:
+                fraction = min(fraction, 1 / 2)
 
-                threshold = series_no_na_sorted.iloc[n]
+            threshold_low = series_no_na_sorted.quantile(fraction)
 
-            elif fraction is not None:
+            threshold_high = series_no_na_sorted.quantile(1 - fraction)
 
-                threshold = series_no_na_sorted.quantile(fraction)
+        elif standard_deviation is not None:
 
-            elif standard_deviation is not None:
+            mean = series_no_na_sorted.mean()
 
-                threshold = (
-                    series_no_na_sorted.mean()
-                    - series_no_na_sorted.std() * standard_deviation
-                )
+            margin = series_no_na_sorted.std() * standard_deviation
 
-            else:
+            threshold_low = mean - margin
 
-                threshold = None
+            threshold_high = mean + margin
 
-        else:
+    else:
 
-            threshold = thresholds[0]
+        threshold_low, threshold_high = thresholds
 
-        is_selected = series_no_na_sorted <= threshold
+    if direction == "<>":
+
+        is_selected = (series_no_na_sorted <= threshold_low) | (
+            threshold_high <= series_no_na_sorted
+        )
+
+    elif direction == "<":
+
+        is_selected = series_no_na_sorted <= threshold_low
 
     elif direction == ">":
 
-        if thresholds is None:
+        is_selected = threshold_high <= series_no_na_sorted
 
-            if n is not None:
-
-                threshold = series_no_na_sorted.iloc[-n]
-
-            elif fraction is not None:
-
-                threshold = series_no_na_sorted.quantile(1 - fraction)
-
-            elif standard_deviation is not None:
-
-                threshold = (
-                    series_no_na_sorted.mean()
-                    + series_no_na_sorted.std() * standard_deviation
-                )
-
-            else:
-
-                threshold = None
-
-        else:
-
-            threshold = thresholds[0]
-
-        is_selected = threshold <= series_no_na_sorted
-
-    elif direction == "<>":
-
-        if thresholds is None:
-
-            if n is not None:
-
-                thresholds = (
-                    series_no_na_sorted.iloc[n - 1],
-                    series_no_na_sorted.iloc[-n],
-                )
-
-            elif fraction is not None:
-
-                thresholds = (
-                    series_no_na_sorted.quantile(fraction),
-                    series_no_na_sorted.quantile(1 - fraction),
-                )
-
-            elif standard_deviation is not None:
-
-                thresholds = (
-                    series_no_na_sorted.mean()
-                    - series_no_na_sorted.std() * standard_deviation,
-                    series_no_na_sorted.mean()
-                    + series_no_na_sorted.std() * standard_deviation,
-                )
-
-            else:
-
-                thresholds = (None,) * 2
-
-        is_selected = (series_no_na_sorted <= thresholds[0]) | (
-            thresholds[1] <= series_no_na_sorted
-        )
-
-    selected_index = series_no_na_sorted.index[is_selected]
+    index = series_no_na_sorted.index[is_selected]
 
     if plot:
 
         layout_template = {
-            "title": {"text": series_no_na_sorted.index.name},
+            "title": {"text": index.name},
             "xaxis": {"title": {"text": "Rank"}},
         }
 
@@ -168,7 +111,7 @@ def select_index(
                     {
                         "type": "scatter",
                         "name": "All ({})".format(series_no_na_sorted.size),
-                        "x": arange(series_no_na_sorted.size),
+                        "x": series_no_na_sorted.index,
                         "y": series_no_na_sorted,
                         "text": series_no_na_sorted.index,
                         "marker": {"color": "#d0d0d0"},
@@ -176,9 +119,9 @@ def select_index(
                     {
                         "type": "scatter",
                         "name": "Selected ({})".format(n_selected),
-                        "x": is_selected.values.nonzero()[0],
-                        "y": series_no_na_sorted[is_selected],
-                        "text": selected_index,
+                        "x": index,
+                        "y": series_no_na_sorted[index],
+                        "text": index,
                         "mode": mode,
                     },
                 ],
@@ -186,4 +129,4 @@ def select_index(
             html_file_path,
         )
 
-    return selected_index
+    return index

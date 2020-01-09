@@ -12,7 +12,7 @@ def merge_2_dicts(dict_0, dict_1):
 
             if isinstance(value_0, dict) and isinstance(value_1, dict):
 
-                dict_[key] = merge_2_dicts_recursively(value_0, value_1)
+                dict_[key] = merge_2_dicts(value_0, value_1)
 
             else:
 
