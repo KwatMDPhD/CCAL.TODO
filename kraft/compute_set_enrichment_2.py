@@ -1,12 +1,18 @@
 from numpy import absolute, asarray, isnan, log, where
+from .plot_plotly import plot_plotly
+from .make_grid import make_grid
 
 
 def compute_set_enrichment_2(
     element_score,
     set_elements,
-    method="rank cdf ks",
+    method,
     power=0,
-    plot=True,
+    plot_score=True,
+    plot_r=True,
+    plot_s=True,
+    plot_signal=True,
+    plot_sea=True,
     title="Set Enrichment",
     element_score_name="Element Score",
     annotation_text_font_size=8,
@@ -21,7 +27,6 @@ def compute_set_enrichment_2(
     #
     set_element_ = {set_element: None for set_element in set_elements}
 
-    #
     r_h = asarray(
         [
             element_score_element in set_element_
@@ -43,9 +48,9 @@ def compute_set_enrichment_2(
     r_m_i = where(r_m)[0]
 
     #
-    if plot:
+    if plot_score:
 
-        plot(
+        plot_plotly(
             {
                 "layout": {
                     "title": {"text": "Element Score"},
@@ -74,16 +79,16 @@ def compute_set_enrichment_2(
         )
 
     #
-    r_h_v = r_h * absolute(element_score.values) ** power
+    if power != 0:
 
-    r_h_p = r_h_v / r_h_v.sum()
+        r_h *= absolute(element_score.values) ** power
+
+    r_h_p = r_h / r_h.sum()
 
     r_h_c = r_h_p[::-1].cumsum()[::-1]
 
     #
-    r_m_v = r_m
-
-    r_m_p = r_m_v / r_m_v.sum()
+    r_m_p = r_m / r_m.sum()
 
     r_m_c = r_m_p[::-1].cumsum()[::-1]
 
@@ -93,9 +98,9 @@ def compute_set_enrichment_2(
     r_c_c = (r_h_c + r_m_c) / 2
 
     #
-    if plot:
+    if plot_r:
 
-        plot(
+        plot_plotly(
             {
                 "layout": {
                     "title": {"text": "PDF(rank | event)"},
@@ -111,7 +116,7 @@ def compute_set_enrichment_2(
             None,
         )
 
-        plot(
+        plot_plotly(
             {
                 "layout": {
                     "title": {"text": "CDF(rank | event)"},
@@ -130,47 +135,28 @@ def compute_set_enrichment_2(
     #
     from .estimate_kernel_density import estimate_kernel_density
 
-    element_score_min = element_score.values.min()
+    s_g = make_grid(element_score.values.min(), element_score.values.max(), 1e-8, 16)
 
-    element_score_max = element_score.values.max()
+    def get_p_c(vector):
 
-    def estimate_vector_density(vector):
-
-        return estimate_kernel_density(
-            vector.reshape(vector.size, 1),
-            dimension_grid_mins=(element_score_min,),
-            dimension_grid_maxs=(element_score_max,),
-            dimension_fraction_grid_extensions=(1e-8,),
-            dimension_n_grids=(1e3,),
-            plot=False,
+        point_x_dimension, kernel_densities = estimate_kernel_density(
+            vector.reshape(vector.size, 1), grids=(s_g,), plot=False,
         )
 
-    #
-    s_g, s_d = estimate_vector_density(element_score.values)
+        p = kernel_densities / (kernel_densities.sum() * (s_g[1] - s_g[0]))
 
-    s_g = s_g.reshape(s_g.size)
+        c = p[::-1].cumsum()[::-1]
 
-    s_p = s_d / s_d.sum()
-
-    s_c = s_p[::-1].cumsum()[::-1]
+        return p, c
 
     #
-    s_h_v = element_score.values[where(r_h)]
-
-    s_h_d = estimate_vector_density(s_h_v)[1]
-
-    s_h_p = s_h_d / s_h_d.sum()
-
-    s_h_c = s_h_p[::-1].cumsum()[::-1]
+    s_p, s_c = get_p_c(element_score.values)
 
     #
-    s_m_v = element_score.values[where(r_m)]
+    s_h_p, s_h_c = get_p_c(element_score.values[where(r_h)])
 
-    s_m_d = estimate_vector_density(s_m_v)[1]
-
-    s_m_p = s_m_d / s_m_d.sum()
-
-    s_m_c = s_m_p[::-1].cumsum()[::-1]
+    #
+    s_m_p, s_m_c = get_p_c(element_score.values[where(r_m)])
 
     #
     s_c_p = (s_h_p + s_m_p) / 2
@@ -178,9 +164,9 @@ def compute_set_enrichment_2(
     s_c_c = (s_h_c + s_m_c) / 2
 
     #
-    if plot:
+    if plot_s:
 
-        plot(
+        plot_plotly(
             {
                 "layout": {
                     "title": {"text": "PDF(score | event)"},
@@ -203,7 +189,7 @@ def compute_set_enrichment_2(
             None,
         )
 
-        plot(
+        plot_plotly(
             {
                 "layout": {
                     "title": {"text": "CDF(score | event)"},
@@ -224,15 +210,15 @@ def compute_set_enrichment_2(
     str_signals = {}
 
     for (h, m, c, str_) in (
-        # (r_h_c, r_m_c, r_c_c, "rank cdf"),
+        (r_h_c, r_m_c, r_c_c, "rank cdf"),
         (s_h_p, s_m_p, s_c_p, "score pdf"),
-        # (s_h_c, s_m_c, s_c_c, "score cdf"),
+        (s_h_c, s_m_c, s_c_c, "score cdf"),
     ):
 
-        # #
-        # ks = h - m
+        #
+        ks = h - m
 
-        # str_signals["{} ks".format(str_)] = ks
+        str_signals["{} ks".format(str_)] = ks
 
         #
         jsh = h * log(h / c)
@@ -254,17 +240,14 @@ def compute_set_enrichment_2(
         str_signals["{} js".format(str_)] = js
 
         #
-        r = s_p
-
-        #
-        jsh_ = h * log(h / r)
+        jsh_ = h * log(h / s_p)
 
         jsh_[isnan(jsh_)] = 0
 
         str_signals["{} jsh_".format(str_)] = jsh_
 
         #
-        jsm_ = m * log(m / r)
+        jsm_ = m * log(m / s_p)
 
         jsm_[isnan(jsm_)] = 0
 
@@ -288,9 +271,9 @@ def compute_set_enrichment_2(
             )
 
     #
-    if plot:
+    if plot_signal:
 
-        plot(
+        plot_plotly(
             {
                 "layout": {
                     "title": {"text": "Statistics"},
@@ -305,12 +288,14 @@ def compute_set_enrichment_2(
             None,
         )
 
+    return
+
     signals = str_signals[method]
 
     enrichment = signals[absolute(signals).argmax()]
 
     #
-    if not plot:
+    if not plot_sea:
 
         return enrichment
 
@@ -325,12 +310,11 @@ def compute_set_enrichment_2(
     }
 
     #
-    data = []
-
     line_width = 2.4
 
-    #
-    data.append(
+    element_texts = element_score.index.values[r_h_i]
+
+    data = [
         {
             "type": "scatter",
             "name": "Element Score",
@@ -338,11 +322,7 @@ def compute_set_enrichment_2(
             "text": element_score.index,
             "line": {"width": line_width, "color": "#4e40d8"},
             "fill": "tozeroy",
-        }
-    )
-
-    #
-    data.append(
+        },
         {
             "yaxis": "y2",
             "type": "scatter",
@@ -350,13 +330,7 @@ def compute_set_enrichment_2(
             "y": signals,
             "line": {"width": line_width, "color": "#20d8ba"},
             "fill": "tozeroy",
-        }
-    )
-
-    #
-    element_texts = element_score.index.values[r_h_i]
-
-    data.append(
+        },
         {
             "yaxis": "y2",
             "type": "scatter",
@@ -372,9 +346,10 @@ def compute_set_enrichment_2(
                 "line": {"width": line_width / 2},
             },
             "hoverinfo": "x+text",
-        }
-    )
+        },
+    ]
 
+    #
     layout["annotations"] = [
         {
             "x": r_h_i_,
@@ -393,6 +368,6 @@ def compute_set_enrichment_2(
     ]
 
     #
-    plot({"layout": layout, "data": data}, html_file_path)
+    plot_plotly({"layout": layout, "data": data}, html_file_path)
 
     return enrichment
