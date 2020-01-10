@@ -1,5 +1,4 @@
-from numpy import product
-from numpy import diff, unique
+from numpy import diff, product, unique
 
 from .estimate_kernel_density import estimate_kernel_density
 from .plot_mesh import plot_mesh

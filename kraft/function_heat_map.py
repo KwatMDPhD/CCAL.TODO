@@ -10,8 +10,8 @@ from .compute_p_values_and_false_discovery_rates import (
     compute_p_values_and_false_discovery_rates,
 )
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .get_clustering_index import get_clustering_index
 from .function_ignoring_nan import function_ignoring_nan
+from .get_clustering_index import get_clustering_index
 from .is_sorted import is_sorted
 from .merge_2_dicts import merge_2_dicts
 from .normalize import normalize

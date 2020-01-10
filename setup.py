@@ -47,7 +47,6 @@ setup(
         "scikit-learn",
         "statsmodels",
         "KDEpy",
-        "tables",
         "plotly",
         "GEOparse",
         "click",

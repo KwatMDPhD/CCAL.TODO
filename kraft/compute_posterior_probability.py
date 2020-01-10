@@ -1,5 +1,4 @@
-from numpy import apply_along_axis
-from numpy import diff, unique
+from numpy import apply_along_axis, diff, unique
 
 from .compute_joint_probability import compute_joint_probability
 from .plot_mesh import plot_mesh
