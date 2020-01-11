@@ -1,4 +1,4 @@
-from numpy import absolute, asarray, isnan, log, where
+from numpy import absolute, asarray, isnan, log, nan, where
 
 from .make_grid import make_grid
 from .plot_plotly import plot_plotly
@@ -16,7 +16,6 @@ def compute_set_enrichment(
     annotation_text_width=160,
     annotation_text_yshift=32,
     html_file_path=None,
-    develop=False,
 ):
 
     #
@@ -33,11 +32,11 @@ def compute_set_enrichment(
         dtype=int,
     )
 
-    assert 1 < r_h.sum()
+    if r_h.sum() == 0:
+
+        return nan
 
     r_m = 1 - r_h
-
-    assert 1 < r_m.sum()
 
     #
     p_h = r_h.sum() / r_h.size
@@ -50,7 +49,7 @@ def compute_set_enrichment(
     r_m_i = where(r_m)[0]
 
     #
-    if develop:
+    if method is None:
 
         plot_plotly(
             {
@@ -85,22 +84,26 @@ def compute_set_enrichment(
 
         r_h *= absolute(element_score.values) ** power
 
+    #
     r_h_p = r_h / r_h.sum()
 
-    r_h_c = r_h_p[::-1].cumsum()[::-1]
-
-    #
     r_m_p = r_m / r_m.sum()
 
-    r_m_c = r_m_p[::-1].cumsum()[::-1]
+    r_c_p = (r_h_p + r_m_p) / 2
 
     #
-    r_c_p = (r_h_p + r_m_p) / 2
+    def get_c(p):
+
+        return p[::-1].cumsum()[::-1]
+
+    r_h_c = get_c(r_h_p)
+
+    r_m_c = get_c(r_m_p)
 
     r_c_c = (r_h_c + r_m_c) / 2
 
     #
-    if develop:
+    if method is None:
 
         plot_plotly(
             {
@@ -135,7 +138,7 @@ def compute_set_enrichment(
         )
 
     #
-    if develop:
+    if method is None:
 
         from .estimate_kernel_density import estimate_kernel_density
 
@@ -151,23 +154,18 @@ def compute_set_enrichment(
 
             p = kernel_densities / (kernel_densities.sum() * (s_g[1] - s_g[0]))
 
-            c = p[::-1].cumsum()[::-1]
-
-            return p, c
-
-        #
-        s_p, s_c = get_p_c(element_score.values)
+            return p, get_c(p)
 
         #
         s_h_p, s_h_c = get_p_c(element_score.values[where(r_h)])
 
-        #
         s_m_p, s_m_c = get_p_c(element_score.values[where(r_m)])
 
-        #
         s_c_p = (s_h_p + s_m_p) / 2
 
         s_c_c = (s_h_c + s_m_c) / 2
+
+        s_p, s_c = get_p_c(element_score.values)
 
         #
         plot_plotly(
@@ -216,80 +214,69 @@ def compute_set_enrichment(
         )
 
     #
-    str_signals = {}
-
-    for (h, m, c, str_) in (
-        (r_h_c, r_m_c, r_c_c, "rank cdf"),
-        (s_h_p, s_m_p, s_c_p, "score pdf"),
-        (s_h_c, s_m_c, s_c_c, "score cdf"),
-    ):
-
-        if not develop and str_ != "rank cdf":
-
-            continue
-
-        #
-        ks = h - m
-
-        str_signals["{} ks".format(str_)] = ks
-
-        if not develop:
-
-            continue
-
-        #
-        jsh = h * log(h / c)
-
-        jsh[isnan(jsh)] = 0
-
-        str_signals["{} jsh".format(str_)] = jsh
-
-        #
-        jsm = m * log(m / c)
-
-        jsm[isnan(jsm)] = 0
-
-        str_signals["{} jsm".format(str_)] = jsm
-
-        #
-        js = (jsh + jsm) / 2
-
-        str_signals["{} js".format(str_)] = js
-
-        #
-        jsh_ = h * log(h / s_p)
-
-        jsh_[isnan(jsh_)] = 0
-
-        str_signals["{} jsh_".format(str_)] = jsh_
-
-        #
-        jsm_ = m * log(m / s_p)
-
-        jsm_[isnan(jsm_)] = 0
-
-        str_signals["{} jsm_".format(str_)] = jsm_
-
-        #
-        js_ = jsh_ * p_h + jsm_ * p_m
-
-        str_signals["{} js_".format(str_)] = js_
+    str_signals = {"rank cdf ks": r_h_c - r_m_c}
 
     #
-    for str_, signals in str_signals.items():
+    if method is None:
 
-        if str_.startswith("score "):
+        #
+        for (h, m, c, str_) in (
+            (r_h_c, r_m_c, r_c_c, "rank cdf"),
+            (s_h_p, s_m_p, s_c_p, "score pdf"),
+            (s_h_c, s_m_c, s_c_c, "score cdf"),
+        ):
 
-            str_signals[str_] = asarray(
-                [
-                    signals[absolute(s_g - score).argmin()]
-                    for score in element_score.values
-                ]
-            )
+            #
+            jsh = h * log(h / c)
 
-    #
-    if develop:
+            jsh[isnan(jsh)] = 0
 
+            str_signals["{} jsh".format(str_)] = jsh
+
+            #
+            jsm = m * log(m / c)
+
+            jsm[isnan(jsm)] = 0
+
+            str_signals["{} jsm".format(str_)] = jsm
+
+            #
+            js = (jsh + jsm) / 2
+
+            str_signals["{} js".format(str_)] = js
+
+            #
+            jsh_ = h * log(h / s_p)
+
+            jsh_[isnan(jsh_)] = 0
+
+            str_signals["{} jsh_".format(str_)] = jsh_
+
+            #
+            jsm_ = m * log(m / s_p)
+
+            jsm_[isnan(jsm_)] = 0
+
+            str_signals["{} jsm_".format(str_)] = jsm_
+
+            #
+            js_ = jsh_ * p_h + jsm_ * p_m
+
+            str_signals["{} js_".format(str_)] = js_
+
+        #
+        for str_, signals in str_signals.items():
+
+            if str_.startswith("score "):
+
+                str_signals[str_] = asarray(
+                    [
+                        signals[absolute(s_g - score).argmin()]
+                        for score in element_score.values
+                    ]
+                )
+
+        #
         plot_plotly(
             {
                 "layout": {
@@ -305,6 +292,7 @@ def compute_set_enrichment(
             None,
         )
 
+    #
     signals = str_signals[method]
 
     enrichment = signals[absolute(signals).argmax()]
@@ -324,8 +312,6 @@ def compute_set_enrichment(
 
         #
         line_width = 2.4
-
-        element_texts = element_score.index.values[r_h_i]
 
         data = [
             {
@@ -350,7 +336,7 @@ def compute_set_enrichment(
                 "name": "Element",
                 "x": r_h_i,
                 "y": (0,) * r_h_i.size,
-                "text": element_texts,
+                "text": element_score.index[r_h_i],
                 "mode": "markers",
                 "marker": {
                     "symbol": "line-ns-open",
@@ -369,7 +355,7 @@ def compute_set_enrichment(
                 "y": 0,
                 "yref": "y2",
                 "clicktoshow": "onoff",
-                "text": "<b>{}</b>".format(str_),
+                "text": "<b>{}</b>".format(element_score.index[r_h_i_]),
                 "showarrow": False,
                 "font": {"size": annotation_text_font_size},
                 "textangle": -90,
@@ -377,10 +363,10 @@ def compute_set_enrichment(
                 "borderpad": 0,
                 "yshift": (-annotation_text_yshift, annotation_text_yshift)[i % 2],
             }
-            for i, (r_h_i_, str_) in enumerate(zip(r_h_i, element_texts))
+            for i, r_h_i_ in enumerate(r_h_i)
         ]
 
         #
         plot_plotly({"layout": layout, "data": data}, html_file_path)
 
-        return enrichment
+    return enrichment

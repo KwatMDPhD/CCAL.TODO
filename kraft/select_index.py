@@ -19,27 +19,13 @@ def select_index(
 
         if n is not None:
 
-            if direction in ("<", ">"):
-
-                n = min(n, series_no_na_sorted.size)
-
-            elif direction == "<>":
-
-                n = min(n, series_no_na_sorted.size // 2)
+            n = min(n, series_no_na_sorted.size)
 
             threshold_low = series_no_na_sorted.iloc[n - 1]
 
             threshold_high = series_no_na_sorted.iloc[-n]
 
         elif fraction is not None:
-
-            if direction in ("<", ">"):
-
-                fraction = min(fraction, 1)
-
-            elif direction == "<>":
-
-                fraction = min(fraction, 1 / 2)
 
             threshold_low = series_no_na_sorted.quantile(fraction)
 
