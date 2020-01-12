@@ -248,20 +248,22 @@ def compute_set_enrichment(
 
                 jsh_[isnan(jsh_)] = 0
 
-                # str_signals["{} jsh_".format(str_)] = jsh_
-
-                #
                 jsm_ = m * log(m / s_p)
 
                 jsm_[isnan(jsm_)] = 0
 
-                # str_signals["{} jsm_".format(str_)] = jsm_
+                js_ = p_h * jsh_ + p_m * jsm_
+
+                jsk = p_h * jsh_ - p_m * jsm_
 
                 #
-                str_signals["{} js_ (p)".format(str_)] = p_h * jsh_ + p_m * jsm_
+                str_signals["{} jsm_".format(str_)] = jsm_
 
-                #
-                str_signals["{} k (p)".format(str_)] = p_h * jsh_ - p_m * jsm_
+                str_signals["{} jsh_".format(str_)] = jsh_
+
+                str_signals["{} js_".format(str_)] = js_
+
+                str_signals["{} jsk".format(str_)] = jsk
 
         #
         for str_, signals in str_signals.items():
