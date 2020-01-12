@@ -25,10 +25,10 @@ def compute_set_enrichment(
     set_element_ = {set_element: None for set_element in set_elements}
 
     r_h = asarray(
-        [
+        tuple(
             element_score_element in set_element_
             for element_score_element in element_score.index
-        ],
+        ),
         dtype=int,
     )
 
@@ -73,6 +73,7 @@ def compute_set_enrichment(
                         "x": r_m_i,
                         "y": element_score.values[r_m_i],
                         "text": element_score.index[r_m_i],
+                        "mode": "markers",
                     },
                 ],
             },
@@ -144,6 +145,10 @@ def compute_set_enrichment(
 
         s_g = make_grid(
             element_score.values.min(), element_score.values.max(), 1e-8, 16
+        )
+
+        element_score_g_index = asarray(
+            tuple(absolute(s_g - score).argmin() for score in element_score.values)
         )
 
         def get_p_c(vector):
@@ -246,35 +251,33 @@ def compute_set_enrichment(
             str_signals["{} js".format(str_)] = js
 
             #
-            jsh_ = h * log(h / s_p)
+            if str_.startswith("score "):
 
-            jsh_[isnan(jsh_)] = 0
+                #
+                jsh_ = h * log(h / s_p)
 
-            str_signals["{} jsh_".format(str_)] = jsh_
+                jsh_[isnan(jsh_)] = 0
 
-            #
-            jsm_ = m * log(m / s_p)
+                str_signals["{} jsh_".format(str_)] = jsh_
 
-            jsm_[isnan(jsm_)] = 0
+                #
+                jsm_ = m * log(m / s_p)
 
-            str_signals["{} jsm_".format(str_)] = jsm_
+                jsm_[isnan(jsm_)] = 0
 
-            #
-            js_ = jsh_ * p_h + jsm_ * p_m
+                str_signals["{} jsm_".format(str_)] = jsm_
 
-            str_signals["{} js_".format(str_)] = js_
+                #
+                js_ = jsh_ * p_h + jsm_ * p_m
+
+                str_signals["{} js_".format(str_)] = js_
 
         #
         for str_, signals in str_signals.items():
 
             if str_.startswith("score "):
 
-                str_signals[str_] = asarray(
-                    [
-                        signals[absolute(s_g - score).argmin()]
-                        for score in element_score.values
-                    ]
-                )
+                str_signals[str_] = signals[element_score_g_index]
 
         #
         plot_plotly(
@@ -291,6 +294,10 @@ def compute_set_enrichment(
             },
             None,
         )
+
+    if method is None:
+
+        return
 
     #
     signals = str_signals[method]
