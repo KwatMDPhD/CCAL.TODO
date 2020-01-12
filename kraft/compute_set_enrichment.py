@@ -1,4 +1,4 @@
-from numpy import absolute, asarray, isnan, log, nan, where
+from numpy import absolute, asarray, log, nan, where
 
 from .make_grid import make_grid
 from .plot_plotly import plot_plotly
@@ -7,7 +7,7 @@ from .plot_plotly import plot_plotly
 def compute_set_enrichment(
     element_score,
     set_elements,
-    method,
+    method="rank cdf ks",
     power=0,
     n_grid=64,
     plot=True,
@@ -19,10 +19,8 @@ def compute_set_enrichment(
     html_file_path=None,
 ):
 
-    #
     element_score = element_score.sort_values()
 
-    #
     set_element_ = {set_element: None for set_element in set_elements}
 
     r_h = asarray(
@@ -39,18 +37,15 @@ def compute_set_enrichment(
 
     r_m = 1 - r_h
 
-    #
     p_h = r_h.sum() / r_h.size
 
     p_m = r_m.sum() / r_m.size
 
-    #
     r_h_i = where(r_h)[0]
 
     r_m_i = where(r_m)[0]
 
-    #
-    if method is None:
+    if method != "rank cdf ks":
 
         plot_plotly(
             {
@@ -81,19 +76,14 @@ def compute_set_enrichment(
             None,
         )
 
-    #
     if power != 0:
 
         r_h *= absolute(element_score.values) ** power
 
-    #
     r_h_p = r_h / r_h.sum()
 
     r_m_p = r_m / r_m.sum()
 
-    r_c_p = (r_h_p + r_m_p) / 2
-
-    #
     def get_c(p):
 
         return p[::-1].cumsum()[::-1]
@@ -102,43 +92,39 @@ def compute_set_enrichment(
 
     r_m_c = get_c(r_m_p)
 
-    r_c_c = (r_h_c + r_m_c) / 2
+    if method != "rank cdf ks":
 
-    # #
-    # if method is None:
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "PDF(rank | event)"},
+                    "xaxis": {"title": {"text": "Rank"}},
+                    "yaxis": {"title": {"text": "Probability"}},
+                },
+                "data": [
+                    {"type": "scatter", "name": "Miss", "y": r_m_p},
+                    {"type": "scatter", "name": "Hit", "y": r_h_p},
+                ],
+            },
+            None,
+        )
 
-    #     plot_plotly(
-    #         {
-    #             "layout": {
-    #                 "title": {"text": "PDF(rank | event)"},
-    #                 "xaxis": {"title": {"text": "Rank"}},
-    #                 "yaxis": {"title": {"text": "Probability"}},
-    #             },
-    #             "data": [
-    #                 {"type": "scatter", "name": "Miss", "y": r_m_p},
-    #                 {"type": "scatter", "name": "Hit", "y": r_h_p},
-    #             ],
-    #         },
-    #         None,
-    #     )
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "CDF(rank | event)"},
+                    "xaxis": {"title": {"text": "Rank"}},
+                    "yaxis": {"title": {"text": "Cumulative Probability"}},
+                },
+                "data": [
+                    {"type": "scatter", "name": "Miss", "y": r_m_c},
+                    {"type": "scatter", "name": "Hit", "y": r_h_c},
+                ],
+            },
+            None,
+        )
 
-    #     plot_plotly(
-    #         {
-    #             "layout": {
-    #                 "title": {"text": "CDF(rank | event)"},
-    #                 "xaxis": {"title": {"text": "Rank"}},
-    #                 "yaxis": {"title": {"text": "Cumulative Probability"}},
-    #             },
-    #             "data": [
-    #                 {"type": "scatter", "name": "Miss", "y": r_m_c},
-    #                 {"type": "scatter", "name": "Hit", "y": r_h_c},
-    #             ],
-    #         },
-    #         None,
-    #     )
-
-    #
-    if method is None:
+    if method != "rank cdf ks":
 
         from .compute_bandwidth import compute_bandwidth
         from .estimate_kernel_density import estimate_kernel_density
@@ -147,10 +133,6 @@ def compute_set_enrichment(
 
         s_g = make_grid(
             element_score.values.min(), element_score.values.max(), 1 / 10, n_grid
-        )
-
-        element_score_g_index = asarray(
-            tuple(absolute(s_g - score).argmin() for score in element_score.values)
         )
 
         def get_p_c(vector):
@@ -166,18 +148,12 @@ def compute_set_enrichment(
 
             return p, get_c(p)
 
-        #
         s_h_p, s_h_c = get_p_c(element_score.values[where(r_h)])
 
         s_m_p, s_m_c = get_p_c(element_score.values[where(r_m)])
 
-        s_c_p = (s_h_p + s_m_p) / 2
-
-        s_c_c = (s_h_c + s_m_c) / 2
-
         s_p, s_c = get_p_c(element_score.values)
 
-        #
         plot_plotly(
             {
                 "layout": {
@@ -194,85 +170,50 @@ def compute_set_enrichment(
             None,
         )
 
-        # plot_plotly(
-        #     {
-        #         "layout": {
-        #             "title": {"text": "CDF(score | event)"},
-        #             "xaxis": {"title": {"text": "Score"}},
-        #             "yaxis": {"title": {"text": "Cumulative Probability"}},
-        #         },
-        #         "data": [
-        #             {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_c},
-        #             {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_c},
-        #             {"type": "scatter", "name": "All", "x": s_g, "y": s_c},
-        #         ],
-        #     },
-        #     None,
-        # )
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "CDF(score | event)"},
+                    "xaxis": {"title": {"text": "Score"}},
+                    "yaxis": {"title": {"text": "Cumulative Probability"}},
+                },
+                "data": [
+                    {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_c},
+                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_c},
+                    {"type": "scatter", "name": "All", "x": s_g, "y": s_c},
+                ],
+            },
+            None,
+        )
 
-    #
-    str_signals = {}  # {"rank cdf ks": r_h_c - r_m_c}
+    str_signals = {"rank cdf ks": r_h_c - r_m_c}
 
-    #
-    if method is None:
+    if method != "rank cdf ks":
 
-        #
-        for (h, m, c, str_) in (
-            # (r_h_c, r_m_c, r_c_c, "rank cdf"),
-            (s_h_p, s_m_p, s_c_p, "score pdf"),
-            # (s_h_c, s_m_c, s_c_c, "score cdf"),
-        ):
+        jsh = s_h_p * log(s_h_p / s_p)
 
-            # #
-            # jsh = h * log(h / c)
+        jsh[jsh == nan] = 0
 
-            # jsh[isnan(jsh)] = 0
+        str_signals["score pdf h"] = jsh
 
-            # str_signals["{} jsh".format(str_)] = jsh
+        jsm = s_m_p * log(s_m_p / s_p)
 
-            # #
-            # jsm = m * log(m / c)
+        jsm[jsm == nan] = 0
 
-            # jsm[isnan(jsm)] = 0
+        str_signals["score pdf m"] = jsm
 
-            # str_signals["{} jsm".format(str_)] = jsm
+        str_signals["score pdf k"] = p_h * jsh - p_m * jsm
 
-            # #
-            # str_signals["{} js".format(str_)] = 0.5 * jsh + 0.5 * jsm
+        element_score_g_index = asarray(
+            tuple(absolute(s_g - score).argmin() for score in element_score.values)
+        )
 
-            #
-            if str_.startswith("score "):
-
-                #
-                jsh_ = h * log(h / s_p)
-
-                jsh_[isnan(jsh_)] = 0
-
-                jsm_ = m * log(m / s_p)
-
-                jsm_[isnan(jsm_)] = 0
-
-                js_ = p_h * jsh_ + p_m * jsm_
-
-                jsk = p_h * jsh_ - p_m * jsm_
-
-                #
-                str_signals["{} jsm_".format(str_)] = jsm_
-
-                str_signals["{} jsh_".format(str_)] = jsh_
-
-                str_signals["{} js_".format(str_)] = js_
-
-                str_signals["{} jsk".format(str_)] = jsk
-
-        #
         for str_, signals in str_signals.items():
 
             if str_.startswith("score "):
 
                 str_signals[str_] = signals[element_score_g_index]
 
-        #
         plot_plotly(
             {
                 "layout": {
@@ -288,19 +229,12 @@ def compute_set_enrichment(
             None,
         )
 
-    if method is None:
-
-        return
-
-    #
     signals = str_signals[method]
 
     enrichment = signals[absolute(signals).argmax()]
 
-    #
     if plot:
 
-        #
         y_fraction = 0.16
 
         layout = {
@@ -310,8 +244,7 @@ def compute_set_enrichment(
             "yaxis2": {"domain": (y_fraction + 0.08, 1), "title": "Enrichment"},
         }
 
-        #
-        line_width = 2.4
+        line_width = 2
 
         data = [
             {
@@ -319,14 +252,6 @@ def compute_set_enrichment(
                 "name": "Element Score",
                 "y": element_score.values,
                 "text": element_score.index,
-                "line": {"width": line_width, "color": "#4e40d8"},
-                "fill": "tozeroy",
-            },
-            {
-                "yaxis": "y2",
-                "type": "scatter",
-                "name": method,
-                "y": signals,
                 "line": {"width": line_width, "color": "#20d8ba"},
                 "fill": "tozeroy",
             },
@@ -342,31 +267,28 @@ def compute_set_enrichment(
                     "symbol": "line-ns-open",
                     "size": 8,
                     "color": "#9016e6",
-                    "line": {"width": line_width / 2},
+                    "line": {"width": line_width * 0.64},
                 },
                 "hoverinfo": "x+text",
             },
         ]
 
-        #
-        layout["annotations"] = [
-            {
-                "x": r_h_i_,
-                "y": 0,
-                "yref": "y2",
-                "clicktoshow": "onoff",
-                "text": "<b>{}</b>".format(element_score.index[r_h_i_]),
-                "showarrow": False,
-                "font": {"size": annotation_text_font_size},
-                "textangle": -90,
-                "width": annotation_text_width,
-                "borderpad": 0,
-                "yshift": (-annotation_text_yshift, annotation_text_yshift)[i % 2],
-            }
-            for i, r_h_i_ in enumerate(r_h_i)
-        ]
+        for is_, color in (
+            (signals < 0, "#0088ff"),
+            (0 < signals, "#ff1968"),
+        ):
 
-        #
+            data.append(
+                {
+                    "yaxis": "y2",
+                    "type": "scatter",
+                    "name": "- Enrichment",
+                    "y": where(is_, signals, 0),
+                    "line": {"width": 0.8, "color": color},
+                    "fill": "tozeroy",
+                }
+            )
+
         plot_plotly({"layout": layout, "data": data}, html_file_path)
 
     return enrichment

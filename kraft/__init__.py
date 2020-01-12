@@ -28,5 +28,7 @@ from .plot_heat_map import plot_heat_map
 from .plot_mesh import plot_mesh
 from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
+from .read_gct import read_gct
+from .read_gmt import read_gmt
 from .select_index import select_index
 from .unmesh import unmesh
