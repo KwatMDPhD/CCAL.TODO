@@ -61,18 +61,18 @@ def compute_set_enrichment(
                 "data": [
                     {
                         "type": "scatter",
-                        "name": "Hit ({:.3f})".format(p_h),
-                        "x": r_h_i,
-                        "y": element_score.values[r_h_i],
-                        "text": element_score.index[r_h_i],
-                        "mode": "markers",
-                    },
-                    {
-                        "type": "scatter",
                         "name": "Miss ({:.3f})".format(p_m),
                         "x": r_m_i,
                         "y": element_score.values[r_m_i],
                         "text": element_score.index[r_m_i],
+                        "mode": "markers",
+                    },
+                    {
+                        "type": "scatter",
+                        "name": "Hit ({:.3f})".format(p_h),
+                        "x": r_h_i,
+                        "y": element_score.values[r_h_i],
+                        "text": element_score.index[r_h_i],
                         "mode": "markers",
                     },
                 ],
@@ -114,8 +114,8 @@ def compute_set_enrichment(
                     "yaxis": {"title": {"text": "Probability"}},
                 },
                 "data": [
-                    {"type": "scatter", "name": "Hit", "y": r_h_p},
                     {"type": "scatter", "name": "Miss", "y": r_m_p},
+                    {"type": "scatter", "name": "Hit", "y": r_h_p},
                     {"type": "scatter", "name": "Center", "y": r_c_p},
                 ],
             },
@@ -130,8 +130,8 @@ def compute_set_enrichment(
                     "yaxis": {"title": {"text": "Cumulative Probability"}},
                 },
                 "data": [
-                    {"type": "scatter", "name": "Hit", "y": r_h_c},
                     {"type": "scatter", "name": "Miss", "y": r_m_c},
+                    {"type": "scatter", "name": "Hit", "y": r_h_c},
                     {"type": "scatter", "name": "Center", "y": r_c_c},
                 ],
             },
@@ -181,8 +181,8 @@ def compute_set_enrichment(
                     "yaxis": {"title": {"text": "Probability"}},
                 },
                 "data": [
-                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_p},
                     {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_p},
+                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_p},
                     {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_p},
                     {"type": "scatter", "name": "All", "x": s_g, "y": s_p},
                 ],
@@ -198,8 +198,8 @@ def compute_set_enrichment(
                     "yaxis": {"title": {"text": "Cumulative Probability"}},
                 },
                 "data": [
-                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_c},
                     {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_c},
+                    {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_c},
                     {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_c},
                     {"type": "scatter", "name": "All", "x": s_g, "y": s_c},
                 ],
