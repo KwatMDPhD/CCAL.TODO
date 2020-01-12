@@ -144,7 +144,7 @@ def compute_set_enrichment(
         from .estimate_kernel_density import estimate_kernel_density
 
         s_g = make_grid(
-            element_score.values.min(), element_score.values.max(), 1e-8, 16
+            element_score.values.min(), element_score.values.max(), 1e-8, 64
         )
 
         element_score_g_index = asarray(
@@ -184,18 +184,7 @@ def compute_set_enrichment(
                     {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_p},
                     {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_p},
                     {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_p},
-                    {
-                        "type": "scatter",
-                        "name": "Hit | Miss (fit)",
-                        "x": s_g,
-                        "y": s_p,
-                    },
-                    {
-                        "type": "scatter",
-                        "name": "Hit | Miss (weight)",
-                        "x": s_g,
-                        "y": s_h_p * p_h + s_m_p * p_m,
-                    },
+                    {"type": "scatter", "name": "All", "x": s_g, "y": s_p},
                 ],
             },
             None,
@@ -212,7 +201,7 @@ def compute_set_enrichment(
                     {"type": "scatter", "name": "Hit", "x": s_g, "y": s_h_c},
                     {"type": "scatter", "name": "Miss", "x": s_g, "y": s_m_c},
                     {"type": "scatter", "name": "Center", "x": s_g, "y": s_c_c},
-                    {"type": "scatter", "name": "Hit | Miss", "x": s_g, "y": s_c},
+                    {"type": "scatter", "name": "All", "x": s_g, "y": s_c},
                 ],
             },
             None,
@@ -226,9 +215,9 @@ def compute_set_enrichment(
 
         #
         for (h, m, c, str_) in (
-            (r_h_c, r_m_c, r_c_c, "rank cdf"),
+            # (r_h_c, r_m_c, r_c_c, "rank cdf"),
             (s_h_p, s_m_p, s_c_p, "score pdf"),
-            (s_h_c, s_m_c, s_c_c, "score cdf"),
+            # (s_h_c, s_m_c, s_c_c, "score cdf"),
         ):
 
             #
