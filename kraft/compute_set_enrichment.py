@@ -252,7 +252,7 @@ def compute_set_enrichment(
                 "name": "Element Score",
                 "y": element_score.values,
                 "text": element_score.index,
-                "line": {"width": line_width, "color": "#20d8ba"},
+                "line": {"width": line_width, "color": "#9016e6"},
                 "fill": "tozeroy",
             },
             {
@@ -266,7 +266,7 @@ def compute_set_enrichment(
                 "marker": {
                     "symbol": "line-ns-open",
                     "size": 8,
-                    "color": "#9016e6",
+                    "color": "#4e40d8",  # "#2e211b",
                     "line": {"width": line_width * 0.64},
                 },
                 "hoverinfo": "x+text",
@@ -284,7 +284,7 @@ def compute_set_enrichment(
                     "type": "scatter",
                     "name": "- Enrichment",
                     "y": where(is_, signals, 0),
-                    "line": {"width": 0.8, "color": color},
+                    "line": {"width": 0, "color": color},
                     "fill": "tozeroy",
                 }
             )
