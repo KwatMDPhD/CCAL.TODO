@@ -208,6 +208,10 @@ def compute_set_enrichment(
             tuple(absolute(s_g - score).argmin() for score in element_score.values)
         )
 
+        str_signals["score cdf m"] = None
+
+        str_signals["score cdf k"] = None
+
         for str_, signals in str_signals.items():
 
             if str_.startswith("score "):
