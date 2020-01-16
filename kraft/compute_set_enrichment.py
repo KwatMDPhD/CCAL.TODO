@@ -190,27 +190,42 @@ def compute_set_enrichment(
 
     if method != "rank cdf ks":
 
-        jsh = s_h_p * log(s_h_p / s_p)
+        for str_, h, m, c in (
+            ("score pdf", s_h_p, s_m_p, s_p),
+            ("score cdf", s_h_c, s_m_c, s_c),
+        ):
 
-        jsh[jsh == nan] = 0
+            klhc = h * log(h / c)
 
-        str_signals["score pdf h"] = jsh
+            klhc[klhc == nan] = 0
 
-        jsm = s_m_p * log(s_m_p / s_p)
+            str_signals["{} hc".format(str_)] = klhc
 
-        jsm[jsm == nan] = 0
+            klmc = m * log(m / c)
 
-        str_signals["score pdf m"] = jsm
+            klmc[klmc == nan] = 0
 
-        str_signals["score pdf k"] = p_h * jsh - p_m * jsm
+            str_signals["{} mc".format(str_)] = klmc
+
+            str_signals["{} k1".format(str_)] = p_h * klhc - p_m * klmc
+
+            klhm = h * log(h / m)
+
+            klhm[klhm == nan] = 0
+
+            str_signals["{} hm".format(str_)] = klhm
+
+            klmh = m * log(m / h)
+
+            klmh[klmh == nan] = 0
+
+            str_signals["{} mh".format(str_)] = klmh
+
+            str_signals["{} k2".format(str_)] = klhm - klmh
 
         element_score_g_index = asarray(
             tuple(absolute(s_g - score).argmin() for score in element_score.values)
         )
-
-        str_signals["score cdf m"] = None
-
-        str_signals["score cdf k"] = None
 
         for str_, signals in str_signals.items():
 
