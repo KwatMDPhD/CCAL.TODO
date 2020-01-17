@@ -24,7 +24,7 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
     if plot_rug:
 
-        rug_height = 0.039
+        rug_height = 0.04
 
         yaxis_domain_max = n * rug_height
 
@@ -61,7 +61,7 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
     data = []
 
-    for i, x in enumerate(xs):
+    for x_index, x in enumerate(xs):
 
         if isinstance(x, Series):
 
@@ -75,13 +75,13 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
             text = None
 
-        color = get_colorscale_color(DATA_TYPE_COLORSCALE["categorical"], i, n)
+        color = get_colorscale_color(DATA_TYPE_COLORSCALE["categorical"], x_index, n)
 
         data.append(
             {
                 "yaxis": "y2",
                 "type": "histogram",
-                "legendgroup": i,
+                "legendgroup": x_index,
                 "name": name,
                 "x": x,
                 "histnorm": histnorm,
@@ -94,10 +94,10 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
             data.append(
                 {
                     "type": "scatter",
-                    "legendgroup": i,
+                    "legendgroup": x_index,
                     "showlegend": False,
                     "x": x,
-                    "y": (i,) * len(x),
+                    "y": (x_index,) * len(x),
                     "text": text,
                     "mode": "markers",
                     "marker": {"symbol": "line-ns-open", "color": color},
