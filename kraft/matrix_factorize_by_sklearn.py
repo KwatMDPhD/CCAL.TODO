@@ -3,7 +3,7 @@ from sklearn.decomposition import NMF
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def nmf_with_sklearn(
+def matrix_factorize_by_sklean(
     V, k, solver="cd", tol=1e-8, n_iteration=int(1e3), random_seed=RANDOM_SEED
 ):
 

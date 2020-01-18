@@ -2,18 +2,17 @@ from numpy import sort
 from pandas import DataFrame, Index, concat
 from scipy.spatial.distance import pdist, squareform
 
-from .call_function_with_multiprocess import call_function_with_multiprocess
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .establish_path import establish_path
 from .hierarchical_consensus_cluster_dataframe import (
     hierarchical_consensus_cluster_dataframe,
 )
+from .path import path
 from .plot_heat_map import plot_heat_map
 from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def hierarchical_consensus_cluster_dataframe_with_rs(
+def cluster_hierarchical_clusterings_at_rs(
     dataframe,
     rs,
     axis,
@@ -31,7 +30,7 @@ def hierarchical_consensus_cluster_dataframe_with_rs(
 
     for r_directory_path in r_directory_paths:
 
-        establish_path(r_directory_path, "directory")
+        path(r_directory_path, "directory")
 
     if element_x_element_distance is None:
 

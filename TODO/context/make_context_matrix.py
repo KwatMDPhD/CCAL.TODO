@@ -1,7 +1,10 @@
 from numpy import full, nan
-from pandas import DataFrame
+from pandas import DataFrame, concat
 
+from .call_function_with_multiprocess import call_function_with_multiprocess
 from .compute_vector_context import compute_vector_context
+from .make_context_matrix_ import make_context_matrix_
+from .split_dataframe import split_dataframe
 
 
 def make_context_matrix_(
@@ -61,13 +64,6 @@ def make_context_matrix_(
         )["context_like_array"]
 
     return DataFrame(context_matrix, index=dataframe.index, columns=dataframe.columns)
-
-
-from pandas import concat
-
-from .call_function_with_multiprocess import call_function_with_multiprocess
-from .make_context_matrix_ import make_context_matrix_
-from .split_dataframe import split_dataframe
 
 
 def make_context_matrix(

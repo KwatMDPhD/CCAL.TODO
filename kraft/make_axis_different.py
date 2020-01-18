@@ -1,7 +1,7 @@
 from numpy import unique
 
 
-def make_dataframes_axis_different(dataframes, axis):
+def make_axis_different(dataframes, axis):
 
     elements = []
 

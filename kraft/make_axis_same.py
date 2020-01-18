@@ -1,4 +1,4 @@
-def make_dataframes_axis_same(dataframes, axis):
+def make_axis_same(dataframes, axis):
 
     if axis == 0:
 

@@ -1,9 +1,6 @@
 from numpy import full, nan
 from pandas import DataFrame, Index, Series
 
-from .cluster_clustering_x_element_and_compute_ccc import (
-    cluster_clustering_x_element_and_compute_ccc,
-)
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .mf_with_multiplicative_update import mf_with_multiplicative_update
 from .nmf_with_sklearn import nmf_with_sklearn
@@ -12,7 +9,7 @@ from .plot_mf import plot_mf
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def mf_consensus_cluster_dataframe(
+def cluster_matrix_factorization_clusterings(
     dataframe,
     r,
     directory_path,

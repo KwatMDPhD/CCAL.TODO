@@ -1,4 +1,5 @@
 from .merge_2_dicts import merge_2_dicts
+from .plot_plotly import plot_plotly
 
 
 def select_index(
@@ -90,7 +91,7 @@ def select_index(
 
             mode = "lines"
 
-        plot(
+        plot_plotly(
             {
                 "layout": layout,
                 "data": [

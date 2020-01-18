@@ -4,9 +4,6 @@ from pandas import DataFrame, Series
 from scipy.cluster.hierarchy import fcluster, linkage
 from scipy.spatial.distance import pdist, squareform
 
-from .cluster_clustering_x_element_and_compute_ccc import (
-    cluster_clustering_x_element_and_compute_ccc,
-)
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .make_binary_dataframe_from_categorical_series import (
     make_binary_dataframe_from_categorical_series,
@@ -15,7 +12,7 @@ from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def hierarchical_consensus_cluster_dataframe(
+def cluster_hierarchical_clusterings(
     dataframe,
     r,
     axis,

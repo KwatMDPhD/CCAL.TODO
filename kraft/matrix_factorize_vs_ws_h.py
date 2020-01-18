@@ -1,7 +1,7 @@
 from numpy import asarray, full, nan, sum
+from numpy.linalg import norm
 from numpy.random import random_sample, seed
 
-from .compute_matrix_norm import compute_matrix_norm
 from .RANDOM_SEED import RANDOM_SEED
 from .update_w_by_multiplicative_update import update_w_by_multiplicative_update
 
@@ -22,13 +22,13 @@ def mf_vs_ws_h(
 
     h = random_sample(size=(r, vs[0].shape[1]))
 
-    errors[:, 0] = [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n_v)]
+    errors[:, 0] = [norm(vs[i] - ws[i] @ h) for i in range(n_v)]
 
-    v_0_norm = compute_matrix_norm(vs[0])
+    v_0_norm = norm(vs[0])
 
     if weights is None:
 
-        weights = [v_0_norm / compute_matrix_norm(v) for v in vs]
+        weights = [v_0_norm / norm(v) for v in vs]
 
     n_per_print = max(1, n_iteration // 10)
 
@@ -46,9 +46,7 @@ def mf_vs_ws_h(
 
         ws = [update_w_by_multiplicative_update(vs[i], ws[i], h) for i in range(n_v)]
 
-        j_1_errors = asarray(
-            [compute_matrix_norm(vs[i] - ws[i] @ h) for i in range(n_v)]
-        )
+        j_1_errors = asarray([norm(vs[i] - ws[i] @ h) for i in range(n_v)])
 
         errors[:, j + 1] = j_1_errors
 

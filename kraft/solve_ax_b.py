@@ -1,13 +1,18 @@
 from numpy import dot, full, nan
 from numpy.linalg import pinv
+from pandas import DataFrame
 from scipy.optimize import nnls
 
 
-def solve_ax_b_x(a, b, method):
+def solve_ax_b(a, b, method):
+
+    a_ = a.values
+
+    b_ = b.values
 
     if method == "pinv":
 
-        x = dot(pinv(a), b)
+        x = dot(pinv(a_), b_)
 
     elif method == "nnls":
 
@@ -15,6 +20,6 @@ def solve_ax_b_x(a, b, method):
 
         for i in range(b.shape[1]):
 
-            x[:, i] = nnls(a, b[:, i])[0]
+            x[:, i] = nnls(a_, b_[:, i])[0]
 
-    return x
+    return DataFrame(x, index=a.columns, columns=b.columns)
