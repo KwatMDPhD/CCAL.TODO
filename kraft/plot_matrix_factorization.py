@@ -6,7 +6,7 @@ from .normalize import normalize
 from .plot_heat_map import plot_heat_map
 
 
-def plot_mf(ws, hs, directory_path):
+def plot_matrix_factorization(ws, hs, directory_path):
 
     axis_size_0 = 560
 

@@ -7,7 +7,7 @@ from .plot_errors import plot_errors
 from .plot_mf import plot_mf
 
 
-def mf_dataframes(
+def factorize_matrices(
     dataframes, method, r, directory_path, plot_w_h=True, **mf_vs_keyword_arguments
 ):
 

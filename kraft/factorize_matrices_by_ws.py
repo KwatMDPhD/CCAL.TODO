@@ -3,14 +3,14 @@ from numpy.linalg import norm
 from numpy.random import random_sample, seed
 
 from .RANDOM_SEED import RANDOM_SEED
-from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
+from .update_w_by_multiplicative_update import update_w_by_multiplicative_update
 
 
-def mf_vs_w_hs(
+def factorize_matrices_by_ws(
     vs, r, weights=None, tolerance=1e-6, n_iteration=int(1e6), random_seed=RANDOM_SEED
 ):
 
-    assert len(set(v.shape[0] for v in vs)) == 1
+    assert len(set(v.shape[1] for v in vs)) == 1
 
     n_v = len(vs)
 
@@ -18,11 +18,11 @@ def mf_vs_w_hs(
 
     seed(seed=random_seed)
 
-    w = random_sample(size=(vs[0].shape[0], r))
+    ws = [random_sample(size=(v.shape[0], r)) for v in vs]
 
-    hs = [random_sample(size=(r, v.shape[1])) for v in vs]
+    h = random_sample(size=(r, vs[0].shape[1]))
 
-    errors[:, 0] = [norm(vs[i] - w @ hs[i]) for i in range(n_v)]
+    errors[:, 0] = [norm(vs[i] - ws[i] @ h) for i in range(n_v)]
 
     v_0_norm = norm(vs[0])
 
@@ -30,7 +30,7 @@ def mf_vs_w_hs(
 
         weights = [v_0_norm / norm(v) for v in vs]
 
-    n_per_print = max(1, n_iteration // 100)
+    n_per_print = max(1, n_iteration // 10)
 
     for j in range(n_iteration):
 
@@ -38,15 +38,15 @@ def mf_vs_w_hs(
 
             print("(r={}) {}/{}...".format(r, j + 1, n_iteration))
 
-        top = sum([weights[i] * vs[i] @ hs[i].T for i in range(n_v)], axis=0)
+        top = sum([weights[i] * ws[i].T @ vs[i] for i in range(n_v)], axis=0)
 
-        bottom = sum([weights[i] * w @ hs[i] @ hs[i].T for i in range(n_v)], axis=0)
+        bottom = sum([weights[i] * ws[i].T @ ws[i] @ h for i in range(n_v)], axis=0)
 
-        w *= top / bottom
+        h *= top / bottom
 
-        hs = [update_h_by_multiplicative_update(vs[i], w, hs[i]) for i in range(n_v)]
+        ws = [update_w_by_multiplicative_update(vs[i], ws[i], h) for i in range(n_v)]
 
-        j_1_errors = asarray([norm(vs[i] - w @ hs[i]) for i in range(n_v)])
+        j_1_errors = asarray([norm(vs[i] - ws[i] @ h) for i in range(n_v)])
 
         errors[:, j + 1] = j_1_errors
 
@@ -56,4 +56,4 @@ def mf_vs_w_hs(
 
             break
 
-    return w, hs, errors
+    return ws, h, errors
