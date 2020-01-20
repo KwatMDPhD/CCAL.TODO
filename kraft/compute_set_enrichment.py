@@ -285,7 +285,7 @@ def compute_set_enrichment(
                 "marker": {
                     "symbol": "line-ns-open",
                     "size": 8,
-                    "color": "#4e40d8",  # "#2e211b",
+                    "color": "#4e40d8",
                     "line": {"width": line_width * 0.64},
                 },
                 "hoverinfo": "x+text",

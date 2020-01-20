@@ -5,9 +5,7 @@ from scipy.cluster.hierarchy import fcluster, linkage
 from scipy.spatial.distance import pdist, squareform
 
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .make_binary_dataframe_from_categorical_series import (
-    make_binary_dataframe_from_categorical_series,
-)
+from .binarize import binarize
 from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
 
@@ -78,7 +76,7 @@ def cluster_hierarchical_clusterings(
 
     element_cluster = Series(element_cluster, name="Cluster", index=dataframe.index)
 
-    cluster_x_element = make_binary_dataframe_from_categorical_series(element_cluster)
+    cluster_x_element = binarize(element_cluster)
 
     cluster_x_element.to_csv(
         "{}/cluster_x_element.tsv".format(directory_path), sep="\t"

@@ -3,9 +3,7 @@ from pandas import DataFrame, concat
 
 from .BAD_VALUES import BAD_VALUES
 from .guess_data_type import guess_data_type
-from .make_binary_dataframe_from_categorical_series import (
-    make_binary_dataframe_from_categorical_series,
-)
+from .binarize import binarize
 
 
 def separate_information_x_sample(information_x_sample, bad_values=BAD_VALUES):
@@ -36,7 +34,7 @@ def separate_information_x_sample(information_x_sample, bad_values=BAD_VALUES):
 
             else:
 
-                binaries.append(make_binary_dataframe_from_categorical_series(values))
+                binaries.append(binarize(values))
 
     if 0 < len(continuouses):
 
