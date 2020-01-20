@@ -7,9 +7,7 @@ from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
 from .update_w_by_multiplicative_update import update_w_by_multiplicative_update
 
 
-def factorize_matrix_by_update(
-    V, k, n_iteration=int(1e3), random_seed=RANDOM_SEED
-):
+def factorize_matrix_by_update(V, k, n_iteration=int(1e3), random_seed=RANDOM_SEED):
 
     R_norms = full(n_iteration + 1, nan)
 
