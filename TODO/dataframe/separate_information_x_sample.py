@@ -2,8 +2,8 @@ from numpy import nan
 from pandas import DataFrame, concat
 
 from .BAD_VALUES import BAD_VALUES
-from .guess_data_type import guess_data_type
 from .binarize import binarize
+from .guess_data_type import guess_data_type
 
 
 def separate_information_x_sample(information_x_sample, bad_values=BAD_VALUES):

@@ -6,8 +6,8 @@ from pandas import DataFrame, Index
 from .plot_errors import plot_errors
 from .plot_matrix_factorization import plot_matrix_factorization
 from .RANDOM_SEED import RANDOM_SEED
-from .update_h_by_multiplicative_update import update_h_by_multiplicative_update
-from .update_w_by_multiplicative_update import update_w_by_multiplicative_update
+from .update_matrix_factorization_h import update_matrix_factorization_h
+from .update_matrix_factorization_w import update_matrix_factorization_w
 
 
 def factorize_matrices(
@@ -58,9 +58,7 @@ def factorize_matrices(
 
             h *= top / bottom
 
-            ws = [
-                update_w_by_multiplicative_update(vs[i], ws[i], h) for i in range(n_v)
-            ]
+            ws = [update_matrix_factorization_w(vs[i], ws[i], h) for i in range(n_v)]
 
             j_1_errors = asarray([norm(vs[i] - ws[i] @ h) for i in range(n_v)])
 
@@ -110,9 +108,7 @@ def factorize_matrices(
 
             w *= top / bottom
 
-            hs = [
-                update_h_by_multiplicative_update(vs[i], w, hs[i]) for i in range(n_v)
-            ]
+            hs = [update_matrix_factorization_h(vs[i], w, hs[i]) for i in range(n_v)]
 
             j_1_errors = asarray([norm(vs[i] - w @ hs[i]) for i in range(n_v)])
 

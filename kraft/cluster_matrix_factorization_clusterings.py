@@ -1,24 +1,23 @@
 from numpy import full, nan
 from pandas import DataFrame, Index, Series
 
+from .cluster import cluster
+from .count_coclustering import count_coclustering
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .mf_with_multiplicative_update import mf_with_multiplicative_update
-from .nmf_with_sklearn import nmf_with_sklearn
+from .factorize_matrix_by_nmf import factorize_matrix_by_nmf
 from .plot_heat_map import plot_heat_map
-from .plot_mf import plot_mf
+from .plot_matrix_factorization import plot_matrix_factorization
 from .RANDOM_SEED import RANDOM_SEED
 
 
 def cluster_matrix_factorization_clusterings(
     dataframe,
     r,
-    directory_path,
-    mf_function="nmf_with_sklearn",
     n_clustering=10,
     n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
-    linkage_method="ward",
-    plot_heat_map_=True,
+    plot=True,
+    directory_path=None,
 ):
 
     clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
@@ -27,18 +26,13 @@ def cluster_matrix_factorization_clusterings(
 
     n_per_print = max(1, n_clustering // 10)
 
-    mf_function = {
-        "mf_with_multiplicative_update": mf_with_multiplicative_update,
-        "nmf_with_sklearn": nmf_with_sklearn,
-    }[mf_function]
-
     for clustering in range(n_clustering):
 
         if clustering % n_per_print == 0:
 
             print("\t(r={}) {}/{}...".format(r, clustering + 1, n_clustering))
 
-        w, h, e = mf_function(
+        w, h, e = factorize_matrix_by_nmf(
             dataframe.values,
             r,
             n_iteration=n_iteration,
@@ -65,35 +59,25 @@ def cluster_matrix_factorization_clusterings(
 
             h_0.to_csv("{}/h.tsv".format(directory_path), sep="\t")
 
-            if plot_heat_map_:
+            if plot:
 
-                plot_mf((w_0,), (h_0,), directory_path)
+                plot_matrix_factorization((w_0,), (h_0,), directory_path)
 
         clustering_x_w_element[clustering, :] = w.argmax(axis=1)
 
         clustering_x_h_element[clustering, :] = h.argmax(axis=0)
 
-    (
-        w_element_cluster,
-        w_element_cluster_ccc,
-    ) = cluster_clustering_x_element_and_compute_ccc(
-        clustering_x_w_element, r, linkage_method
-    )
+    w_element_cluster = cluster(count_coclustering(clustering_x_w_element), r)
 
     w_element_cluster = Series(w_element_cluster, name="Cluster", index=dataframe.index)
 
-    (
-        h_element_cluster,
-        h_element_cluster_ccc,
-    ) = cluster_clustering_x_element_and_compute_ccc(
-        clustering_x_h_element, r, linkage_method
-    )
+    h_element_cluster = cluster(count_coclustering(clustering_x_h_element), r)
 
     h_element_cluster = Series(
         h_element_cluster, name="Cluster", index=dataframe.columns
     )
 
-    if plot_heat_map_:
+    if plot:
 
         annotation_colorscale = DATA_TYPE_COLORSCALE["categorical"]
 
@@ -112,7 +96,5 @@ def cluster_matrix_factorization_clusterings(
         h_0,
         e_0,
         w_element_cluster,
-        w_element_cluster_ccc,
         h_element_cluster,
-        h_element_cluster_ccc,
     )
