@@ -1,4 +1,4 @@
-from numpy import asarray, isnan, log, where
+from numpy import absolute, asarray, isnan, log, where
 
 from .compute_bandwidth import compute_bandwidth
 from .estimate_kernel_density import estimate_kernel_density
@@ -11,8 +11,9 @@ def compute_set_enrichment(
     element_score,
     set_elements,
     method="rank cdf ks",
+    power=0,
     n_grid=None,
-    plot_=False,
+    plot_analysis=False,
     plot=False,
     title="Set Enrichment",
     element_score_name="Element Score",
@@ -31,7 +32,7 @@ def compute_set_enrichment(
             element_score_element in set_element_
             for element_score_element in element_score.index
         ),
-        dtype=int,
+        dtype=float,
     )
 
     if r_h.sum() == 0:
@@ -40,7 +41,7 @@ def compute_set_enrichment(
 
     r_m = 1 - r_h
 
-    if plot_:
+    if plot_analysis:
 
         r_h_i = where(r_h)[0]
 
@@ -98,11 +99,15 @@ def compute_set_enrichment(
 
     if method.startswith("rank cdf"):
 
+        if power != 0:
+
+            r_h *= absolute(element_score.values) ** power
+
         r_h_p = r_h / r_h.sum()
 
         r_m_p = r_m / r_m.sum()
 
-        if plot_:
+        if plot_analysis:
 
             plot_plotly(
                 {
@@ -124,7 +129,7 @@ def compute_set_enrichment(
 
         r_c = (r_h_c + r_m_c) / 2
 
-        if plot_:
+        if plot_analysis:
 
             plot_plotly(
                 {
@@ -145,13 +150,19 @@ def compute_set_enrichment(
 
             h, m, s = None, None, r_h_c - r_m_c
 
-        elif method.endswith("k1"):
+            enrichment = s[absolute(s).argmax()]
 
-            h, m, s = compute_k1(r_h_c, r_m_c, r_c)
+        else:
 
-        elif method.endswith("k2"):
+            if method.endswith("k1"):
 
-            h, m, s = compute_k2(r_h_c, r_m_c)
+                h, m, s = compute_k1(r_h_c, r_m_c, r_c)
+
+            elif method.endswith("k2"):
+
+                h, m, s = compute_k2(r_h_c, r_m_c)
+
+            enrichment = s.sum() / n_grid
 
     if method.startswith("score"):
 
@@ -184,7 +195,7 @@ def compute_set_enrichment(
 
         s_p = get_p(element_score.values)
 
-        if plot_:
+        if plot_analysis:
 
             plot_plotly(
                 {
@@ -211,6 +222,8 @@ def compute_set_enrichment(
 
                 h, m, s = compute_k2(s_h_p, s_m_p)
 
+            enrichment = s.sum() / n_grid
+
         elif "cdf" in method:
 
             s_h_c = get_c(s_h_p)
@@ -219,7 +232,7 @@ def compute_set_enrichment(
 
             s_c = get_c(s_p)
 
-            if plot_:
+            if plot_analysis:
 
                 plot_plotly(
                     {
@@ -240,15 +253,19 @@ def compute_set_enrichment(
 
                 h, m, s = None, None, s_h_c - s_m_c
 
-            elif method.endswith("k1"):
+                enrichment = s[absolute(s).argmax()]
 
-                h, m, s = compute_k1(s_h_c, s_m_c, s_c)
+            else:
 
-            elif method.endswith("k2"):
+                if method.endswith("k1"):
 
-                h, m, s = compute_k2(s_h_c, s_m_c)
+                    h, m, s = compute_k1(s_h_c, s_m_c, s_c)
 
-    enrichment = s.sum() / n_grid
+                elif method.endswith("k2"):
+
+                    h, m, s = compute_k2(s_h_c, s_m_c)
+
+                enrichment = s.sum() / n_grid
 
     if plot:
 
@@ -266,3 +283,5 @@ def compute_set_enrichment(
                 ],
             },
         )
+
+    return enrichment
