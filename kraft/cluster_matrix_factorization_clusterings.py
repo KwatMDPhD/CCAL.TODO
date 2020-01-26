@@ -12,12 +12,11 @@ from .RANDOM_SEED import RANDOM_SEED
 
 def cluster_matrix_factorization_clusterings(
     dataframe,
-    r,
-    n_clustering=10,
+    n_cluster,
+    n_clustering=100,
     n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
     plot=True,
-    directory_path=None,
 ):
 
     clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
@@ -26,20 +25,24 @@ def cluster_matrix_factorization_clusterings(
 
     n_per_print = max(1, n_clustering // 10)
 
-    for clustering in range(n_clustering):
+    for clustering_index in range(n_clustering):
 
-        if clustering % n_per_print == 0:
+        if clustering_index % n_per_print == 0:
 
-            print("\t(r={}) {}/{}...".format(r, clustering + 1, n_clustering))
+            print(
+                "\t(r={}) {}/{}...".format(
+                    n_cluster, clustering_index + 1, n_clustering
+                )
+            )
 
         w, h, e = factorize_matrix_by_nmf(
             dataframe.values,
-            r,
+            n_cluster,
             n_iteration=n_iteration,
-            random_seed=random_seed + clustering,
+            random_seed=random_seed + clustering_index,
         )
 
-        if clustering == 0:
+        if clustering_index == 0:
 
             w_0 = w
 
@@ -47,38 +50,33 @@ def cluster_matrix_factorization_clusterings(
 
             e_0 = e
 
-            index_factors = Index(
-                ("r{}_f{}".format(r, i) for i in range(r)), name="Factor"
+            factor_index = Index(
+                ("r{}_f{}".format(n_cluster, i) for i in range(n_cluster)),
+                name="Factor",
             )
 
-            w_0 = DataFrame(w_0, index=dataframe.index, columns=index_factors)
+            w_0 = DataFrame(w_0, index=dataframe.index, columns=factor_index)
 
-            h_0 = DataFrame(h_0, index=index_factors, columns=dataframe.columns)
-
-            w_0.to_csv("{}/w.tsv".format(directory_path), sep="\t")
-
-            h_0.to_csv("{}/h.tsv".format(directory_path), sep="\t")
+            h_0 = DataFrame(h_0, index=factor_index, columns=dataframe.columns)
 
             if plot:
 
-                plot_matrix_factorization((w_0,), (h_0,), directory_path)
+                plot_matrix_factorization((w_0,), (h_0,))
 
-        clustering_x_w_element[clustering, :] = w.argmax(axis=1)
+        clustering_x_w_element[clustering_index, :] = w.argmax(axis=1)
 
-        clustering_x_h_element[clustering, :] = h.argmax(axis=0)
+        clustering_x_h_element[clustering_index, :] = h.argmax(axis=0)
 
-    w_element_cluster = cluster(
-        compute_coclustering_distance(clustering_x_w_element), r
-    )
-
-    w_element_cluster = Series(w_element_cluster, name="Cluster", index=dataframe.index)
-
-    h_element_cluster = cluster(
-        compute_coclustering_distance(clustering_x_h_element), r
+    w_element_cluster = Series(
+        cluster(compute_coclustering_distance(clustering_x_w_element), n_cluster),
+        name="Cluster",
+        index=dataframe.index,
     )
 
     h_element_cluster = Series(
-        h_element_cluster, name="Cluster", index=dataframe.columns
+        cluster(compute_coclustering_distance(clustering_x_h_element), n_cluster),
+        name="Cluster",
+        index=dataframe.columns,
     )
 
     if plot:
@@ -91,8 +89,7 @@ def cluster_matrix_factorization_clusterings(
             row_annotation_colorscale=annotation_colorscale,
             column_annotations=h_element_cluster,
             column_annotation_colorscale=annotation_colorscale,
-            layout={"title": {"text": "MFCC r={}".format(r)}},
-            html_file_path="{}/dataframe_cluster.html".format(directory_path),
+            layout={"title": {"text": "MFCC r={}".format(n_cluster)}},
         )
 
     return (

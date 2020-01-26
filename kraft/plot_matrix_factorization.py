@@ -6,7 +6,7 @@ from .normalize import normalize
 from .plot_heat_map import plot_heat_map
 
 
-def plot_matrix_factorization(ws, hs, directory_path):
+def plot_matrix_factorization(ws, hs):
 
     axis_size_0 = 560
 
@@ -33,7 +33,6 @@ def plot_matrix_factorization(ws, hs, directory_path):
                 "width": axis_size_0,
                 "title": {"text": "W{}".format(i)},
             },
-            html_file_path="{}/w{}.html".format(directory_path, i),
         )
 
     for i, h in enumerate(hs):
@@ -57,5 +56,4 @@ def plot_matrix_factorization(ws, hs, directory_path):
                 "width": axis_size_1,
                 "title": {"text": "H{}".format(i)},
             },
-            html_file_path="{}/h{}.html".format(directory_path, i),
         )

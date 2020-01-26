@@ -31,15 +31,15 @@ def cluster_hierarchical_clusterings(
 
     n_choice = int(0.64 * n_point)
 
-    for clustering in range(n_clustering):
+    for clustering_index in range(n_clustering):
 
-        if clustering % n_per_print == 0:
+        if clustering_index % n_per_print == 0:
 
-            print("\t{}/{}...".format(clustering + 1, n_clustering))
+            print("\t{}/{}...".format(clustering_index + 1, n_clustering))
 
         choice_index = choice(point_index, size=n_choice, replace=False)
 
-        clustering_x_point[clustering, choice_index] = cluster(
+        clustering_x_point[clustering_index, choice_index] = cluster(
             point_x_dimension[choice_index], n_cluster,
         )
 

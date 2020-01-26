@@ -1,20 +1,23 @@
-from .COLORBAR import COLORBAR
-from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .RANDOM_SEED import RANDOM_SEED
 from .binarize import binarize
 from .cast_builtin import cast_builtin
 from .clip_by_standard_deviation import clip_by_standard_deviation
 from .cluster import cluster
 from .cluster_hierarchical_clusterings import cluster_hierarchical_clusterings
-from .cluster_matrix_factorization_clusterings import cluster_matrix_factorization_clusterings
+from .cluster_matrix_factorization_clusterings import (
+    cluster_matrix_factorization_clusterings,
+)
+from .COLORBAR import COLORBAR
 from .compute_bandwidth import compute_bandwidth
 from .compute_coclustering_distance import compute_coclustering_distance
 from .compute_joint_probability import compute_joint_probability
 from .compute_margin_of_error import compute_margin_of_error
 from .compute_p_value import compute_p_value
-from .compute_p_values_and_false_discovery_rates import compute_p_values_and_false_discovery_rates
+from .compute_p_values_and_false_discovery_rates import (
+    compute_p_values_and_false_discovery_rates,
+)
 from .compute_posterior_probability import compute_posterior_probability
 from .compute_set_enrichment import compute_set_enrichment
+from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .estimate_kernel_density import estimate_kernel_density
 from .factorize_matrices import factorize_matrices
 from .factorize_matrix_by_nmf import factorize_matrix_by_nmf
@@ -40,6 +43,7 @@ from .plot_histogram import plot_histogram
 from .plot_matrix_factorization import plot_matrix_factorization
 from .plot_mesh import plot_mesh
 from .plot_plotly import plot_plotly
+from .RANDOM_SEED import RANDOM_SEED
 from .read_gct import read_gct
 from .read_gmt import read_gmt
 from .read_json import read_json
