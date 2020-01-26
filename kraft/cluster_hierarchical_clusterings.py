@@ -23,13 +23,13 @@ def cluster_hierarchical_clusterings(
 
     n_per_print = max(1, n_clustering // 10)
 
-    seed(seed=random_seed)
-
     point_x_dimension = dataframe.values
 
-    point_index = arange(n_point)
+    index_for_choice = arange(n_point)
 
-    n_choice = int(0.64 * n_point)
+    n_for_choice = int(0.64 * n_point)
+
+    seed(seed=random_seed)
 
     for clustering_index in range(n_clustering):
 
@@ -37,10 +37,10 @@ def cluster_hierarchical_clusterings(
 
             print("\t{}/{}...".format(clustering_index + 1, n_clustering))
 
-        choice_index = choice(point_index, size=n_choice, replace=False)
+        point_index = choice(index_for_choice, size=n_for_choice, replace=False)
 
-        clustering_x_point[clustering_index, choice_index] = cluster(
-            point_x_dimension[choice_index], n_cluster,
+        clustering_x_point[clustering_index, point_index] = cluster(
+            point_x_dimension[point_index], n_cluster,
         )
 
     point_cluster = Series(
@@ -49,26 +49,25 @@ def cluster_hierarchical_clusterings(
         index=dataframe.index,
     )
 
-    if axis == 1:
-
-        dataframe = dataframe.T
-
     if plot:
+
+        if axis == 1:
+
+            dataframe = dataframe.T
 
         if axis == 0:
 
-            row_column = "row"
+            str_ = "row"
 
         elif axis == 1:
 
-            row_column = "column"
+            str_ = "column"
 
         plot_heat_map(
             dataframe,
-            layout={"title": {"text": "HCC r={}".format(n_cluster)}},
             **{
-                "{}_annotations".format(row_column): point_cluster,
-                "{}_annotation_colorscale".format(row_column): DATA_TYPE_COLORSCALE[
+                "{}_annotations".format(str_): point_cluster,
+                "{}_annotation_colorscale".format(str_): DATA_TYPE_COLORSCALE[
                     "categorical"
                 ],
             },
