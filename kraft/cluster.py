@@ -2,16 +2,20 @@ from scipy.cluster.hierarchy import fclusterdata
 
 
 def cluster(
-    element_x_dimension,
-    r,
+    point_x_dimension,
+    n_cluster,
+    distance_function="euclidean",
+    linkage_method="single",
     criterion="maxclust",
-    metric="correlation",
-    method="centroid",
 ):
 
     return (
         fclusterdata(
-            element_x_dimension, r, criterion=criterion, metric=metric, method=method,
+            point_x_dimension,
+            n_cluster,
+            metric=distance_function,
+            method=linkage_method,
+            criterion=criterion,
         )
         - 1
     )

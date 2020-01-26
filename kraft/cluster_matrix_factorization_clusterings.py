@@ -2,7 +2,7 @@ from numpy import full, nan
 from pandas import DataFrame, Index, Series
 
 from .cluster import cluster
-from .count_coclustering import count_coclustering
+from .compute_coclustering_distance import compute_coclustering_distance
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .factorize_matrix_by_nmf import factorize_matrix_by_nmf
 from .plot_heat_map import plot_heat_map
@@ -67,11 +67,15 @@ def cluster_matrix_factorization_clusterings(
 
         clustering_x_h_element[clustering, :] = h.argmax(axis=0)
 
-    w_element_cluster = cluster(count_coclustering(clustering_x_w_element), r)
+    w_element_cluster = cluster(
+        compute_coclustering_distance(clustering_x_w_element), r
+    )
 
     w_element_cluster = Series(w_element_cluster, name="Cluster", index=dataframe.index)
 
-    h_element_cluster = cluster(count_coclustering(clustering_x_h_element), r)
+    h_element_cluster = cluster(
+        compute_coclustering_distance(clustering_x_h_element), r
+    )
 
     h_element_cluster = Series(
         h_element_cluster, name="Cluster", index=dataframe.columns
