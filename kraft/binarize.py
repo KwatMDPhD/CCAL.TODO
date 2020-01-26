@@ -1,16 +1,17 @@
 from pandas import DataFrame
+from numpy import unique
 
 
-def binarize(series, include_series_name_in_index=False):
+def binarize(series):
 
-    object_x_index = DataFrame(
-        index=series.dropna().sort_values().unique(), columns=series.index
-    )
+    series = series.astype(str)
 
-    for object_ in object_x_index.index:
+    str_x_index = DataFrame(index=unique(series), columns=series.index)
 
-        object_x_index.loc[object_] = (series == object_).astype(int)
+    for str_ in str_x_index.index:
 
-    object_x_index.index.name = series.name
+        str_x_index.loc[str_] = series == str_
 
-    return object_x_index
+    str_x_index.index.name = series.name
+
+    return str_x_index.astype(int)
