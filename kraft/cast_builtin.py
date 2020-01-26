@@ -1,16 +1,14 @@
 def cast_builtin(object_):
 
-    if object_ == "None":
+    for builtin_object in (
+        None,
+        False,
+        True,
+    ):
 
-        return None
+        if object_ is builtin_object or object_ == str(builtin_object):
 
-    elif object_ == "True":
-
-        return True
-
-    elif object_ == "False":
-
-        return False
+            return builtin_object
 
     for type_ in (int, float):
 
