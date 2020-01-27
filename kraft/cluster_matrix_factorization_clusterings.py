@@ -4,7 +4,7 @@ from pandas import DataFrame, Index, Series
 from .cluster import cluster
 from .compute_coclustering_distance import compute_coclustering_distance
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .factorize_matrix_by_nmf import factorize_matrix_by_nmf
+from .factorize_matrix_by_update import factorize_matrix_by_update
 from .plot_heat_map import plot_heat_map
 from .plot_matrix_factorization import plot_matrix_factorization
 from .RANDOM_SEED import RANDOM_SEED
@@ -19,9 +19,9 @@ def cluster_matrix_factorization_clusterings(
     plot=True,
 ):
 
-    clustering_x_w_element = full((n_clustering, dataframe.shape[0]), nan)
+    clustering_x_w_point = full((n_clustering, dataframe.shape[0]), nan)
 
-    clustering_x_h_element = full((n_clustering, dataframe.shape[1]), nan)
+    clustering_x_h_point = full((n_clustering, dataframe.shape[1]), nan)
 
     n_per_print = max(1, n_clustering // 10)
 
@@ -35,7 +35,7 @@ def cluster_matrix_factorization_clusterings(
                 )
             )
 
-        w, h, e = factorize_matrix_by_nmf(
+        w, h, e = factorize_matrix_by_update(
             dataframe.values,
             n_cluster,
             n_iteration=n_iteration,
@@ -63,18 +63,18 @@ def cluster_matrix_factorization_clusterings(
 
                 plot_matrix_factorization((w_0,), (h_0,))
 
-        clustering_x_w_element[clustering_index, :] = w.argmax(axis=1)
+        clustering_x_w_point[clustering_index] = w.argmax(axis=1)
 
-        clustering_x_h_element[clustering_index, :] = h.argmax(axis=0)
+        clustering_x_h_point[clustering_index] = h.argmax(axis=0)
 
-    w_element_cluster = Series(
-        cluster(compute_coclustering_distance(clustering_x_w_element), n_cluster),
+    w_point_cluster = Series(
+        cluster(compute_coclustering_distance(clustering_x_w_point), n_cluster),
         name="Cluster",
         index=dataframe.index,
     )
 
-    h_element_cluster = Series(
-        cluster(compute_coclustering_distance(clustering_x_h_element), n_cluster),
+    h_point_cluster = Series(
+        cluster(compute_coclustering_distance(clustering_x_h_point), n_cluster),
         name="Cluster",
         index=dataframe.columns,
     )
@@ -85,17 +85,17 @@ def cluster_matrix_factorization_clusterings(
 
         plot_heat_map(
             dataframe,
-            row_annotations=w_element_cluster,
+            row_annotations=w_point_cluster,
             row_annotation_colorscale=annotation_colorscale,
-            column_annotations=h_element_cluster,
+            column_annotations=h_point_cluster,
             column_annotation_colorscale=annotation_colorscale,
-            layout={"title": {"text": "MFCC r={}".format(n_cluster)}},
+            layout={"title": {"text": "Clustering ({} cluster)".format(n_cluster)}},
         )
 
     return (
         w_0,
         h_0,
         e_0,
-        w_element_cluster,
-        h_element_cluster,
+        w_point_cluster,
+        h_point_cluster,
     )

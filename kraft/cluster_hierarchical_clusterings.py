@@ -65,6 +65,7 @@ def cluster_hierarchical_clusterings(
 
         plot_heat_map(
             dataframe,
+            layout={"title": {"text": "Clustering ({} cluster)".format(n_cluster)}},
             **{
                 "{}_annotations".format(str_): point_cluster,
                 "{}_annotation_colorscale".format(str_): DATA_TYPE_COLORSCALE[
