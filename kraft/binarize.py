@@ -1,5 +1,5 @@
-from pandas import DataFrame
 from numpy import unique
+from pandas import DataFrame
 
 
 def binarize(series):
