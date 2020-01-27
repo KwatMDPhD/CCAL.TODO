@@ -5,7 +5,7 @@ def cluster(
     point_x_dimension,
     n_cluster,
     distance_function="euclidean",
-    linkage_method="centroid",
+    linkage_method="ward",
     criterion="maxclust",
 ):
 
