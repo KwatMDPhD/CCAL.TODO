@@ -14,9 +14,9 @@ def cluster_matrix_factorization_clusterings(
     dataframe,
     n_cluster,
     n_clustering=100,
-    n_iteration=int(1e3),
     random_seed=RANDOM_SEED,
     plot=True,
+    **factorize_matrix_by_update_keyword_arguments,
 ):
 
     clustering_x_w_point = full((n_clustering, dataframe.shape[0]), nan)
@@ -38,8 +38,8 @@ def cluster_matrix_factorization_clusterings(
         w, h, e = factorize_matrix_by_update(
             dataframe.values,
             n_cluster,
-            n_iteration=n_iteration,
             random_seed=random_seed + clustering_index,
+            **factorize_matrix_by_update_keyword_arguments,
         )
 
         if clustering_index == 0:
