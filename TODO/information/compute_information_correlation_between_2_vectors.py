@@ -1,7 +1,7 @@
 from numpy import asarray, exp, log, nan, sign, sqrt, unique
 from scipy.stats import pearsonr
 
-from .estimate_joint_pdf import estimate_joint_pdf
+from .estimate_pdf import estimate_pdf
 from .unmesh import unmesh
 
 
@@ -20,7 +20,7 @@ def compute_information_correlation_between_2_vectors(
     r = pearsonr(vector_0, vector_1)[0]
 
     (x_grid, y_grid), pxy = unmesh(
-        *estimate_joint_pdf(
+        *estimate_pdf(
             asarray((vector_0, vector_1)).T,
             plot=False,
             dimension_bandwidth_factors=(1 - abs(r) * 2 / 3,) * 2,

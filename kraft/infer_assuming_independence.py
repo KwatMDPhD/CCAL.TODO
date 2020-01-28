@@ -1,6 +1,6 @@
 from numpy import absolute, apply_along_axis, product
 
-from .estimate_joint_pdf import estimate_joint_pdf
+from .estimate_pdf import estimate_pdf
 from .infer import infer
 from .mesh import mesh
 from .plot_mesh import plot_mesh
@@ -20,7 +20,7 @@ def infer_assuming_independence(
     (
         target_mesh_grid_point_x_dimension,
         target_mesh_grid_point_posterior_probability,
-    ) = estimate_joint_pdf(element_x_dimension[:, -1:], plot=plot, names=names[-1:],)
+    ) = estimate_pdf(element_x_dimension[:, -1:], plot=plot, names=names[-1:],)
 
     target_dimensino_grids, target_probability = unmesh(
         target_mesh_grid_point_x_dimension, target_mesh_grid_point_posterior_probability

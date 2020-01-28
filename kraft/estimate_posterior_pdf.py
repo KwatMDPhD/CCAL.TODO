@@ -1,6 +1,6 @@
 from numpy import apply_along_axis, diff, unique
 
-from .estimate_joint_pdf import estimate_joint_pdf
+from .estimate_pdf import estimate_pdf
 from .plot_mesh import plot_mesh
 from .unmesh import unmesh
 
@@ -12,7 +12,7 @@ def estimate_posterior_pdf(
     **estimate_kernel_density_keyword_arguments,
 ):
 
-    point_x_dimension, joint_probabilities = estimate_joint_pdf(
+    point_x_dimension, joint_probabilities = estimate_pdf(
         point_x_dimension,
         plot=plot,
         names=names,
@@ -33,7 +33,7 @@ def estimate_posterior_pdf(
             point_x_dimension,
             posterior_probabilities,
             names=names,
-            value_name="Posterior Probability",
+            value_name="Posterior PDF",
         )
 
     return point_x_dimension, posterior_probabilities

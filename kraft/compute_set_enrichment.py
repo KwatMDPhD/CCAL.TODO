@@ -1,7 +1,7 @@
 from numpy import absolute, asarray, isnan, log, where
 
 from .compute_bandwidth import compute_bandwidth
-from .estimate_kernel_density import estimate_kernel_density
+from .estimate_density import estimate_density
 from .make_grid import make_grid
 from .normalize import normalize
 from .plot_plotly import plot_plotly
@@ -177,7 +177,7 @@ def compute_set_enrichment(
 
         def get_p(vector):
 
-            point_x_dimension, kernel_densities = estimate_kernel_density(
+            point_x_dimension, kernel_densities = estimate_density(
                 vector.reshape(vector.size, 1),
                 bandwidths=(s_b,),
                 grids=(s_g,),

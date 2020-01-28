@@ -3,7 +3,7 @@ from pandas import DataFrame
 from scipy.spatial import Delaunay
 
 from .compute_bandwidth import compute_bandwidth
-from .estimate_joint_pdf import estimate_joint_pdf
+from .estimate_pdf import estimate_pdf
 from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
     make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )
@@ -113,7 +113,7 @@ class GPSMap:
         for label in self.element_label.unique():
 
             label_grid_probability[label] = unmesh(
-                *estimate_joint_pdf(
+                *estimate_pdf(
                     self.element_x_dimension[self.element_label == label].values,
                     plot=False,
                     dimension_bandwidths=dimension_bandwidths,
