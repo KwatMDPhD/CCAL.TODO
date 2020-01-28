@@ -34,10 +34,7 @@ def compute_set_enrichment(
         ),
         dtype=float,
     )
-
-    if r_h.sum() == 0:
-
-        return
+    print(r_h)
 
     r_m = 1 - r_h
 
