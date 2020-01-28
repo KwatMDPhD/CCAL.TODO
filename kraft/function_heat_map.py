@@ -6,9 +6,7 @@ from numpy.random import choice, seed, shuffle
 from pandas import DataFrame, Series
 
 from .compute_margin_of_error import compute_margin_of_error
-from .compute_p_values_and_false_discovery_rates import (
-    compute_p_values_and_false_discovery_rates,
-)
+from .compute_p_values_and_q_values import compute_p_values_and_q_values
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .function_ignoring_nan import function_ignoring_nan
 from .get_clustering_index import get_clustering_index
@@ -147,7 +145,7 @@ def function_heat_map(
             (
                 statistics["P-Value"],
                 statistics["False Discovery Rate"],
-            ) = compute_p_values_and_false_discovery_rates(
+            ) = compute_p_values_and_q_values(
                 statistics["Score"].values, row_x_permutation.flatten(), "<>"
             )
 

@@ -1,6 +1,6 @@
 from numpy import absolute, unique
 
-from .compute_posterior_probability import compute_posterior_probability
+from .estimate_posterior_pdf import estimate_posterior_pdf
 from .plot_mesh import plot_mesh
 
 
@@ -11,7 +11,7 @@ def infer(
     (
         mesh_grid_point_x_dimension,
         mesh_grid_point_posterior_probability,
-    ) = compute_posterior_probability(element_x_dimension, plot=plot, names=names,)
+    ) = estimate_posterior_pdf(element_x_dimension, plot=plot, names=names,)
 
     target_dimension_grid = unique(mesh_grid_point_x_dimension[:, -1])
 

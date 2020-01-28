@@ -1,19 +1,19 @@
 from numpy import apply_along_axis, diff, unique
 
-from .compute_joint_probability import compute_joint_probability
+from .estimate_joint_pdf import estimate_joint_pdf
 from .plot_mesh import plot_mesh
 from .unmesh import unmesh
 
 
-def compute_posterior_probability(
-    element_x_dimension,
+def estimate_posterior_pdf(
+    point_x_dimension,
     plot=True,
     names=None,
     **estimate_kernel_density_keyword_arguments,
 ):
 
-    point_x_dimension, joint_probabilities = compute_joint_probability(
-        element_x_dimension,
+    point_x_dimension, joint_probabilities = estimate_joint_pdf(
+        point_x_dimension,
         plot=plot,
         names=names,
         **estimate_kernel_density_keyword_arguments,

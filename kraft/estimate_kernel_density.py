@@ -7,26 +7,25 @@ from .plot_mesh import plot_mesh
 
 
 def estimate_kernel_density(
-    element_x_dimension, bandwidths=None, grids=None, plot=True, names=None,
+    point_x_dimension, bandwidths=None, grids=None, plot=True, names=None,
 ):
 
-    dimension_x_element = element_x_dimension.T
+    dimension_x_point = point_x_dimension.T
 
     if bandwidths is None:
 
-        bandwidths = tuple(compute_bandwidth(vector) for vector in dimension_x_element)
+        bandwidths = tuple(compute_bandwidth(vector) for vector in dimension_x_point)
 
     if grids is None:
 
         grids = tuple(
-            make_grid(vector.min(), vector.max(), 0, 8)
-            for vector in dimension_x_element
+            make_grid(vector.min(), vector.max(), 0, 8) for vector in dimension_x_point
         )
 
     point_x_dimension = mesh(grids)
 
     kernel_densities = (
-        FFTKDE(bw=bandwidths).fit(element_x_dimension).evaluate(point_x_dimension)
+        FFTKDE(bw=bandwidths).fit(point_x_dimension).evaluate(point_x_dimension)
     )
 
     if plot:

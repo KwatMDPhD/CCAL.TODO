@@ -7,10 +7,10 @@ def compute_p_value(value, random_values, direction):
 
     if direction == "<":
 
-        n_significant_random_value = (random_values <= value).sum()
+        n_significant = (random_values <= value).sum()
 
     elif direction == ">":
 
-        n_significant_random_value = (value <= random_values).sum()
+        n_significant = (value <= random_values).sum()
 
-    return max(1, n_significant_random_value) / random_values.size
+    return max(1, n_significant) / random_values.size
