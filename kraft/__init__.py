@@ -32,7 +32,6 @@ from .merge_2_dicts import merge_2_dicts
 from .mesh import mesh
 from .normalize import normalize
 from .path import path
-from .plot_errors import plot_errors
 from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_matrix_factorization import plot_matrix_factorization

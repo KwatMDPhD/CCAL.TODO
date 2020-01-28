@@ -1,59 +1,60 @@
 from numpy import apply_along_axis
-from pandas import DataFrame
 
 from .get_clustering_index import get_clustering_index
 from .normalize import normalize
 from .plot_heat_map import plot_heat_map
+from .plot_plotly import plot_plotly
 
 
-def plot_matrix_factorization(ws, hs):
+def plot_matrix_factorization(ws, hs, errors=None, axis_size=320):
 
-    axis_size_0 = 480
+    axis_size_ = axis_size * 1.618
 
-    axis_size_1 = axis_size_0 * 1.618
+    for w_index, w in enumerate(ws):
 
-    for i, w in enumerate(ws):
-
-        if not isinstance(w, DataFrame):
-
-            w = DataFrame(w)
-
-        w = w.iloc[get_clustering_index(w.values, 0), :]
-
-        w = DataFrame(
-            apply_along_axis(normalize, 1, w.values, "-0-"),
-            index=w.index,
-            columns=w.columns,
-        )
+        w = apply_along_axis(normalize, 1, w[get_clustering_index(w, 0), :], "-0-")
 
         plot_heat_map(
             w,
             layout={
-                "height": axis_size_1,
-                "width": axis_size_0,
-                "title": {"text": "W{}".format(i)},
+                "height": axis_size_,
+                "width": axis_size,
+                "title": {"text": "W{}".format(w_index)},
             },
         )
 
-    for i, h in enumerate(hs):
+    for h_index, h in enumerate(hs):
 
-        if not isinstance(h, DataFrame):
-
-            h = DataFrame(h)
-
-        h = h.iloc[:, get_clustering_index(h.values, 1)]
-
-        h = DataFrame(
-            apply_along_axis(normalize, 0, h.values, "-0-"),
-            index=h.index,
-            columns=h.columns,
-        )
+        h = apply_along_axis(normalize, 0, h[:, get_clustering_index(h, 1)], "-0-")
 
         plot_heat_map(
             h,
             layout={
-                "height": axis_size_0,
-                "width": axis_size_1,
-                "title": {"text": "H{}".format(i)},
+                "height": axis_size,
+                "width": axis_size_,
+                "title": {"text": "H{}".format(h_index)},
+            },
+        )
+
+    if errors is not None:
+
+        plot_plotly(
+            {
+                "layout": {
+                    "xaxis": {"title": "Iteration"},
+                    "yaxis": {"title": "Error"},
+                    "annotations": [
+                        {
+                            "x": error.size - 1,
+                            "y": error[-1],
+                            "text": "{:.2e}".format(error[-1]),
+                        }
+                        for error in errors
+                    ],
+                },
+                "data": [
+                    {"name": error_index, "y": error}
+                    for error_index, error in enumerate(errors)
+                ],
             },
         )

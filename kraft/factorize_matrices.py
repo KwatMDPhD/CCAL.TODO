@@ -1,4 +1,4 @@
-from numpy import asarray, full, nan, sum
+from numpy import asarray, sum
 from numpy.linalg import norm
 from numpy.random import random_sample, seed
 
@@ -17,8 +17,6 @@ def factorize_matrices(
 
     n_v = len(vs)
 
-    errors = full((n_v, n_iteration + 1), nan)
-
     def update_matrix_factorization_w(v, w, h):
 
         return w * (v @ h.T) / (w @ h @ h.T)
@@ -27,7 +25,21 @@ def factorize_matrices(
 
         return h * (w.T @ v) / (w.T @ w @ h)
 
+    def is_tolerable(errors, tolerance):
+
+        e_, e = asarray(errors)[-2:]
+
+        return ((e_ - e) / e_ < tolerance).all()
+
     seed(seed=random_seed)
+
+    v_0_norm = norm(vs[0])
+
+    if weights is None:
+
+        weights = [v_0_norm / norm(v) for v in vs]
+
+    n_per_print = max(1, n_iteration // 10)
 
     if mode == "ws":
 
@@ -35,21 +47,13 @@ def factorize_matrices(
 
         h = random_sample(size=(r, vs[0].shape[1]))
 
-        errors[:, 0] = [norm(vs[i] - ws[i] @ h) for i in range(n_v)]
-
-        v_0_norm = norm(vs[0])
-
-        if weights is None:
-
-            weights = [v_0_norm / norm(v) for v in vs]
-
-        n_per_print = max(1, n_iteration // 10)
+        errors = [[norm(vs[i] - ws[i] @ h) for i in range(n_v)]]
 
         for iteration_index in range(n_iteration):
 
             if iteration_index % n_per_print == 0:
 
-                print("{}/{}...".format(r, iteration_index + 1, n_iteration))
+                print("{}/{}...".format(iteration_index + 1, n_iteration))
 
             t = sum([weights[i] * ws[i].T @ vs[i] for i in range(n_v)], axis=0)
 
@@ -59,13 +63,9 @@ def factorize_matrices(
 
             ws = [update_matrix_factorization_w(vs[i], ws[i], h) for i in range(n_v)]
 
-            e = asarray([norm(vs[i] - ws[i] @ h) for i in range(n_v)])
+            errors.append([norm(vs[i] - ws[i] @ h) for i in range(n_v)])
 
-            errors[:, iteration_index + 1] = e
-
-            e_ = errors[:, iteration_index]
-
-            if (((e_ - e) / e_) < tolerance).all():
+            if is_tolerable(errors, tolerance):
 
                 break
 
@@ -77,21 +77,13 @@ def factorize_matrices(
 
         hs = [random_sample(size=(r, v.shape[1])) for v in vs]
 
-        errors[:, 0] = [norm(vs[i] - w @ hs[i]) for i in range(n_v)]
-
-        v_0_norm = norm(vs[0])
-
-        if weights is None:
-
-            weights = [v_0_norm / norm(v) for v in vs]
-
-        n_per_print = max(1, n_iteration // 100)
+        errors = [[norm(vs[i] - w @ hs[i]) for i in range(n_v)]]
 
         for iteration_index in range(n_iteration):
 
             if iteration_index % n_per_print == 0:
 
-                print("{}/{}...".format(r, iteration_index + 1, n_iteration))
+                print("{}/{}...".format(iteration_index + 1, n_iteration))
 
             t = sum([weights[i] * vs[i] @ hs[i].T for i in range(n_v)], axis=0)
 
@@ -101,16 +93,12 @@ def factorize_matrices(
 
             hs = [update_matrix_factorization_h(vs[i], w, hs[i]) for i in range(n_v)]
 
-            e = asarray([norm(vs[i] - w @ hs[i]) for i in range(n_v)])
+            errors.append([norm(vs[i] - w @ hs[i]) for i in range(n_v)])
 
-            errors[:, iteration_index + 1] = e
-
-            e_ = errors[:, iteration_index]
-
-            if (((e_ - e) / e_) < tolerance).all():
+            if is_tolerable(errors, tolerance):
 
                 break
 
         ws = (w,)
 
-    return ws, hs, errors
+    return ws, hs, asarray(errors).T

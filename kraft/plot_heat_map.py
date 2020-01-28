@@ -1,4 +1,5 @@
 from numpy import argsort, asarray, nonzero, unique
+from pandas import DataFrame
 
 from .cast_builtin import cast_builtin
 from .COLORBAR import COLORBAR
@@ -8,7 +9,7 @@ from .plot_plotly import plot_plotly
 
 
 def plot_heat_map(
-    dataframe,
+    matrix,
     colorscale=None,
     row_annotations=None,
     row_annotation_colorscale=None,
@@ -19,8 +20,11 @@ def plot_heat_map(
     column_annotation_str=None,
     column_annotation=None,
     layout=None,
-    html_file_path=None,
 ):
+
+    if not isinstance(matrix, DataFrame):
+
+        matrix = DataFrame(matrix)
 
     heat_map_axis_template = {"domain": (0, 0.95)}
 
@@ -32,7 +36,7 @@ def plot_heat_map(
 
         row_annotations = [row_annotations[i] for i in sorting_indices]
 
-        dataframe = dataframe.iloc[sorting_indices]
+        matrix = matrix.iloc[sorting_indices]
 
     if column_annotations is not None:
 
@@ -40,15 +44,15 @@ def plot_heat_map(
 
         column_annotations = [column_annotations[i] for i in sorting_indices]
 
-        dataframe = dataframe.iloc[:, sorting_indices]
+        matrix = matrix.iloc[:, sorting_indices]
 
     layout_template = {
         "xaxis": {
-            "title": "{} (n={})".format(dataframe.columns.name, dataframe.columns.size),
+            "title": "{} (n={})".format(matrix.columns.name, matrix.columns.size),
             **heat_map_axis_template,
         },
         "yaxis": {
-            "title": "{} (n={})".format(dataframe.index.name, dataframe.index.size),
+            "title": "{} (n={})".format(matrix.index.name, matrix.index.size),
             **heat_map_axis_template,
         },
         "xaxis2": annotation_axis_template,
@@ -64,17 +68,17 @@ def plot_heat_map(
 
         layout = merge_2_dicts(layout_template, layout)
 
-    if any(isinstance(cast_builtin(i), str) for i in dataframe.columns):
+    if any(isinstance(cast_builtin(i), str) for i in matrix.columns):
 
-        x = dataframe.columns
+        x = matrix.columns
 
     else:
 
         x = None
 
-    if any(isinstance(cast_builtin(i), str) for i in dataframe.index):
+    if any(isinstance(cast_builtin(i), str) for i in matrix.index):
 
-        y = dataframe.index[::-1]
+        y = matrix.index[::-1]
 
     else:
 
@@ -91,7 +95,7 @@ def plot_heat_map(
             "type": "heatmap",
             "x": x,
             "y": y,
-            "z": dataframe.values[::-1],
+            "z": matrix.values[::-1],
             "colorscale": colorscale,
             "colorbar": {**COLORBAR, "x": colorbar_x},
         }
@@ -197,4 +201,4 @@ def plot_heat_map(
                     }
                 )
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path)
+    plot_plotly({"layout": layout, "data": data})
