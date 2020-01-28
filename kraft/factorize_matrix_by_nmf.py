@@ -4,21 +4,21 @@ from .RANDOM_SEED import RANDOM_SEED
 
 
 def factorize_matrix_by_nmf(
-    V, k, solver="cd", tol=1e-8, n_iteration=int(1e3), random_seed=RANDOM_SEED
+    v, r, solver="cd", tolerance=1e-6, n_iteration=int(1e3), random_seed=RANDOM_SEED
 ):
 
     model = NMF(
-        n_components=k,
+        n_components=r,
         solver=solver,
-        tol=tol,
+        tol=tolerance,
         max_iter=n_iteration,
         random_state=random_seed,
     )
 
-    W = model.fit_transform(V)
+    w = model.fit_transform(v)
 
-    H = model.components_
+    h = model.components_
 
-    R_norm = model.reconstruction_err_
+    error = model.reconstruction_err_
 
-    return W, H, R_norm
+    return w, h, error
