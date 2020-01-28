@@ -8,7 +8,7 @@ from .plot_heat_map import plot_heat_map
 
 def plot_matrix_factorization(ws, hs):
 
-    axis_size_0 = 560
+    axis_size_0 = 480
 
     axis_size_1 = axis_size_0 * 1.618
 

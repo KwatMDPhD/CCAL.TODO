@@ -6,7 +6,7 @@ from .unmesh import unmesh
 
 
 def plot_mesh(
-    point_x_dimension, values, names=None, value_name="Value",
+    point_x_dimension, value, names=None, value_name="Value",
 ):
 
     n_dimension = point_x_dimension.shape[1]
@@ -15,7 +15,7 @@ def plot_mesh(
 
         names = tuple("Dimension {}".format(i) for i in range(n_dimension))
 
-    grids, values = unmesh(point_x_dimension, values)
+    grids, value = unmesh(point_x_dimension, value)
 
     if n_dimension == 1:
 
@@ -25,7 +25,7 @@ def plot_mesh(
                     "xaxis": {"title": {"text": names[0]}},
                     "yaxis": {"title": {"text": value_name}},
                 },
-                "data": [{"type": "scatter", "x": grids[0], "y": values}],
+                "data": [{"type": "scatter", "x": grids[0], "y": value}],
             },
             None,
         )
@@ -34,7 +34,7 @@ def plot_mesh(
 
         plot_heat_map(
             DataFrame(
-                values,
+                value,
                 index=Index(("{:.2e} *".format(i) for i in grids[0]), name=names[0]),
                 columns=Index(("* {:.2e}".format(i) for i in grids[1]), name=names[1]),
             ),
@@ -51,8 +51,8 @@ def plot_mesh(
 
         print("Value (unmesh):")
 
-        print("Shape: {}".format(values.shape))
+        print("Shape: {}".format(value.shape))
 
-        print("Min: {:.2e}".format(values.min()))
+        print("Min: {:.2e}".format(value.min()))
 
-        print("Max: {:.2e}".format(values.max()))
+        print("Max: {:.2e}".format(value.max()))
