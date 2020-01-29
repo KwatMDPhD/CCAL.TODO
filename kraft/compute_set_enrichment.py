@@ -34,7 +34,6 @@ def compute_set_enrichment(
         ),
         dtype=float,
     )
-    print(r_h)
 
     r_m = 1 - r_h
 

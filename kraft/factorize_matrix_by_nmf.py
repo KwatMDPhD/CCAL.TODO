@@ -15,10 +15,4 @@ def factorize_matrix_by_nmf(
         random_state=random_seed,
     )
 
-    w = model.fit_transform(v)
-
-    h = model.components_
-
-    error = model.reconstruction_err_
-
-    return w, h, error
+    return model.fit_transform(v), model.components_, model.reconstruction_err_
