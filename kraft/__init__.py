@@ -6,6 +6,10 @@ from .cluster_hierarchical_clusterings import cluster_hierarchical_clusterings
 from .COLORBAR import COLORBAR
 from .compute_bandwidth import compute_bandwidth
 from .compute_coclustering_distance import compute_coclustering_distance
+from .compute_entropy import compute_entropy
+from .compute_ic import compute_ic
+from .compute_icd import compute_icd
+from .compute_kl import compute_kl
 from .compute_margin_of_error import compute_margin_of_error
 from .compute_p_value import compute_p_value
 from .compute_p_values_and_q_values import compute_p_values_and_q_values

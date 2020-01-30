@@ -1,7 +1,7 @@
 from numpy import log
 
 
-def compute_vector_entropy(vector):
+def compute_entropy(vector):
 
     assert (0 < vector).all()
 
