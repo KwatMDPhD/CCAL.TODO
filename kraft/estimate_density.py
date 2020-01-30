@@ -1,4 +1,5 @@
 from KDEpy import FFTKDE
+from numpy import finfo
 
 from .compute_bandwidth import compute_bandwidth
 from .make_grid import make_grid
@@ -27,7 +28,7 @@ def estimate_density(
 
     density = (
         FFTKDE(bw=bandwidths).fit(point_x_dimension).evaluate(grid_point_x_dimension)
-    )
+    ).clip(min=finfo(float).resolution)
 
     if plot:
 

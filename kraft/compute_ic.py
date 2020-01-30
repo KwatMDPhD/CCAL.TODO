@@ -1,7 +1,8 @@
-from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
+from numpy import asarray, exp, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
 from .compute_bandwidth import compute_bandwidth
+from .compute_kl import compute_kl
 from .estimate_pdf import estimate_pdf
 from .make_grid import make_grid
 from .normalize import normalize
@@ -55,7 +56,7 @@ def compute_ic(vector_0, vector_1):
 
     pxpy = outer(px, py)
 
-    mi = (pxy * log(pxy / pxpy)).sum() * dx * dy
+    mi = compute_kl(pxy, pxpy).sum() * dx * dy
 
     ic = sqrt(1 - exp(-2 * mi))
 
