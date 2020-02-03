@@ -1,7 +1,7 @@
 from math import ceil
 from multiprocessing import Pool
 
-from numpy import apply_along_axis, asarray, full, nan
+from numpy import apply_along_axis, asarray, full, isnan, nan
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame, Series
 
@@ -115,7 +115,7 @@ def function_heat_map(
 
             statistics["0.95 Margin of Error"] = apply_along_axis(
                 lambda sampled_scores: compute_margin_of_error(
-                    sampled_scores[sampled_scores != nan]
+                    sampled_scores[~isnan(sampled_scores)]
                 ),
                 1,
                 row_x_sampling,

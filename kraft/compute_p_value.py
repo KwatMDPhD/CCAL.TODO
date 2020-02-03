@@ -1,9 +1,9 @@
-from numpy import nan
+from numpy import isnan
 
 
 def compute_p_value(value, random_values, direction):
 
-    assert value != nan
+    assert ~isnan(value)
 
     if direction == "<":
 
