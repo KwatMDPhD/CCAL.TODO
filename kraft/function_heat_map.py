@@ -8,8 +8,8 @@ from pandas import DataFrame, Series
 from .compute_margin_of_error import compute_margin_of_error
 from .compute_p_values_and_q_values import compute_p_values_and_q_values
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .function_ignoring_nan import function_ignoring_nan
 from .get_clustering_index import get_clustering_index
+from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .is_sorted import is_sorted
 from .merge_2_dicts import merge_2_dicts
 from .normalize import normalize
@@ -84,7 +84,7 @@ def function_heat_map(
 
         statistics["Score"] = asarray(
             pool.starmap(
-                function_ignoring_nan,
+                ignore_nan_and_function_2,
                 ((vector_, matrix_row, function) for matrix_row in matrix.values),
             )
         )
@@ -106,7 +106,7 @@ def function_heat_map(
                 vector_ = vector.values[columns]
 
                 row_x_sampling[:, sampling_index] = pool.starmap(
-                    function_ignoring_nan,
+                    ignore_nan_and_function_2,
                     (
                         (vector_, matrix_row, function)
                         for matrix_row in matrix.values[:, columns]
@@ -138,7 +138,7 @@ def function_heat_map(
                 shuffle(vector_)
 
                 row_x_permutation[:, permuting_index] = pool.starmap(
-                    function_ignoring_nan,
+                    ignore_nan_and_function_2,
                     ((vector_, matrix_row, function) for matrix_row in matrix.values),
                 )
 

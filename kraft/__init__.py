@@ -21,9 +21,10 @@ from .estimate_posterior_pdf import estimate_posterior_pdf
 from .factorize_matrices import factorize_matrices
 from .factorize_matrix_by_nmf import factorize_matrix_by_nmf
 from .function_heat_map import function_heat_map
-from .function_ignoring_nan import function_ignoring_nan
 from .get_clustering_index import get_clustering_index
 from .get_colorscale_color import get_colorscale_color
+from .ignore_nan_and_function_1 import ignore_nan_and_function_1
+from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .infer import infer
 from .infer_assuming_independence import infer_assuming_independence
 from .is_sorted import is_sorted

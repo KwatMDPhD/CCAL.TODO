@@ -2,7 +2,7 @@ from numpy import concatenate, where
 from pandas import unique
 from scipy.cluster.hierarchy import leaves_list, linkage
 
-from .function_ignoring_nan import function_ignoring_nan
+from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 
 
 def get_clustering_index(
@@ -22,7 +22,7 @@ def get_clustering_index(
 
         def linkage_metric(vector_0, vector_1):
 
-            return function_ignoring_nan(
+            return ignore_nan_and_function_2(
                 vector_0,
                 vector_1,
                 lambda vector_0, vector_1: ((vector_0 - vector_1) ** 2).sum() ** 0.5,
