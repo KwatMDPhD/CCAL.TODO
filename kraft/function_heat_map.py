@@ -9,6 +9,7 @@ from .compute_margin_of_error import compute_margin_of_error
 from .compute_p_values_and_q_values import compute_p_values_and_q_values
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .get_clustering_index import get_clustering_index
+from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .is_sorted import is_sorted
 from .merge_2_dicts import merge_2_dicts
@@ -204,7 +205,7 @@ def function_heat_map(
         if vector_data_type == "continuous":
 
             vector_ = Series(
-                normalize(vector_.values, "-0-"),
+                ignore_nan_and_function_1(vector_.values, normalize, "-0-"),
                 name=vector_.name,
                 index=vector_.index,
             ).clip(lower=-plot_std, upper=plot_std)
@@ -212,7 +213,9 @@ def function_heat_map(
         if matrix_data_type == "continuous":
 
             dataframe_ = DataFrame(
-                apply_along_axis(normalize, 1, dataframe_.values, "-0-"),
+                apply_along_axis(
+                    ignore_nan_and_function_1, 1, dataframe_.values, normalize, "-0-"
+                ),
                 index=dataframe_.index,
                 columns=dataframe_.columns,
             ).clip(lower=-plot_std, upper=plot_std)
