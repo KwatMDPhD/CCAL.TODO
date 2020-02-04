@@ -200,7 +200,7 @@ def function_heat_map(
                 )
             ].sort_values("Score", ascending=score_ascending)
 
-        dataframe_ = matrix.loc[statistics_.index]
+        matrix_ = matrix.loc[statistics_.index]
 
         if vector_data_type == "continuous":
 
@@ -212,12 +212,12 @@ def function_heat_map(
 
         if matrix_data_type == "continuous":
 
-            dataframe_ = DataFrame(
+            matrix_ = DataFrame(
                 apply_along_axis(
-                    ignore_nan_and_function_1, 1, dataframe_.values, normalize, "-0-"
+                    ignore_nan_and_function_1, 1, matrix_.values, normalize, "-0-"
                 ),
-                index=dataframe_.index,
-                columns=dataframe_.columns,
+                index=matrix_.index,
+                columns=matrix_.columns,
             ).clip(lower=-plot_std, upper=plot_std)
 
         if (
@@ -229,13 +229,13 @@ def function_heat_map(
 
             print("Clustering within category...")
 
-            dataframe_ = dataframe_.iloc[
-                :, get_clustering_index(dataframe_.values, 1, groups=vector_.values),
+            matrix_ = matrix_.iloc[
+                :, get_clustering_index(matrix_.values, 1, groups=vector_.values),
             ]
 
-            vector_ = vector_[dataframe_.columns]
+            vector_ = vector_[matrix_.columns]
 
-        n_row = 1 + 1 + dataframe_.shape[0]
+        n_row = 1 + 1 + matrix_.shape[0]
 
         fraction_row = 1 / n_row
 
@@ -360,9 +360,9 @@ def function_heat_map(
                     {
                         "yaxis": "y",
                         "name": "Data",
-                        "x": dataframe_.columns,
-                        "y": dataframe_.index[::-1],
-                        "z": dataframe_.iloc[::-1],
+                        "x": matrix_.columns,
+                        "y": matrix_.index[::-1],
+                        "z": matrix_.iloc[::-1],
                         "colorscale": DATA_TYPE_COLORSCALE[matrix_data_type],
                         **heatmap_trace_template,
                     },
