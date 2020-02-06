@@ -1,9 +1,8 @@
-from numpy import nan
+from numpy import apply_along_axis, nan
 from pandas import DataFrame, Series
 
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
-from .merge_2_dicts import merge_2_dicts
 from .normalize import normalize
 from .plot_plotly import plot_plotly
 
@@ -16,7 +15,6 @@ def function_heat_map_summary(
     vector_ascending=True,
     vector_data_type="continuous",
     plot_std=nan,
-    layout=None,
     html_file_path=None,
 ):
 
@@ -50,7 +48,7 @@ def function_heat_map_summary(
 
         n_row += matrix_dict["matrix"].shape[0]
 
-    layout_template = {
+    layout = {
         "height": max(500, 25 * n_row),
         "width": 800,
         "margin": {"l": 200, "r": 200},
@@ -58,19 +56,11 @@ def function_heat_map_summary(
         "annotations": [],
     }
 
-    if layout is None:
-
-        layout = layout_template
-
-    else:
-
-        layout = merge_2_dicts(layout_template, layout)
-
-    row_fraction = 1 / n_row
+    fraction_row = 1 / n_row
 
     yaxis = "yaxis{}".format(len(matrix_dicts) + 1)
 
-    domain = (1 - row_fraction, 1)
+    domain = (1 - fraction_row, 1)
 
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
@@ -86,7 +76,7 @@ def function_heat_map_summary(
         }
     ]
 
-    layout_annotation_template = {
+    annotation_template = {
         "xref": "paper",
         "yref": "paper",
         "yanchor": "middle",
@@ -97,22 +87,20 @@ def function_heat_map_summary(
     layout["annotations"].append(
         {
             "x": 0,
-            "y": 1 - (row_fraction / 2),
+            "y": 1 - fraction_row / 2,
             "xanchor": "right",
             "text": "<b>{}</b>".format(vector.name),
-            **layout_annotation_template,
+            **annotation_template,
         }
     )
 
     for matrix_index, (matrix_name, matrix_dict) in enumerate(matrix_dicts.items()):
 
-        print("Making match panel with data {}...".format(matrix_name))
+        print("Making match panel with {}...".format(matrix_name))
 
-        data_to_plot = matrix_dict["dataframe"].reindex(columns=vector_.index)
+        matrix_ = matrix_dict["matrix"].reindex(columns=vector_.index)
 
-        score_moe_p_value_fdr_to_plot = statistics[matrix_name].reindex(
-            index=data_to_plot.index
-        )
+        statistics_ = statistics[matrix_name].reindex(index=matrix_.index)
 
         if "emphasis" in matrix_dict:
 
@@ -122,13 +110,11 @@ def function_heat_map_summary(
 
             score_ascending = False
 
-        score_moe_p_value_fdr_to_plot.sort_values(
-            "Score", ascending=score_ascending, inplace=True
-        )
+        statistics_.sort_values("Score", ascending=score_ascending, inplace=True)
 
-        data_to_plot = data_to_plot.loc[score_moe_p_value_fdr_to_plot.index]
+        matrix_ = matrix_.loc[statistics_.index]
 
-        if matrix_dict["matrix_data_type"] == "continuous":
+        if matrix_dict["data_type"] == "continuous":
 
             matrix_ = DataFrame(
                 apply_along_axis(
@@ -141,8 +127,8 @@ def function_heat_map_summary(
         yaxis = "yaxis{}".format(len(matrix_dicts) - matrix_index)
 
         domain = (
-            max(0, domain[0] - row_fraction * (n_space + data_to_plot.shape[0])),
-            domain[0] - row_fraction * n_space,
+            max(0, domain[0] - fraction_row * (n_space + matrix_.shape[0])),
+            domain[0] - fraction_row * n_space,
         )
 
         layout[yaxis] = {"domain": domain, "showticklabels": False}
@@ -152,9 +138,9 @@ def function_heat_map_summary(
                 "yaxis": yaxis.replace("axis", ""),
                 "type": "heatmap",
                 "name": matrix_name,
-                "x": data_to_plot.columns,
-                "y": data_to_plot.index[::-1],
-                "z": data_to_plot.values[::-1],
+                "x": matrix_.columns,
+                "y": matrix_.index[::-1],
+                "z": matrix_.values[::-1],
                 "colorscale": DATA_TYPE_COLORSCALE[matrix_dict["data_type"]],
                 "showscale": False,
             }
@@ -163,57 +149,66 @@ def function_heat_map_summary(
         layout["annotations"].append(
             {
                 "x": 0.5,
-                "y": domain[1] + (row_fraction / 2),
+                "y": domain[1] + fraction_row / 2,
                 "xanchor": "center",
                 "text": "<b>{}</b>".format(matrix_name),
-                **layout_annotation_template,
+                **annotation_template,
             }
         )
 
-        for annotation_index, (annotation, annotation_values) in enumerate(
-            make_match_panel_annotations(score_moe_p_value_fdr_to_plot).items()
-        ):
+        def get_x(ix):
 
-            x = 1.1 + annotation_index / 6.4
+            return 1.1 + ix / 6.4
 
-            if matrix_index == 0:
+        if matrix_index == 0:
+
+            for ix, str_ in enumerate(("Score(\u0394)", "P-Value", "FDR")):
 
                 layout["annotations"].append(
                     {
-                        "x": x,
-                        "y": 1 - (row_fraction / 2),
+                        "x": get_x(ix),
+                        "y": 1 - fraction_row / 2,
                         "xanchor": "center",
-                        "text": "<b>{}</b>".format(annotation),
-                        **layout_annotation_template,
+                        "text": "<b>{}</b>".format(str_),
+                        **annotation_template,
                     }
                 )
 
-            y = domain[1] - (row_fraction / 2)
+        y = domain[1] - fraction_row / 2
 
-            for data_to_plot_index, annotation in zip(
-                data_to_plot.index, annotation_values
+        for (
+            index,
+            (score, margin_of_error, p_value, false_discovery_rate),
+        ) in statistics_.iterrows():
+
+            layout["annotations"].append(
+                {
+                    "x": 0,
+                    "y": y,
+                    "xanchor": "right",
+                    "text": index,
+                    **annotation_template,
+                }
+            )
+
+            for ix, str_ in enumerate(
+                (
+                    "{:.2f}({:.2f})".format(score, margin_of_error),
+                    "{:.2e}".format(p_value),
+                    "{:.2e}".format(false_discovery_rate),
+                )
             ):
 
                 layout["annotations"].append(
                     {
-                        "x": 0,
-                        "y": y,
-                        "xanchor": "right",
-                        "text": data_to_plot_index,
-                        **layout_annotation_template,
-                    }
-                )
-
-                layout["annotations"].append(
-                    {
-                        "x": x,
+                        "x": get_x(ix),
                         "y": y,
                         "xanchor": "center",
-                        "text": annotation,
-                        **layout_annotation_template,
+                        "text": str_,
+                        **annotation_template,
                     }
                 )
 
-                y -= row_fraction
+            y -= fraction_row
 
-    plot_plotly({"layout": layout, "data": figure_data}, html_file_path)
+    plot_plotly({"layout": layout, "data": figure_data}, html_file_path=html_file_path)

@@ -12,7 +12,6 @@ from .get_clustering_index import get_clustering_index
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .is_sorted import is_sorted
-from .merge_2_dicts import merge_2_dicts
 from .normalize import normalize
 from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
@@ -37,7 +36,6 @@ def function_heat_map(
     matrix_data_type="continuous",
     plot_std=nan,
     cluster_within_category=True,
-    layout=None,
     file_path_prefix=None,
 ):
 
@@ -239,7 +237,7 @@ def function_heat_map(
 
         fraction_row = 1 / n_row
 
-        layout_template = {
+        layout = {
             "height": max(500, 25 * n_row),
             "width": 800,
             "margin": {"l": 200, "r": 200},
@@ -248,14 +246,6 @@ def function_heat_map(
             "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
             "annotations": [],
         }
-
-        if layout is None:
-
-            layout = layout_template
-
-        else:
-
-            layout = merge_2_dicts(layout_template, layout)
 
         heatmap_trace_template = {
             "type": "heatmap",
@@ -275,7 +265,7 @@ def function_heat_map(
         layout["annotations"].append(
             {
                 "x": 0,
-                "y": 1 - (fraction_row / 2),
+                "y": 1 - fraction_row / 2,
                 "xanchor": "right",
                 "text": "<b>{}</b>".format(vector_.name),
                 **annotation_template,
@@ -286,7 +276,7 @@ def function_heat_map(
 
             return 1.1 + ix / 6.4
 
-        y = 1 - (fraction_row / 2)
+        y = 1 - fraction_row / 2
 
         for ix, str_ in enumerate(("Score(\u0394)", "P-Value", "FDR")):
 
@@ -368,7 +358,7 @@ def function_heat_map(
                     },
                 ],
             },
-            html_file_path,
+            html_file_path=html_file_path,
         )
 
     return statistics
