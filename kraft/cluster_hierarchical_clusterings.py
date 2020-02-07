@@ -3,8 +3,8 @@ from numpy.random import choice, seed
 from pandas import Series
 
 from .cluster import cluster
-from .compute_coclustering_distance import compute_coclustering_distance
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
+from .get_coclustering_distance import get_coclustering_distance
 from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
 
@@ -44,9 +44,7 @@ def cluster_hierarchical_clusterings(
         )[1]
 
     point_cluster = Series(
-        cluster(compute_coclustering_distance(clustering_x_point), n_cluster=n_cluster)[
-            1
-        ],
+        cluster(get_coclustering_distance(clustering_x_point), n_cluster=n_cluster)[1],
         name="Cluster",
         index=dataframe.index,
     )

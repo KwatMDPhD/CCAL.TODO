@@ -1,7 +1,7 @@
 from KDEpy import FFTKDE
 from numpy import finfo
 
-from .compute_bandwidth import compute_bandwidth
+from .get_bandwidth import get_bandwidth
 from .make_grid import make_grid
 from .mesh import mesh
 from .plot_mesh import plot_mesh
@@ -15,7 +15,7 @@ def estimate_density(
 
     if bandwidths is None:
 
-        bandwidths = tuple(compute_bandwidth(vector) for vector in dimension_x_point)
+        bandwidths = tuple(get_bandwidth(vector) for vector in dimension_x_point)
 
     if grids is None:
 

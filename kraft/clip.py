@@ -1,4 +1,4 @@
-def clip_by_standard_deviation(array, standard_deviation):
+def clip(array, standard_deviation):
 
     mean = array.mean()
 

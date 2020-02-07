@@ -1,13 +1,13 @@
 from numpy import absolute, asarray, isnan, log, where
 
-from .compute_bandwidth import compute_bandwidth
 from .estimate_density import estimate_density
+from .get_bandwidth import get_bandwidth
 from .make_grid import make_grid
 from .normalize import normalize
 from .plot_plotly import plot_plotly
 
 
-def compute_set_enrichment(
+def score_set(
     element_score,
     set_elements,
     method="rank cdf ks",
@@ -65,7 +65,7 @@ def compute_set_enrichment(
             },
         )
 
-    def compute_k1(h, m, c):
+    def get_k1(h, m, c):
 
         klhc = h * log(h / c)
 
@@ -77,7 +77,7 @@ def compute_set_enrichment(
 
         return klhc, klmc, klhc - klmc
 
-    def compute_k2(h, m):
+    def get_k2(h, m):
 
         klhm = h * log(h / m)
 
@@ -152,17 +152,17 @@ def compute_set_enrichment(
 
             if method.endswith("k1"):
 
-                h, m, s = compute_k1(r_h_c, r_m_c, r_c)
+                h, m, s = get_k1(r_h_c, r_m_c, r_c)
 
             elif method.endswith("k2"):
 
-                h, m, s = compute_k2(r_h_c, r_m_c)
+                h, m, s = get_k2(r_h_c, r_m_c)
 
             enrichment = s.sum() / n_grid
 
     if method.startswith("score"):
 
-        s_b = compute_bandwidth(element_score.values)
+        s_b = get_bandwidth(element_score.values)
 
         if n_grid is None:
 
@@ -212,11 +212,11 @@ def compute_set_enrichment(
 
             if method.endswith("k1"):
 
-                h, m, s = compute_k1(s_h_p, s_m_p, s_p)
+                h, m, s = get_k1(s_h_p, s_m_p, s_p)
 
             elif method.endswith("k2"):
 
-                h, m, s = compute_k2(s_h_p, s_m_p)
+                h, m, s = get_k2(s_h_p, s_m_p)
 
             enrichment = s.sum() / n_grid
 
@@ -255,11 +255,11 @@ def compute_set_enrichment(
 
                 if method.endswith("k1"):
 
-                    h, m, s = compute_k1(s_h_c, s_m_c, s_c)
+                    h, m, s = get_k1(s_h_c, s_m_c, s_c)
 
                 elif method.endswith("k2"):
 
-                    h, m, s = compute_k2(s_h_c, s_m_c)
+                    h, m, s = get_k2(s_h_c, s_m_c)
 
                 enrichment = s.sum() / n_grid
 

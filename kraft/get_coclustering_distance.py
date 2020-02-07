@@ -2,7 +2,7 @@ from numpy import apply_along_axis, asarray, isnan, triu_indices
 from scipy.spatial.distance import squareform
 
 
-def compute_coclustering_distance(clustering_x_point):
+def get_coclustering_distance(clustering_x_point):
 
     print(clustering_x_point)
 

@@ -1,7 +1,7 @@
 from numpy import isnan, nan
 
 
-def compute_p_value(value, random_values, direction):
+def get_p_value(value, random_values, direction):
 
     if isnan(value):
 

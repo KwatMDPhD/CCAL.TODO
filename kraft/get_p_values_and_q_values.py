@@ -1,17 +1,17 @@
 from numpy import asarray, where
 from statsmodels.sandbox.stats.multicomp import multipletests
 
-from .compute_p_value import compute_p_value
+from .get_p_value import get_p_value
 
 
-def compute_p_values_and_q_values(
+def get_p_values_and_q_values(
     values, random_values, direction, multipletests_method="fdr_bh"
 ):
 
     if "<" in direction:
 
         p_values_less = asarray(
-            tuple(compute_p_value(value, random_values, "<") for value in values)
+            tuple(get_p_value(value, random_values, "<") for value in values)
         )
 
         q_values_less = multipletests(p_values_less, method=multipletests_method)[1]
@@ -19,7 +19,7 @@ def compute_p_values_and_q_values(
     if ">" in direction:
 
         p_values_great = asarray(
-            tuple(compute_p_value(value, random_values, ">") for value in values)
+            tuple(get_p_value(value, random_values, ">") for value in values)
         )
 
         q_values_great = multipletests(p_values_great, method=multipletests_method)[1]

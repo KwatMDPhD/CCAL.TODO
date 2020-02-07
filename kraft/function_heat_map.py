@@ -6,9 +6,9 @@ from numpy.random import choice, seed, shuffle
 from pandas import DataFrame, Series, unique
 
 from .cluster import cluster
-from .compute_margin_of_error import compute_margin_of_error
-from .compute_p_values_and_q_values import compute_p_values_and_q_values
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
+from .get_margin_of_error import get_margin_of_error
+from .get_p_values_and_q_values import get_p_values_and_q_values
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .is_sorted import is_sorted
@@ -112,7 +112,7 @@ def function_heat_map(
                 )
 
             statistics["0.95 Margin of Error"] = apply_along_axis(
-                lambda sampled_scores: compute_margin_of_error(
+                lambda sampled_scores: get_margin_of_error(
                     sampled_scores[~isnan(sampled_scores)]
                 ),
                 1,
@@ -143,7 +143,7 @@ def function_heat_map(
             (
                 statistics["P-Value"],
                 statistics["False Discovery Rate"],
-            ) = compute_p_values_and_q_values(
+            ) = get_p_values_and_q_values(
                 statistics["Score"].values, row_x_permutation.flatten(), "<>"
             )
 

@@ -1,15 +1,15 @@
 from numpy import asarray, exp, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
-from .compute_bandwidth import compute_bandwidth
-from .compute_kl import compute_kl
 from .estimate_pdf import estimate_pdf
+from .get_bandwidth import get_bandwidth
+from .get_kl import get_kl
 from .make_grid import make_grid
 from .normalize import normalize
 from .unmesh import unmesh
 
 
-def compute_ic(vector_0, vector_1):
+def get_ic(vector_0, vector_1):
 
     if unique(vector_0).size == 1 or unique(vector_1).size == 1:
 
@@ -24,8 +24,8 @@ def compute_ic(vector_0, vector_1):
     bandwidth_factor = 1 - abs(r) * 2 / 3
 
     bandwidths = (
-        compute_bandwidth(vector_0) * bandwidth_factor,
-        compute_bandwidth(vector_1) * bandwidth_factor,
+        get_bandwidth(vector_0) * bandwidth_factor,
+        get_bandwidth(vector_1) * bandwidth_factor,
     )
 
     fraction_grid_extension = 0.1
@@ -56,7 +56,7 @@ def compute_ic(vector_0, vector_1):
 
     pxpy = outer(px, py)
 
-    mi = compute_kl(pxy, pxpy).sum() * dx * dy
+    mi = get_kl(pxy, pxpy).sum() * dx * dy
 
     ic = sqrt(1 - exp(-2 * mi))
 
