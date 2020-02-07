@@ -43,16 +43,8 @@ def plot_mesh(
 
     else:
 
-        print("======== {} ========".format(value_name))
+        for grid in grids:
 
-        print("Grids:")
+            print(grid.size, grid.min(), grid.max())
 
-        print(grids)
-
-        print("Value (unmesh):")
-
-        print("Shape: {}".format(value.shape))
-
-        print("Min: {:.2e}".format(value.min()))
-
-        print("Max: {:.2e}".format(value.max()))
+        print(value.min(), value.max())
