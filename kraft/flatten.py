@@ -1,4 +1,4 @@
-def flatten_nested_iterable(iterable, iterable_types=(tuple, list, set)):
+def flatten(iterable, iterable_types=(tuple, list, set)):
 
     flattened_iterable = list(iterable)
 

@@ -7,7 +7,7 @@ from .clean_and_write_dataframe_to_tsv import clean_and_write_dataframe_to_tsv
 from .separate_information_x_sample import separate_information_x_sample
 
 
-def download_and_parse_geo(geo_id, directory_path):
+def get_geo(geo_id, directory_path):
 
     directory_path = "{}/{}".format(directory_path, geo_id)
 

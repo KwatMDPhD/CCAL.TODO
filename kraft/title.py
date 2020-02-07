@@ -1,4 +1,4 @@
-def title_str(str_):
+def title(str_):
 
     original_uppers = []
 

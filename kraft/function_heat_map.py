@@ -1,14 +1,14 @@
 from math import ceil
 from multiprocessing import Pool
 
-from numpy import apply_along_axis, asarray, full, isnan, nan
+from numpy import apply_along_axis, asarray, concatenate, full, isnan, nan, where
 from numpy.random import choice, seed, shuffle
-from pandas import DataFrame, Series
+from pandas import DataFrame, Series, unique
 
+from .cluster import cluster
 from .compute_margin_of_error import compute_margin_of_error
 from .compute_p_values_and_q_values import compute_p_values_and_q_values
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .get_clustering_index import get_clustering_index
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .is_sorted import is_sorted
@@ -35,7 +35,6 @@ def function_heat_map(
     vector_data_type="continuous",
     matrix_data_type="continuous",
     plot_std=nan,
-    cluster_within_category=True,
     file_path_prefix=None,
 ):
 
@@ -219,17 +218,28 @@ def function_heat_map(
             ).clip(lower=-plot_std, upper=plot_std)
 
         if (
-            cluster_within_category
-            and not vector_.isna().any()
+            not vector_.isna().any()
             and is_sorted(vector_.values)
             and (1 < vector_.value_counts()).all()
         ):
 
             print("Clustering within category...")
 
-            matrix_ = matrix_.iloc[
-                :, get_clustering_index(matrix_.values, 1, groups=vector_.values),
-            ]
+            categories = vector_.values
+
+            matrix_values_t = matrix_.values.T
+
+            cluster_index = []
+
+            for category in unique(categories):
+
+                category_index = where(categories == category)[0]
+
+                cluster_index.append(
+                    category_index[cluster(matrix_values_t[category_index])[0]]
+                )
+
+            matrix_ = matrix_.iloc[:, concatenate(cluster_index)]
 
             vector_ = vector_[matrix_.columns]
 

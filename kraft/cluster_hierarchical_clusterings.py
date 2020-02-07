@@ -40,11 +40,13 @@ def cluster_hierarchical_clusterings(
         point_index = choice(index_for_choice, size=n_for_choice, replace=False)
 
         clustering_x_point[clustering_index, point_index] = cluster(
-            point_x_dimension[point_index], n_cluster,
-        )
+            point_x_dimension[point_index], n_cluster=n_cluster,
+        )[1]
 
     point_cluster = Series(
-        cluster(compute_coclustering_distance(clustering_x_point), n_cluster),
+        cluster(compute_coclustering_distance(clustering_x_point), n_cluster=n_cluster)[
+            1
+        ],
         name="Cluster",
         index=dataframe.index,
     )

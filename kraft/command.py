@@ -1,7 +1,7 @@
 from subprocess import PIPE, run
 
 
-def run_command(command):
+def command(command):
 
     print(command)
 

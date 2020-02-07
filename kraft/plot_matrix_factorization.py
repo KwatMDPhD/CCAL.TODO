@@ -1,6 +1,6 @@
 from numpy import apply_along_axis
 
-from .get_clustering_index import get_clustering_index
+from .cluster import cluster
 from .normalize import normalize
 from .plot_heat_map import plot_heat_map
 from .plot_plotly import plot_plotly
@@ -12,7 +12,7 @@ def plot_matrix_factorization(ws, hs, errors=None, axis_size=320):
 
     for w_index, w in enumerate(ws):
 
-        w = apply_along_axis(normalize, 1, w[get_clustering_index(w, 0), :], "-0-")
+        w = apply_along_axis(normalize, 1, w[cluster(w)[0], :], "-0-")
 
         plot_heat_map(
             w,
@@ -25,7 +25,7 @@ def plot_matrix_factorization(ws, hs, errors=None, axis_size=320):
 
     for h_index, h in enumerate(hs):
 
-        h = apply_along_axis(normalize, 0, h[:, get_clustering_index(h, 1)], "-0-")
+        h = apply_along_axis(normalize, 0, h[:, cluster(h.T)[0]], "-0-")
 
         plot_heat_map(
             h,
