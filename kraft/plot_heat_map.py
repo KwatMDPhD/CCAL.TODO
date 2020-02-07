@@ -11,62 +11,71 @@ from .plot_plotly import plot_plotly
 def plot_heat_map(
     matrix,
     colorscale=None,
+    ordered_annotation=False,
     row_annotations=None,
     row_annotation_colorscale=None,
     row_annotation_str=None,
-    row_annotation=None,
     column_annotations=None,
     column_annotation_colorscale=None,
     column_annotation_str=None,
-    column_annotation=None,
     layout=None,
+    layout_annotation_row=None,
+    layout_annotation_column=None,
 ):
 
     if not isinstance(matrix, DataFrame):
 
         matrix = DataFrame(matrix)
 
-    heat_map_axis_template = {"domain": (0, 0.95)}
-
-    annotation_axis_template = {"domain": (0.96, 1), "showticklabels": False}
-
     if row_annotations is not None:
 
-        sorting_indices = argsort(row_annotations)
+        row_annotations = asarray(row_annotations)
 
-        row_annotations = [row_annotations[i] for i in sorting_indices]
+        if not ordered_annotation:
 
-        matrix = matrix.iloc[sorting_indices]
+            index = argsort(row_annotations)
+
+            row_annotations = row_annotations[index]
+
+            matrix = matrix.iloc[index]
 
     if column_annotations is not None:
 
-        sorting_indices = argsort(column_annotations)
+        column_annotations = asarray(column_annotations)
 
-        column_annotations = [column_annotations[i] for i in sorting_indices]
+        if not ordered_annotation:
 
-        matrix = matrix.iloc[:, sorting_indices]
+            index = argsort(column_annotations)
 
-    layout_template = {
+            column_annotations = column_annotations[index]
+
+            matrix = matrix.iloc[:, index]
+
+    heat_map_axis_ = {"domain": (0, 0.95)}
+
+    annotation_axis_ = {"domain": (0.96, 1), "showticklabels": False}
+
+    layout_ = {
         "xaxis": {
             "title": "{} (n={})".format(matrix.columns.name, matrix.columns.size),
-            **heat_map_axis_template,
+            **heat_map_axis_,
         },
         "yaxis": {
             "title": "{} (n={})".format(matrix.index.name, matrix.index.size),
-            **heat_map_axis_template,
+            **heat_map_axis_,
         },
-        "xaxis2": annotation_axis_template,
-        "yaxis2": annotation_axis_template,
+        "xaxis2": annotation_axis_,
+        "yaxis2": annotation_axis_,
         "annotations": [],
     }
 
     if layout is None:
 
-        layout = layout_template
+        layout = layout_
 
     else:
 
-        layout = merge_2_dicts(layout_template, layout)
+        layout = merge_2_dicts(layout_, layout)
 
     if any(isinstance(cast_builtin(i), str) for i in matrix.columns):
 
@@ -101,7 +110,7 @@ def plot_heat_map(
         }
     ]
 
-    annotation_template = {"showarrow": False}
+    annotation_ = {"showarrow": False}
 
     if row_annotations is not None:
 
@@ -113,7 +122,7 @@ def plot_heat_map(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
-                "z": tuple((i,) for i in row_annotations),
+                "z": row_annotations.reshape(row_annotations.size, 1),
                 "colorscale": row_annotation_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+y",
@@ -122,32 +131,32 @@ def plot_heat_map(
 
         if row_annotation_str is not None:
 
-            row_annotation_template = {
+            layout_annotation_row_ = {
                 "xref": "x2",
                 "x": 0,
                 "xanchor": "left",
-                **annotation_template,
+                **annotation_,
             }
 
-            if row_annotation is None:
+            if layout_annotation_row is None:
 
-                row_annotation = row_annotation_template
+                layout_annotation_row = layout_annotation_row_
 
             else:
 
-                row_annotation = merge_2_dicts(row_annotation_template, row_annotation)
+                layout_annotation_row = merge_2_dicts(
+                    layout_annotation_row_, layout_annotation_row
+                )
 
             for i in unique(row_annotations):
 
-                index_first, index_last = nonzero(asarray(row_annotations) == i)[0][
-                    [0, -1]
-                ]
+                index_0, index__1 = nonzero(row_annotations == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
-                        "y": index_first + (index_last - index_first) / 2,
+                        "y": index_0 + (index__1 - index_0) / 2,
                         "text": row_annotation_str[i],
-                        **row_annotation,
+                        **layout_annotation_row,
                     }
                 )
 
@@ -159,7 +168,7 @@ def plot_heat_map(
             {
                 "yaxis": "y2",
                 "type": "heatmap",
-                "z": tuple((i,) for i in column_annotations),
+                "z": column_annotations.reshape(column_annotations.size, 1),
                 "transpose": True,
                 "colorscale": column_annotation_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
@@ -169,35 +178,33 @@ def plot_heat_map(
 
         if column_annotation_str is not None:
 
-            column_annotation_template = {
+            layout_column_annotation_ = {
                 "yref": "y2",
                 "y": 0,
                 "yanchor": "bottom",
                 "textangle": -90,
-                **annotation_template,
+                **annotation_,
             }
 
-            if column_annotation is None:
+            if layout_annotation_column is None:
 
-                column_annotation = column_annotation_template
+                layout_annotation_column = layout_column_annotation_
 
             else:
 
-                column_annotation = merge_2_dicts(
-                    column_annotation_template, column_annotation
+                layout_annotation_column = merge_2_dicts(
+                    layout_column_annotation_, layout_annotation_column
                 )
 
             for i in unique(column_annotations):
 
-                index_first, index_last = nonzero(asarray(column_annotations) == i)[0][
-                    [0, -1]
-                ]
+                index_0, index__1 = nonzero(column_annotations == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
-                        "x": index_first + (index_last - index_first) / 2,
+                        "x": index_0 + (index__1 - index_0) / 2,
                         "text": column_annotation_str[i],
-                        **column_annotation,
+                        **layout_annotation_column,
                     }
                 )
 

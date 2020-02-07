@@ -35,7 +35,7 @@ def cluster_hierarchical_clusterings(
 
         if clustering_index % n_per_print == 0:
 
-            print("\t{}/{}...".format(clustering_index + 1, n_clustering))
+            print("{}/{}...".format(clustering_index + 1, n_clustering))
 
         point_index = choice(index_for_choice, size=n_for_choice, replace=False)
 
@@ -43,17 +43,15 @@ def cluster_hierarchical_clusterings(
             point_x_dimension[point_index], n_cluster=n_cluster,
         )[1]
 
-    point_cluster = Series(
-        cluster(get_coclustering_distance(clustering_x_point), n_cluster=n_cluster)[1],
-        name="Cluster",
-        index=dataframe.index,
+    leave_index, clusters = cluster(
+        get_coclustering_distance(clustering_x_point), n_cluster=n_cluster
     )
 
     if plot:
 
-        if axis == 1:
+        dataframe = dataframe.iloc[leave_index]
 
-            dataframe = dataframe.T
+        clusters = clusters[leave_index]
 
         if axis == 0:
 
@@ -63,15 +61,18 @@ def cluster_hierarchical_clusterings(
 
             str_ = "column"
 
+            dataframe = dataframe.T
+
         plot_heat_map(
             dataframe,
+            ordered_annotation=True,
             layout={"title": {"text": "Clustering ({} cluster)".format(n_cluster)}},
             **{
-                "{}_annotations".format(str_): point_cluster,
+                "{}_annotations".format(str_): clusters,
                 "{}_annotation_colorscale".format(str_): DATA_TYPE_COLORSCALE[
                     "categorical"
                 ],
             },
         )
 
-    return point_cluster
+    return Series(clusters, name="Cluster", index=dataframe.index,)
