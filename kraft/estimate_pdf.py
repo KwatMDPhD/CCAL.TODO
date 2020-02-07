@@ -15,7 +15,9 @@ def estimate_pdf(
     pdf = kernel_density / (
         kernel_density.sum()
         * product(
-            tuple(diff(unique(vector)).min() for vector in grid_point_x_dimension.T)
+            tuple(
+                diff(unique(dimension)).min() for dimension in grid_point_x_dimension.T
+            )
         )
     )
 

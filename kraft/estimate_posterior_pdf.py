@@ -15,10 +15,12 @@ def estimate_posterior_pdf(
 
     target_dimension_resolution = diff(unique(grid_point_x_dimension[:, -1])).min()
 
+    def get_posterior_probability(array):
+
+        return array / (array.sum() * target_dimension_resolution)
+
     posterior_pdf = apply_along_axis(
-        lambda vector: vector / (vector.sum() * target_dimension_resolution),
-        -1,
-        unmesh(grid_point_x_dimension, joint_pdf)[1],
+        get_posterior_probability, -1, unmesh(grid_point_x_dimension, joint_pdf)[1]
     ).reshape(joint_pdf.shape)
 
     if plot:

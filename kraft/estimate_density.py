@@ -15,13 +15,13 @@ def estimate_density(
 
     if bandwidths is None:
 
-        bandwidths = tuple(get_bandwidth(vector) for vector in dimension_x_point)
+        bandwidths = tuple(get_bandwidth(dimension) for dimension in dimension_x_point)
 
     if grids is None:
 
         grids = tuple(
-            make_grid(vector.min(), vector.max(), 0.1, 8)
-            for vector in dimension_x_point
+            make_grid(dimension.min(), dimension.max(), 0.1, 8)
+            for dimension in dimension_x_point
         )
 
     grid_point_x_dimension = mesh(grids)
@@ -32,8 +32,6 @@ def estimate_density(
 
     if plot:
 
-        plot_mesh(
-            grid_point_x_dimension, density, names=names, value_name="Density",
-        )
+        plot_mesh(grid_point_x_dimension, density, names=names, value_name="Density")
 
     return grid_point_x_dimension, density
