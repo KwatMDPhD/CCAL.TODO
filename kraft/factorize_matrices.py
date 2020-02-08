@@ -37,17 +37,17 @@ def factorize_matrices(
 
     if weights is None:
 
-        weights = [v_0_norm / norm(v) for v in vs]
+        weights = tuple(v_0_norm / norm(v) for v in vs)
 
     n_per_print = max(1, n_iteration // 10)
 
     if mode == "ws":
 
-        ws = [random_sample(size=(v.shape[0], r)) for v in vs]
+        ws = tuple(random_sample(size=(v.shape[0], r)) for v in vs)
 
         h = random_sample(size=(r, vs[0].shape[1]))
 
-        errors = [[norm(vs[i] - ws[i] @ h) for i in range(n_v)]]
+        errors = [tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v))]
 
         for iteration_index in range(n_iteration):
 
@@ -55,15 +55,17 @@ def factorize_matrices(
 
                 print("{}/{}...".format(iteration_index + 1, n_iteration))
 
-            t = sum([weights[i] * ws[i].T @ vs[i] for i in range(n_v)], axis=0)
+            t = sum(tuple(weights[i] * ws[i].T @ vs[i] for i in range(n_v)), axis=0)
 
-            b = sum([weights[i] * ws[i].T @ ws[i] @ h for i in range(n_v)], axis=0)
+            b = sum(tuple(weights[i] * ws[i].T @ ws[i] @ h for i in range(n_v)), axis=0)
 
             h *= t / b
 
-            ws = [update_matrix_factorization_w(vs[i], ws[i], h) for i in range(n_v)]
+            ws = tuple(
+                update_matrix_factorization_w(vs[i], ws[i], h) for i in range(n_v)
+            )
 
-            errors.append([norm(vs[i] - ws[i] @ h) for i in range(n_v)])
+            errors.append(tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v)))
 
             if is_tolerable(errors, tolerance):
 
@@ -75,9 +77,9 @@ def factorize_matrices(
 
         w = random_sample(size=(vs[0].shape[0], r))
 
-        hs = [random_sample(size=(r, v.shape[1])) for v in vs]
+        hs = tuple(random_sample(size=(r, v.shape[1])) for v in vs)
 
-        errors = [[norm(vs[i] - w @ hs[i]) for i in range(n_v)]]
+        errors = [tuple(norm(vs[i] - w @ hs[i]) for i in range(n_v))]
 
         for iteration_index in range(n_iteration):
 
@@ -85,15 +87,17 @@ def factorize_matrices(
 
                 print("{}/{}...".format(iteration_index + 1, n_iteration))
 
-            t = sum([weights[i] * vs[i] @ hs[i].T for i in range(n_v)], axis=0)
+            t = sum(tuple(weights[i] * vs[i] @ hs[i].T for i in range(n_v)), axis=0)
 
-            b = sum([weights[i] * w @ hs[i] @ hs[i].T for i in range(n_v)], axis=0)
+            b = sum(tuple(weights[i] * w @ hs[i] @ hs[i].T for i in range(n_v)), axis=0)
 
             w *= t / b
 
-            hs = [update_matrix_factorization_h(vs[i], w, hs[i]) for i in range(n_v)]
+            hs = tuple(
+                update_matrix_factorization_h(vs[i], w, hs[i]) for i in range(n_v)
+            )
 
-            errors.append([norm(vs[i] - w @ hs[i]) for i in range(n_v)])
+            errors.append(tuple(norm(vs[i] - w @ hs[i]) for i in range(n_v)))
 
             if is_tolerable(errors, tolerance):
 

@@ -14,12 +14,15 @@ def plot_matrix_factorization(ws, hs, errors=None, axis_size=320):
 
         w = apply_along_axis(normalize, 1, w[cluster(w)[0], :], "-0-")
 
+        layout_factor_axis = {"title": {"text": "Factor"}, "dtick": 1}
+
         plot_heat_map(
             w,
             layout={
                 "height": axis_size_,
                 "width": axis_size,
                 "title": {"text": "W{}".format(w_index)},
+                "xaxis": layout_factor_axis,
             },
         )
 
@@ -33,6 +36,7 @@ def plot_matrix_factorization(ws, hs, errors=None, axis_size=320):
                 "height": axis_size,
                 "width": axis_size_,
                 "title": {"text": "H{}".format(h_index)},
+                "yaxis": layout_factor_axis,
             },
         )
 

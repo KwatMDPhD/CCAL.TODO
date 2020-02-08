@@ -75,4 +75,4 @@ def cluster_hierarchical_clusterings(
             },
         )
 
-    return Series(clusters, name="Cluster", index=dataframe.index,)
+    return Series(clusters, name="Cluster", index=dataframe.index)
