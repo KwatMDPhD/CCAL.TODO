@@ -1,25 +1,25 @@
-def flatten(iterable, iterable_types=(tuple, list, set)):
+def flatten(iterable, types=(tuple, list, set)):
 
-    flattened_iterable = list(iterable)
+    list_ = list(iterable)
 
     i = 0
 
-    while i < len(flattened_iterable):
+    while i < len(list_):
 
-        while isinstance(flattened_iterable[i], iterable_types):
+        while isinstance(list_[i], types):
 
-            if len(flattened_iterable[i]) == 0:
+            if len(list_[i]) != 0:
 
-                flattened_iterable.pop(i)
+                list_[i : i + 1] = list_[i]
+
+            else:
+
+                list_.pop(i)
 
                 i -= 1
 
                 break
 
-            else:
-
-                flattened_iterable[i : i + 1] = flattened_iterable[i]
-
         i += 1
 
-    return flattened_iterable
+    return list_

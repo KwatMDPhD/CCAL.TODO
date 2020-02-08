@@ -7,11 +7,10 @@ from pandas import DataFrame, Series, unique
 
 from .cluster import cluster
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .get_margin_of_error import get_margin_of_error
+from .get_moe import get_moe
 from .get_p_values_and_q_values import get_p_values_and_q_values
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
-from .is_sorted import is_sorted
 from .normalize import normalize
 from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
@@ -35,14 +34,14 @@ def function_heat_map(
     vector_data_type="continuous",
     matrix_data_type="continuous",
     plot_std=nan,
-    file_path_prefix=None,
+    directory_path=None,
 ):
 
     intersection = vector.index & matrix.columns
 
     print(
         "vector.index ({}) and matrix.columns ({}) share {}.".format(
-            vector.index.size, matrix.columns.size, intersection.size,
+            vector.index.size, matrix.columns.size, intersection.size
         )
     )
 
@@ -57,24 +56,18 @@ def function_heat_map(
     if statistics is None:
 
         statistics = DataFrame(
-            index=matrix.index,
-            columns=(
-                "Score",
-                "0.95 Margin of Error",
-                "P-Value",
-                "False Discovery Rate",
-            ),
+            index=matrix.index, columns=("Score", "0.95 MoE", "P-Value", "Q-Value")
         )
 
         n_matrix_row, n_matrix_column = matrix.shape
 
-        print("Computing statistics using {} process...".format(n_job))
-
         n_job = min(n_matrix_row, n_job)
+
+        print("Computing statistics using {} process...".format(n_job))
 
         pool = Pool(n_job)
 
-        print("Scoring...")
+        print("\tScore with {}...".format(function.__name__))
 
         seed(seed=random_seed)
 
@@ -89,9 +82,7 @@ def function_heat_map(
 
         if 0 < n_sampling:
 
-            print(
-                "Computing 0.95 margin of error with {} sampling...".format(n_sampling)
-            )
+            print("\t0.95 MoE with {} sampling...".format(n_sampling))
 
             row_x_sampling = full((n_matrix_row, n_sampling), nan)
 
@@ -111,21 +102,13 @@ def function_heat_map(
                     ),
                 )
 
-            statistics["0.95 Margin of Error"] = apply_along_axis(
-                lambda sampled_scores: get_margin_of_error(
-                    sampled_scores[~isnan(sampled_scores)]
-                ),
-                1,
-                row_x_sampling,
+            statistics["0.95 MoE"] = apply_along_axis(
+                lambda scores: get_moe(scores[~isnan(scores)]), 1, row_x_sampling,
             )
 
         if 0 < n_permutation:
 
-            print(
-                "Computing p-value and false discovery rate with {} permutation...".format(
-                    n_sampling
-                )
-            )
+            print("\tP-Value and Q-Value with {} permutation...".format(n_sampling))
 
             row_x_permutation = full((n_matrix_row, n_permutation), nan)
 
@@ -140,10 +123,7 @@ def function_heat_map(
                     ((vector_, matrix_row, function) for matrix_row in matrix.values),
                 )
 
-            (
-                statistics["P-Value"],
-                statistics["False Discovery Rate"],
-            ) = get_p_values_and_q_values(
+            statistics["P-Value"], statistics["Q-Value"] = get_p_values_and_q_values(
                 statistics["Score"].values, row_x_permutation.flatten(), "<>"
             )
 
@@ -151,17 +131,17 @@ def function_heat_map(
 
     else:
 
-        statistics = statistics.reindex(index=matrix.index)
+        statistics = statistics.reindex(row_name=matrix.index)
 
     statistics.sort_values("Score", ascending=score_ascending, inplace=True)
 
-    if file_path_prefix is not None:
+    if directory_path is not None:
 
-        statistics.to_csv("{}.tsv".format(file_path_prefix), sep="\t")
+        tsv_file_path = "{}/function_heat_map.tsv".format(directory_path)
+
+        statistics.to_csv(tsv_file_path, sep="\t")
 
     if plot:
-
-        print("Plotting...")
 
         plot_plotly(
             {
@@ -172,11 +152,11 @@ def function_heat_map(
                 "data": [
                     {
                         "type": "scatter",
-                        "name": statistics_name,
-                        "x": statistics_column.index,
-                        "y": statistics_column.values,
+                        "name": name,
+                        "x": values.index,
+                        "y": values.values,
                     }
-                    for statistics_name, statistics_column in statistics.items()
+                    for name, values in statistics.items()
                 ],
             },
         )
@@ -219,27 +199,23 @@ def function_heat_map(
 
         if (
             not vector_.isna().any()
-            and is_sorted(vector_.values)
+            and isinstance(vector_ascending, bool)
             and (1 < vector_.value_counts()).all()
         ):
-
-            print("Clustering within category...")
 
             categories = vector_.values
 
             matrix_values_t = matrix_.values.T
 
-            cluster_index = []
+            leave_index = []
 
             for category in unique(categories):
 
-                category_index = where(categories == category)[0]
+                row_name = where(categories == category)[0]
 
-                cluster_index.append(
-                    category_index[cluster(matrix_values_t[category_index])[0]]
-                )
+                leave_index.append(row_name[cluster(matrix_values_t[row_name])[0]])
 
-            matrix_ = matrix_.iloc[:, concatenate(cluster_index)]
+            matrix_ = matrix_.iloc[:, concatenate(leave_index)]
 
             vector_ = vector_[matrix_.columns]
 
@@ -248,7 +224,7 @@ def function_heat_map(
         fraction_row = 1 / n_row
 
         layout = {
-            "height": max(500, 25 * n_row),
+            "height": max(480, 24 * n_row),
             "width": 800,
             "margin": {"l": 200, "r": 200},
             "title": {"x": 0.5},
@@ -257,14 +233,7 @@ def function_heat_map(
             "annotations": [],
         }
 
-        heatmap_trace_template = {
-            "type": "heatmap",
-            "zmin": -plot_std,
-            "zmax": plot_std,
-            "showscale": False,
-        }
-
-        annotation_template = {
+        annotation_ = {
             "xref": "paper",
             "yref": "paper",
             "yanchor": "middle",
@@ -278,72 +247,68 @@ def function_heat_map(
                 "y": 1 - fraction_row / 2,
                 "xanchor": "right",
                 "text": "<b>{}</b>".format(vector_.name),
-                **annotation_template,
+                **annotation_,
             }
         )
 
-        def get_x(ix):
+        def get_x(x_index):
 
-            return 1.1 + ix / 6.4
+            return 1.1 + x_index / 6.4
 
         y = 1 - fraction_row / 2
 
-        for ix, str_ in enumerate(("Score(\u0394)", "P-Value", "FDR")):
+        for x_index, str_ in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
 
             layout["annotations"].append(
                 {
-                    "x": get_x(ix),
+                    "x": get_x(x_index),
                     "y": y,
                     "xanchor": "center",
                     "text": "<b>{}</b>".format(str_),
-                    **annotation_template,
+                    **annotation_,
                 }
             )
 
         y -= 2 * fraction_row
 
-        for (
-            index,
-            (score, margin_of_error, p_value, false_discovery_rate),
-        ) in statistics_.iterrows():
+        for row_name, (score, moe, p_value, q_value) in statistics_.iterrows():
 
             layout["annotations"].append(
-                {
-                    "x": 0,
-                    "y": y,
-                    "xanchor": "right",
-                    "text": index,
-                    **annotation_template,
-                }
+                {"x": 0, "y": y, "xanchor": "right", "text": row_name, **annotation_}
             )
 
-            for ix, str_ in enumerate(
+            for x_index, str_ in enumerate(
                 (
-                    "{:.2f}({:.2f})".format(score, margin_of_error),
+                    "{:.2f} ({:.2f})".format(score, moe),
                     "{:.2e}".format(p_value),
-                    "{:.2e}".format(false_discovery_rate),
+                    "{:.2e}".format(q_value),
                 )
             ):
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(ix),
+                        "x": get_x(x_index),
                         "y": y,
                         "xanchor": "center",
                         "text": str_,
-                        **annotation_template,
+                        **annotation_,
                     }
                 )
 
             y -= fraction_row
 
-        if file_path_prefix is None:
+        if directory_path is None:
 
             html_file_path = None
 
         else:
 
-            html_file_path = "{}.html".format(file_path_prefix)
+            html_file_path = tsv_file_path.repalce(".tsv", ".html")
+
+        heatmap_trace_ = {
+            "type": "heatmap",
+            "showscale": False,
+        }
 
         plot_plotly(
             {
@@ -351,20 +316,18 @@ def function_heat_map(
                 "data": [
                     {
                         "yaxis": "y2",
-                        "name": "Target",
                         "x": vector_.index,
                         "z": vector_.to_frame().T,
                         "colorscale": DATA_TYPE_COLORSCALE[vector_data_type],
-                        **heatmap_trace_template,
+                        **heatmap_trace_,
                     },
                     {
                         "yaxis": "y",
-                        "name": "Data",
                         "x": matrix_.columns,
                         "y": matrix_.index[::-1],
                         "z": matrix_.iloc[::-1],
                         "colorscale": DATA_TYPE_COLORSCALE[matrix_data_type],
-                        **heatmap_trace_template,
+                        **heatmap_trace_,
                     },
                 ],
             },

@@ -25,7 +25,7 @@ from .get_entropy import get_entropy
 from .get_ic import get_ic
 from .get_icd import get_icd
 from .get_kl import get_kl
-from .get_margin_of_error import get_margin_of_error
+from .get_moe import get_moe
 from .get_p_value import get_p_value
 from .get_p_values_and_q_values import get_p_values_and_q_values
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
