@@ -1,7 +1,7 @@
 from pandas import Series
 
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .get_colorscale_color import get_colorscale_color
+from .get_color import get_color
 from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
@@ -75,7 +75,7 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
             text = None
 
-        color = get_colorscale_color(DATA_TYPE_COLORSCALE["categorical"], x_index, n)
+        color = get_color(DATA_TYPE_COLORSCALE["categorical"], x_index, n)
 
         data.append(
             {

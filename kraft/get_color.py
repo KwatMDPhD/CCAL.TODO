@@ -1,7 +1,7 @@
 from plotly.colors import convert_colors_to_same_type, find_intermediate_color
 
 
-def get_colorscale_color(colorscale, value, n=None):
+def get_color(colorscale, value, n=None):
 
     if 1 < value or (value == 1 and n is not None):
 
@@ -28,7 +28,7 @@ def get_colorscale_color(colorscale, value, n=None):
             color = find_intermediate_color(
                 *convert_colors_to_same_type((color_low, color_high))[0],
                 value_,
-                colortype="rgb"
+                colortype="rgb",
             )
 
             return "rgb{}".format(

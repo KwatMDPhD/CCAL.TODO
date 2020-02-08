@@ -20,7 +20,7 @@ from .function_heat_map_summary import function_heat_map_summary
 from .get_bandwidth import get_bandwidth
 from .get_child_paths import get_child_paths
 from .get_coclustering_distance import get_coclustering_distance
-from .get_colorscale_color import get_colorscale_color
+from .get_color import get_color
 from .get_entropy import get_entropy
 from .get_ic import get_ic
 from .get_icd import get_icd
