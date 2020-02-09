@@ -2,15 +2,23 @@ from numpy import full, isnan, nan
 
 
 def ignore_nan_and_function_1(
-    array, function, *function_arguments, **function_keyword_arguments
+    array, function, *function_arguments, update=False, **function_keyword_arguments
 ):
-
-    array_ = full(array.shape, nan)
 
     is_not_nan = ~isnan(array)
 
-    array_[is_not_nan] = function(
+    output = function(
         array[is_not_nan], *function_arguments, **function_keyword_arguments
     )
 
-    return array_
+    if update:
+
+        array_ = full(array.shape, nan)
+
+        array_[is_not_nan] = output
+
+        return array_
+
+    else:
+
+        return output

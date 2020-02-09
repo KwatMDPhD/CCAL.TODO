@@ -10,7 +10,7 @@ from .plot_plotly import plot_plotly
 def plot_bubble_map(
     dataframe_size,
     dataframe_color=None,
-    marker_size_max=20,
+    max_size=20,
     colorscale=None,
     layout=None,
     html_file_path=None,
@@ -20,9 +20,9 @@ def plot_bubble_map(
 
     y_grid = arange(dataframe_size.shape[0])[::-1]
 
-    layout_template = {
-        "height": max(500, marker_size_max * 2 * dataframe_size.shape[0]),
-        "width": max(500, marker_size_max * 2 * dataframe_size.shape[1]),
+    layout_ = {
+        "height": max(500, max_size * 2 * dataframe_size.shape[0]),
+        "width": max(500, max_size * 2 * dataframe_size.shape[1]),
         "xaxis": {
             "title": "{} (n={})".format(
                 dataframe_size.columns.name, dataframe_size.columns.size
@@ -41,11 +41,11 @@ def plot_bubble_map(
 
     if layout is None:
 
-        layout = layout_template
+        layout = layout_
 
     else:
 
-        layout = merge_2_dicts(layout_template, layout)
+        layout = merge_2_dicts(layout_, layout)
 
     if dataframe_color is None:
 
@@ -62,14 +62,13 @@ def plot_bubble_map(
             "layout": layout,
             "data": [
                 {
-                    "type": "scatter",
                     "x": mesh_grid_x.ravel(),
                     "y": mesh_grid_y.ravel(),
                     "text": dataframe_size.values.ravel(),
                     "mode": "markers",
                     "marker": {
                         "size": normalize(dataframe_size.values, "0-1").ravel()
-                        * marker_size_max,
+                        * max_size,
                         "color": dataframe_color.values.ravel(),
                         "colorscale": colorscale,
                         "colorbar": COLORBAR,
@@ -77,5 +76,5 @@ def plot_bubble_map(
                 }
             ],
         },
-        html_file_path,
+        html_file_path=html_file_path,
     )

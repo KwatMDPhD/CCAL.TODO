@@ -182,7 +182,9 @@ def function_heat_map(
         if vector_data_type == "continuous":
 
             vector_ = Series(
-                ignore_nan_and_function_1(vector_.values, normalize, "-0-"),
+                ignore_nan_and_function_1(
+                    vector_.values, normalize, "-0-", update=True
+                ),
                 name=vector_.name,
                 index=vector_.index,
             ).clip(lower=-plot_std, upper=plot_std)
@@ -191,7 +193,12 @@ def function_heat_map(
 
             matrix_ = DataFrame(
                 apply_along_axis(
-                    ignore_nan_and_function_1, 1, matrix_.values, normalize, "-0-"
+                    ignore_nan_and_function_1,
+                    1,
+                    matrix_.values,
+                    normalize,
+                    "-0-",
+                    update=True,
                 ),
                 index=matrix_.index,
                 columns=matrix_.columns,

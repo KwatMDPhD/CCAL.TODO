@@ -20,13 +20,13 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
         plot_rug = all(len(x) < 1e3 for x in xs)
 
-    n = len(xs)
+    n_x = len(xs)
 
     if plot_rug:
 
         rug_height = 0.04
 
-        yaxis_domain_max = n * rug_height
+        yaxis_domain_max = n_x * rug_height
 
         yaxis2_domain_min = yaxis_domain_max + rug_height
 
@@ -36,11 +36,11 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
         yaxis2_domain_min = 0
 
-    yaxis_domain = (0, yaxis_domain_max)
+    yaxis_domain = 0, yaxis_domain_max
 
-    yaxis2_domain = (yaxis2_domain_min, 1)
+    yaxis2_domain = yaxis2_domain_min, 1
 
-    layout_template = {
+    layout_ = {
         "xaxis": {"anchor": "y"},
         "yaxis": {
             "domain": yaxis_domain,
@@ -53,11 +53,11 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
     if layout is None:
 
-        layout = layout_template
+        layout = layout_
 
     else:
 
-        layout = merge_2_dicts(layout_template, layout)
+        layout = merge_2_dicts(layout_, layout)
 
     data = []
 
@@ -71,11 +71,11 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
         else:
 
-            name = None
+            name = x_index
 
             text = None
 
-        color = get_color(DATA_TYPE_COLORSCALE["categorical"], x_index, n)
+        color = get_color(DATA_TYPE_COLORSCALE["categorical"], x_index, n_x)
 
         data.append(
             {
@@ -93,8 +93,8 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
 
             data.append(
                 {
-                    "type": "scatter",
                     "legendgroup": x_index,
+                    "name": name,
                     "showlegend": False,
                     "x": x,
                     "y": (x_index,) * len(x),
@@ -105,4 +105,4 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
                 }
             )
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path)
+    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
