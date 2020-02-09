@@ -2,7 +2,7 @@ from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 
-def select_index(
+def select(
     series,
     direction,
     thresholds=None,
@@ -64,18 +64,18 @@ def select_index(
 
     if plot:
 
-        layout_template = {
+        layout_ = {
             "title": {"text": index.name},
             "xaxis": {"title": {"text": "Rank"}},
         }
 
         if layout is None:
 
-            layout = layout_template
+            layout = layout_
 
         else:
 
-            layout = merge_2_dicts(layout_template, layout)
+            layout = merge_2_dicts(layout_, layout)
 
         n_selected = is_selected.sum()
 
@@ -96,7 +96,6 @@ def select_index(
                 "layout": layout,
                 "data": [
                     {
-                        "type": "scatter",
                         "name": "All ({})".format(series_no_na_sorted.size),
                         "x": series_no_na_sorted.index,
                         "y": series_no_na_sorted,
@@ -104,7 +103,6 @@ def select_index(
                         "marker": {"color": "#d0d0d0"},
                     },
                     {
-                        "type": "scatter",
                         "name": "Selected ({})".format(n_selected),
                         "x": index,
                         "y": series_no_na_sorted[index],
@@ -113,7 +111,7 @@ def select_index(
                     },
                 ],
             },
-            html_file_path,
+            html_file_path=html_file_path,
         )
 
     return index

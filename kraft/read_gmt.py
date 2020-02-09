@@ -6,7 +6,7 @@ def read_gmt(gmt_file_path):
 
         for line in io.readlines():
 
-            line_split = [str_ for str_ in line.strip().split("\t") if str_]
+            line_split = tuple(str_ for str_ in line.strip().split("\t") if str_)
 
             gene_set_genes[line_split[0]] = line_split[2:]
 
