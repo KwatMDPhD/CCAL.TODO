@@ -14,7 +14,7 @@ from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .normalize import normalize
 from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
-from .select_index import select_index
+from .select_extreme import select_extreme
 
 
 def function_heat_map(
@@ -168,7 +168,7 @@ def function_heat_map(
         if n_extreme is not None or fraction_extreme is not None:
 
             statistics_ = statistics_.loc[
-                select_index(
+                select_extreme(
                     statistics_["Score"],
                     "<>",
                     n=n_extreme,

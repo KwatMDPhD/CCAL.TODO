@@ -21,6 +21,7 @@ def plot_heat_map(
     layout=None,
     layout_annotation_row=None,
     layout_annotation_column=None,
+    html_file_path=None,
 ):
 
     if not isinstance(matrix, DataFrame):
@@ -208,4 +209,4 @@ def plot_heat_map(
                     }
                 )
 
-    plot_plotly({"layout": layout, "data": data})
+    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)

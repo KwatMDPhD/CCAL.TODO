@@ -51,10 +51,10 @@ from .read_gct import read_gct
 from .read_gmt import read_gmt
 from .read_json import read_json
 from .score_set import score_set
-from .select_index import select_index
+from .select_extreme import select_extreme
 from .solve_ax_b import solve_ax_b
 from .standardize_file_name import standardize_file_name
-from .summarize_dataframe import summarize_dataframe
+from .summarize import summarize
 from .title import title
 from .unmesh import unmesh
 from .write_json import write_json
