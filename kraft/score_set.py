@@ -8,28 +8,28 @@ from .plot_plotly import plot_plotly
 
 
 def score_set(
-    element_score,
+    element_value,
     set_elements,
     method=("rank", "cdf", "s0", "supreme"),
     power=1,
     plot_=False,
     plot=True,
-    title="Set Enrichment",
-    element_score_name="Element Score",
+    title="Score Set",
+    element_value_name="Element Value",
     annotation_text_font_size=8,
     annotation_text_width=160,
     annotation_text_yshift=32,
     html_file_path=None,
 ):
 
-    element_score = element_score.sort_values()
+    element_value = element_value.sort_values()
 
-    element_score_ = element_score.values
+    element_value_ = element_value.values
 
     set_element_ = {element: None for element in set_elements}
 
     r_h = asarray(
-        tuple(element in set_element_ for element in element_score.index), dtype=float
+        tuple(element in set_element_ for element in element_value.index), dtype=float
     )
 
     r_m = 1 - r_h
@@ -43,21 +43,21 @@ def score_set(
         plot_plotly(
             {
                 "layout": {
-                    "title": {"text": "Element Score"},
+                    "title": {"text": "Element Value"},
                     "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": {"title": {"text": "Score"}},
+                    "yaxis": {"title": {"text": "Value"}},
                 },
                 "data": [
                     {
                         "name": "Miss ({:.1%})".format(r_m.sum() / r_m.size),
                         "x": r_m_i,
-                        "y": element_score_[r_m_i],
+                        "y": element_value_[r_m_i],
                         "mode": "markers",
                     },
                     {
                         "name": "Hit ({:.1%})".format(r_h.sum() / r_h.size),
                         "x": r_h_i,
-                        "y": element_score_[r_h_i],
+                        "y": element_value_[r_h_i],
                         "mode": "markers",
                     },
                 ],
@@ -100,7 +100,7 @@ def score_set(
 
         if power != 0:
 
-            r_h *= absolute(element_score_) ** power
+            r_h *= absolute(element_value_) ** power
 
         r_h_p = r_h / r_h.sum()
 
@@ -164,12 +164,12 @@ def score_set(
 
             c = r_c
 
-    elif method[0] == "score":
+    elif method[0] == "value":
 
-        s_b = get_bandwidth(element_score_)
+        s_b = get_bandwidth(element_value_)
 
         s_g = make_grid(
-            element_score_.min(), element_score_.max(), 1 / 3, element_score_.size * 3,
+            element_value_.min(), element_value_.max(), 1 / 3, element_value_.size * 3,
         )
 
         dg = s_g[1] - s_g[0]
@@ -185,19 +185,19 @@ def score_set(
 
             return density / (density.sum() * dg)
 
-        s_h_p = get_p(element_score_[where(r_h)])
+        s_h_p = get_p(element_value_[where(r_h)])
 
-        s_m_p = get_p(element_score_[where(r_m)])
+        s_m_p = get_p(element_value_[where(r_m)])
 
-        s_p = get_p(element_score_)
+        s_p = get_p(element_value_)
 
         if plot_:
 
             plot_plotly(
                 {
                     "layout": {
-                        "title": {"text": "PDF(score | event)"},
-                        "xaxis": {"title": {"text": "Score"}},
+                        "title": {"text": "PDF(value | event)"},
+                        "xaxis": {"title": {"text": "Value"}},
                         "yaxis": {"title": {"text": "Probability"}},
                     },
                     "data": [
@@ -229,8 +229,8 @@ def score_set(
                 plot_plotly(
                     {
                         "layout": {
-                            "title": {"text": "CDF(score | event)"},
-                            "xaxis": {"title": {"text": "Score"}},
+                            "title": {"text": "CDF(value | event)"},
+                            "xaxis": {"title": {"text": "Value"}},
                             "yaxis": {"title": {"text": "Cumulative Probability"}},
                         },
                         "data": [
@@ -259,9 +259,9 @@ def score_set(
 
         h, m, s = get_s2(h, m)
 
-    if method[0] == "score":
+    if method[0] == "value":
 
-        index = [absolute(score_ - s_g).argmin() for score_ in element_score_]
+        index = [absolute(value - s_g).argmin() for value in element_value_]
 
         h = h[index]
 
