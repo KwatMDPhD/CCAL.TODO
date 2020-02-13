@@ -10,12 +10,11 @@ from .plot_plotly import plot_plotly
 def score_set(
     element_score,
     set_elements,
-    method="rank cdf ks",
-    power=0,
-    n_grid=None,
-    plot_analysis=False,
-    plot=False,
-    title="Set Enrichment",
+    method=("rank", "cdf", "s0", "supreme"),
+    power=1,
+    plot_=False,
+    plot=True,
+    title=None,
     element_score_name="Element Score",
     annotation_text_font_size=8,
     annotation_text_width=160,
@@ -25,19 +24,17 @@ def score_set(
 
     element_score = element_score.sort_values()
 
-    set_element_ = {set_element: None for set_element in set_elements}
+    element_score_ = element_score.values
+
+    set_element_ = {element: None for element in set_elements}
 
     r_h = asarray(
-        tuple(
-            element_score_element in set_element_
-            for element_score_element in element_score.index
-        ),
-        dtype=float,
+        tuple(element in set_element_ for element in element_score.index), dtype=float,
     )
 
     r_m = 1 - r_h
 
-    if plot_analysis:
+    if plot_:
 
         r_h_i = where(r_h)[0]
 
@@ -52,58 +49,64 @@ def score_set(
                 },
                 "data": [
                     {
-                        "name": "Miss ({:.3f})".format(r_m.sum() / r_m.size),
+                        "name": "Miss ({:.1%})".format(r_m.sum() / r_m.size),
                         "x": r_m_i,
-                        "y": element_score.values[r_m_i],
+                        "y": element_score_[r_m_i],
                     },
                     {
-                        "name": "Hit ({:.3f})".format(r_h.sum() / r_h.size),
+                        "name": "Hit ({:.1%})".format(r_h.sum() / r_h.size),
                         "x": r_h_i,
-                        "y": element_score.values[r_h_i],
+                        "y": element_score_[r_h_i],
                     },
                 ],
             },
         )
 
-    def get_k1(h, m, c):
-
-        klhc = h * log(h / c)
-
-        klhc[isnan(klhc)] = 0
-
-        klmc = m * log(m / c)
-
-        klmc[isnan(klmc)] = 0
-
-        return klhc, klmc, klhc - klmc
-
-    def get_k2(h, m):
-
-        klhm = h * log(h / m)
-
-        klhm[isnan(klhm)] = 0
-
-        klmh = m * log(m / h)
-
-        klmh[isnan(klmh)] = 0
-
-        return klhm, klmh, klhm - klmh
-
     def get_c(p):
 
         return normalize(p[::-1].cumsum()[::-1], "0-1")
 
-    if method.startswith("rank cdf"):
+    def get_s0(h, m):
+
+        return h - m
+
+    def get_s1(h, m, c):
+
+        kl_hc = h * log(h / c)
+
+        kl_hc[isnan(kl_hc)] = 0
+
+        kl_mc = m * log(m / c)
+
+        kl_mc[isnan(kl_mc)] = 0
+
+        return kl_hc, kl_mc, kl_hc - kl_mc
+
+    def get_s2(h, m):
+
+        kl_hm = h * log(h / m)
+
+        kl_hm[isnan(kl_hm)] = 0
+
+        kl_mh = m * log(m / h)
+
+        kl_mh[isnan(kl_mh)] = 0
+
+        return kl_hm, kl_mh, kl_hm - kl_mh
+
+    if method[0] == "rank":
 
         if power != 0:
 
-            r_h *= absolute(element_score.values) ** power
+            r_h *= absolute(element_score_) ** power
 
         r_h_p = r_h / r_h.sum()
 
         r_m_p = r_m / r_m.sum()
 
-        if plot_analysis:
+        r_p = (r_h_p + r_m_p) / 2
+
+        if plot_:
 
             plot_plotly(
                 {
@@ -115,83 +118,78 @@ def score_set(
                     "data": [
                         {"name": "Miss", "y": r_m_p},
                         {"name": "Hit", "y": r_h_p},
+                        {"name": "Center", "y": r_p},
                     ],
                 },
             )
 
-        r_h_c = get_c(r_h_p)
+        if method[1] == "pdf":
 
-        r_m_c = get_c(r_m_p)
+            h = r_h_p
 
-        r_c = (r_h_c + r_m_c) / 2
+            m = r_m_p
 
-        if plot_analysis:
+            c = r_p
 
-            plot_plotly(
-                {
-                    "layout": {
-                        "title": {"text": "CDF(rank | event)"},
-                        "xaxis": {"title": {"text": "Rank"}},
-                        "yaxis": {"title": {"text": "Cumulative Probability"}},
+        if method[1] == "cdf":
+
+            r_h_c = get_c(r_h_p)
+
+            r_m_c = get_c(r_m_p)
+
+            r_c = (r_h_c + r_m_c) / 2
+
+            if plot_:
+
+                plot_plotly(
+                    {
+                        "layout": {
+                            "title": {"text": "CDF(rank | event)"},
+                            "xaxis": {"title": {"text": "Rank"}},
+                            "yaxis": {"title": {"text": "Cumulative Probability"}},
+                        },
+                        "data": [
+                            {"name": "Miss", "y": r_m_c},
+                            {"name": "Hit", "y": r_h_c},
+                            {"name": "Center", "y": r_c},
+                        ],
                     },
-                    "data": [
-                        {"name": "Miss", "y": r_m_c},
-                        {"name": "Hit", "y": r_h_c},
-                        {"name": "Center", "y": r_c},
-                    ],
-                },
-            )
+                )
 
-        if method.endswith("ks"):
+            h = r_h_c
 
-            h, m, s = None, None, r_h_c - r_m_c
+            m = r_m_c
 
-            enrichment = s[absolute(s).argmax()]
+            c = r_c
 
-        else:
+    elif method[0] == "score":
 
-            if method.endswith("k1"):
-
-                h, m, s = get_k1(r_h_c, r_m_c, r_c)
-
-            elif method.endswith("k2"):
-
-                h, m, s = get_k2(r_h_c, r_m_c)
-
-            enrichment = s.sum() / n_grid
-
-    if method.startswith("score"):
-
-        s_b = get_bandwidth(element_score.values)
-
-        if n_grid is None:
-
-            n_grid = element_score.size * 3
+        s_b = get_bandwidth(element_score_)
 
         s_g = make_grid(
-            element_score.values.min(), element_score.values.max(), 1 / 3, n_grid
+            element_score_.min(), element_score_.max(), 1 / 3, element_score_.size * 3,
         )
 
         dg = s_g[1] - s_g[0]
 
         def get_p(vector):
 
-            point_x_dimension, kernel_densities = estimate_density(
+            density = estimate_density(
                 vector.reshape(vector.size, 1),
                 bandwidths=(s_b,),
                 grids=(s_g,),
                 plot=False,
-            )
+            )[1]
 
-            return kernel_densities / (kernel_densities.sum() * dg)
+            return density / (density.sum() * dg)
 
-        s_h_p = get_p(element_score.values[where(r_h)])
+        s_h_p = get_p(element_score_[where(r_h)])
 
-        s_m_p = get_p(element_score.values[where(r_m)])
+        s_m_p = get_p(element_score_[where(r_m)])
 
-        s_p = get_p(element_score.values)
+        s_p = get_p(element_score_)
 
-        if plot_analysis:
+        if plot_:
 
             plot_plotly(
                 {
@@ -208,17 +206,13 @@ def score_set(
                 },
             )
 
-        if "pdf" in method:
+        if method[1] == "pdf":
 
-            if method.endswith("k1"):
+            h = s_h_p
 
-                h, m, s = get_k1(s_h_p, s_m_p, s_p)
+            m = s_m_p
 
-            elif method.endswith("k2"):
-
-                h, m, s = get_k2(s_h_p, s_m_p)
-
-            enrichment = s.sum() / n_grid
+            c = s_p
 
         elif "cdf" in method:
 
@@ -228,7 +222,7 @@ def score_set(
 
             s_c = get_c(s_p)
 
-            if plot_analysis:
+            if plot_:
 
                 plot_plotly(
                     {
@@ -245,39 +239,55 @@ def score_set(
                     },
                 )
 
-            if method.endswith("ks"):
+            h = s_h_c
 
-                h, m, s = None, None, s_h_c - s_m_c
+            m = s_m_c
 
-                enrichment = s[absolute(s).argmax()]
+            c = s_c
 
-            else:
+    if method[2] == "s0":
 
-                if method.endswith("k1"):
+        s = get_s0(h, m)
 
-                    h, m, s = get_k1(s_h_c, s_m_c, s_c)
+    elif method[2] == "s1":
 
-                elif method.endswith("k2"):
+        h, m, s = get_s1(h, m, c)
 
-                    h, m, s = get_k2(s_h_c, s_m_c)
+    elif method[2] == "s2":
 
-                enrichment = s.sum() / n_grid
+        h, m, s = get_s2(h, m)
+
+    if method[0] == "score":
+
+        index = [absolute(score_ - s_g).argmin() for score_ in element_score_]
+
+        h = h[index]
+
+        m = m[index]
+
+        s = s[index]
+
+    if method[3] == "supreme":
+
+        score = s[absolute(s).argmax()]
+
+    elif method[3] == "area":
+
+        score = s.sum()
 
     if plot:
 
         plot_plotly(
             {
                 "layout": {
-                    "title": {
-                        "text": "method: {}<br>score: {:.3f}".format(method, enrichment)
-                    }
+                    "title": {"text": "{} {} {} {} = {:.2f}".format(*method, score)}
                 },
                 "data": [
-                    {"name": "Miss", "y": m, "opacity": 0.32},
-                    {"name": "Hit", "y": h, "opacity": 0.32},
-                    {"name": "Signal", "y": s},
+                    {"name": "Miss", "y": m, "opacity": 0.32, "mode": "lines"},
+                    {"name": "Hit", "y": h, "opacity": 0.32, "mode": "lines"},
+                    {"name": "Signal", "y": s, "mode": "lines"},
                 ],
             },
         )
 
-    return enrichment
+    return score
