@@ -14,7 +14,7 @@ def score_set(
     power=1,
     plot_=False,
     plot=True,
-    title=None,
+    title="Set Enrichment",
     element_score_name="Element Score",
     annotation_text_font_size=8,
     annotation_text_width=160,
@@ -29,7 +29,7 @@ def score_set(
     set_element_ = {element: None for element in set_elements}
 
     r_h = asarray(
-        tuple(element in set_element_ for element in element_score.index), dtype=float,
+        tuple(element in set_element_ for element in element_score.index), dtype=float
     )
 
     r_m = 1 - r_h
@@ -52,11 +52,13 @@ def score_set(
                         "name": "Miss ({:.1%})".format(r_m.sum() / r_m.size),
                         "x": r_m_i,
                         "y": element_score_[r_m_i],
+                        "mode": "markers",
                     },
                     {
                         "name": "Hit ({:.1%})".format(r_h.sum() / r_h.size),
                         "x": r_h_i,
                         "y": element_score_[r_h_i],
+                        "mode": "markers",
                     },
                 ],
             },
@@ -116,9 +118,9 @@ def score_set(
                         "yaxis": {"title": {"text": "Probability"}},
                     },
                     "data": [
-                        {"name": "Miss", "y": r_m_p},
-                        {"name": "Hit", "y": r_h_p},
-                        {"name": "Center", "y": r_p},
+                        {"name": "Miss", "y": r_m_p, "mode": "lines"},
+                        {"name": "Hit", "y": r_h_p, "mode": "lines"},
+                        {"name": "Center", "y": r_p, "mode": "lines"},
                     ],
                 },
             )
@@ -149,9 +151,9 @@ def score_set(
                             "yaxis": {"title": {"text": "Cumulative Probability"}},
                         },
                         "data": [
-                            {"name": "Miss", "y": r_m_c},
-                            {"name": "Hit", "y": r_h_c},
-                            {"name": "Center", "y": r_c},
+                            {"name": "Miss", "y": r_m_c, "mode": "lines"},
+                            {"name": "Hit", "y": r_h_c, "mode": "lines"},
+                            {"name": "Center", "y": r_c, "mode": "lines"},
                         ],
                     },
                 )
@@ -199,9 +201,9 @@ def score_set(
                         "yaxis": {"title": {"text": "Probability"}},
                     },
                     "data": [
-                        {"name": "Miss", "x": s_g, "y": s_m_p},
-                        {"name": "Hit", "x": s_g, "y": s_h_p},
-                        {"name": "All", "x": s_g, "y": s_p},
+                        {"name": "Miss", "x": s_g, "y": s_m_p, "mode": "lines"},
+                        {"name": "Hit", "x": s_g, "y": s_h_p, "mode": "lines"},
+                        {"name": "All", "x": s_g, "y": s_p, "mode": "lines"},
                     ],
                 },
             )
@@ -232,9 +234,9 @@ def score_set(
                             "yaxis": {"title": {"text": "Cumulative Probability"}},
                         },
                         "data": [
-                            {"name": "Miss", "x": s_g, "y": s_m_c},
-                            {"name": "Hit", "x": s_g, "y": s_h_c},
-                            {"name": "All", "x": s_g, "y": s_c},
+                            {"name": "Miss", "x": s_g, "y": s_m_c, "mode": "lines"},
+                            {"name": "Hit", "x": s_g, "y": s_h_c, "mode": "lines"},
+                            {"name": "All", "x": s_g, "y": s_c, "mode": "lines"},
                         ],
                     },
                 )
@@ -280,7 +282,12 @@ def score_set(
         plot_plotly(
             {
                 "layout": {
-                    "title": {"text": "{} {} {} {} = {:.2f}".format(*method, score)}
+                    "title": {
+                        "x": 0.5,
+                        "text": "{}<br>{} {} {} {} = {:.2f}".format(
+                            title, *method, score
+                        ),
+                    }
                 },
                 "data": [
                     {"name": "Miss", "y": m, "opacity": 0.32, "mode": "lines"},
