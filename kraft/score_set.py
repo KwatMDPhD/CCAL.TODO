@@ -1,11 +1,11 @@
 from numpy import absolute, asarray, where
 
-from .accumulate import accumulate
 from .estimate_density import estimate_density
 from .get_bandwidth import get_bandwidth
 from .get_s1 import get_s1
 from .get_s2 import get_s2
 from .make_grid import make_grid
+from .normalize import normalize
 from .plot_plotly import plot_plotly
 
 
@@ -13,7 +13,6 @@ def score_set(
     element_value,
     set_elements,
     method=("rank", "cdf", "s0", "supreme"),
-    power=1,
     plot_=False,
     plot=True,
     title="Score Set",
@@ -40,23 +39,256 @@ def score_set(
 
     m_i = where(m_is)[0]
 
-    h_r = h_is * absolute(values) ** power
+    if plot_:
 
-    m_r = m_is
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "Element Value"}},
+                "data": [
+                    {
+                        "name": "Hit ({:.1%})".format(h_i.size / values.size),
+                        "x": h_i,
+                        "y": values[h_i],
+                        "mode": "markers",
+                    },
+                    {
+                        "name": "Miss ({:.1%})".format(m_i.size / values.size),
+                        "x": m_i,
+                        "y": values[m_i],
+                        "mode": "markers",
+                    },
+                ],
+            },
+        )
+
+    opacity = 0.24
+
+    signal_template = {
+        "name": "Signal",
+        "mode": "lines",
+        "marker": {"color": "#ff1968"},
+    }
+
+    if method[1] == "pdf":
+
+        if method[0] == "rank":
+
+            h_f, m_f, r_f = get_r_p(values, h_is, m_is, plot_)
+
+        elif method[0] == "value":
+
+            h_f, m_f, r_f = get_v_p_0(values, h_i, m_i, plot_)
+
+        elif method[0] == "value_":
+
+            h_f, m_f, r_f = get_v_p_1(values, h_is, m_is, plot_)
+
+        if method[2] == "s0":
+
+            s_h, s_m, s = h_f, m_f, h_f - m_f
+
+        elif method[2] == "s1":
+
+            s_h, s_m, s = get_s1(h_f, m_f, r_f)
+
+        elif method[2] == "s2":
+
+            s_h, s_m, s = get_s2(h_f, m_f)
+
+    elif method[1] == "cdf":
+
+        if method[0] == "rank":
+
+            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_r_c(values, h_is, m_is, plot_)
+
+        elif method[0] == "value":
+
+            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_v_c_0(values, h_i, m_i, plot_)
+
+        elif method[0] == "value_":
+
+            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_v_c_1(values, h_is, m_is, plot_)
+
+        if method[2] == "s0":
+
+            ls_h, ls_m, ls = h_lf, m_lf, h_lf - m_lf
+
+            rs_h, rs_m, rs = h_rf, m_rf, h_rf - m_rf
+
+        elif method[2] == "s1":
+
+            ls_h, ls_m, ls = get_s1(h_lf, m_lf, r_lf)
+
+            rs_h, rs_m, rs = get_s1(h_rf, m_rf, r_rf)
+
+        elif method[2] == "s2":
+
+            ls_h, ls_m, ls = get_s2(h_lf, m_lf)
+
+            rs_h, rs_m, rs = get_s2(h_rf, m_rf)
+
+        if plot_:
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "Signal ==>"}},
+                    "data": [
+                        {
+                            "name": "Hit",
+                            "y": ls_h,
+                            "opacity": opacity,
+                            "mode": "lines",
+                        },
+                        {
+                            "name": "Miss",
+                            "y": ls_m,
+                            "opacity": opacity,
+                            "mode": "lines",
+                        },
+                        {"y": ls, **signal_template},
+                    ],
+                },
+            )
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "<== Signal"}},
+                    "data": [
+                        {
+                            "name": "Hit",
+                            "y": rs_h,
+                            "opacity": opacity,
+                            "mode": "lines",
+                        },
+                        {
+                            "name": "Miss",
+                            "y": rs_m,
+                            "opacity": opacity,
+                            "mode": "lines",
+                        },
+                        {"y": rs, **signal_template},
+                    ],
+                },
+            )
+
+        s = rs - ls
+
+    if method[3] == "supreme":
+
+        score = s[absolute(s).argmax()]
+
+    elif method[3] == "area":
+
+        score = s.sum()
+
+    if plot:
+
+        data = [{"y": s, **signal_template}]
+
+        if method[1] == "pdf":
+
+            data = [
+                {"name": "Hit", "y": s_h, "opacity": opacity, "mode": "lines"},
+                {"name": "Miss", "y": s_m, "opacity": opacity, "mode": "lines"},
+            ] + data
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {
+                        "x": 0.5,
+                        "text": "{}<br>{} {} {} {} = {:.2f}".format(
+                            title, *method, score
+                        ),
+                    },
+                },
+                "data": data,
+            },
+        )
+
+    return score
+
+
+def get_c(vector):
+
+    # vector += 1e-8
+
+    # TODO: try not normalizing
+
+    return (
+        normalize(vector.cumsum(), "0-1"),
+        normalize(vector[::-1].cumsum()[::-1], "0-1"),
+    )
+
+
+def get_r_p(values, h_is, m_is, plot_):
+
+    h_r = h_is * absolute(values)
 
     h_r_p = h_r / h_r.sum()
 
-    m_r_p = m_r / m_r.sum()
+    m_r_p = m_is / m_is.sum()
 
     r_p = (h_r_p + m_r_p) / 2
 
-    h_r_lc, h_r_rc = accumulate(h_r_p)
+    if plot_:
 
-    m_r_lc, m_r_rc = accumulate(m_r_p)
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "PDF"}},
+                "data": [
+                    {"name": "Hit", "y": h_r_p, "mode": "lines"},
+                    {"name": "Miss", "y": m_r_p, "mode": "lines"},
+                    {"name": "Center", "y": r_p, "mode": "lines"},
+                ],
+            },
+        )
+
+    return h_r_p, m_r_p, r_p
+
+
+def get_r_c(values, h_is, m_is, plot_):
+
+    h_r_p, m_r_p, r_p = get_r_p(values, h_is, m_is, plot_)
+
+    h_r_lc, h_r_rc = get_c(h_r_p)
+
+    m_r_lc, m_r_rc = get_c(m_r_p)
+
+    # TODO: compare with get_c(r_p)
 
     r_lc = (h_r_lc + m_r_lc) / 2
 
     r_rc = (h_r_rc + m_r_rc) / 2
+
+    if plot_:
+
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "CDF ==>"}},
+                "data": [
+                    {"name": "Hit", "y": h_r_lc, "mode": "lines"},
+                    {"name": "Miss", "y": m_r_lc, "mode": "lines"},
+                    {"name": "Center", "y": r_lc, "mode": "lines"},
+                ],
+            },
+        )
+
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "<== CDF"}},
+                "data": [
+                    {"name": "Hit", "y": h_r_rc, "mode": "lines"},
+                    {"name": "Miss", "y": m_r_rc, "mode": "lines"},
+                    {"name": "Center", "y": r_rc, "mode": "lines"},
+                ],
+            },
+        )
+
+    return h_r_lc, m_r_lc, r_lc, h_r_rc, m_r_rc, r_rc
+
+
+def get_v_p_0(values, h_i, m_i, plot_):
 
     b = get_bandwidth(values)
 
@@ -72,220 +304,123 @@ def score_set(
 
         return density / (density.sum() * dg)
 
-    h_v_p = get_p(values[h_i])
+    index = [absolute(value - g).argmin() for value in values]
 
-    m_v_p = get_p(values[m_i])
+    h_v_p = get_p(values[h_i])[index]
 
-    v_p = get_p(values)
+    m_v_p = get_p(values[m_i])[index]
 
-    h_v_lc, h_v_rc = accumulate(h_v_p)
-
-    m_v_lc, m_v_rc = accumulate(m_v_p)
-
-    v_lc, v_rc = accumulate(v_p)
-
-    if method[0] == "rank":
-
-        if method[1] == "pdf":
-
-            h = h_r_p
-
-            m = m_r_p
-
-            r = r_p
-
-        elif method[1] == "cdf":
-
-            h = h_r_rc
-
-            m = m_r_rc
-
-            r = r_rc
-
-    elif method[0] == "value":
-
-        if method[1] == "pdf":
-
-            h = h_v_p
-
-            m = m_v_p
-
-            r = v_p
-
-        elif method[1] == "cdf":
-
-            h = h_v_rc
-
-            m = m_v_rc
-
-            r = v_rc
-
-    if method[2] == "s0":
-
-        s_h, s_m, s = h, m, h - m
-
-    elif method[2] == "s1":
-
-        s_h, s_m, s = get_s1(h, m, r)
-
-    elif method[2] == "s2":
-
-        s_h, s_m, s = get_s2(h, m)
-
-    if method[0] == "value":
-
-        index = [absolute(value - g).argmin() for value in values]
-
-        s_h = s_h[index]
-
-        s_m = s_m[index]
-
-        s = s[index]
-
-    if method[3] == "supreme":
-
-        score = s[absolute(s).argmax()]
-
-    elif method[3] == "area":
-
-        score = s.sum()
+    v_p = get_p(values)[index]
 
     if plot_:
 
         plot_plotly(
             {
-                "layout": {
-                    "title": {"text": "Element Value"},
-                    "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": {"title": {"text": "Value"}},
-                },
+                "layout": {"title": {"text": "PDF"}},
                 "data": [
-                    {
-                        "name": "Miss ({:.1%})".format(m_is.sum() / m_is.size),
-                        "x": m_i,
-                        "y": values[m_i],
-                        "mode": "markers",
-                    },
-                    {
-                        "name": "Hit ({:.1%})".format(h_is.sum() / h_is.size),
-                        "x": h_i,
-                        "y": values[h_i],
-                        "mode": "markers",
-                    },
+                    {"name": "Hit", "y": h_v_p, "mode": "lines"},
+                    {"name": "Miss", "y": m_v_p, "mode": "lines"},
+                    {"name": "All", "y": v_p, "mode": "lines"},
+                ],
+            },
+        )
+
+    return h_v_p, m_v_p, v_p
+
+
+def get_v_c_0(values, h_i, m_i, plot_):
+
+    h_v_p, m_v_p, v_p = get_v_p_0(values, h_i, m_i, plot_)
+
+    h_v_lc, h_v_rc = get_c(h_v_p)
+
+    m_v_lc, m_v_rc = get_c(m_v_p)
+
+    v_lc, v_rc = get_c(v_p)
+
+    if plot_:
+
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "CDF ==>"}},
+                "data": [
+                    {"name": "Hit", "y": h_v_lc, "mode": "lines"},
+                    {"name": "Miss", "y": m_v_lc, "mode": "lines"},
+                    {"name": "All", "y": v_lc, "mode": "lines"},
                 ],
             },
         )
 
         plot_plotly(
             {
-                "layout": {
-                    "title": {"text": "PDF(rank | event)"},
-                    "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": {"title": {"text": "Probability"}},
-                },
+                "layout": {"title": {"text": "<== CDF"}},
                 "data": [
-                    {"name": "Miss", "y": m_r_p, "mode": "lines"},
-                    {"name": "Hit", "y": h_r_p, "mode": "lines"},
-                    {"name": "Center", "y": r_p, "mode": "lines"},
+                    {"name": "Hit", "y": h_v_rc, "mode": "lines"},
+                    {"name": "Miss", "y": m_v_rc, "mode": "lines"},
+                    {"name": "All", "y": v_rc, "mode": "lines"},
+                ],
+            },
+        )
+
+    return h_v_lc, m_v_lc, v_lc, h_v_rc, m_v_rc, v_rc
+
+
+def get_v_p_1(values, h_is, m_is, plot_):
+
+    v = absolute(values)
+
+    h_v = v * h_is
+
+    m_v = v * m_is
+
+    if plot_:
+
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "PDF"}},
+                "data": [
+                    {"name": "Hit", "y": h_v, "mode": "lines"},
+                    {"name": "Miss", "y": m_v, "mode": "lines"},
+                    {"name": "All", "y": v, "mode": "lines"},
+                ],
+            },
+        )
+
+    return h_v, m_v, v
+
+
+def get_v_c_1(values, h_is, m_is, plot_):
+
+    h_v, m_v, v = get_v_p_1(values, h_is, m_is, plot_)
+
+    h_v_lc, h_v_rc = get_c(h_v)
+
+    m_v_lc, m_v_rc = get_c(m_v)
+
+    v_lc, v_rc = get_c(v)
+
+    if plot_:
+
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "CDF ==>"}},
+                "data": [
+                    {"name": "Hit", "y": h_v_lc, "mode": "lines"},
+                    {"name": "Miss", "y": m_v_lc, "mode": "lines"},
+                    {"name": "All", "y": v_lc, "mode": "lines"},
                 ],
             },
         )
 
         plot_plotly(
             {
-                "layout": {
-                    "title": {"text": "LCDF(rank | event)"},
-                    "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": {"title": {"text": "Cumulative Probability"}},
-                },
+                "layout": {"title": {"text": "<== CDF"}},
                 "data": [
-                    {"name": "Miss", "y": m_r_lc, "mode": "lines"},
-                    {"name": "Hit", "y": h_r_lc, "mode": "lines"},
-                    {"name": "Center", "y": r_lc, "mode": "lines"},
+                    {"name": "Hit", "y": h_v_rc, "mode": "lines"},
+                    {"name": "Miss", "y": m_v_rc, "mode": "lines"},
+                    {"name": "All", "y": v_rc, "mode": "lines"},
                 ],
             },
         )
 
-        plot_plotly(
-            {
-                "layout": {
-                    "title": {"text": "RCDF(rank | event)"},
-                    "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": {"title": {"text": "Cumulative Probability"}},
-                },
-                "data": [
-                    {"name": "Miss", "y": m_r_rc, "mode": "lines"},
-                    {"name": "Hit", "y": h_r_rc, "mode": "lines"},
-                    {"name": "Center", "y": r_rc, "mode": "lines"},
-                ],
-            },
-        )
-
-        plot_plotly(
-            {
-                "layout": {
-                    "title": {"text": "PDF(value | event)"},
-                    "xaxis": {"title": {"text": "Value"}},
-                    "yaxis": {"title": {"text": "Probability"}},
-                },
-                "data": [
-                    {"name": "Miss", "x": g, "y": m_v_p, "mode": "lines"},
-                    {"name": "Hit", "x": g, "y": h_v_p, "mode": "lines"},
-                    {"name": "All", "x": g, "y": v_p, "mode": "lines"},
-                ],
-            },
-        )
-
-        plot_plotly(
-            {
-                "layout": {
-                    "title": {"text": "LCDF(value | event)"},
-                    "xaxis": {"title": {"text": "Value"}},
-                    "yaxis": {"title": {"text": "Cumulative Probability"}},
-                },
-                "data": [
-                    {"name": "Miss", "x": g, "y": m_v_lc, "mode": "lines"},
-                    {"name": "Hit", "x": g, "y": h_v_lc, "mode": "lines"},
-                    {"name": "All", "x": g, "y": v_lc, "mode": "lines"},
-                ],
-            },
-        )
-
-        plot_plotly(
-            {
-                "layout": {
-                    "title": {"text": "RCDF(value | event)"},
-                    "xaxis": {"title": {"text": "Value"}},
-                    "yaxis": {"title": {"text": "Cumulative Probability"}},
-                },
-                "data": [
-                    {"name": "Miss", "x": g, "y": m_v_rc, "mode": "lines"},
-                    {"name": "Hit", "x": g, "y": h_v_rc, "mode": "lines"},
-                    {"name": "All", "x": g, "y": v_rc, "mode": "lines"},
-                ],
-            },
-        )
-
-    if plot:
-
-        hm_opacity = 0.24
-
-        plot_plotly(
-            {
-                "layout": {
-                    "title": {
-                        "x": 0.5,
-                        "text": "{}<br>{} {} {} {} = {:.2f}".format(
-                            title, *method, score
-                        ),
-                    }
-                },
-                "data": [
-                    {"name": "Miss", "y": s_m, "opacity": hm_opacity, "mode": "lines"},
-                    {"name": "Hit", "y": s_h, "opacity": hm_opacity, "mode": "lines"},
-                    {"name": "Signal", "y": s, "mode": "lines"},
-                ],
-            },
-        )
-
-    return score
+    return h_v_lc, m_v_lc, v_lc, h_v_rc, m_v_rc, v_rc
