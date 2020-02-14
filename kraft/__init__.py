@@ -1,3 +1,4 @@
+from .accumulate import accumulate
 from .BAD_VALUES import BAD_VALUES
 from .binarize import binarize
 from .cast_builtin import cast_builtin
@@ -28,6 +29,8 @@ from .get_kl import get_kl
 from .get_moe import get_moe
 from .get_p_value import get_p_value
 from .get_p_values_and_q_values import get_p_values_and_q_values
+from .get_s1 import get_s1
+from .get_s2 import get_s2
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .infer import infer

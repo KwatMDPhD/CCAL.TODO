@@ -1,9 +1,11 @@
-from numpy import absolute, asarray, isnan, log, where
+from numpy import absolute, asarray, where
 
+from .accumulate import accumulate
 from .estimate_density import estimate_density
 from .get_bandwidth import get_bandwidth
+from .get_s1 import get_s1
+from .get_s2 import get_s2
 from .make_grid import make_grid
-from .normalize import normalize
 from .plot_plotly import plot_plotly
 
 
@@ -24,248 +26,119 @@ def score_set(
 
     element_value = element_value.sort_values()
 
-    element_value_ = element_value.values
+    values = element_value.values
 
     set_element_ = {element: None for element in set_elements}
 
-    r_h = asarray(
+    h_is = asarray(
         tuple(element in set_element_ for element in element_value.index), dtype=float
     )
 
-    r_m = 1 - r_h
+    m_is = 1 - h_is
 
-    if plot_:
+    h_i = where(h_is)[0]
 
-        r_h_i = where(r_h)[0]
+    m_i = where(m_is)[0]
 
-        r_m_i = where(r_m)[0]
+    h_r = h_is * absolute(values) ** power
 
-        plot_plotly(
-            {
-                "layout": {
-                    "title": {"text": "Element Value"},
-                    "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": {"title": {"text": "Value"}},
-                },
-                "data": [
-                    {
-                        "name": "Miss ({:.1%})".format(r_m.sum() / r_m.size),
-                        "x": r_m_i,
-                        "y": element_value_[r_m_i],
-                        "mode": "markers",
-                    },
-                    {
-                        "name": "Hit ({:.1%})".format(r_h.sum() / r_h.size),
-                        "x": r_h_i,
-                        "y": element_value_[r_h_i],
-                        "mode": "markers",
-                    },
-                ],
-            },
-        )
+    m_r = m_is
 
-    def get_c(p):
+    h_r_p = h_r / h_r.sum()
 
-        return normalize(p[::-1].cumsum()[::-1], "0-1")
+    m_r_p = m_r / m_r.sum()
 
-    def get_s0(h, m):
+    r_p = (h_r_p + m_r_p) / 2
 
-        return h - m
+    h_r_lc, h_r_rc = accumulate(h_r_p)
 
-    def get_s1(h, m, c):
+    m_r_lc, m_r_rc = accumulate(m_r_p)
 
-        kl_hc = h * log(h / c)
+    r_lc = (h_r_lc + m_r_lc) / 2
 
-        kl_hc[isnan(kl_hc)] = 0
+    r_rc = (h_r_rc + m_r_rc) / 2
 
-        kl_mc = m * log(m / c)
+    b = get_bandwidth(values)
 
-        kl_mc[isnan(kl_mc)] = 0
+    g = make_grid(values.min(), values.max(), 1 / 3, values.size * 3)
 
-        return kl_hc, kl_mc, kl_hc - kl_mc
+    dg = g[1] - g[0]
 
-    def get_s2(h, m):
+    def get_p(vector):
 
-        kl_hm = h * log(h / m)
+        density = estimate_density(
+            vector.reshape(vector.size, 1), bandwidths=(b,), grids=(g,), plot=False
+        )[1]
 
-        kl_hm[isnan(kl_hm)] = 0
+        return density / (density.sum() * dg)
 
-        kl_mh = m * log(m / h)
+    h_v_p = get_p(values[h_i])
 
-        kl_mh[isnan(kl_mh)] = 0
+    m_v_p = get_p(values[m_i])
 
-        return kl_hm, kl_mh, kl_hm - kl_mh
+    v_p = get_p(values)
+
+    h_v_lc, h_v_rc = accumulate(h_v_p)
+
+    m_v_lc, m_v_rc = accumulate(m_v_p)
+
+    v_lc, v_rc = accumulate(v_p)
 
     if method[0] == "rank":
 
-        if power != 0:
-
-            r_h *= absolute(element_value_) ** power
-
-        r_h_p = r_h / r_h.sum()
-
-        r_m_p = r_m / r_m.sum()
-
-        r_p = (r_h_p + r_m_p) / 2
-
-        if plot_:
-
-            plot_plotly(
-                {
-                    "layout": {
-                        "title": {"text": "PDF(rank | event)"},
-                        "xaxis": {"title": {"text": "Rank"}},
-                        "yaxis": {"title": {"text": "Probability"}},
-                    },
-                    "data": [
-                        {"name": "Miss", "y": r_m_p, "mode": "lines"},
-                        {"name": "Hit", "y": r_h_p, "mode": "lines"},
-                        {"name": "Center", "y": r_p, "mode": "lines"},
-                    ],
-                },
-            )
-
         if method[1] == "pdf":
 
-            h = r_h_p
+            h = h_r_p
 
-            m = r_m_p
+            m = m_r_p
 
-            c = r_p
+            r = r_p
 
-        if method[1] == "cdf":
+        elif method[1] == "cdf":
 
-            r_h_c = get_c(r_h_p)
+            h = h_r_rc
 
-            r_m_c = get_c(r_m_p)
+            m = m_r_rc
 
-            r_c = (r_h_c + r_m_c) / 2
-
-            if plot_:
-
-                plot_plotly(
-                    {
-                        "layout": {
-                            "title": {"text": "CDF(rank | event)"},
-                            "xaxis": {"title": {"text": "Rank"}},
-                            "yaxis": {"title": {"text": "Cumulative Probability"}},
-                        },
-                        "data": [
-                            {"name": "Miss", "y": r_m_c, "mode": "lines"},
-                            {"name": "Hit", "y": r_h_c, "mode": "lines"},
-                            {"name": "Center", "y": r_c, "mode": "lines"},
-                        ],
-                    },
-                )
-
-            h = r_h_c
-
-            m = r_m_c
-
-            c = r_c
+            r = r_rc
 
     elif method[0] == "value":
 
-        s_b = get_bandwidth(element_value_)
-
-        s_g = make_grid(
-            element_value_.min(), element_value_.max(), 1 / 3, element_value_.size * 3,
-        )
-
-        dg = s_g[1] - s_g[0]
-
-        def get_p(vector):
-
-            density = estimate_density(
-                vector.reshape(vector.size, 1),
-                bandwidths=(s_b,),
-                grids=(s_g,),
-                plot=False,
-            )[1]
-
-            return density / (density.sum() * dg)
-
-        s_h_p = get_p(element_value_[where(r_h)])
-
-        s_m_p = get_p(element_value_[where(r_m)])
-
-        s_p = get_p(element_value_)
-
-        if plot_:
-
-            plot_plotly(
-                {
-                    "layout": {
-                        "title": {"text": "PDF(value | event)"},
-                        "xaxis": {"title": {"text": "Value"}},
-                        "yaxis": {"title": {"text": "Probability"}},
-                    },
-                    "data": [
-                        {"name": "Miss", "x": s_g, "y": s_m_p, "mode": "lines"},
-                        {"name": "Hit", "x": s_g, "y": s_h_p, "mode": "lines"},
-                        {"name": "All", "x": s_g, "y": s_p, "mode": "lines"},
-                    ],
-                },
-            )
-
         if method[1] == "pdf":
 
-            h = s_h_p
+            h = h_v_p
 
-            m = s_m_p
+            m = m_v_p
 
-            c = s_p
+            r = v_p
 
-        elif "cdf" in method:
+        elif method[1] == "cdf":
 
-            s_h_c = get_c(s_h_p)
+            h = h_v_rc
 
-            s_m_c = get_c(s_m_p)
+            m = m_v_rc
 
-            s_c = get_c(s_p)
-
-            if plot_:
-
-                plot_plotly(
-                    {
-                        "layout": {
-                            "title": {"text": "CDF(value | event)"},
-                            "xaxis": {"title": {"text": "Value"}},
-                            "yaxis": {"title": {"text": "Cumulative Probability"}},
-                        },
-                        "data": [
-                            {"name": "Miss", "x": s_g, "y": s_m_c, "mode": "lines"},
-                            {"name": "Hit", "x": s_g, "y": s_h_c, "mode": "lines"},
-                            {"name": "All", "x": s_g, "y": s_c, "mode": "lines"},
-                        ],
-                    },
-                )
-
-            h = s_h_c
-
-            m = s_m_c
-
-            c = s_c
+            r = v_rc
 
     if method[2] == "s0":
 
-        s = get_s0(h, m)
+        s_h, s_m, s = h, m, h - m
 
     elif method[2] == "s1":
 
-        h, m, s = get_s1(h, m, c)
+        s_h, s_m, s = get_s1(h, m, r)
 
     elif method[2] == "s2":
 
-        h, m, s = get_s2(h, m)
+        s_h, s_m, s = get_s2(h, m)
 
     if method[0] == "value":
 
-        index = [absolute(value - s_g).argmin() for value in element_value_]
+        index = [absolute(value - g).argmin() for value in values]
 
-        h = h[index]
+        s_h = s_h[index]
 
-        m = m[index]
+        s_m = s_m[index]
 
         s = s[index]
 
@@ -277,7 +150,125 @@ def score_set(
 
         score = s.sum()
 
+    if plot_:
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "Element Value"},
+                    "xaxis": {"title": {"text": "Rank"}},
+                    "yaxis": {"title": {"text": "Value"}},
+                },
+                "data": [
+                    {
+                        "name": "Miss ({:.1%})".format(m_is.sum() / m_is.size),
+                        "x": m_i,
+                        "y": values[m_i],
+                        "mode": "markers",
+                    },
+                    {
+                        "name": "Hit ({:.1%})".format(h_is.sum() / h_is.size),
+                        "x": h_i,
+                        "y": values[h_i],
+                        "mode": "markers",
+                    },
+                ],
+            },
+        )
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "PDF(rank | event)"},
+                    "xaxis": {"title": {"text": "Rank"}},
+                    "yaxis": {"title": {"text": "Probability"}},
+                },
+                "data": [
+                    {"name": "Miss", "y": m_r_p, "mode": "lines"},
+                    {"name": "Hit", "y": h_r_p, "mode": "lines"},
+                    {"name": "Center", "y": r_p, "mode": "lines"},
+                ],
+            },
+        )
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "LCDF(rank | event)"},
+                    "xaxis": {"title": {"text": "Rank"}},
+                    "yaxis": {"title": {"text": "Cumulative Probability"}},
+                },
+                "data": [
+                    {"name": "Miss", "y": m_r_lc, "mode": "lines"},
+                    {"name": "Hit", "y": h_r_lc, "mode": "lines"},
+                    {"name": "Center", "y": r_lc, "mode": "lines"},
+                ],
+            },
+        )
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "RCDF(rank | event)"},
+                    "xaxis": {"title": {"text": "Rank"}},
+                    "yaxis": {"title": {"text": "Cumulative Probability"}},
+                },
+                "data": [
+                    {"name": "Miss", "y": m_r_rc, "mode": "lines"},
+                    {"name": "Hit", "y": h_r_rc, "mode": "lines"},
+                    {"name": "Center", "y": r_rc, "mode": "lines"},
+                ],
+            },
+        )
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "PDF(value | event)"},
+                    "xaxis": {"title": {"text": "Value"}},
+                    "yaxis": {"title": {"text": "Probability"}},
+                },
+                "data": [
+                    {"name": "Miss", "x": g, "y": m_v_p, "mode": "lines"},
+                    {"name": "Hit", "x": g, "y": h_v_p, "mode": "lines"},
+                    {"name": "All", "x": g, "y": v_p, "mode": "lines"},
+                ],
+            },
+        )
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "LCDF(value | event)"},
+                    "xaxis": {"title": {"text": "Value"}},
+                    "yaxis": {"title": {"text": "Cumulative Probability"}},
+                },
+                "data": [
+                    {"name": "Miss", "x": g, "y": m_v_lc, "mode": "lines"},
+                    {"name": "Hit", "x": g, "y": h_v_lc, "mode": "lines"},
+                    {"name": "All", "x": g, "y": v_lc, "mode": "lines"},
+                ],
+            },
+        )
+
+        plot_plotly(
+            {
+                "layout": {
+                    "title": {"text": "RCDF(value | event)"},
+                    "xaxis": {"title": {"text": "Value"}},
+                    "yaxis": {"title": {"text": "Cumulative Probability"}},
+                },
+                "data": [
+                    {"name": "Miss", "x": g, "y": m_v_rc, "mode": "lines"},
+                    {"name": "Hit", "x": g, "y": h_v_rc, "mode": "lines"},
+                    {"name": "All", "x": g, "y": v_rc, "mode": "lines"},
+                ],
+            },
+        )
+
     if plot:
+
+        hm_opacity = 0.24
 
         plot_plotly(
             {
@@ -290,8 +281,8 @@ def score_set(
                     }
                 },
                 "data": [
-                    {"name": "Miss", "y": m, "opacity": 0.32, "mode": "lines"},
-                    {"name": "Hit", "y": h, "opacity": 0.32, "mode": "lines"},
+                    {"name": "Miss", "y": s_m, "opacity": hm_opacity, "mode": "lines"},
+                    {"name": "Hit", "y": s_h, "opacity": hm_opacity, "mode": "lines"},
                     {"name": "Signal", "y": s, "mode": "lines"},
                 ],
             },

@@ -6,7 +6,7 @@ from .unmesh import unmesh
 
 
 def plot_mesh(
-    point_x_dimension, value, names=None, value_name="Value", html_file_path=None,
+    point_x_dimension, value, names=None, value_name="Value", html_file_path=None
 ):
 
     n_dimension = point_x_dimension.shape[1]
@@ -25,7 +25,9 @@ def plot_mesh(
                     "xaxis": {"title": {"text": names[0]}},
                     "yaxis": {"title": {"text": value_name}},
                 },
-                "data": [{"type": "scatter", "x": grids[0], "y": value}],
+                "data": [
+                    {"type": "scatter", "x": grids[0], "y": value, "mode": "lines"}
+                ],
             },
             html_file_path=html_file_path,
         )

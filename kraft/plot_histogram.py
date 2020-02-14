@@ -6,7 +6,9 @@ from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 
-def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path=None):
+def plot_histogram(
+    xs, histnorm=None, bin_size=None, plot_rug=None, layout=None, html_file_path=None
+):
 
     if histnorm is None:
 
@@ -85,6 +87,7 @@ def plot_histogram(xs, histnorm=None, plot_rug=None, layout=None, html_file_path
                 "name": name,
                 "x": x,
                 "histnorm": histnorm,
+                "xbins": {"size": bin_size},
                 "marker": {"color": color},
             }
         )
