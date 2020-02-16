@@ -247,8 +247,6 @@ def score_set(
 
 def get_c(vector):
 
-    # TODO: fix boundary
-
     lc = vector.cumsum()
 
     rc = vector[::-1].cumsum()[::-1]
