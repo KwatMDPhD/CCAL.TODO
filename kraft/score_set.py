@@ -5,7 +5,8 @@ from .get_bandwidth import get_bandwidth
 from .get_s1 import get_s1
 from .get_s2 import get_s2
 from .make_grid import make_grid
-from .normalize import normalize
+
+# from .normalize import normalize
 from .plot_plotly import plot_plotly
 
 
@@ -39,27 +40,27 @@ def score_set(
 
     m_i = where(m_is)[0]
 
-    if plot_:
+    # if plot_:
 
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "Element Value"}},
-                "data": [
-                    {
-                        "name": "Hit ({:.1%})".format(h_i.size / values.size),
-                        "x": h_i,
-                        "y": values[h_i],
-                        "mode": "markers",
-                    },
-                    {
-                        "name": "Miss ({:.1%})".format(m_i.size / values.size),
-                        "x": m_i,
-                        "y": values[m_i],
-                        "mode": "markers",
-                    },
-                ],
-            },
-        )
+    #     plot_plotly(
+    #         {
+    #             "layout": {"title": {"text": "Element Value"}},
+    #             "data": [
+    #                 {
+    #                     "name": "Hit ({:.1%})".format(h_i.size / values.size),
+    #                     "x": h_i,
+    #                     "y": values[h_i],
+    #                     "mode": "markers",
+    #                 },
+    #                 {
+    #                     "name": "Miss ({:.1%})".format(m_i.size / values.size),
+    #                     "x": m_i,
+    #                     "y": values[m_i],
+    #                     "mode": "lines",
+    #                 },
+    #             ],
+    #         },
+    #     )
 
     opacity = 0.24
 
@@ -131,7 +132,7 @@ def score_set(
 
             plot_plotly(
                 {
-                    "layout": {"title": {"text": "Signal ==>"}},
+                    "layout": {"title": {"text": "Signal >"}},
                     "data": [
                         {
                             "name": "Hit",
@@ -152,7 +153,7 @@ def score_set(
 
             plot_plotly(
                 {
-                    "layout": {"title": {"text": "<== Signal"}},
+                    "layout": {"title": {"text": "< Signal"}},
                     "data": [
                         {
                             "name": "Hit",
@@ -179,7 +180,7 @@ def score_set(
 
     elif method[3] == "area":
 
-        score = s.sum()
+        score = s.sum() / s.size
 
     if plot:
 
@@ -211,21 +212,22 @@ def score_set(
 
 def get_c(vector):
 
-    # vector += 1e-8
+    # TODO: fix boundary
 
-    # TODO: try not normalizing
+    lc = vector.cumsum()
 
-    return (
-        normalize(vector.cumsum(), "0-1"),
-        normalize(vector[::-1].cumsum()[::-1], "0-1"),
-    )
+    rc = vector[::-1].cumsum()[::-1]
+
+    add = 1e-8
+
+    return lc + add, rc + add
 
 
 def get_r_p(values, h_is, m_is, plot_):
 
-    h_r = h_is * absolute(values)
+    h_is *= absolute(values)
 
-    h_r_p = h_r / h_r.sum()
+    h_r_p = h_is / h_is.sum()
 
     m_r_p = m_is / m_is.sum()
 
@@ -255,17 +257,13 @@ def get_r_c(values, h_is, m_is, plot_):
 
     m_r_lc, m_r_rc = get_c(m_r_p)
 
-    # TODO: compare with get_c(r_p)
-
-    r_lc = (h_r_lc + m_r_lc) / 2
-
-    r_rc = (h_r_rc + m_r_rc) / 2
+    r_lc, r_rc = get_c(r_p)
 
     if plot_:
 
         plot_plotly(
             {
-                "layout": {"title": {"text": "CDF ==>"}},
+                "layout": {"title": {"text": "CDF >"}},
                 "data": [
                     {"name": "Hit", "y": h_r_lc, "mode": "lines"},
                     {"name": "Miss", "y": m_r_lc, "mode": "lines"},
@@ -276,7 +274,7 @@ def get_r_c(values, h_is, m_is, plot_):
 
         plot_plotly(
             {
-                "layout": {"title": {"text": "<== CDF"}},
+                "layout": {"title": {"text": "< CDF"}},
                 "data": [
                     {"name": "Hit", "y": h_r_rc, "mode": "lines"},
                     {"name": "Miss", "y": m_r_rc, "mode": "lines"},
@@ -332,17 +330,17 @@ def get_v_c_0(values, h_i, m_i, plot_):
 
     h_v_p, m_v_p, v_p = get_v_p_0(values, h_i, m_i, plot_)
 
-    h_v_lc, h_v_rc = get_c(h_v_p)
+    h_v_lc, h_v_rc = get_c(h_v_p / h_v_p.sum())
 
-    m_v_lc, m_v_rc = get_c(m_v_p)
+    m_v_lc, m_v_rc = get_c(m_v_p / m_v_p.sum())
 
-    v_lc, v_rc = get_c(v_p)
+    v_lc, v_rc = get_c(v_p / v_p.sum())
 
     if plot_:
 
         plot_plotly(
             {
-                "layout": {"title": {"text": "CDF ==>"}},
+                "layout": {"title": {"text": "CDF >"}},
                 "data": [
                     {"name": "Hit", "y": h_v_lc, "mode": "lines"},
                     {"name": "Miss", "y": m_v_lc, "mode": "lines"},
@@ -353,7 +351,7 @@ def get_v_c_0(values, h_i, m_i, plot_):
 
         plot_plotly(
             {
-                "layout": {"title": {"text": "<== CDF"}},
+                "layout": {"title": {"text": "< CDF"}},
                 "data": [
                     {"name": "Hit", "y": h_v_rc, "mode": "lines"},
                     {"name": "Miss", "y": m_v_rc, "mode": "lines"},
@@ -373,11 +371,17 @@ def get_v_p_1(values, h_is, m_is, plot_):
 
     m_v = v * m_is
 
+    v /= v.sum()
+
+    h_v /= h_v.sum()
+
+    m_v /= m_v.sum()
+
     if plot_:
 
         plot_plotly(
             {
-                "layout": {"title": {"text": "PDF"}},
+                "layout": {"title": {"text": "Magnitude"}},
                 "data": [
                     {"name": "Hit", "y": h_v, "mode": "lines"},
                     {"name": "Miss", "y": m_v, "mode": "lines"},
@@ -403,7 +407,7 @@ def get_v_c_1(values, h_is, m_is, plot_):
 
         plot_plotly(
             {
-                "layout": {"title": {"text": "CDF ==>"}},
+                "layout": {"title": {"text": "CDF >"}},
                 "data": [
                     {"name": "Hit", "y": h_v_lc, "mode": "lines"},
                     {"name": "Miss", "y": m_v_lc, "mode": "lines"},
@@ -414,7 +418,7 @@ def get_v_c_1(values, h_is, m_is, plot_):
 
         plot_plotly(
             {
-                "layout": {"title": {"text": "<== CDF"}},
+                "layout": {"title": {"text": "< CDF"}},
                 "data": [
                     {"name": "Hit", "y": h_v_rc, "mode": "lines"},
                     {"name": "Miss", "y": m_v_rc, "mode": "lines"},
