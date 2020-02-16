@@ -26,10 +26,10 @@ def score_set(
 
     values = element_value.values
 
-    set_element_ = {element: None for element in set_elements}
+    set_elements = {element: None for element in set_elements}
 
     h_is = asarray(
-        tuple(element in set_element_ for element in element_value.index), dtype=float
+        tuple(element in set_elements for element in element_value.index), dtype=float
     )
 
     m_is = 1 - h_is
@@ -54,13 +54,13 @@ def score_set(
                         "name": "Miss ({:.1%})".format(m_i.size / values.size),
                         "x": m_i,
                         "y": values[m_i],
-                        "mode": "lines",
+                        "mode": "markers",
                     },
                 ],
             },
         )
 
-    opacity = 0.24
+    opacity = 0.32
 
     signal_template = {
         "name": "Signal",
