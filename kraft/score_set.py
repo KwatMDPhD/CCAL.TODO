@@ -5,8 +5,6 @@ from .get_bandwidth import get_bandwidth
 from .get_s1 import get_s1
 from .get_s2 import get_s2
 from .make_grid import make_grid
-
-# from .normalize import normalize
 from .plot_plotly import plot_plotly
 
 
@@ -40,27 +38,27 @@ def score_set(
 
     m_i = where(m_is)[0]
 
-    # if plot_:
+    if plot_:
 
-    #     plot_plotly(
-    #         {
-    #             "layout": {"title": {"text": "Element Value"}},
-    #             "data": [
-    #                 {
-    #                     "name": "Hit ({:.1%})".format(h_i.size / values.size),
-    #                     "x": h_i,
-    #                     "y": values[h_i],
-    #                     "mode": "markers",
-    #                 },
-    #                 {
-    #                     "name": "Miss ({:.1%})".format(m_i.size / values.size),
-    #                     "x": m_i,
-    #                     "y": values[m_i],
-    #                     "mode": "lines",
-    #                 },
-    #             ],
-    #         },
-    #     )
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "Element Value"}},
+                "data": [
+                    {
+                        "name": "Hit ({:.1%})".format(h_i.size / values.size),
+                        "x": h_i,
+                        "y": values[h_i],
+                        "mode": "markers",
+                    },
+                    {
+                        "name": "Miss ({:.1%})".format(m_i.size / values.size),
+                        "x": m_i,
+                        "y": values[m_i],
+                        "mode": "lines",
+                    },
+                ],
+            },
+        )
 
     opacity = 0.24
 
@@ -172,7 +170,13 @@ def score_set(
                 },
             )
 
-        s = rs - ls
+        if method[:3] == ("rank", "cdf", "s0"):
+
+            s = rs
+
+        else:
+
+            s = rs - ls
 
     if method[3] == "supreme":
 
