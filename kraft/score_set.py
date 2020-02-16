@@ -4,6 +4,7 @@ from .estimate_density import estimate_density
 from .get_bandwidth import get_bandwidth
 from .get_s1 import get_s1
 from .get_s2 import get_s2
+from .get_s3 import get_s3
 from .make_grid import make_grid
 from .plot_plotly import plot_plotly
 
@@ -54,7 +55,7 @@ def score_set(
                         "name": "Miss ({:.1%})".format(m_i.size / values.size),
                         "x": m_i,
                         "y": values[m_i],
-                        "mode": "markers",
+                        "mode": "lines",
                     },
                 ],
             },
@@ -94,6 +95,10 @@ def score_set(
 
             s_h, s_m, s = get_s2(h_f, m_f)
 
+        elif method[2] == "s3":
+
+            s_h, s_m, s = get_s3(h_f, m_f, r_f)
+
     elif method[1] == "cdf":
 
         if method[0] == "rank":
@@ -125,6 +130,12 @@ def score_set(
             ls_h, ls_m, ls = get_s2(h_lf, m_lf)
 
             rs_h, rs_m, rs = get_s2(h_rf, m_rf)
+
+        elif method[2] == "s3":
+
+            ls_h, ls_m, ls = get_s3(h_lf, m_lf, r_lf)
+
+            rs_h, rs_m, rs = get_s3(h_rf, m_rf, r_rf)
 
         if plot_:
 
