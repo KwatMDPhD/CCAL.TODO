@@ -39,28 +39,6 @@ def score_set(
 
     m_i = where(m_is)[0]
 
-    if plot_:
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "Element Value"}},
-                "data": [
-                    {
-                        "name": "Hit ({:.1%})".format(h_i.size / values.size),
-                        "x": h_i,
-                        "y": values[h_i],
-                        "mode": "markers",
-                    },
-                    {
-                        "name": "Miss ({:.1%})".format(m_i.size / values.size),
-                        "x": m_i,
-                        "y": values[m_i],
-                        "mode": "lines",
-                    },
-                ],
-            },
-        )
-
     opacity = 0.32
 
     signal_template = {
@@ -199,28 +177,70 @@ def score_set(
 
     if plot:
 
-        data = [{"y": s, **signal_template}]
+        y_fraction = 0.16
+
+        layout = {
+            "title": {
+                "text": "{}<br>{} {} {} {} = {:.2f}".format(title, *method, score),
+                "x": 0.5,
+            },
+            "xaxis": {"anchor": "y"},
+            "yaxis": {"domain": (0, y_fraction), "title": element_value_name},
+            "yaxis2": {"domain": (y_fraction + 0.08, 1)},
+            "legend_orientation": "h",
+            "legend": {"y": -0.24},
+        }
+
+        data = [
+            {
+                "name": "Element Value ({})".format(values.size),
+                "y": values,
+                "text": element_value.index,
+                "mode": "lines",
+                "line": {"width": 0, "color": "#20d8ba"},
+                "fill": "tozeroy",
+            },
+            {
+                "name": "Element ({})".format(h_i.size),
+                "yaxis": "y2",
+                "x": h_i,
+                "y": (0,) * h_i.size,
+                "text": element_value.index[h_i],
+                "mode": "markers",
+                "marker": {
+                    "symbol": "line-ns-open",
+                    "size": 8,
+                    "color": "#2e211b",
+                    "line": {"width": 1.6},
+                },
+                "hoverinfo": "x+text",
+            },
+        ]
 
         if method[1] == "pdf":
 
             data = [
-                {"name": "Hit", "y": s_h, "opacity": opacity, "mode": "lines"},
-                {"name": "Miss", "y": s_m, "opacity": opacity, "mode": "lines"},
+                {"name": "Hit", "y": s_h, "mode": "lines", "opacity": opacity},
+                {"name": "Miss", "y": s_m, "mode": "lines", "opacity": opacity},
             ] + data
 
-        plot_plotly(
-            {
-                "layout": {
-                    "title": {
-                        "x": 0.5,
-                        "text": "{}<br>{} {} {} {} = {:.2f}".format(
-                            title, *method, score
-                        ),
-                    },
-                },
-                "data": data,
-            },
-        )
+        for name, is_, color in (
+            ("- Enrichment", s < 0, "#0088ff"),
+            ("+ Enrichment", 0 < s, "#ff1968"),
+        ):
+
+            data.append(
+                {
+                    "name": name,
+                    "yaxis": "y2",
+                    "y": where(is_, s, 0),
+                    "mode": "lines",
+                    "line": {"width": 0, "color": color},
+                    "fill": "tozeroy",
+                }
+            )
+
+        plot_plotly({"layout": layout, "data": data}, html_file_path)
 
     return score
 
