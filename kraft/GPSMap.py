@@ -2,17 +2,12 @@ from numpy import full, linspace, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
 
-from .estimate_pdf import estimate_pdf
-from .get_bandwidth import get_bandwidth
 from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
     make_element_x_dimension_from_element_x_node_and_node_x_dimension,
 )
-
-from .normalize import normalize
 from .plot_gps_map import plot_gps_map
 from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
-from .scale_dimension import scale_dimension
 from .unmesh import unmesh
 
 

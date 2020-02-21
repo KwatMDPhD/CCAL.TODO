@@ -18,33 +18,20 @@ def scale_dimension(
     random_seed=RANDOM_SEED,
 ):
 
-    mds_keyword_arguments = {
-        "n_components": n_target_dimension,
-        "metric": metric,
-        "n_init": n_init,
-        "max_iter": max_iter,
-        "verbose": verbose,
-        "eps": eps,
-        "n_jobs": n_job,
-        "random_state": random_seed,
-    }
+    if point_x_point_distance is None:
 
-    if point_x_point_distance is None and not callable(distance_function):
+        point_x_point_distance = squareform(
+            pdist(point_x_dimension, metric=distance_function)
+        )
 
-        mds = MDS(dissimilarity=distance_function, **mds_keyword_arguments)
-
-        point_x_target_dimension = mds.fit_transform(point_x_dimension)
-
-    else:
-
-        mds = MDS(dissimilarity="precomputed", **mds_keyword_arguments)
-
-        if point_x_point_distance is None:
-
-            point_x_point_distance = squareform(
-                pdist(point_x_dimension, distance_function)
-            )
-
-        point_x_target_dimension = mds.fit_transform(point_x_point_distance)
-
-    return point_x_target_dimension
+    return MDS(
+        n_components=n_target_dimension,
+        metric=metric,
+        n_init=n_init,
+        max_iter=max_iter,
+        verbose=verbose,
+        eps=eps,
+        n_jobs=n_job,
+        random_state=random_seed,
+        dissimilarity="precomputed",
+    ).fit_transform(point_x_point_distance)
