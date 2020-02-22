@@ -75,7 +75,7 @@ def score_set(
 
         elif method[2] == "s3":
 
-            s_h, s_m, s = get_s3(h_f, m_f, r_f)
+            s_h, s_m, s = get_s3(h_f, m_f)
 
     elif method[1] == "cdf":
 
@@ -111,9 +111,9 @@ def score_set(
 
         elif method[2] == "s3":
 
-            ls_h, ls_m, ls = get_s3(h_lf, m_lf, r_lf)
+            ls_h, ls_m, ls = get_s3(h_lf, m_lf)
 
-            rs_h, rs_m, rs = get_s3(h_rf, m_rf, r_rf)
+            rs_h, rs_m, rs = get_s3(h_rf, m_rf)
 
         if plot_:
 
@@ -216,13 +216,6 @@ def score_set(
                 "hoverinfo": "x+text",
             },
         ]
-
-        if method[1] == "pdf":
-
-            data = [
-                {"name": "Hit", "y": s_h, "mode": "lines", "opacity": opacity},
-                {"name": "Miss", "y": s_m, "mode": "lines", "opacity": opacity},
-            ] + data
 
         for name, is_, color in (
             ("- Enrichment", s < 0, "#0088ff"),
