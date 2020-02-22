@@ -2,9 +2,7 @@ from numpy import full, linspace, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
 
-from .make_element_x_dimension_from_element_x_node_and_node_x_dimension import (
-    make_element_x_dimension_from_element_x_node_and_node_x_dimension,
-)
+from .make_point_x_dimension import make_point_x_dimension
 from .plot_gps_map import plot_gps_map
 from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
@@ -38,7 +36,7 @@ class GPSMap:
         self.node_marker_size = node_marker_size
 
         self.element_x_dimension = DataFrame(
-            make_element_x_dimension_from_element_x_node_and_node_x_dimension(
+            make_point_x_dimension(
                 self.element_x_node.values, self.node_x_dimension.values
             ),
             index=self.element_x_node.index,
@@ -162,7 +160,7 @@ class GPSMap:
         plot_gps_map(
             self.node_x_dimension,
             DataFrame(
-                make_element_x_dimension_from_element_x_node_and_node_x_dimension(
+                make_point_x_dimension(
                     new_element_x_node.values, self.node_x_dimension.values
                 ),
                 index=new_element_x_node.index,
