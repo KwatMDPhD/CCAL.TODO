@@ -1,14 +1,12 @@
-from scipy.spatial.distance import pdist, squareform
 from sklearn.manifold import MDS
 
+from .normalize import normalize
 from .RANDOM_SEED import RANDOM_SEED
 
 
-def scale_dimension(
-    n_target_dimension,
-    point_x_dimension=None,
-    point_x_point_distance=None,
-    distance_function="euclidean",
+def map_points(
+    point_x_point_distance,
+    n_dimension,
     metric=True,
     n_init=int(1e3),
     max_iter=int(1e3),
@@ -18,14 +16,8 @@ def scale_dimension(
     random_seed=RANDOM_SEED,
 ):
 
-    if point_x_point_distance is None:
-
-        point_x_point_distance = squareform(
-            pdist(point_x_dimension, metric=distance_function)
-        )
-
-    return MDS(
-        n_components=n_target_dimension,
+    point_x_dimension = MDS(
+        n_components=n_dimension,
         metric=metric,
         n_init=n_init,
         max_iter=max_iter,
@@ -35,3 +27,5 @@ def scale_dimension(
         random_state=random_seed,
         dissimilarity="precomputed",
     ).fit_transform(point_x_point_distance)
+
+    return normalize(point_x_dimension, 0, "0-1")

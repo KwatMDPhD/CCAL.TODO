@@ -22,9 +22,6 @@ from .get_bandwidth import get_bandwidth
 from .get_child_paths import get_child_paths
 from .get_coclustering_distance import get_coclustering_distance
 from .get_color import get_color
-from .get_element_x_dimension_triangulation_edges import (
-    get_element_x_dimension_triangulation_edges,
-)
 from .get_entropy import get_entropy
 from .get_ic import get_ic
 from .get_icd import get_icd
@@ -34,6 +31,8 @@ from .get_p_value import get_p_value
 from .get_p_values_and_q_values import get_p_values_and_q_values
 from .get_s1 import get_s1
 from .get_s2 import get_s2
+from .get_s3 import get_s3
+from .get_triangulation_edges import get_triangulation_edges
 from .GPSMap import GPSMap
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
@@ -43,7 +42,8 @@ from .log import log
 from .make_axis_different import make_axis_different
 from .make_axis_same import make_axis_same
 from .make_grid import make_grid
-from .make_point_x_dimension import make_point_x_dimension
+from .map_points import map_points
+from .map_points_by_pull import map_points_by_pull
 from .merge_2_dicts import merge_2_dicts
 from .mesh import mesh
 from .normalize import normalize
@@ -59,7 +59,6 @@ from .RANDOM_SEED import RANDOM_SEED
 from .read_gct import read_gct
 from .read_gmt import read_gmt
 from .read_json import read_json
-from .scale_dimension import scale_dimension
 from .score_set import score_set
 from .select_extreme import select_extreme
 from .solve_ax_b import solve_ax_b

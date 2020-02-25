@@ -1,13 +1,13 @@
 from scipy.spatial import Delaunay
 
 
-def get_element_x_dimension_triangulation_edges(element_x_dimension):
+def get_triangulation_edges(point_x_dimension):
 
     edge_xs = []
 
     edge_ys = []
 
-    triangulation = Delaunay(element_x_dimension)
+    triangulation = Delaunay(point_x_dimension)
 
     for point_0_index, point_1_index, point_2_index in triangulation.simplices:
 

@@ -2,7 +2,11 @@ from numpy import full, linspace, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
 
-from .make_point_x_dimension import make_point_x_dimension
+from .estimate_pdf import estimate_pdf
+from .get_bandwidth import get_bandwidth
+from .map_points import map_points
+from .map_points_by_pull import map_points_by_pull
+from .normalize import normalize
 from .plot_gps_map import plot_gps_map
 from .plot_heat_map import plot_heat_map
 from .RANDOM_SEED import RANDOM_SEED
@@ -11,32 +15,18 @@ from .unmesh import unmesh
 
 class GPSMap:
     def __init__(
-        self,
-        element_x_node,
-        node_x_node_distance,
-        mds_random_seed=RANDOM_SEED,
-        node_marker_size=16,
+        self, element_x_node, node_x_node_distance, mds_random_seed=RANDOM_SEED
     ):
 
         self.element_x_node = element_x_node
 
-        self.node_x_dimension = normalize_dataframe(
-            DataFrame(
-                scale_element_x_dimension_dimension(
-                    2,
-                    point_x_point_distance=node_x_node_distance,
-                    random_seed=mds_random_seed,
-                ),
-                index=self.element_x_node.columns,
-            ),
-            0,
-            "0-1",
+        self.node_x_dimension = DataFrame(
+            map_points(node_x_node_distance, 2, random_seed=mds_random_seed),
+            index=self.element_x_node.columns,
         )
 
-        self.node_marker_size = node_marker_size
-
         self.element_x_dimension = DataFrame(
-            make_point_x_dimension(
+            map_points_by_pull(
                 self.element_x_node.values, self.node_x_dimension.values
             ),
             index=self.element_x_node.index,
@@ -58,7 +48,6 @@ class GPSMap:
         plot_gps_map(
             self.node_x_dimension,
             self.element_x_dimension,
-            node_marker_size=self.node_marker_size,
             element_label=self.element_label,
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,
@@ -100,14 +89,14 @@ class GPSMap:
         label_grid_probability = {}
 
         dimension_bandwidths = tuple(
-            compute_vector_bandwidth(coordinate.values)
+            get_bandwidth(coordinate.values)
             for axis, coordinate in self.element_x_dimension.items()
         )
 
         for label in self.element_label.unique():
 
             label_grid_probability[label] = unmesh(
-                *compute_element_x_dimension_joint_probability(
+                *estimate_pdf(
                     self.element_x_dimension[self.element_label == label].values,
                     plot=False,
                     dimension_bandwidths=dimension_bandwidths,
@@ -150,7 +139,7 @@ class GPSMap:
         self.element_label_colorscale = element_label_colorscale
 
         plot_heat_map(
-            normalize_dataframe(self.element_x_node, 1, "-0-").T,
+            normalize(self.element_x_node.values, 1, "-0-").T,
             column_annotations=self.element_label,
             column_annotation_colorscale=self.element_label_colorscale,
         )
@@ -160,13 +149,12 @@ class GPSMap:
         plot_gps_map(
             self.node_x_dimension,
             DataFrame(
-                make_point_x_dimension(
+                map_points_by_pull(
                     new_element_x_node.values, self.node_x_dimension.values
                 ),
                 index=new_element_x_node.index,
                 columns=self.node_x_dimension.columns,
             ),
-            node_marker_size=self.node_marker_size,
             element_label=None,
             dimension_grid=self.dimension_grid,
             grid_probability=self.grid_probability,

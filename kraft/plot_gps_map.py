@@ -4,9 +4,7 @@ from plotly.colors import make_colorscale
 
 from .COLORBAR import COLORBAR
 from .get_color import get_color
-from .get_element_x_dimension_triangulation_edges import (
-    get_element_x_dimension_triangulation_edges,
-)
+from .get_triangulation_edges import get_triangulation_edges
 from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
@@ -86,7 +84,7 @@ def plot_gps_map(
 
         layout = merge_2_dicts(layout_template, layout)
 
-    edge_xs, edge_ys = get_element_x_dimension_triangulation_edges(node_x_dimension)
+    edge_xs, edge_ys = get_triangulation_edges(node_x_dimension)
 
     data = [
         {
