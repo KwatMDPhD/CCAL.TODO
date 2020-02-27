@@ -1,3 +1,4 @@
+from numpy import apply_along_axis
 from sklearn.manifold import MDS
 
 from .normalize import normalize
@@ -28,4 +29,4 @@ def map_points(
         dissimilarity="precomputed",
     ).fit_transform(point_x_point_distance)
 
-    return normalize(point_x_dimension, 0, "0-1")
+    return apply_along_axis(normalize, 0, point_x_dimension, "0-1")

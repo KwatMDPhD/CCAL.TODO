@@ -11,22 +11,22 @@ from .plot_plotly import plot_plotly
 
 def plot_gps_map(
     node_x_dimension,
-    element_x_dimension,
+    point_x_dimension,
     node_marker_size=16,
     opacity=0.8,
-    element_label=None,
+    point_label=None,
     dimension_grid=None,
     grid_probability=None,
     grid_label=None,
-    element_label_colorscale=None,
-    element_value=None,
-    element_value_na_opacity=None,
-    element_value_colorscale=None,
+    point_label_colorscale=None,
+    point_value=None,
+    point_value_na_opacity=None,
+    point_value_colorscale=None,
     ticktext_function=None,
     layout=None,
     show_node_text=True,
-    element_trace=None,
-    elements_to_highlight=(),
+    point_trace=None,
+    points_to_highlight=(),
     html_file_path=None,
 ):
 
@@ -38,24 +38,24 @@ def plot_gps_map(
         index=node_x_dimension.index,
     )
 
-    element_x_dimension = DataFrame(
+    point_x_dimension = DataFrame(
         {
-            "x": element_x_dimension.iloc[:, 1].values,
-            "y": 1 - element_x_dimension.iloc[::1, 0].values,
+            "x": point_x_dimension.iloc[:, 1].values,
+            "y": 1 - point_x_dimension.iloc[::1, 0].values,
         },
-        index=element_x_dimension.index,
+        index=point_x_dimension.index,
     )
 
     title_text = "{} {} & {} {}".format(
         node_x_dimension.index.size,
         node_x_dimension.index.name,
-        element_x_dimension.index.size,
-        element_x_dimension.index.name,
+        point_x_dimension.index.size,
+        point_x_dimension.index.name,
     )
 
-    if element_value is not None:
+    if point_value is not None:
 
-        title_text = "{}<br>{}".format(title_text, element_value.name)
+        title_text = "{}<br>{}".format(title_text, point_value.name)
 
     axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
 
@@ -140,9 +140,9 @@ def plot_gps_map(
             for node, (x, y) in node_x_dimension.iterrows()
         ]
 
-    element_trace_template = {
+    point_trace_template = {
         "type": "scatter",
-        "name": element_x_dimension.index.name,
+        "name": point_x_dimension.index.name,
         "mode": "markers",
         "marker": {
             "size": 16,
@@ -153,13 +153,13 @@ def plot_gps_map(
         "hoverinfo": "text",
     }
 
-    if element_trace is None:
+    if point_trace is None:
 
-        element_trace = element_trace_template
+        point_trace = point_trace_template
 
     else:
 
-        element_trace = merge_2_dicts(element_trace_template, element_trace)
+        point_trace = merge_2_dicts(point_trace_template, point_trace)
 
     if grid_label is not None:
 
@@ -168,7 +168,7 @@ def plot_gps_map(
         n_unique_label = grid_label_not_nan_unique.size
 
         label_color = {
-            label: get_color(element_label_colorscale, label, n_unique_label)
+            label: get_color(point_label_colorscale, label, n_unique_label)
             for label in grid_label_not_nan_unique
         }
 
@@ -206,31 +206,31 @@ def plot_gps_map(
                 }
             )
 
-    if element_value is not None:
+    if point_value is not None:
 
-        element_value = element_value.reindex(index=element_x_dimension.index)
+        point_value = point_value.reindex(index=point_x_dimension.index)
 
-        element_value_opacity = opacity
+        point_value_opacity = opacity
 
-        if element_value_na_opacity is None:
+        if point_value_na_opacity is None:
 
-            element_value.dropna(inplace=True)
+            point_value.dropna(inplace=True)
 
         else:
 
-            element_value_opacity = element_value.where(
-                isnan, other=element_value_opacity
-            ).fillna(value=element_value_na_opacity)
+            point_value_opacity = point_value.where(
+                isnan, other=point_value_opacity
+            ).fillna(value=point_value_na_opacity)
 
-        element_value = element_value[
-            element_value.abs().sort_values(na_position="first").index
+        point_value = point_value[
+            point_value.abs().sort_values(na_position="first").index
         ]
 
-        element_x_dimension = element_x_dimension.loc[element_value.index]
+        point_x_dimension = point_x_dimension.loc[point_value.index]
 
-        if element_value.astype(float).map(float.is_integer).all():
+        if point_value.astype(float).map(float.is_integer).all():
 
-            tickvals = element_value.unique()
+            tickvals = point_value.unique()
 
             if ticktext_function is None:
 
@@ -238,7 +238,7 @@ def plot_gps_map(
 
         else:
 
-            tickvals = element_value.describe()[
+            tickvals = point_value.describe()[
                 ["min", "25%", "50%", "mean", "75%", "max"]
             ].values
 
@@ -246,18 +246,18 @@ def plot_gps_map(
 
         data.append(
             merge_2_dicts(
-                element_trace,
+                point_trace,
                 {
-                    "x": element_x_dimension["x"],
-                    "y": element_x_dimension["y"],
+                    "x": point_x_dimension["x"],
+                    "y": point_x_dimension["y"],
                     "text": tuple(
-                        "{}<br>{:.2e}".format(element, value)
-                        for element, value in element_value.items()
+                        "{}<br>{:.2e}".format(point, value)
+                        for point, value in point_value.items()
                     ),
                     "marker": {
-                        "opacity": element_value_opacity,
-                        "color": element_value,
-                        "colorscale": element_value_colorscale,
+                        "opacity": point_value_opacity,
+                        "color": point_value,
+                        "colorscale": point_value_colorscale,
                         "colorbar": merge_2_dicts(
                             COLORBAR,
                             {
@@ -273,23 +273,23 @@ def plot_gps_map(
             )
         )
 
-    elif element_label is not None:
+    elif point_label is not None:
 
         for label in grid_label_not_nan_unique:
 
-            is_label = element_label == label
+            is_label = point_label == label
 
             name = "Label {:.0f}".format(label)
 
             data.append(
                 merge_2_dicts(
-                    element_trace,
+                    point_trace,
                     {
                         "legendgroup": name,
                         "name": name,
-                        "x": element_x_dimension["x"][is_label],
-                        "y": element_x_dimension["y"][is_label],
-                        "text": element_x_dimension.index[is_label],
+                        "x": point_x_dimension["x"][is_label],
+                        "y": point_x_dimension["y"][is_label],
+                        "text": point_x_dimension.index[is_label],
                         "marker": {"color": label_color[label]},
                     },
                 )
@@ -299,27 +299,27 @@ def plot_gps_map(
 
         data.append(
             merge_2_dicts(
-                element_trace,
+                point_trace,
                 {
-                    "x": element_x_dimension["x"],
-                    "y": element_x_dimension["y"],
-                    "text": element_x_dimension.index,
+                    "x": point_x_dimension["x"],
+                    "y": point_x_dimension["y"],
+                    "text": point_x_dimension.index,
                 },
             )
         )
 
     layout["annotations"] += [
         {
-            "x": element_x_dimension.loc[element, "x"],
-            "y": element_x_dimension.loc[element, "y"],
-            "text": "<b>{}</b>".format(element),
+            "x": point_x_dimension.loc[point, "x"],
+            "y": point_x_dimension.loc[point, "y"],
+            "text": "<b>{}</b>".format(point),
             "arrowhead": 2,
             "arrowwidth": 2,
             "arrowcolor": "#c93756",
             "standoff": None,
             "clicktoshow": "onoff",
         }
-        for element in elements_to_highlight
+        for point in points_to_highlight
     ]
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)

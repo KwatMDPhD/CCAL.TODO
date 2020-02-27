@@ -1,4 +1,9 @@
-from plotly.colors import convert_colors_to_same_type, find_intermediate_color
+from plotly.colors import (
+    convert_colors_to_same_type,
+    find_intermediate_color,
+    make_colorscale,
+    qualitative,
+)
 
 
 def get_color(colorscale, value, n=None):
@@ -14,6 +19,10 @@ def get_color(colorscale, value, n=None):
         else:
 
             value = value / n_block
+
+    if colorscale is None:
+
+        colorscale = make_colorscale(qualitative.Plotly)
 
     for i in range(len(colorscale) - 1):
 

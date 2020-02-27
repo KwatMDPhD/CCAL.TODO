@@ -58,6 +58,7 @@ from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
 from .read_gct import read_gct
 from .read_gmt import read_gmt
+from .read_gps_map import read_gps_map
 from .read_json import read_json
 from .score_set import score_set
 from .select_extreme import select_extreme
@@ -66,4 +67,5 @@ from .standardize_file_name import standardize_file_name
 from .summarize import summarize
 from .title import title
 from .unmesh import unmesh
+from .write_gps_map import write_gps_map
 from .write_json import write_json

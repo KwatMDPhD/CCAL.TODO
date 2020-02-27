@@ -1,7 +1,7 @@
 from numpy import full, nan
 
 
-def map_points_by_pull(point_x_node, node_x_dimension):
+def map_points_by_pull(node_x_dimension, point_x_node):
 
     point_x_dimension = full((point_x_node.shape[0], node_x_dimension.shape[1]), nan)
 
