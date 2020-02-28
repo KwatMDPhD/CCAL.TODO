@@ -51,6 +51,7 @@ def plot_histogram(
             "showticklabels": False,
         },
         "yaxis2": {"domain": yaxis2_domain, "title": {"text": yaxis2_title_text}},
+        "showlegend": True,
     }
 
     if layout is None:

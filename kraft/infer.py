@@ -5,13 +5,19 @@ from .plot_mesh import plot_mesh
 
 
 def infer(
-    point_x_dimension, value, plot=True, names=None,
+    point_x_dimension,
+    value,
+    plot=True,
+    names=None,
+    **estimate_density_keyword_arguments,
 ):
 
     (
         mesh_grid_point_x_dimension,
         mesh_grid_point_posterior_probability,
-    ) = estimate_posterior_pdf(point_x_dimension, plot=plot, names=names,)
+    ) = estimate_posterior_pdf(
+        point_x_dimension, plot=plot, names=names, **estimate_density_keyword_arguments
+    )
 
     target_dimension_grid = unique(mesh_grid_point_x_dimension[:, -1])
 
