@@ -36,7 +36,6 @@ from .get_triangulation_edges import get_triangulation_edges
 from .GPSMap import GPSMap
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
-from .infer import infer
 from .is_sorted import is_sorted
 from .log import log
 from .make_axis_different import make_axis_different
@@ -54,6 +53,7 @@ from .plot_heat_map import plot_heat_map
 from .plot_histogram import plot_histogram
 from .plot_matrix_factorization import plot_matrix_factorization
 from .plot_mesh import plot_mesh
+from .plot_nomogram import plot_nomogram
 from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
 from .read_gct import read_gct
@@ -65,6 +65,7 @@ from .select_extreme import select_extreme
 from .solve_ax_b import solve_ax_b
 from .standardize_file_name import standardize_file_name
 from .summarize import summarize
+from .target_posterior_pdf import target_posterior_pdf
 from .title import title
 from .unmesh import unmesh
 from .write_gps_map import write_gps_map
