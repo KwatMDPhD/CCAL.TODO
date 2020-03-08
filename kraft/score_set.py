@@ -1,18 +1,14 @@
 from numpy import absolute, asarray, where
 
-from .estimate_density import estimate_density
-from .get_bandwidth import get_bandwidth
 from .get_s1 import get_s1
 from .get_s2 import get_s2
-from .get_s3 import get_s3
-from .make_grid import make_grid
 from .plot_plotly import plot_plotly
 
 
 def score_set(
     element_value,
     set_elements,
-    method=("rank", "cdf", "s0", "supreme"),
+    method=("rank", "cdf", "s0", "area"),
     plot_=False,
     plot=True,
     title="Score Set",
@@ -55,11 +51,7 @@ def score_set(
 
         elif method[0] == "value":
 
-            h_f, m_f, r_f = get_v_p_0(values, h_i, m_i, plot_)
-
-        elif method[0] == "value_":
-
-            h_f, m_f, r_f = get_v_p_1(values, h_is, m_is, plot_)
+            h_f, m_f, r_f = get_v_p(values, h_is, m_is, plot_)
 
         if method[2] == "s0":
 
@@ -73,10 +65,6 @@ def score_set(
 
             s_h, s_m, s = get_s2(h_f, m_f)
 
-        elif method[2] == "s3":
-
-            s_h, s_m, s = get_s3(h_f, m_f)
-
     elif method[1] == "cdf":
 
         if method[0] == "rank":
@@ -85,11 +73,7 @@ def score_set(
 
         elif method[0] == "value":
 
-            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_v_c_0(values, h_i, m_i, plot_)
-
-        elif method[0] == "value_":
-
-            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_v_c_1(values, h_is, m_is, plot_)
+            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_v_c(values, h_is, m_is, plot_)
 
         if method[2] == "s0":
 
@@ -108,12 +92,6 @@ def score_set(
             ls_h, ls_m, ls = get_s2(h_lf, m_lf)
 
             rs_h, rs_m, rs = get_s2(h_rf, m_rf)
-
-        elif method[2] == "s3":
-
-            ls_h, ls_m, ls = get_s3(h_lf, m_lf)
-
-            rs_h, rs_m, rs = get_s3(h_rf, m_rf)
 
         if plot_:
 
@@ -312,84 +290,7 @@ def get_r_c(values, h_is, m_is, plot_):
     return h_r_lc, m_r_lc, r_lc, h_r_rc, m_r_rc, r_rc
 
 
-def get_v_p_0(values, h_i, m_i, plot_):
-
-    b = get_bandwidth(values)
-
-    g = make_grid(values.min(), values.max(), 1 / 3, values.size * 3)
-
-    dg = g[1] - g[0]
-
-    def get_p(vector):
-
-        density = estimate_density(
-            vector.reshape(vector.size, 1), bandwidths=(b,), grids=(g,), plot=False
-        )[1]
-
-        return density / (density.sum() * dg)
-
-    index = [absolute(value - g).argmin() for value in values]
-
-    h_v_p = get_p(values[h_i])[index]
-
-    m_v_p = get_p(values[m_i])[index]
-
-    v_p = get_p(values)[index]
-
-    if plot_:
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "PDF"}},
-                "data": [
-                    {"name": "Hit", "y": h_v_p, "mode": "lines"},
-                    {"name": "Miss", "y": m_v_p, "mode": "lines"},
-                    {"name": "All", "y": v_p, "mode": "lines"},
-                ],
-            },
-        )
-
-    return h_v_p, m_v_p, v_p
-
-
-def get_v_c_0(values, h_i, m_i, plot_):
-
-    h_v_p, m_v_p, v_p = get_v_p_0(values, h_i, m_i, plot_)
-
-    h_v_lc, h_v_rc = get_c(h_v_p / h_v_p.sum())
-
-    m_v_lc, m_v_rc = get_c(m_v_p / m_v_p.sum())
-
-    v_lc, v_rc = get_c(v_p / v_p.sum())
-
-    if plot_:
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "CDF >"}},
-                "data": [
-                    {"name": "Hit", "y": h_v_lc, "mode": "lines"},
-                    {"name": "Miss", "y": m_v_lc, "mode": "lines"},
-                    {"name": "All", "y": v_lc, "mode": "lines"},
-                ],
-            },
-        )
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "< CDF"}},
-                "data": [
-                    {"name": "Hit", "y": h_v_rc, "mode": "lines"},
-                    {"name": "Miss", "y": m_v_rc, "mode": "lines"},
-                    {"name": "All", "y": v_rc, "mode": "lines"},
-                ],
-            },
-        )
-
-    return h_v_lc, m_v_lc, v_lc, h_v_rc, m_v_rc, v_rc
-
-
-def get_v_p_1(values, h_is, m_is, plot_):
+def get_v_p(values, h_is, m_is, plot_):
 
     v = absolute(values)
 
@@ -419,9 +320,9 @@ def get_v_p_1(values, h_is, m_is, plot_):
     return h_v, m_v, v
 
 
-def get_v_c_1(values, h_is, m_is, plot_):
+def get_v_c(values, h_is, m_is, plot_):
 
-    h_v, m_v, v = get_v_p_1(values, h_is, m_is, plot_)
+    h_v, m_v, v = get_v_p(values, h_is, m_is, plot_)
 
     h_v_lc, h_v_rc = get_c(h_v)
 
