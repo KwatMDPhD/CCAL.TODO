@@ -1,7 +1,7 @@
 from numpy import absolute, asarray, where
 
-from .get_s1 import get_s1
-from .get_s2 import get_s2
+from .get_jsd import get_jsd
+from .get_zd import get_zd
 from .plot_plotly import plot_plotly
 
 
@@ -59,11 +59,11 @@ def score_set(
 
         elif method[2] == "s1":
 
-            s_h, s_m, s = get_s1(h_f, m_f, r_f)
+            s_h, s_m, s = get_jsd(h_f, m_f, r_f)
 
         elif method[2] == "s2":
 
-            s_h, s_m, s = get_s2(h_f, m_f)
+            s_h, s_m, s = get_zd(h_f, m_f)
 
     elif method[1] == "cdf":
 
@@ -83,15 +83,15 @@ def score_set(
 
         elif method[2] == "s1":
 
-            ls_h, ls_m, ls = get_s1(h_lf, m_lf, r_lf)
+            ls_h, ls_m, ls = get_jsd(h_lf, m_lf, r_lf)
 
-            rs_h, rs_m, rs = get_s1(h_rf, m_rf, r_rf)
+            rs_h, rs_m, rs = get_jsd(h_rf, m_rf, r_rf)
 
         elif method[2] == "s2":
 
-            ls_h, ls_m, ls = get_s2(h_lf, m_lf)
+            ls_h, ls_m, ls = get_zd(h_lf, m_lf)
 
-            rs_h, rs_m, rs = get_s2(h_rf, m_rf)
+            rs_h, rs_m, rs = get_zd(h_rf, m_rf)
 
         if plot_:
 

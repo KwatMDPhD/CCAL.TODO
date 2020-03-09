@@ -27,13 +27,13 @@ from .get_color import get_color
 from .get_entropy import get_entropy
 from .get_ic import get_ic
 from .get_icd import get_icd
-from .get_kl import get_kl
+from .get_jsd import get_jsd
+from .get_kld import get_kld
 from .get_moe import get_moe
 from .get_p_value import get_p_value
 from .get_p_values_and_q_values import get_p_values_and_q_values
-from .get_s1 import get_s1
-from .get_s2 import get_s2
 from .get_triangulation_edges import get_triangulation_edges
+from .get_zd import get_zd
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .is_sorted import is_sorted

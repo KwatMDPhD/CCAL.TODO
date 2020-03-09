@@ -3,7 +3,7 @@ from scipy.stats import pearsonr
 
 from .estimate_pdf import estimate_pdf
 from .get_bandwidth import get_bandwidth
-from .get_kl import get_kl
+from .get_kld import get_kld
 from .make_grid import make_grid
 from .normalize import normalize
 from .unmesh import unmesh
@@ -56,7 +56,7 @@ def get_ic(vector_0, vector_1):
 
     pxpy = outer(px, py)
 
-    mi = get_kl(pxy, pxpy).sum() * dx * dy
+    mi = get_kld(pxy, pxpy).sum() * dx * dy
 
     ic = sqrt(1 - exp(-2 * mi))
 
