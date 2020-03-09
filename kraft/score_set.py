@@ -1,14 +1,14 @@
 from numpy import absolute, asarray, where
 
 from .get_jsd import get_jsd
-from .get_zd import get_zd
 from .plot_plotly import plot_plotly
 
 
 def score_set(
     element_value,
     set_elements,
-    method=("rank", "cdf", "s0", "area"),
+    method="classic",
+    symmetry=False,
     plot_=False,
     plot=True,
     title="Score Set",
@@ -23,6 +23,8 @@ def score_set(
 
     values = element_value.values
 
+    magnitudes = absolute(values)
+
     set_elements = {element: None for element in set_elements}
 
     h_is = asarray(
@@ -31,127 +33,65 @@ def score_set(
 
     m_is = 1 - h_is
 
-    h_i = where(h_is)[0]
+    if method == "classic":
 
-    m_i = where(m_is)[0]
+        h_lf, m_lf, h_rf, m_rf = cumulate_rank(magnitudes, h_is, m_is, plot_)
 
-    opacity = 0.32
+        ls_h, ls_m, ls = h_lf, m_lf, h_lf - m_lf
 
-    signal_template = {
-        "name": "Signal",
-        "mode": "lines",
-        "marker": {"color": "#ff1968"},
-    }
+        rs_h, rs_m, rs = h_rf, m_rf, h_rf - m_rf
 
-    if method[1] == "pdf":
+    elif method == "2020":
 
-        if method[0] == "rank":
+        h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = cumulate_magnitude(
+            magnitudes, h_is, m_is, plot_
+        )
 
-            h_f, m_f, r_f = get_r_p(values, h_is, m_is, plot_)
+        ls_h, ls_m, ls = get_jsd(h_lf, m_lf, vector_reference=r_lf)
 
-        elif method[0] == "value":
+        rs_h, rs_m, rs = get_jsd(h_rf, m_rf, vector_reference=r_rf)
 
-            h_f, m_f, r_f = get_v_p(values, h_is, m_is, plot_)
+    if plot_:
 
-        if method[2] == "s0":
+        opacity = 0.32
 
-            s_h, s_m, s = h_f, m_f, h_f - m_f
+        signal_template = {
+            "name": "Signal",
+            "mode": "lines",
+            "marker": {"color": "#ff1968"},
+        }
 
-        elif method[2] == "s1":
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "Signal >"}},
+                "data": [
+                    {"name": "Hit", "y": ls_h, "opacity": opacity, "mode": "lines"},
+                    {"name": "Miss", "y": ls_m, "opacity": opacity, "mode": "lines"},
+                    {"y": ls, **signal_template},
+                ],
+            },
+        )
 
-            s_h, s_m, s = get_jsd(h_f, m_f, r_f)
+        plot_plotly(
+            {
+                "layout": {"title": {"text": "< Signal"}},
+                "data": [
+                    {"name": "Hit", "y": rs_h, "opacity": opacity, "mode": "lines"},
+                    {"name": "Miss", "y": rs_m, "opacity": opacity, "mode": "lines"},
+                    {"y": rs, **signal_template},
+                ],
+            },
+        )
 
-        elif method[2] == "s2":
+    if symmetry:
 
-            s_h, s_m, s = get_zd(h_f, m_f)
+        s = rs - ls
 
-    elif method[1] == "cdf":
+    else:
 
-        if method[0] == "rank":
+        s = rs
 
-            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_r_c(values, h_is, m_is, plot_)
-
-        elif method[0] == "value":
-
-            h_lf, m_lf, r_lf, h_rf, m_rf, r_rf = get_v_c(values, h_is, m_is, plot_)
-
-        if method[2] == "s0":
-
-            ls_h, ls_m, ls = h_lf, m_lf, h_lf - m_lf
-
-            rs_h, rs_m, rs = h_rf, m_rf, h_rf - m_rf
-
-        elif method[2] == "s1":
-
-            ls_h, ls_m, ls = get_jsd(h_lf, m_lf, r_lf)
-
-            rs_h, rs_m, rs = get_jsd(h_rf, m_rf, r_rf)
-
-        elif method[2] == "s2":
-
-            ls_h, ls_m, ls = get_zd(h_lf, m_lf)
-
-            rs_h, rs_m, rs = get_zd(h_rf, m_rf)
-
-        if plot_:
-
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "Signal >"}},
-                    "data": [
-                        {
-                            "name": "Hit",
-                            "y": ls_h,
-                            "opacity": opacity,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": ls_m,
-                            "opacity": opacity,
-                            "mode": "lines",
-                        },
-                        {"y": ls, **signal_template},
-                    ],
-                },
-            )
-
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "< Signal"}},
-                    "data": [
-                        {
-                            "name": "Hit",
-                            "y": rs_h,
-                            "opacity": opacity,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": rs_m,
-                            "opacity": opacity,
-                            "mode": "lines",
-                        },
-                        {"y": rs, **signal_template},
-                    ],
-                },
-            )
-
-        if method[:3] == ("rank", "cdf", "s0"):
-
-            s = rs
-
-        else:
-
-            s = rs - ls
-
-    if method[3] == "supreme":
-
-        score = s[absolute(s).argmax()]
-
-    elif method[3] == "area":
-
-        score = s.sum() / s.size
+    score = s.sum() / s.size
 
     if plot:
 
@@ -159,7 +99,9 @@ def score_set(
 
         layout = {
             "title": {
-                "text": "{}<br>{} {} {} {} = {:.2f}".format(title, *method, score),
+                "text": "{}<br>Score (method={}, symmetry={}) = {:.2f}".format(
+                    title, method, symmetry, score
+                ),
                 "x": 0.5,
             },
             "xaxis": {"anchor": "y"},
@@ -168,6 +110,8 @@ def score_set(
             "legend_orientation": "h",
             "legend": {"y": -0.24},
         }
+
+        h_i = where(h_is)[0]
 
         data = [
             {
@@ -211,7 +155,7 @@ def score_set(
                 }
             )
 
-        plot_plotly({"layout": layout, "data": data}, html_file_path)
+        plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
 
     return score
 
@@ -227,15 +171,13 @@ def get_c(vector):
     return lc + add, rc + add
 
 
-def get_r_p(values, h_is, m_is, plot_):
+def cumulate_rank(magnitudes, h_is, m_is, plot_):
 
-    h_is *= absolute(values)
+    h_is *= magnitudes
 
     h_r_p = h_is / h_is.sum()
 
     m_r_p = m_is / m_is.sum()
-
-    r_p = (h_r_p + m_r_p) / 2
 
     if plot_:
 
@@ -245,23 +187,13 @@ def get_r_p(values, h_is, m_is, plot_):
                 "data": [
                     {"name": "Hit", "y": h_r_p, "mode": "lines"},
                     {"name": "Miss", "y": m_r_p, "mode": "lines"},
-                    {"name": "Center", "y": r_p, "mode": "lines"},
                 ],
             },
         )
 
-    return h_r_p, m_r_p, r_p
-
-
-def get_r_c(values, h_is, m_is, plot_):
-
-    h_r_p, m_r_p, r_p = get_r_p(values, h_is, m_is, plot_)
-
     h_r_lc, h_r_rc = get_c(h_r_p)
 
     m_r_lc, m_r_rc = get_c(m_r_p)
-
-    r_lc, r_rc = get_c(r_p)
 
     if plot_:
 
@@ -271,7 +203,6 @@ def get_r_c(values, h_is, m_is, plot_):
                 "data": [
                     {"name": "Hit", "y": h_r_lc, "mode": "lines"},
                     {"name": "Miss", "y": m_r_lc, "mode": "lines"},
-                    {"name": "Center", "y": r_lc, "mode": "lines"},
                 ],
             },
         )
@@ -282,17 +213,16 @@ def get_r_c(values, h_is, m_is, plot_):
                 "data": [
                     {"name": "Hit", "y": h_r_rc, "mode": "lines"},
                     {"name": "Miss", "y": m_r_rc, "mode": "lines"},
-                    {"name": "Center", "y": r_rc, "mode": "lines"},
                 ],
             },
         )
 
-    return h_r_lc, m_r_lc, r_lc, h_r_rc, m_r_rc, r_rc
+    return h_r_lc, m_r_lc, h_r_rc, m_r_rc
 
 
-def get_v_p(values, h_is, m_is, plot_):
+def cumulate_magnitude(magnitudes, h_is, m_is, plot_):
 
-    v = absolute(values)
+    v = magnitudes
 
     h_v = v * h_is
 
@@ -316,13 +246,6 @@ def get_v_p(values, h_is, m_is, plot_):
                 ],
             },
         )
-
-    return h_v, m_v, v
-
-
-def get_v_c(values, h_is, m_is, plot_):
-
-    h_v, m_v, v = get_v_p(values, h_is, m_is, plot_)
 
     h_v_lc, h_v_rc = get_c(h_v)
 
