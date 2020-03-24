@@ -48,7 +48,6 @@ setup(
         "statsmodels",
         "KDEpy",
         "plotly",
-        "GEOparse",
         "click",
     ),
     packages=(name,),
