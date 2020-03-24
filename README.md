@@ -2,7 +2,7 @@
 
 Helpers.
 
-## Install
+## Get
 
 ```sh
 pip install git+https://github.com/KwatME/kraft
@@ -15,9 +15,3 @@ import kraft
 ```
 
 See [notebook](notebook) for applications.
-
-<./notebook>
-
-<notebook>
-
-</notebook>
