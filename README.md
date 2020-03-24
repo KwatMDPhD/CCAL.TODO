@@ -11,7 +11,7 @@ pip install git+https://github.com/KwatME/kraft
 ## Use
 
 ```python
-imoprt kraft
+import kraft
 ```
 
 See [notebook](notebook) for applications.
