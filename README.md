@@ -15,3 +15,5 @@ import kraft
 ```
 
 See [notebook](notebook) for applications.
+
+./notebook
