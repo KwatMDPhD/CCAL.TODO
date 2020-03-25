@@ -1,4 +1,4 @@
-from .BAD_VALUES import BAD_VALUES
+from .BAD_STR import BAD_STR
 from .binarize import binarize
 from .cast_builtin import cast_builtin
 from .clip import clip
@@ -9,6 +9,8 @@ from .command import command
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .download import download
 from .download_extract import download_extract
+from .drop_slice import drop_slice
+from .drop_slice_greedily import drop_slice_greedily
 from .estimate_density import estimate_density
 from .estimate_pdf import estimate_pdf
 from .estimate_posterior_pdf import estimate_posterior_pdf
@@ -33,6 +35,7 @@ from .get_p_values_and_q_values import get_p_values_and_q_values
 from .get_triangulation_edges import get_triangulation_edges
 from .get_zd import get_zd
 from .GPSMap import GPSMap
+from .guess_type import guess_type
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
 from .is_sorted import is_sorted
@@ -61,6 +64,7 @@ from .read_gps_map import read_gps_map
 from .read_json import read_json
 from .score_set import score_set
 from .select_extreme import select_extreme
+from .separate_information import separate_information
 from .solve_ax_b import solve_ax_b
 from .standardize_file_name import standardize_file_name
 from .summarize import summarize
@@ -69,3 +73,4 @@ from .title import title
 from .unmesh import unmesh
 from .write_gps_map import write_gps_map
 from .write_json import write_json
+from .write_tsv import write_tsv

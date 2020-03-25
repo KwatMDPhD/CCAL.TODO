@@ -1,4 +1,4 @@
-BAD_VALUES = (
+BAD_STR = (
     "--",
     "?",
     "Missing",
