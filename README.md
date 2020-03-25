@@ -1,6 +1,6 @@
 # Kraft
 
-Helpers.
+Program that helps other programs.
 
 ## Get
 
@@ -10,8 +10,4 @@ pip install git+https://github.com/KwatME/kraft
 
 ## Use
 
-```python
-import kraft
-```
-
-See [notebook](notebook) for applications.
+See [notebook](notebook).

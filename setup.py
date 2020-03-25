@@ -4,6 +4,8 @@ from setuptools import setup
 
 name = "kraft"
 
+data_directory_name = "data"
+
 
 def get_child_paths(parent_directory_path, relative=True):
 
@@ -30,14 +32,9 @@ def get_child_paths(parent_directory_path, relative=True):
         return tuple(child_paths)
 
 
-data_directory_name = "data"
-
 setup(
     name=name,
-    url="https://github.com/KwatME/{}".format(name),
     version="0.2.0",
-    author="Kwat Medetgul-Ernar",
-    author_email="kwatme8@gmail.com",
     python_requires=">=3.7",
     install_requires=(
         "numpy",
