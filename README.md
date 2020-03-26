@@ -1,6 +1,6 @@
 # Kraft
 
-Program that helps other programs.
+Program for helping other programs.
 
 ## Get
 
