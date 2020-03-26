@@ -64,7 +64,7 @@ from .read_gps_map import read_gps_map
 from .read_json import read_json
 from .score_set import score_set
 from .select_extreme import select_extreme
-from .separate_information import separate_information
+from .separate_type import separate_type
 from .solve_ax_b import solve_ax_b
 from .standardize_file_name import standardize_file_name
 from .summarize import summarize

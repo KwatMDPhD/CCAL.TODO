@@ -57,9 +57,17 @@ def summarize(
 
         axis0_n_na.name = dataframe_isna.index.name
 
+        if axis0_n_na.name is None:
+
+            axis0_n_na.name = "Axis 0"
+
         axis1_n_na = dataframe_isna.sum()
 
         axis1_n_na.name = dataframe_isna.columns.name
+
+        if axis1_n_na.name is None:
+
+            axis1_n_na.name = "Axis 1"
 
         if plot:
 

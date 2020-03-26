@@ -1,12 +1,9 @@
-from numpy import unique
 from pandas import DataFrame
 
 
 def binarize(series):
 
-    series = series.astype(str)
-
-    dataframe = DataFrame(index=unique(series), columns=series.index)
+    dataframe = DataFrame(index=series.unique(), columns=series.index)
 
     dataframe.index.name = series.name
 
