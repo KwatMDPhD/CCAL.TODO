@@ -44,24 +44,12 @@ def separate_type(information_x_, bad_values=BAD_STR):
 
                 binary_dataframes.append(binary_x_)
 
-    if 0 < len(continuous_dataframe_rows):
+    continuous_x_ = DataFrame(data=continuous_dataframe_rows)
 
-        continuous_x_ = DataFrame(data=continuous_dataframe_rows)
+    continuous_x_.index.name = information_x_.index.name
 
-        continuous_x_.index.name = information_x_.index.name
+    binary_x_ = concat(binary_dataframes)
 
-    else:
-
-        continuous_x_ = None
-
-    if 0 < len(binary_dataframes):
-
-        binary_x_ = concat(binary_dataframes)
-
-        binary_x_.index.name = information_x_.index.name
-
-    else:
-
-        binary_x_ = None
+    binary_x_.index.name = information_x_.index.name
 
     return continuous_x_, binary_x_
