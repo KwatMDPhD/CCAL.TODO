@@ -86,6 +86,7 @@ def plot_histogram(
                 "type": "histogram",
                 "legendgroup": x_index,
                 "name": name,
+                "showlegend": 1 < len(xs),
                 "x": x,
                 "histnorm": histnorm,
                 "xbins": {"size": bin_size},

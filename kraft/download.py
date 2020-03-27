@@ -1,24 +1,26 @@
-from os.path import basename
+from os.path import basename, exists
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
 
 from requests import get
 
 
-def download(url, directory_path):
+def download(url, directory_path, overwrite=True):
 
     file_path = "{}/{}".format(directory_path, basename(urlsplit(url).path))
 
-    print("{} ==> {}...".format(url, file_path))
+    if not exists(file_path) or overwrite:
 
-    if url.startswith("ftp"):
+        print("{} ==> {}...".format(url, file_path))
 
-        urlretrieve(url, file_path)
+        if url.startswith("ftp"):
 
-    else:
+            urlretrieve(url, file_path)
 
-        with open(file_path, mode="wb") as io:
+        else:
 
-            io.write(get(url, allow_redirects=True).content)
+            with open(file_path, mode="wb") as io:
+
+                io.write(get(url, allow_redirects=True).content)
 
     return file_path
