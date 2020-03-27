@@ -35,6 +35,7 @@ from .get_p_values_and_q_values import get_p_values_and_q_values
 from .get_triangulation_edges import get_triangulation_edges
 from .get_zd import get_zd
 from .GPSMap import GPSMap
+from .group import group
 from .guess_type import guess_type
 from .ignore_nan_and_function_1 import ignore_nan_and_function_1
 from .ignore_nan_and_function_2 import ignore_nan_and_function_2
@@ -70,8 +71,8 @@ from .solve_ax_b import solve_ax_b
 from .standardize_file_name import standardize_file_name
 from .summarize import summarize
 from .target_posterior_pdf import target_posterior_pdf
+from .tidy import tidy
 from .title import title
 from .unmesh import unmesh
 from .write_gps_map import write_gps_map
 from .write_json import write_json
-from .write_tsv import write_tsv
