@@ -35,7 +35,7 @@ def get_child_paths(parent_directory_path, relative=True):
 setup(
     name=name,
     version="0.2.0",
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     install_requires=(
         "numpy",
         "pandas",
