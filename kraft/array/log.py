@@ -1,7 +1,9 @@
-from numpy import log as loge, log2, log10
+from numpy import log as loge, log2, log10, nanmin
 
 
 def log(array, min_before_logging=None, log_base="e"):
+
+    array = array.copy()
 
     if min_before_logging is not None:
 
@@ -9,7 +11,7 @@ def log(array, min_before_logging=None, log_base="e"):
 
             min_before_logging = array[0 < array].min()
 
-        array += min_before_logging - array.min()
+        array += min_before_logging - nanmin(array)
 
     if log_base == "2":
 
