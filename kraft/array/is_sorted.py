@@ -1,7 +1,11 @@
 from numpy import diff
 
+from .error_nan import error_nan
+
 
 def is_sorted(array):
+
+    error_nan(array)
 
     diff_ = diff(array)
 
