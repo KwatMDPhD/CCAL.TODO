@@ -1,29 +1,15 @@
-from numpy import log as loge, log2, log10, nanmin
+from numpy import log as loge, log2, log10
 
 from .error_nan import error_nan
 
 
-def log(array, min_before_logging=None, log_base="e"):
+def log(array, log_base=2):
 
     error_nan(array)
 
     assert (0 < array).all()
 
-    array = array.copy()
-
-    if min_before_logging is not None:
-
-        if min_before_logging == "0<":
-
-            min_before_logging = array[0 < array].min()
-
-        else:
-
-            assert 0 < min_before_logging
-
-        array += min_before_logging - nanmin(array)
-
-    if log_base == "2":
+    if log_base in (2, "2"):
 
         log_ = log2
 
@@ -31,7 +17,7 @@ def log(array, min_before_logging=None, log_base="e"):
 
         log_ = loge
 
-    elif log_base == "10":
+    elif log_base in (10, "10"):
 
         log_ = log10
 

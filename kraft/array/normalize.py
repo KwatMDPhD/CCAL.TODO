@@ -5,17 +5,31 @@ def normalize(array, method, rank_method="average"):
 
     if method == "-0-":
 
-        return (array - array.mean()) / array.std()
+        standard_deviation = array.std()
+
+        assert standard_deviation != 0
+
+        return (array - array.mean()) / standard_deviation
 
     elif method == "0-1":
 
         min_ = array.min()
 
-        return (array - min_) / (array.max() - min_)
+        range_ = array.max() - min_
+
+        assert range_ != 0
+
+        return (array - min_) / range_
 
     elif method == "sum":
 
-        return array / array.sum()
+        assert (0 <= array).all()
+
+        sum_ = array.sum()
+
+        assert sum_ != 0
+
+        return array / sum_
 
     elif method == "rank":
 

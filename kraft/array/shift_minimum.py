@@ -3,7 +3,7 @@ from numpy import nanmin
 from .error_nan import error_nan
 
 
-def set_minimum(array, minimum):
+def shift_minimum(array, minimum):
 
     error_nan(array)
 
@@ -11,8 +11,4 @@ def set_minimum(array, minimum):
 
         minimum = array[0 < array].min()
 
-    else:
-
-        array += min_before_logging - nanmin(array)
-
-    return
+    return array + minimum - nanmin(array)
