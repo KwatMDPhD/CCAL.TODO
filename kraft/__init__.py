@@ -7,14 +7,15 @@ from .array.is_sorted import is_sorted
 from .array.log import log
 from .array.normalize import normalize
 from .array.shift_minimum import shift_minimum
-
-# from .kernel_density.estimate_density import estimate_density
-# from .kernel_density.estimate_pdf import estimate_pdf
-# from .kernel_density.get_bandwidth import get_bandwidth
-# from .kernel_density.make_grid import make_grid
-# from .kernel_density.mesh import mesh
-# from .kernel_density.plot_mesh import plot_mesh
-# from .kernel_density.unmesh import unmesh
+from .kernel_density.estimate_density import estimate_density
+from .kernel_density.estimate_pdf import estimate_pdf
+from .kernel_density.get_bandwidth import get_bandwidth
+from .kernel_density.make_grid import make_grid
+from .kernel_density.mesh import mesh
+from .kernel_density.plot_mesh import plot_mesh
+from .kernel_density.unmesh import unmesh
+from .plot.plot_heat_map import plot_heat_map
+from .support.merge_2_dicts import merge_2_dicts
 
 # from .information.get_entropy import get_entropy
 

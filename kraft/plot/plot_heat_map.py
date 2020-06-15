@@ -1,10 +1,10 @@
 from numpy import argsort, asarray, nonzero, unique
 from pandas import DataFrame
 
-from .cast_builtin import cast_builtin
+from ..support.cast_builtin import cast_builtin
+from ..support.merge_2_dicts import merge_2_dicts
 from .COLORBAR import COLORBAR
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .merge_2_dicts import merge_2_dicts
 from .plot_plotly import plot_plotly
 
 

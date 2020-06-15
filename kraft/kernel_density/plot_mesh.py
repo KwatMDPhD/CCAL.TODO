@@ -1,7 +1,7 @@
 from pandas import DataFrame, Index
 
-from .plot_heat_map import plot_heat_map
-from .plot_plotly import plot_plotly
+from ..plot.plot_heat_map import plot_heat_map
+from ..plot.plot_plotly import plot_plotly
 from .unmesh import unmesh
 
 
