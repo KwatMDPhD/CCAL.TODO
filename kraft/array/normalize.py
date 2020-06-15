@@ -1,7 +1,11 @@
 from scipy.stats import rankdata
 
+from .error_nan import error_nan
+
 
 def normalize(array, method, rank_method="average"):
+
+    error_nan(array)
 
     if method == "-0-":
 
