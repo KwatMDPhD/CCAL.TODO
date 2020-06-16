@@ -1,3 +1,6 @@
+from subprocess import PIPE, run
+
+
 def cast_builtin(object_):
 
     for builtin_object in (
@@ -52,3 +55,17 @@ def merge_2_dicts(dict_0, dict_1):
             dict_[key] = dict_1[key]
 
     return dict_
+
+
+def command(command):
+
+    print(command)
+
+    return run(
+        command,
+        shell=True,
+        stdout=PIPE,
+        stderr=PIPE,
+        check=True,
+        universal_newlines=True,
+    )
