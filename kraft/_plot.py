@@ -1,11 +1,26 @@
+COLORBAR = {
+    "thicknessmode": "fraction",
+    "thickness": 0.024,
+    "len": 0.64,
+    "ticks": "outside",
+    "tickfont": {"size": 10},
+}
 from numpy import argsort, asarray, nonzero, unique
 from pandas import DataFrame
+from plotly.colors import make_colorscale, qualitative
+from plotly.io import show, templates, write_html
 
 from ..support.cast_builtin import cast_builtin
 from ..support.merge_2_dicts import merge_2_dicts
 from .COLORBAR import COLORBAR
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
 from .plot_plotly import plot_plotly
+
+DATA_TYPE_COLORSCALE = {
+    "continuous": make_colorscale(("#0000ff", "#ffffff", "#ff0000")),
+    "categorical": make_colorscale(qualitative.Plotly),
+    "binary": make_colorscale(("#ffddca", "#006442")),
+}
 
 
 def plot_heat_map(
@@ -210,3 +225,27 @@ def plot_heat_map(
                 )
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+
+
+templates["kraft"] = {"layout": {"autosize": False}}
+
+
+def plot_plotly(figure, html_file_path=None):
+
+    template = "plotly_white+kraft"
+
+    if "layout" in figure:
+
+        figure["layout"]["template"] = template
+
+    else:
+
+        figure["layout"] = {"template": template}
+
+    config = {"editable": True}
+
+    show(figure, config=config)
+
+    if html_file_path is not None:
+
+        write_html(figure, html_file_path, config=config)

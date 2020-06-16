@@ -1,10 +1,11 @@
 from KDEpy import FFTKDE
 from numpy import finfo
+from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
+from ..point_x_dimension.make_grid import make_grid
+from ..point_x_dimension.mesh import mesh
+from ..point_x_dimension.plot_mesh import plot_mesh
 from .get_bandwidth import get_bandwidth
-from .make_grid import make_grid
-from .mesh import mesh
-from .plot_mesh import plot_mesh
 
 
 def estimate_density(
@@ -35,3 +36,8 @@ def estimate_density(
         plot_mesh(grid_point_x_dimension, density, names=names, value_name="Density")
 
     return grid_point_x_dimension, density
+
+
+def get_bandwidth(vector):
+
+    return KDEMultivariate(vector, "c").bw[0]
