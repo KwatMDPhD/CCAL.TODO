@@ -17,6 +17,16 @@ def plot_mesh(
 
     grids, value = unmesh(point_x_dimension, value)
 
+    for grid_index, grid in enumerate(grids):
+
+        print(
+            "Dimension {} grid: size={} min={:.2e} max={:.2e}".format(
+                grid_index, grid.size, grid.min(), grid.max()
+            )
+        )
+
+    print("Value: min={:.2e} max={:.2e}".format(value.min(), value.max()))
+
     if n_dimension == 1:
 
         plot_plotly(
@@ -43,11 +53,3 @@ def plot_mesh(
             layout={"title": {"text": value_name}},
             html_file_path=html_file_path,
         )
-
-    else:
-
-        for grid in grids:
-
-            print(grid.size, grid.min(), grid.max())
-
-        print(value.min(), value.max())

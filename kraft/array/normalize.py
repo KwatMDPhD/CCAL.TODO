@@ -11,7 +11,7 @@ def normalize(array, method, rank_method="average"):
 
         standard_deviation = array.std()
 
-        assert standard_deviation != 0
+        assert not standard_deviation == 0
 
         return (array - array.mean()) / standard_deviation
 
@@ -21,7 +21,7 @@ def normalize(array, method, rank_method="average"):
 
         range_ = array.max() - min_
 
-        assert range_ != 0
+        assert not range_ == 0
 
         return (array - min_) / range_
 
@@ -31,7 +31,7 @@ def normalize(array, method, rank_method="average"):
 
         sum_ = array.sum()
 
-        assert sum_ != 0
+        assert not sum_ == 0
 
         return array / sum_
 

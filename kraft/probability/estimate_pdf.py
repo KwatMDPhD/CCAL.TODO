@@ -1,7 +1,7 @@
 from numpy import diff, product, unique
 
-from .estimate_density import estimate_density
-from .plot_mesh import plot_mesh
+from ..kernel_density.estimate_density import estimate_density
+from ..kernel_density.plot_mesh import plot_mesh
 
 
 def estimate_pdf(

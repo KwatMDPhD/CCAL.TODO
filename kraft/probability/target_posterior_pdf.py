@@ -1,6 +1,6 @@
 from numpy import absolute, unique
 
-from .plot_mesh import plot_mesh
+from ..kernel_density.plot_mesh import plot_mesh
 
 
 def target_posterior_pdf(

@@ -1,8 +1,8 @@
 from numpy import apply_along_axis, diff, unique
 
+from ..kernel_density.plot_mesh import plot_mesh
+from ..kernel_density.unmesh import unmesh
 from .estimate_pdf import estimate_pdf
-from .plot_mesh import plot_mesh
-from .unmesh import unmesh
 
 
 def estimate_posterior_pdf(
