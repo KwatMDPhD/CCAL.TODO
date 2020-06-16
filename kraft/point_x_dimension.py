@@ -1,14 +1,7 @@
 from numpy import asarray, linspace, meshgrid, unique
 from pandas import DataFrame, Index
 
-from ..plot.plot_heat_map import plot_heat_map
-from ..plot.plot_plotly import plot_plotly
-from .unmesh import get_grid
-
-
-def get_grid(point_x_dimension):
-
-    return tuple(unique(dimension) for dimension in point_x_dimension.T)
+from .plot import plot_heat_map, plot_plotly
 
 
 def grid(min_, max_, fraction_extension, n):
@@ -29,6 +22,11 @@ def make_grid_point_x_dimension(grids):
     return asarray(tuple(array.ravel() for array in meshgrid(*grids, indexing="ij"))).T
 
 
+def get_grids(point_x_dimension):
+
+    return tuple(unique(dimension) for dimension in point_x_dimension.T)
+
+
 def plot_grid_point_x_dimension(
     grid_point_x_dimension,
     grid_point_value,
@@ -43,7 +41,7 @@ def plot_grid_point_x_dimension(
 
         names = tuple("Dimension {}".format(i) for i in range(n_dimension))
 
-    grids = get_grid(grid_point_x_dimension)
+    grids = get_grids(grid_point_x_dimension)
 
     grid_point_value = grid_point_value.reshape(tuple(grid.size for grid in grids))
 

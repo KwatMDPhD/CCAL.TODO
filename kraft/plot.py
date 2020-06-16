@@ -5,22 +5,63 @@ COLORBAR = {
     "ticks": "outside",
     "tickfont": {"size": 10},
 }
-from numpy import argsort, asarray, nonzero, unique
-from pandas import DataFrame
-from plotly.colors import make_colorscale, qualitative
+from numpy import arange, argsort, asarray, meshgrid, nonzero, unique
+from pandas import DataFrame, Series
+from plotly.colors import (
+    convert_colors_to_same_type,
+    find_intermediate_color,
+    make_colorscale,
+    qualitative,
+)
 from plotly.io import show, templates, write_html
 
-from ..support.cast_builtin import cast_builtin
-from ..support.merge_2_dicts import merge_2_dicts
-from .COLORBAR import COLORBAR
-from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .plot_plotly import plot_plotly
+from .array import normalize
+from .support import cast_builtin, merge_2_dicts
 
 DATA_TYPE_COLORSCALE = {
     "continuous": make_colorscale(("#0000ff", "#ffffff", "#ff0000")),
     "categorical": make_colorscale(qualitative.Plotly),
     "binary": make_colorscale(("#ffddca", "#006442")),
 }
+
+
+def get_color(colorscale, value, n=None):
+
+    if 1 < value or (value == 1 and n is not None):
+
+        n_block = n - 1
+
+        if value == n_block:
+
+            value = 1
+
+        else:
+
+            value = value / n_block
+
+    if colorscale is None:
+
+        colorscale = make_colorscale(qualitative.Plotly)
+
+    for i in range(len(colorscale) - 1):
+
+        if colorscale[i][0] <= value <= colorscale[i + 1][0]:
+
+            scale_low, color_low = colorscale[i]
+
+            scale_high, color_high = colorscale[i + 1]
+
+            value_ = (value - scale_low) / (scale_high - scale_low)
+
+            color = find_intermediate_color(
+                *convert_colors_to_same_type((color_low, color_high))[0],
+                value_,
+                colortype="rgb",
+            )
+
+            return "rgb{}".format(
+                tuple(int(float(i)) for i in color[4:-1].split(sep=","))
+            )
 
 
 def plot_heat_map(
@@ -249,3 +290,183 @@ def plot_plotly(figure, html_file_path=None):
     if html_file_path is not None:
 
         write_html(figure, html_file_path, config=config)
+
+
+def plot_bubble_map(
+    dataframe_size,
+    dataframe_color=None,
+    max_size=20,
+    colorscale=None,
+    layout=None,
+    html_file_path=None,
+):
+
+    x_grid = arange(dataframe_size.shape[1])
+
+    y_grid = arange(dataframe_size.shape[0])[::-1]
+
+    layout_ = {
+        "height": max(500, max_size * 2 * dataframe_size.shape[0]),
+        "width": max(500, max_size * 2 * dataframe_size.shape[1]),
+        "xaxis": {
+            "title": "{} (n={})".format(
+                dataframe_size.columns.name, dataframe_size.columns.size
+            ),
+            "tickvals": x_grid,
+            "ticktext": dataframe_size.columns,
+        },
+        "yaxis": {
+            "title": "{} (n={})".format(
+                dataframe_size.index.name, dataframe_size.index.size
+            ),
+            "tickvals": y_grid,
+            "ticktext": dataframe_size.index,
+        },
+    }
+
+    if layout is None:
+
+        layout = layout_
+
+    else:
+
+        layout = merge_2_dicts(layout_, layout)
+
+    if dataframe_color is None:
+
+        dataframe_color = dataframe_size
+
+    mesh_grid_x, mesh_grid_y = meshgrid(x_grid, y_grid)
+
+    if colorscale is None:
+
+        colorscale = DATA_TYPE_COLORSCALE["continuous"]
+
+    plot_plotly(
+        {
+            "layout": layout,
+            "data": [
+                {
+                    "x": mesh_grid_x.ravel(),
+                    "y": mesh_grid_y.ravel(),
+                    "text": dataframe_size.values.ravel(),
+                    "mode": "markers",
+                    "marker": {
+                        "size": normalize(dataframe_size.values, "0-1").ravel()
+                        * max_size,
+                        "color": dataframe_color.values.ravel(),
+                        "colorscale": colorscale,
+                        "colorbar": COLORBAR,
+                    },
+                }
+            ],
+        },
+        html_file_path=html_file_path,
+    )
+
+
+def plot_histogram(
+    xs, histnorm=None, bin_size=None, plot_rug=None, layout=None, html_file_path=None
+):
+
+    if histnorm is None:
+
+        yaxis2_title_text = "N"
+
+    else:
+
+        yaxis2_title_text = histnorm.title()
+
+    if plot_rug is None:
+
+        plot_rug = all(len(x) < 1e3 for x in xs)
+
+    n_x = len(xs)
+
+    if plot_rug:
+
+        rug_height = 0.04
+
+        yaxis_domain_max = n_x * rug_height
+
+        yaxis2_domain_min = yaxis_domain_max + rug_height
+
+    else:
+
+        yaxis_domain_max = 0
+
+        yaxis2_domain_min = 0
+
+    yaxis_domain = 0, yaxis_domain_max
+
+    yaxis2_domain = yaxis2_domain_min, 1
+
+    layout_ = {
+        "xaxis": {"anchor": "y"},
+        "yaxis": {
+            "domain": yaxis_domain,
+            "zeroline": False,
+            "dtick": 1,
+            "showticklabels": False,
+        },
+        "yaxis2": {"domain": yaxis2_domain, "title": {"text": yaxis2_title_text}},
+        "showlegend": True,
+    }
+
+    if layout is None:
+
+        layout = layout_
+
+    else:
+
+        layout = merge_2_dicts(layout_, layout)
+
+    data = []
+
+    for x_index, x in enumerate(xs):
+
+        if isinstance(x, Series):
+
+            name = x.name
+
+            text = x.index
+
+        else:
+
+            name = x_index
+
+            text = None
+
+        color = get_color(DATA_TYPE_COLORSCALE["categorical"], x_index, n_x)
+
+        data.append(
+            {
+                "yaxis": "y2",
+                "type": "histogram",
+                "legendgroup": x_index,
+                "name": name,
+                "showlegend": 1 < len(xs),
+                "x": x,
+                "histnorm": histnorm,
+                "xbins": {"size": bin_size},
+                "marker": {"color": color},
+            }
+        )
+
+        if plot_rug:
+
+            data.append(
+                {
+                    "legendgroup": x_index,
+                    "name": name,
+                    "showlegend": False,
+                    "x": x,
+                    "y": (x_index,) * len(x),
+                    "text": text,
+                    "mode": "markers",
+                    "marker": {"symbol": "line-ns-open", "color": color},
+                    "hoverinfo": "x+text",
+                }
+            )
+
+    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
