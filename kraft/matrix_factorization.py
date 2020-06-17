@@ -5,11 +5,11 @@ from pandas import DataFrame
 from scipy.optimize import nnls
 from sklearn.decomposition import NMF
 
-from .cluster import cluster
-from .normalize import normalize
-from .plot_heat_map import plot_heat_map
-from .plot_plotly import plot_plotly
-from .RANDOM_SEED import RANDOM_SEED
+from .clustering import cluster
+from .array import normalize
+from .plot import plot_heat_map
+from .plot import plot_plotly
+from .CONSTANT import RANDOM_SEED
 
 
 def factorize_matrix_by_nmf(

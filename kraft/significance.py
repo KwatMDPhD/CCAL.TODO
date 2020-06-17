@@ -2,8 +2,6 @@ from numpy import asarray, isnan, nan, sqrt, where
 from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
-from .get_p_value import get_p_value
-
 
 def get_moe(array, confidence=0.95):
 

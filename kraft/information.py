@@ -1,13 +1,10 @@
 from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
-from .estimate_pdf import estimate_pdf
-from .get_bandwidth import get_bandwidth
-from .get_ic import get_ic
-from .get_kld import get_kld
-from .make_grid import make_grid
-from .normalize import normalize
-from .unmesh import unmesh
+from .probability import get_pdf
+from .kernel_density import get_bandwidth
+from .array import normalize
+from .point_x_dimension import get_grids, grid
 
 
 def get_entropy(vector):
@@ -46,12 +43,12 @@ def get_ic(vector_0, vector_1):
     n_grid = 24
 
     grids = (
-        make_grid(vector_0.min(), vector_0.max(), fraction_grid_extension, n_grid),
-        make_grid(vector_1.min(), vector_1.max(), fraction_grid_extension, n_grid),
+        grid(vector_0.min(), vector_0.max(), fraction_grid_extension, n_grid),
+        grid(vector_1.min(), vector_1.max(), fraction_grid_extension, n_grid),
     )
 
-    (x_grid, y_grid), pxy = unmesh(
-        *estimate_pdf(
+    (x_grid, y_grid), pxy = get_grids(
+        *get_pdf(
             asarray((vector_0, vector_1)).T,
             plot=False,
             bandwidths=bandwidths,

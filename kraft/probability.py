@@ -1,7 +1,7 @@
 from numpy import absolute, apply_along_axis, diff, log2, product, unique
 
 from .kernel_density import get_density
-from .plot_plotly import plot_plotly
+from .plot import plot_plotly
 from .point_x_dimension import get_grids, plot_grid_point_x_dimension
 
 

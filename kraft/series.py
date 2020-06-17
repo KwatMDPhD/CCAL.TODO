@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
-from .merge_2_dicts import merge_2_dicts
-from .plot_plotly import plot_plotly
+from .support import merge_2_dicts
+from .plot import plot_plotly
 
 
 def binarize(series):

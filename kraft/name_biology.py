@@ -1,6 +1,6 @@
 from pandas import read_csv
 
-from .DATA_DIRECTORY_PATH import DATA_DIRECTORY_PATH
+from .CONSTANT import DATA_DIRECTORY_PATH
 
 enst_ensg_gene = read_csv(
     "{}/enst_ensg_gene.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"

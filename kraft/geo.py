@@ -3,9 +3,9 @@ from gzip import open
 from pandas import DataFrame
 
 from .dataframe import group, tidy
-from .download import download, group, tidy
+from .download import download
 from .name_biology import map_genes
-from .support import cast_builtin, download, group, tidy
+from .support import cast_builtin
 
 
 def parse_block(io, str_):

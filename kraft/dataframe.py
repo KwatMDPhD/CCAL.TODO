@@ -3,7 +3,6 @@ from numpy.random import choice
 from pandas import DataFrame, concat
 
 from .array import guess_type
-from .dataframe import drop_slice
 from .plot import plot_heat_map, plot_histogram
 from .series import binarize
 from .string import BAD_STR

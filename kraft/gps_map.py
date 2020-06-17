@@ -7,21 +7,14 @@ from plotly.colors import make_colorscale
 from scipy.spatial import Delaunay
 from sklearn.manifold import MDS
 
-from .COLORBAR import COLORBAR
-from .estimate_pdf import estimate_pdf
-from .get_bandwidth import get_bandwidth
-from .get_color import get_color
-from .get_triangulation_edges import get_triangulation_edges
-from .make_grid import make_grid
-from .map_points import map_points
-from .map_points_by_pull import map_points_by_pull
-from .merge_2_dicts import merge_2_dicts
-from .normalize import normalize
-from .plot_gps_map import plot_gps_map
-from .plot_heat_map import plot_heat_map
-from .plot_plotly import plot_plotly
-from .RANDOM_SEED import RANDOM_SEED
-from .unmesh import unmesh
+from .plot import COLORBAR, get_color
+from .probability import get_pdf
+from .kernel_density import get_bandwidth
+from .point_x_dimension import grid, get_grids
+from .support import merge_2_dicts
+from .array import normalize
+from .plot import plot_heat_map, plot_plotly
+from .CONSTANT import RANDOM_SEED
 
 
 def get_triangulation_edges(point_x_dimension):
@@ -129,7 +122,7 @@ class GPSMap:
 
         triangulation = Delaunay(self.node_x_dimension)
 
-        self.dimension_grid = make_grid(0, 1, 1e-3, n_grid)
+        self.dimension_grid = grid(0, 1, 1e-3, n_grid)
 
         for i in range(n_grid):
 
@@ -147,8 +140,8 @@ class GPSMap:
 
         for label in self.point_label.unique():
 
-            label_grid_probability[label] = unmesh(
-                *estimate_pdf(
+            label_grid_probability[label] = get_grids(
+                *get_pdf(
                     self.point_x_dimension[self.point_label == label].values,
                     plot=False,
                     bandwidths=bandwidths,
