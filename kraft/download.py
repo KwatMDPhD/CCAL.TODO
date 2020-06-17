@@ -1,8 +1,21 @@
-from os.path import basename, exists
+from os import remove
+from os.path import basename, exists, splitext
+from shutil import unpack_archive
 from urllib.parse import urlsplit
 from urllib.request import urlretrieve
 
 from requests import get
+
+from .download import download
+
+
+def download_extract(url, directory_path):
+
+    compressed_file_path = download(url, directory_path)
+
+    unpack_archive(compressed_file_path, extract_dir=splitext(compressed_file_path)[0])
+
+    remove(compressed_file_path)
 
 
 def download(url, directory_path, overwrite=True):

@@ -1,12 +1,25 @@
-from numpy import asarray, exp, nan, outer, sign, sqrt, unique
+from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
 from .estimate_pdf import estimate_pdf
 from .get_bandwidth import get_bandwidth
+from .get_ic import get_ic
 from .get_kld import get_kld
 from .make_grid import make_grid
 from .normalize import normalize
 from .unmesh import unmesh
+
+
+def get_entropy(vector):
+
+    probability = vector / vector.sum()
+
+    return -(probability * log(probability)).sum()
+
+
+def get_icd(vector_0, vector_1):
+
+    return -(get_ic(vector_0, vector_1) - 1)
 
 
 def get_ic(vector_0, vector_1):
@@ -61,3 +74,30 @@ def get_ic(vector_0, vector_1):
     ic = sqrt(1 - exp(-2 * mi))
 
     return sign(r) * ic
+
+
+def get_jsd(vector_0, vector_1, vector_reference=None):
+
+    if vector_reference is None:
+
+        vector_reference = (vector_0 + vector_1) / 2
+
+    kld_0 = get_kld(vector_0, vector_reference)
+
+    kld_1 = get_kld(vector_1, vector_reference)
+
+    return kld_0, kld_1, kld_0 - kld_1
+
+
+def get_kld(vector_0, vector_1):
+
+    return vector_0 * log(vector_0 / vector_1)
+
+
+def get_zd(vector_0, vector_1):
+
+    kld_0 = get_kld(vector_0, vector_1)
+
+    kld_1 = get_kld(vector_1, vector_0)
+
+    return kld_0, kld_1, kld_0 - kld_1

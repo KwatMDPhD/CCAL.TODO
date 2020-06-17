@@ -1,7 +1,30 @@
-from numpy import asarray, where
+from numpy import asarray, isnan, nan, sqrt, where
+from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
 from .get_p_value import get_p_value
+
+
+def get_moe(array, confidence=0.95):
+
+    return norm.ppf(q=confidence) * array.std() / sqrt(array.size)
+
+
+def get_p_value(value, random_values, direction):
+
+    if isnan(value):
+
+        return nan
+
+    if direction == "<":
+
+        n_significant = (random_values <= value).sum()
+
+    elif direction == ">":
+
+        n_significant = (value <= random_values).sum()
+
+    return max(1, n_significant) / random_values.size
 
 
 def get_p_values_and_q_values(

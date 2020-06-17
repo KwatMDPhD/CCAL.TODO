@@ -1,6 +1,8 @@
-from numpy import arange, full, nan
+from numpy import apply_along_axis, arange, asarray, full, isnan, nan, triu_indices
 from numpy.random import choice, seed
 from pandas import Series
+from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
+from scipy.spatial.distance import squareform
 
 from .cluster import cluster
 from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
@@ -76,3 +78,55 @@ def cluster_hierarchical_clusterings(
         )
 
     return Series(clusters, name="Cluster", index=dataframe.index)
+
+
+def cluster(
+    point_x_dimension,
+    distance_function="euclidean",
+    linkage_method="ward",
+    optimal_ordering=False,
+    n_cluster=None,
+    criterion="maxclust",
+):
+
+    z = linkage(
+        point_x_dimension,
+        metric=distance_function,
+        method=linkage_method,
+        optimal_ordering=optimal_ordering,
+    )
+
+    leave_index = leaves_list(z)
+
+    if n_cluster is None:
+
+        clusters = None
+
+    else:
+
+        clusters = fcluster(z, n_cluster, criterion=criterion) - 1
+
+    return leave_index, clusters
+
+
+def get_coclustering_distance(clustering_x_point):
+
+    index_0_index_1 = tuple(zip(*triu_indices(clustering_x_point.shape[1], k=1)))
+
+    def is_coclustered(clusters):
+
+        return tuple(
+            clusters[index_0] == clusters[index_1]
+            for index_0, index_1 in index_0_index_1
+        )
+
+    n_coclustered = apply_along_axis(is_coclustered, 1, clustering_x_point).sum(axis=0)
+
+    n = asarray(
+        tuple(
+            (~isnan(clustering_x_point[:, index_0_index_1_])).all(axis=1).sum()
+            for index_0_index_1_ in index_0_index_1
+        )
+    )
+
+    return squareform(1 - n_coclustered / n)
