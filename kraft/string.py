@@ -1,3 +1,28 @@
+from re import sub
+
+BAD_STR = (
+    "",
+    "--",
+    "?",
+    "Missing",
+    "N/A",
+    "N/A",
+    "NA",
+    "NA",
+    "NAN",
+    "NaN",
+    "None",
+    "missing",
+    "n/a",
+    "n/a",
+    "na",
+    "na",
+    "nan",
+    "none",
+    "unknown",
+)
+
+
 def title(str_):
 
     original_uppers = []
@@ -71,3 +96,8 @@ def title(str_):
         )
 
     return " ".join(sub_str.strip() for sub_str in str_.split())
+
+
+def standardize_file_name(file_name):
+
+    return sub(r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_"))
