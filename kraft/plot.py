@@ -1,10 +1,3 @@
-COLORBAR = {
-    "thicknessmode": "fraction",
-    "thickness": 0.024,
-    "len": 0.64,
-    "ticks": "outside",
-    "tickfont": {"size": 10},
-}
 from numpy import arange, argsort, asarray, meshgrid, nonzero, unique
 from pandas import DataFrame, Series
 from plotly.colors import (
@@ -18,6 +11,14 @@ from plotly.io import show, templates, write_html
 from .array import normalize
 from .support import cast_builtin, merge_2_dicts
 
+COLORBAR = {
+    "thicknessmode": "fraction",
+    "thickness": 0.024,
+    "len": 0.64,
+    "ticks": "outside",
+    "tickfont": {"size": 10},
+}
+
 DATA_TYPE_COLORSCALE = {
     "continuous": make_colorscale(("#0000ff", "#ffffff", "#ff0000")),
     "categorical": make_colorscale(qualitative.Plotly),
@@ -25,19 +26,46 @@ DATA_TYPE_COLORSCALE = {
 }
 
 
+def plot_plotly(figure, html_file_path=None):
+
+    template = "plotly_white+kraft"
+
+    if "layout" in figure:
+
+        figure["layout"]["template"] = template
+
+    else:
+
+        figure["layout"] = {"template": template}
+
+    config = {"editable": True}
+
+    show(figure, config=config)
+
+    if html_file_path is not None:
+
+        write_html(figure, html_file_path, config=config)
+
+
 def get_color(colorscale, value, n=None):
 
-    if 1 < value or (value == 1 and n is not None):
+    if n is not None:
 
-        n_block = n - 1
+        assert isinstance(cast_builtin(n), int)
 
-        if value == n_block:
+        assert isinstance(cast_builtin(value), int)
 
-            value = 1
+        if 1 <= value < n:
 
-        else:
+            n_block = n - 1
 
-            value = value / n_block
+            if value == n_block:
+
+                value = 1.0
+
+            else:
+
+                value = value / n_block
 
     if colorscale is None:
 
@@ -51,11 +79,9 @@ def get_color(colorscale, value, n=None):
 
             scale_high, color_high = colorscale[i + 1]
 
-            value_ = (value - scale_low) / (scale_high - scale_low)
-
             color = find_intermediate_color(
                 *convert_colors_to_same_type((color_low, color_high))[0],
-                value_,
+                (value - scale_low) / (scale_high - scale_low),
                 colortype="rgb",
             )
 
@@ -269,27 +295,6 @@ def plot_heat_map(
 
 
 templates["kraft"] = {"layout": {"autosize": False}}
-
-
-def plot_plotly(figure, html_file_path=None):
-
-    template = "plotly_white+kraft"
-
-    if "layout" in figure:
-
-        figure["layout"]["template"] = template
-
-    else:
-
-        figure["layout"] = {"template": template}
-
-    config = {"editable": True}
-
-    show(figure, config=config)
-
-    if html_file_path is not None:
-
-        write_html(figure, html_file_path, config=config)
 
 
 def plot_bubble_map(
