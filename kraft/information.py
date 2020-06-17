@@ -17,9 +17,9 @@ def get_entropy(vector):
     return -(probability * log(probability)).sum()
 
 
-def get_icd(vector_0, vector_1):
+def get_kld(vector_0, vector_1):
 
-    return -(get_ic(vector_0, vector_1) - 1)
+    return vector_0 * log(vector_0 / vector_1)
 
 
 def get_ic(vector_0, vector_1):
@@ -76,6 +76,11 @@ def get_ic(vector_0, vector_1):
     return sign(r) * ic
 
 
+def get_icd(vector_0, vector_1):
+
+    return -(get_ic(vector_0, vector_1) - 1)
+
+
 def get_jsd(vector_0, vector_1, vector_reference=None):
 
     if vector_reference is None:
@@ -87,11 +92,6 @@ def get_jsd(vector_0, vector_1, vector_reference=None):
     kld_1 = get_kld(vector_1, vector_reference)
 
     return kld_0, kld_1, kld_0 - kld_1
-
-
-def get_kld(vector_0, vector_1):
-
-    return vector_0 * log(vector_0 / vector_1)
 
 
 def get_zd(vector_0, vector_1):

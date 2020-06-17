@@ -2,58 +2,25 @@ from numpy import full, nan, unique
 from numpy.random import choice
 from pandas import DataFrame, concat
 
-from .BAD_STR import BAD_STR
-from .binarize import binarize
-from .cast_builtin import cast_builtin
-from .drop_slice import drop_slice
-from .guess_type import guess_type
-from .plot_heat_map import plot_heat_map
-from .plot_histogram import plot_histogram
+from .array import guess_type
+from .dataframe import drop_slice
+from .plot import plot_heat_map, plot_histogram
+from .series import binarize
+from .string import BAD_STR
+from .support import cast_builtin
 
 
-def drop_slice_greedily(
-    dataframe,
-    axis=None,
-    max_na=None,
-    min_n_not_na_value=None,
-    min_n_not_na_unique_value=None,
-):
+def tidy(dataframe):
 
-    shape_before = dataframe.shape
+    assert not dataframe.index.hasnans
 
-    if axis is None:
+    assert not dataframe.index.has_duplicates
 
-        axis = int(dataframe.shape[0] < dataframe.shape[1])
+    assert not dataframe.columns.hasnans
 
-    return_ = False
+    assert not dataframe.columns.has_duplicates
 
-    while True:
-
-        dataframe = drop_slice(
-            dataframe,
-            axis,
-            max_na=max_na,
-            min_n_not_na_value=min_n_not_na_value,
-            min_n_not_na_unique_value=min_n_not_na_unique_value,
-        )
-
-        shape_after = dataframe.shape
-
-        if return_ and shape_before == shape_after:
-
-            return dataframe
-
-        shape_before = shape_after
-
-        if axis == 0:
-
-            axis = 1
-
-        elif axis == 1:
-
-            axis = 0
-
-        return_ = True
+    return dataframe.sort_index().sort_index(axis=1)
 
 
 def drop_slice(
@@ -126,6 +93,51 @@ def drop_slice(
     return dataframe
 
 
+def drop_slice_greedily(
+    dataframe,
+    axis=None,
+    max_na=None,
+    min_n_not_na_value=None,
+    min_n_not_na_unique_value=None,
+):
+
+    shape_before = dataframe.shape
+
+    if axis is None:
+
+        axis = int(dataframe.shape[0] < dataframe.shape[1])
+
+    return_ = False
+
+    while True:
+
+        dataframe = drop_slice(
+            dataframe,
+            axis,
+            max_na=max_na,
+            min_n_not_na_value=min_n_not_na_value,
+            min_n_not_na_unique_value=min_n_not_na_unique_value,
+        )
+
+        shape_after = dataframe.shape
+
+        if return_ and shape_before == shape_after:
+
+            return dataframe
+
+        shape_before = shape_after
+
+        if axis == 0:
+
+            axis = 1
+
+        elif axis == 1:
+
+            axis = 0
+
+        return_ = True
+
+
 def group(dataframe):
 
     print("Grouping index with median...")
@@ -141,32 +153,6 @@ def group(dataframe):
     print(dataframe.shape)
 
     return dataframe
-
-
-def make_axis_different(dataframes, axis):
-
-    elements = []
-
-    for dataframe in dataframes:
-
-        if axis == 0:
-
-            elements += dataframe.index.tolist()
-
-        else:
-
-            elements += dataframe.columns.tolist()
-
-    elements, counts = unique(elements, return_counts=True)
-
-    elements_to_drop = elements[1 < counts]
-
-    print("Dropping {} axis-{} elements...".format(elements_to_drop.size, axis))
-
-    return tuple(
-        dataframe.drop(elements_to_drop, axis=axis, errors="ignore")
-        for dataframe in dataframes
-    )
 
 
 def make_axis_same(dataframes, axis):
@@ -204,52 +190,30 @@ def make_axis_same(dataframes, axis):
     return dataframes
 
 
-def separate_type(information_x_, bad_values=BAD_STR):
+def make_axis_different(dataframes, axis):
 
-    continuous_dataframe_rows = []
+    elements = []
 
-    binary_dataframes = []
+    for dataframe in dataframes:
 
-    for information, series in information_x_.iterrows():
+        if axis == 0:
 
-        series = series.replace(bad_values, nan)
+            elements += dataframe.index.tolist()
 
-        if 1 < series.dropna().unique().size:
+        else:
 
-            try:
+            elements += dataframe.columns.tolist()
 
-                is_continuous = guess_type(series.astype(float)) == "continuous"
+    elements, counts = unique(elements, return_counts=True)
 
-            except ValueError:
+    elements_to_drop = elements[1 < counts]
 
-                is_continuous = False
+    print("Dropping {} axis-{} elements...".format(elements_to_drop.size, axis))
 
-            if is_continuous:
-
-                continuous_dataframe_rows.append(series.apply(cast_builtin))
-
-            else:
-
-                binary_x_ = binarize(series)
-
-                binary_x_ = binary_x_.loc[~binary_x_.index.isna()]
-
-                binary_x_.index = (
-                    "({}) {}".format(binary_x_.index.name, str_)
-                    for str_ in binary_x_.index
-                )
-
-                binary_dataframes.append(binary_x_)
-
-    continuous_x_ = DataFrame(data=continuous_dataframe_rows)
-
-    continuous_x_.index.name = information_x_.index.name
-
-    binary_x_ = concat(binary_dataframes)
-
-    binary_x_.index.name = information_x_.index.name
-
-    return continuous_x_, binary_x_
+    return tuple(
+        dataframe.drop(elements_to_drop, axis=axis, errors="ignore")
+        for dataframe in dataframes
+    )
 
 
 def summarize(
@@ -330,14 +294,49 @@ def summarize(
             )
 
 
-def tidy(dataframe):
+def separate_type(information_x_, bad_values=BAD_STR):
 
-    assert not dataframe.index.hasnans
+    continuous_dataframe_rows = []
 
-    assert not dataframe.index.has_duplicates
+    binary_dataframes = []
 
-    assert not dataframe.columns.hasnans
+    for information, series in information_x_.iterrows():
 
-    assert not dataframe.columns.has_duplicates
+        series = series.replace(bad_values, nan)
 
-    return dataframe.sort_index().sort_index(axis=1)
+        if 1 < series.dropna().unique().size:
+
+            try:
+
+                is_continuous = guess_type(series.astype(float)) == "continuous"
+
+            except ValueError:
+
+                is_continuous = False
+
+            if is_continuous:
+
+                continuous_dataframe_rows.append(series.apply(cast_builtin))
+
+            else:
+
+                binary_x_ = binarize(series)
+
+                binary_x_ = binary_x_.loc[~binary_x_.index.isna()]
+
+                binary_x_.index = (
+                    "({}) {}".format(binary_x_.index.name, str_)
+                    for str_ in binary_x_.index
+                )
+
+                binary_dataframes.append(binary_x_)
+
+    continuous_x_ = DataFrame(data=continuous_dataframe_rows)
+
+    continuous_x_.index.name = information_x_.index.name
+
+    binary_x_ = concat(binary_dataframes)
+
+    binary_x_.index.name = information_x_.index.name
+
+    return continuous_x_, binary_x_

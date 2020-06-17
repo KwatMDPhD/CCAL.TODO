@@ -12,6 +12,21 @@ from .plot_plotly import plot_plotly
 from .RANDOM_SEED import RANDOM_SEED
 
 
+def factorize_matrix_by_nmf(
+    v, r, solver="cd", tolerance=1e-6, n_iteration=int(1e3), random_seed=RANDOM_SEED
+):
+
+    model = NMF(
+        n_components=r,
+        solver=solver,
+        tol=tolerance,
+        max_iter=n_iteration,
+        random_state=random_seed,
+    )
+
+    return model.fit_transform(v), model.components_, model.reconstruction_err_
+
+
 def factorize_matrices(
     vs,
     r,
@@ -113,21 +128,6 @@ def factorize_matrices(
         ws = (w,)
 
     return ws, hs, asarray(errors).T
-
-
-def factorize_matrix_by_nmf(
-    v, r, solver="cd", tolerance=1e-6, n_iteration=int(1e3), random_seed=RANDOM_SEED
-):
-
-    model = NMF(
-        n_components=r,
-        solver=solver,
-        tol=tolerance,
-        max_iter=n_iteration,
-        random_state=random_seed,
-    )
-
-    return model.fit_transform(v), model.components_, model.reconstruction_err_
 
 
 def plot_matrix_factorization(ws, hs, errors=None, axis_size=320, directory_path=None):

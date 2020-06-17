@@ -31,6 +31,39 @@ def get_pdf(
     return grid_point_x_dimension, point_pdf
 
 
+def target_posterior_pdf(
+    grid_point_x_dimension, point_posterior_probability, value, plot=True, names=None,
+):
+
+    target_dimension_grid = unique(grid_point_x_dimension[:, -1])
+
+    target_value_index = absolute(target_dimension_grid - value).argmin()
+
+    grid_point_x_dimension_ = grid_point_x_dimension[
+        target_value_index :: target_dimension_grid.size, :-1
+    ]
+
+    point_posterior_probability_ = point_posterior_probability[
+        target_value_index :: target_dimension_grid.size
+    ]
+
+    if plot:
+
+        plot_grid_point_x_dimension(
+            grid_point_x_dimension_,
+            point_posterior_probability_,
+            names=names,
+            value_name="P({} = {:.2e} (~{}) | {})".format(
+                names[-1],
+                target_dimension_grid[target_value_index],
+                value,
+                *names[:-1],
+            ),
+        )
+
+    return grid_point_x_dimension_, point_posterior_probability_
+
+
 def get_posterior_pdf(
     point_x_dimension, plot=True, names=None, **estimate_density_keyword_arguments,
 ):
@@ -63,39 +96,6 @@ def get_posterior_pdf(
         )
 
     return grid_point_x_dimension, point_posterior_pdf
-
-
-def target_posterior_pdf(
-    grid_point_x_dimension, point_posterior_probability, value, plot=True, names=None,
-):
-
-    target_dimension_grid = unique(grid_point_x_dimension[:, -1])
-
-    target_value_index = absolute(target_dimension_grid - value).argmin()
-
-    grid_point_x_dimension_ = grid_point_x_dimension[
-        target_value_index :: target_dimension_grid.size, :-1
-    ]
-
-    point_posterior_probability_ = point_posterior_probability[
-        target_value_index :: target_dimension_grid.size
-    ]
-
-    if plot:
-
-        plot_grid_point_x_dimension(
-            grid_point_x_dimension_,
-            point_posterior_probability_,
-            names=names,
-            value_name="P({} = {:.2e} (~{}) | {})".format(
-                names[-1],
-                target_dimension_grid[target_value_index],
-                value,
-                *names[:-1],
-            ),
-        )
-
-    return grid_point_x_dimension_, point_posterior_probability_
 
 
 def plot_nomogram(p_t1, p_t0, names, p_t10__, plot_=False):

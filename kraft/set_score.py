@@ -1,7 +1,7 @@
 from numpy import absolute, asarray, where
 
-from .get_jsd import get_jsd
-from .plot_plotly import plot_plotly
+from .information import get_jsd
+from .plot import plot_plotly
 
 
 def score_set(

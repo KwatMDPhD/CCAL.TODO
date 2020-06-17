@@ -5,16 +5,12 @@ from numpy import apply_along_axis, asarray, concatenate, full, isnan, nan, wher
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame, Series, unique
 
-from .cluster import cluster
-from .DATA_TYPE_COLORSCALE import DATA_TYPE_COLORSCALE
-from .get_moe import get_moe
-from .get_p_values_and_q_values import get_p_values_and_q_values
-from .ignore_nan_and_function_1 import ignore_nan_and_function_1
-from .ignore_nan_and_function_2 import ignore_nan_and_function_2
-from .normalize import normalize
-from .plot_plotly import plot_plotly
-from .RANDOM_SEED import RANDOM_SEED
-from .select_extreme import select_extreme
+from .array import ignore_nan_and_function_1, ignore_nan_and_function_2, normalize
+from .clustering import cluster
+from .CONSTANT import RANDOM_SEED
+from .plot import DATA_TYPE_COLORSCALE, plot_plotly
+from .series import select_extreme
+from .significance import get_moe, get_p_values_and_q_values
 
 
 def function_heat_map(

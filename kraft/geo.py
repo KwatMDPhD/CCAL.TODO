@@ -2,8 +2,66 @@ from gzip import open
 
 from pandas import DataFrame
 
-from kraft import cast_builtin, download, group, tidy
-from name_biology import map_genes
+from .dataframe import group, tidy
+from .download import download, group, tidy
+from .name_biology import map_genes
+from .support import cast_builtin, download, group, tidy
+
+
+def parse_block(io, str_):
+
+    dict_ = {}
+
+    table = []
+
+    table_begin_str = "!{}_table_begin\n".format(str_)
+
+    table_end_str = "!{}_table_end\n".format(str_)
+
+    while True:
+
+        line = io.readline()
+
+        if line == "" or line.startswith("^"):
+
+            break
+
+        elif line[0] == "!" and " = " in line:
+
+            key, value = get_key_value(line)
+
+            dict_[key] = value.rstrip("\n")
+
+        elif line == table_begin_str:
+
+            while True:
+
+                line = io.readline()
+
+                if line == table_end_str:
+
+                    break
+
+                table.append(line.rstrip("\n").split(sep="\t"))
+
+            break
+
+    table = DataFrame(data=table)
+
+    if not table.empty:
+
+        table.columns = table.loc[0]
+
+        table = table.drop(0).set_index(table.columns[0]).applymap(cast_builtin)
+
+    dict_["table"] = table
+
+    return dict_
+
+
+def get_key_value(line):
+
+    return line.lstrip("!").split(sep=" = ", maxsplit=1)
 
 
 def get_gse(gse_id, directory_path, overwrite=True):
@@ -140,59 +198,3 @@ def get_gse(gse_id, directory_path, overwrite=True):
         print(_x_sample.iloc[:2, :2])
 
     return tuple(_x_samples)
-
-
-def parse_block(io, str_):
-
-    dict_ = {}
-
-    table = []
-
-    table_begin_str = "!{}_table_begin\n".format(str_)
-
-    table_end_str = "!{}_table_end\n".format(str_)
-
-    while True:
-
-        line = io.readline()
-
-        if line == "" or line.startswith("^"):
-
-            break
-
-        elif line[0] == "!" and " = " in line:
-
-            key, value = get_key_value(line)
-
-            dict_[key] = value.rstrip("\n")
-
-        elif line == table_begin_str:
-
-            while True:
-
-                line = io.readline()
-
-                if line == table_end_str:
-
-                    break
-
-                table.append(line.rstrip("\n").split(sep="\t"))
-
-            break
-
-    table = DataFrame(data=table)
-
-    if not table.empty:
-
-        table.columns = table.loc[0]
-
-        table = table.drop(0).set_index(table.columns[0]).applymap(cast_builtin)
-
-    dict_["table"] = table
-
-    return dict_
-
-
-def get_key_value(line):
-
-    return line.lstrip("!").split(sep=" = ", maxsplit=1)

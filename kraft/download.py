@@ -6,17 +6,6 @@ from urllib.request import urlretrieve
 
 from requests import get
 
-from .download import download
-
-
-def download_extract(url, directory_path):
-
-    compressed_file_path = download(url, directory_path)
-
-    unpack_archive(compressed_file_path, extract_dir=splitext(compressed_file_path)[0])
-
-    remove(compressed_file_path)
-
 
 def download(url, directory_path, overwrite=True):
 
@@ -37,3 +26,12 @@ def download(url, directory_path, overwrite=True):
                 io.write(get(url, allow_redirects=True).content)
 
     return file_path
+
+
+def download_extract(url, directory_path):
+
+    compressed_file_path = download(url, directory_path)
+
+    unpack_archive(compressed_file_path, extract_dir=splitext(compressed_file_path)[0])
+
+    remove(compressed_file_path)
