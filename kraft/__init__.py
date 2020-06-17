@@ -1,82 +1,62 @@
-from .array import error_nan
-from .array import is_sorted
-from .array import guess_type
-from .array import clip
-from .array import shift_minimum
-from .array import log
-from .array import normalize
-from .array import ignore_nan_and_function_1
-from .array import ignore_nan_and_function_2
-from .clustering import cluster
-from .clustering import get_coclustering_distance
-from .clustering import cluster_hierarchical_clusterings
-from .dataframe import tidy
-from .dataframe import drop_slice
-from .dataframe import drop_slice_greedily
-from .dataframe import group
-from .dataframe import make_axis_same
-from .dataframe import make_axis_different
-from .dataframe import summarize
-from .dataframe import separate_type
-from .download import download
-from .download import download_extract
-from .function_heat_map import function_heat_map
-from .function_heat_map import function_heat_map_summary
-from .geo import parse_block
-from .geo import get_key_value
-from .geo import get_gse
-from .gps_map import get_triangulation_edges
-from .gps_map import GPSMap
-from .gps_map import map_points_by_pull
-from .gps_map import map_points
-from .gps_map import plot_gps_map
-from .gps_map import read_gps_map
-from .gps_map import write_gps_map
-from .information import get_entropy
-from .information import get_kld
-from .information import get_ic
-from .information import get_icd
-from .information import get_jsd
-from .information import get_zd
-from .io import read_json
-from .io import write_json
-from .io import read_gct
-from .io import read_gmt
-from .kernel_density import get_bandwidth
-from .kernel_density import get_density
-from .matrix_factorization import factorize_matrix_by_nmf
-from .matrix_factorization import factorize_matrices
-from .matrix_factorization import plot_matrix_factorization
-from .matrix_factorization import solve_ax_b
+from .array import (
+    clip,
+    error_nan,
+    guess_type,
+    ignore_nan_and_function_1,
+    ignore_nan_and_function_2,
+    is_sorted,
+    log,
+    normalize,
+    shift_minimum,
+)
+from .clustering import (
+    cluster,
+    cluster_hierarchical_clusterings,
+    get_coclustering_distance,
+)
+from .dataframe import (
+    drop_slice,
+    drop_slice_greedily,
+    group,
+    make_axis_different,
+    make_axis_same,
+    separate_type,
+    summarize,
+    tidy,
+)
+from .download import download, download_extract
+from .function_heat_map import function_heat_map, function_heat_map_summary
+from .geo import get_gse, get_key_value, parse_block
+from .gps_map import (
+    GPSMap,
+    get_triangulation_edges,
+    map_points,
+    map_points_by_pull,
+    plot_gps_map,
+    read_gps_map,
+    write_gps_map,
+)
+from .information import get_entropy, get_ic, get_icd, get_jsd, get_kld, get_zd
+from .io import read_gct, read_gmt, read_json, write_json
+from .kernel_density import get_bandwidth, get_density
+from .matrix_factorization import (
+    factorize_matrices,
+    factorize_matrix_by_nmf,
+    plot_matrix_factorization,
+    solve_ax_b,
+)
 from .name_biology import map_genes
-from .path import path
-from .path import get_child_paths
-from .plot import plot_plotly
-from .plot import get_color
-from .plot import plot_heat_map
-from .plot import plot_bubble_map
-from .plot import plot_histogram
-from .point_x_dimension import grid
-from .point_x_dimension import make_grid_point_x_dimension
-from .point_x_dimension import get_grids
-from .point_x_dimension import plot_grid_point_x_dimension
-from .probability import get_pdf
-from .probability import target_posterior_pdf
-from .probability import get_posterior_pdf
-from .probability import plot_nomogram
-from .series import binarize
-from .series import select_extreme
-from .set_score import score_set
-from .set_score import get_c
-from .set_score import cumulate_rank
-from .set_score import cumulate_magnitude
-from .significance import get_moe
-from .significance import get_p_value
-from .significance import get_p_values_and_q_values
-from .string import title
-from .string import standardize_file_name
-from .support import cast_builtin
-from .support import flatten
-from .support import make_unique
-from .support import merge_2_dicts
-from .support import command
+from .path import get_child_paths, path
+from .plot import get_color, plot_bubble_map, plot_heat_map, plot_histogram, plot_plotly
+from .point_x_dimension import (
+    get_grids,
+    grid,
+    make_grid_point_x_dimension,
+    plot_grid_point_x_dimension,
+)
+from .probability import get_pdf, get_posterior_pdf, plot_nomogram, target_posterior_pdf
+from .series import binarize, select_extreme
+from .set_score import cumulate_magnitude, cumulate_rank, get_c, score_set
+from .significance import get_moe, get_p_value, get_p_values_and_q_values
+from .string import standardize_file_name, title
+from .support import cast_builtin, command, flatten, make_unique, merge_2_dicts

@@ -1,10 +1,10 @@
 from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
-from .probability import get_pdf
-from .kernel_density import get_bandwidth
 from .array import normalize
+from .kernel_density import get_bandwidth
 from .point_x_dimension import get_grids, grid
+from .probability import get_pdf
 
 
 def get_entropy(vector):
