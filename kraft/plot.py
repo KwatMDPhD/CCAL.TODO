@@ -25,6 +25,8 @@ DATA_TYPE_COLORSCALE = {
     "binary": make_colorscale(("#ffddca", "#006442")),
 }
 
+templates["kraft"] = {"layout": {"autosize": False}}
+
 
 def plot_plotly(figure, html_file_path=None):
 
@@ -116,11 +118,11 @@ def plot_heat_map(
 
         if not ordered_annotation:
 
-            index = argsort(row_annotations)
+            sorting_index = argsort(row_annotations)
 
-            row_annotations = row_annotations[index]
+            row_annotations = row_annotations[sorting_index]
 
-            matrix = matrix.iloc[index]
+            matrix = matrix.iloc[sorting_index]
 
     if column_annotations is not None:
 
@@ -128,39 +130,39 @@ def plot_heat_map(
 
         if not ordered_annotation:
 
-            index = argsort(column_annotations)
+            sorting_index = argsort(column_annotations)
 
-            column_annotations = column_annotations[index]
+            column_annotations = column_annotations[sorting_index]
 
-            matrix = matrix.iloc[:, index]
+            matrix = matrix.iloc[:, sorting_index]
 
-    heat_map_axis_ = {"domain": (0, 0.95)}
+    heat_map_axis_template = {"domain": (0, 0.95)}
 
-    annotation_axis_ = {"domain": (0.96, 1), "showticklabels": False}
+    annotation_axis_template = {"domain": (0.96, 1), "showticklabels": False}
 
-    layout_ = {
+    layout_template = {
         "xaxis": {
             "title": "{} (n={})".format(matrix.columns.name, matrix.columns.size),
-            **heat_map_axis_,
+            **heat_map_axis_template,
         },
         "yaxis": {
             "title": "{} (n={})".format(matrix.index.name, matrix.index.size),
-            **heat_map_axis_,
+            **heat_map_axis_template,
         },
-        "xaxis2": annotation_axis_,
-        "yaxis2": annotation_axis_,
+        "xaxis2": annotation_axis_template,
+        "yaxis2": annotation_axis_template,
         "annotations": [],
     }
 
     if layout is None:
 
-        layout = layout_
+        layout = layout_template
 
     else:
 
-        layout = merge_2_dicts(layout_, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
-    if any(isinstance(cast_builtin(i), str) for i in matrix.columns):
+    if any(isinstance(cast_builtin(x), str) for x in matrix.columns):
 
         x = matrix.columns
 
@@ -168,7 +170,7 @@ def plot_heat_map(
 
         x = None
 
-    if any(isinstance(cast_builtin(i), str) for i in matrix.index):
+    if any(isinstance(cast_builtin(x), str) for x in matrix.index):
 
         y = matrix.index[::-1]
 
@@ -193,7 +195,7 @@ def plot_heat_map(
         }
     ]
 
-    annotation_ = {"showarrow": False}
+    annotation_template = {"showarrow": False}
 
     if row_annotations is not None:
 
@@ -214,30 +216,30 @@ def plot_heat_map(
 
         if row_annotation_str is not None:
 
-            layout_annotation_row_ = {
+            layout_annotation_row_template = {
                 "xref": "x2",
                 "x": 0,
                 "xanchor": "left",
-                **annotation_,
+                **annotation_template,
             }
 
             if layout_annotation_row is None:
 
-                layout_annotation_row = layout_annotation_row_
+                layout_annotation_row = layout_annotation_row_template
 
             else:
 
                 layout_annotation_row = merge_2_dicts(
-                    layout_annotation_row_, layout_annotation_row
+                    layout_annotation_row_template, layout_annotation_row
                 )
 
             for i in unique(row_annotations):
 
-                index_0, index__1 = nonzero(row_annotations == i)[0][[0, -1]]
+                index_0, index_1 = nonzero(row_annotations == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
-                        "y": index_0 + (index__1 - index_0) / 2,
+                        "y": index_0 + (index_1 - index_0) / 2,
                         "text": row_annotation_str[i],
                         **layout_annotation_row,
                     }
@@ -261,40 +263,37 @@ def plot_heat_map(
 
         if column_annotation_str is not None:
 
-            layout_column_annotation_ = {
+            layout_column_annotation_template = {
                 "yref": "y2",
                 "y": 0,
                 "yanchor": "bottom",
                 "textangle": -90,
-                **annotation_,
+                **annotation_template,
             }
 
             if layout_annotation_column is None:
 
-                layout_annotation_column = layout_column_annotation_
+                layout_annotation_column = layout_column_annotation_template
 
             else:
 
                 layout_annotation_column = merge_2_dicts(
-                    layout_column_annotation_, layout_annotation_column
+                    layout_column_annotation_template, layout_annotation_column
                 )
 
             for i in unique(column_annotations):
 
-                index_0, index__1 = nonzero(column_annotations == i)[0][[0, -1]]
+                index_0, index_1 = nonzero(column_annotations == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
-                        "x": index_0 + (index__1 - index_0) / 2,
+                        "x": index_0 + (index_1 - index_0) / 2,
                         "text": column_annotation_str[i],
                         **layout_annotation_column,
                     }
                 )
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
-
-
-templates["kraft"] = {"layout": {"autosize": False}}
 
 
 def plot_bubble_map(
@@ -310,9 +309,9 @@ def plot_bubble_map(
 
     y_grid = arange(dataframe_size.shape[0])[::-1]
 
-    layout_ = {
-        "height": max(500, max_size * 2 * dataframe_size.shape[0]),
-        "width": max(500, max_size * 2 * dataframe_size.shape[1]),
+    layout_template = {
+        "height": max(480, max_size * 2 * dataframe_size.shape[0]),
+        "width": max(480, max_size * 2 * dataframe_size.shape[1]),
         "xaxis": {
             "title": "{} (n={})".format(
                 dataframe_size.columns.name, dataframe_size.columns.size
@@ -331,11 +330,11 @@ def plot_bubble_map(
 
     if layout is None:
 
-        layout = layout_
+        layout = layout_template
 
     else:
 
-        layout = merge_2_dicts(layout_, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     if dataframe_color is None:
 
@@ -406,7 +405,7 @@ def plot_histogram(
 
     yaxis2_domain = yaxis2_domain_min, 1
 
-    layout_ = {
+    layout_template = {
         "xaxis": {"anchor": "y"},
         "yaxis": {
             "domain": yaxis_domain,
@@ -420,11 +419,11 @@ def plot_histogram(
 
     if layout is None:
 
-        layout = layout_
+        layout = layout_template
 
     else:
 
-        layout = merge_2_dicts(layout_, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     data = []
 
