@@ -24,7 +24,6 @@ from .dataframe import (
     summarize,
     tidy,
 )
-from .download import download, download_extract
 from .function_heat_map import function_heat_map, function_heat_map_summary
 from .geo import get_gse, get_key_value, parse_block
 from .gps_map import (
@@ -37,6 +36,7 @@ from .gps_map import (
     write_gps_map,
 )
 from .information import get_entropy, get_ic, get_icd, get_jsd, get_kld, get_zd
+from .internet import download, download_and_extract
 from .io import read_gct, read_gmt, read_json, write_json
 from .kernel_density import get_bandwidth, get_density
 from .matrix_factorization import (

@@ -28,7 +28,7 @@ def download(url, directory_path, overwrite=True):
     return file_path
 
 
-def download_extract(url, directory_path):
+def download_and_extract(url, directory_path):
 
     compressed_file_path = download(url, directory_path)
 
