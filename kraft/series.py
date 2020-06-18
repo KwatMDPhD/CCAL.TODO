@@ -4,19 +4,6 @@ from .plot import plot_plotly
 from .support import merge_2_dicts
 
 
-def binarize(series):
-
-    dataframe = DataFrame(index=series.unique(), columns=series.index)
-
-    dataframe.index.name = series.name
-
-    for str_ in dataframe.index:
-
-        dataframe.loc[str_] = series == str_
-
-    return dataframe.astype(int)
-
-
 def select_extreme(
     series,
     direction,
@@ -118,3 +105,15 @@ def select_extreme(
         )
 
     return index
+
+
+def binarize(series):
+    dataframe = DataFrame(index=series.unique(), columns=series.index)
+
+    dataframe.index.name = series.name
+
+    for str_ in dataframe.index:
+
+        dataframe.loc[str_] = series == str_
+
+    return dataframe.astype(int)

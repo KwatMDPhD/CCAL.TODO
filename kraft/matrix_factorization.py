@@ -26,7 +26,7 @@ def factorize_matrix_by_nmf(
     return model.fit_transform(v), model.components_, model.reconstruction_err_
 
 
-def factorize_matrices(
+def factorize_matrix(
     vs,
     r,
     mode,
