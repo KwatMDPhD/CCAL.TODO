@@ -1,7 +1,7 @@
 from scipy.spatial.distance import pdist, squareform
 from sklearn.manifold import MDS
 
-from .RANDOM_SEED import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED
 
 
 def scale_element_x_dimension_dimension(

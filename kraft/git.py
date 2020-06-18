@@ -1,8 +1,8 @@
 from os.path import join
 from subprocess import CalledProcessError
 
-from .is_str_version import is_str_version
-from .run_command import run_command
+from .string import is_version
+from .support import command
 
 
 def get_git_versions():

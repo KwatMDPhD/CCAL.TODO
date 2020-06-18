@@ -2,11 +2,8 @@ from os import environ
 from os.path import isdir, join
 from urllib.parse import urljoin
 
-from .add_conda_to_path import add_conda_to_path
-from .download_url import download_url
-from .get_machine import get_machine
-from .is_conda_directory_path import is_conda_directory_path
-from .run_command import run_command
+from .internet import download
+from .support import command, get_machine
 
 
 def add_conda_to_path(conda_directory_path):
@@ -22,7 +19,7 @@ def get_conda_environments():
 
     environments = {}
 
-    for line in run_command("conda-env list").stdout.strip().split(sep="\n"):
+    for line in command("conda-env list").stdout.strip().split(sep="\n"):
 
         if not line.startswith("#"):
 
@@ -60,12 +57,12 @@ def install_and_activate_conda(
 
         tmp_directory_path = join("/", "tmp")
 
-        download_url(
+        download(
             urljoin("https://repo.continuum.io/miniconda/", conda_script_file_name),
             tmp_directory_path,
         )
 
-        run_command(
+        command(
             "bash {} -b -p {}".format(
                 join(tmp_directory_path, conda_script_file_name), conda_directory_path
             )
@@ -75,13 +72,13 @@ def install_and_activate_conda(
 
     if pip_installs is not None:
 
-        run_command("pip install {}".format(" ".join(pip_installs)))
+        command("pip install {}".format(" ".join(pip_installs)))
 
     if conda_installs is not None:
 
         for channel, packages in conda_installs.items():
 
-            run_command(
+            command(
                 "conda install --channel {} --yes {}".format(
                     channel, " ".join(packages)
                 )

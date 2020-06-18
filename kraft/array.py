@@ -2,8 +2,7 @@ from numpy import diff, full, isnan, log as loge, log2, log10, nan, nanmin, uniq
 from numpy.random import seed, shuffle
 from scipy.stats import rankdata
 
-from .check_array_for_bad import check_array_for_bad
-from .RANDOM_SEED import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED
 
 
 def error_nan(array):
@@ -121,6 +120,29 @@ def normalize(array, method, rank_method="average"):
         return rankdata(array, method=rank_method)
 
 
+def shuffle_slice(matrix, axis, random_seed=RANDOM_SEED):
+
+    error_nan(matrix)
+
+    matrix_copy = matrix.copy()
+
+    seed(seed=random_seed)
+
+    if axis == 0:
+
+        for i in range(matrix.shape[1]):
+
+            shuffle(matrix_copy[:, i])
+
+    elif axis == 1:
+
+        for i in range(matrix.shape[0]):
+
+            shuffle(matrix_copy[i, :])
+
+    return matrix_copy
+
+
 def ignore_nan_and_function_1(
     array, function, *function_arguments, update=False, **function_keyword_arguments
 ):
@@ -157,27 +179,3 @@ def ignore_nan_and_function_2(
         **function_keyword_arguments,
     )
 
-
-def shuffle_each_matrix_slice(
-    matrix, axis, random_seed=RANDOM_SEED, raise_for_bad=True
-):
-
-    check_array_for_bad(matrix, raise_for_bad=raise_for_bad)
-
-    matrix_ = matrix.copy()
-
-    seed(seed=random_seed)
-
-    if axis == 0:
-
-        for i in range(matrix.shape[1]):
-
-            shuffle(matrix_[:, i])
-
-    elif axis == 1:
-
-        for i in range(matrix.shape[0]):
-
-            shuffle(matrix_[i, :])
-
-    return matrix_

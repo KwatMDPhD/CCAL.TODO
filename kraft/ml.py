@@ -1,6 +1,6 @@
 from sklearn.svm import SVC, SVR
 
-from .RANDOM_SEED import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED
 
 
 def train_and_classify(

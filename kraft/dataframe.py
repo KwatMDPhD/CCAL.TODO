@@ -4,15 +4,10 @@ from numpy import full, nan, unique
 from numpy.random import choice
 from pandas import DataFrame, concat
 
-from .array import guess_type
-from .drop_dataframe_slice import drop_dataframe_slice
-from .drop_dataframe_slice_greedily import drop_dataframe_slice_greedily
-from .log_array import log_array
-from .normalize_dataframe import normalize_dataframe
+from .array import guess_type, log
 from .plot import plot_heat_map, plot_histogram
 from .series import binarize
 from .string import BAD_STR
-from .summarize_feature_x_sample import summarize_feature_x_sample
 from .support import cast_builtin
 
 
@@ -489,7 +484,7 @@ def process_feature_x_sample(
         )
 
         feature_x_sample = DataFrame(
-            log_array(
+            log(
                 feature_x_sample.values,
                 raise_for_bad=False,
                 shift_as_necessary_to_achieve_min_before_logging=shift_as_necessary_to_achieve_min_before_logging,

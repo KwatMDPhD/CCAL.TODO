@@ -2,8 +2,6 @@ from inspect import stack
 from platform import uname
 from subprocess import PIPE, CalledProcessError, run
 
-from .run_command import run_command
-
 
 def cast_builtin(object_):
 
@@ -170,7 +168,7 @@ def get_shell_environment():
 
     environemnt = {}
 
-    for line in run_command("env").stdout.split(sep="\n"):
+    for line in command("env").stdout.split(sep="\n"):
 
         if line and not line.strip().startswith(":"):
 
@@ -185,21 +183,21 @@ def install_python_libraries(libraries):
 
     libraries_installed = tuple(
         line.split()[0]
-        for line in run_command("pip list").stdout.strip().split(sep="\n")[2:]
+        for line in command("pip list").stdout.strip().split(sep="\n")[2:]
     )
 
     for library in libraries:
 
         if library not in libraries_installed:
 
-            run_command("pip install {}".format(library))
+            command("pip install {}".format(library))
 
 
 def is_program(program_name):
 
     try:
 
-        return bool(run_command("type {}".format(program_name)).stdout.strip())
+        return bool(command("type {}".format(program_name)).stdout.strip())
 
     except CalledProcessError:
 

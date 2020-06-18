@@ -98,24 +98,24 @@ def title(str_):
     return " ".join(sub_str.strip() for sub_str in str_.split())
 
 
-def standardize_file_name(file_name):
+def standardize(file_name):
 
     return sub(r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_"))
 
 
-def is_str_version(str_):
+def is_version(str_):
 
     str_split = str_.split(sep=".")
 
     return "." in str_ and len(str_split) == 3 and all(i.isnumeric() for i in str_split)
 
 
-def untitle_str(str_):
+def untitle(str_):
 
     return str_.lower().replace(" ", "_").replace("-", "_")
 
 
-def skip_quote_and_split_str(str_, separator):
+def skip_quote_and_split(str_, separator):
 
     splits = []
 

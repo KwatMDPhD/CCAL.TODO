@@ -2,10 +2,10 @@ from numpy import full, isnan, nan
 from numpy.random import seed, shuffle
 from sklearn.linear_model import LinearRegression
 
-from .compute_empirical_p_value import compute_empirical_p_value
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
-from .plot_plotly_figure import plot_plotly_figure
-from .RANDOM_SEED import RANDOM_SEED
+from .significance import get_p_value
+from .support import merge_2_dicts
+from .plot import plot_plotly
+from .CONSTANT import RANDOM_SEED
 
 
 def correlate_2_vectors(
@@ -50,8 +50,7 @@ def correlate_2_vectors(
             r2s_shuffled[i] = model_.score(xs, vector_1_copy)
 
         p_value = min(
-            compute_empirical_p_value(r2, r2s_shuffled, "<"),
-            compute_empirical_p_value(r2, r2s_shuffled, ">"),
+            get_p_value(r2, r2s_shuffled, "<"), get_p_value(r2, r2s_shuffled, ">"),
         )
 
     if plot:
@@ -85,9 +84,9 @@ def correlate_2_vectors(
 
         else:
 
-            layout = merge_2_dicts_recursively(layout_template, layout)
+            layout = merge_2_dicts(layout_template, layout)
 
-        plot_plotly_figure(
+        plot_plotly(
             {
                 "layout": layout,
                 "data": [

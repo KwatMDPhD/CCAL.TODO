@@ -2,15 +2,7 @@ from os.path import isfile
 
 from pandas import read_csv, value_counts
 
-from .flatten_nested_iterable import flatten_nested_iterable
-from .get_variant_start_and_end_positions import get_variant_start_and_end_positions
-from .get_vcf_genotype import get_vcf_genotype
-from .get_vcf_info import get_vcf_info
-from .get_vcf_info_ann import get_vcf_info_ann
-from .make_variant_n_from_vcf_row import make_variant_n_from_vcf_row
-from .run_command import run_command
-from .VCF_ANN_KEYS import VCF_ANN_KEYS
-from .VCF_COLUMNS import VCF_COLUMNS
+from .support import flatten, command
 
 
 def get_variants_from_vcf_or_vcf_gz(

@@ -2,7 +2,7 @@ from os.path import isfile
 
 from pandas import read_csv
 
-from .run_command import run_command
+from .support import command
 
 
 def get_chromosome_size_from_fasta_gz(fasta_gz_file_path):
@@ -26,10 +26,10 @@ def get_sequence_from_fasta_or_fasta_gz(
 
     if not isfile("{}.gzi".format(fasta_or_fasta_gz_file_path)):
 
-        run_command("samtools faidx {}".format(fasta_or_fasta_gz_file_path))
+        command("samtools faidx {}".format(fasta_or_fasta_gz_file_path))
 
     return "".join(
-        run_command(
+        command(
             "samtools faidx {} {}:{}-{}".format(
                 fasta_or_fasta_gz_file_path,
                 chromosome,

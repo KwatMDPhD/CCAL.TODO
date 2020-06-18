@@ -16,19 +16,10 @@ from numpy import (
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .ALMOST_ZERO import ALMOST_ZERO
-from .call_function_with_multiprocess import call_function_with_multiprocess
-from .check_array_for_bad import check_array_for_bad
-from .compute_kullback_leibler_divergence import compute_kullback_leibler_divergence
-from .compute_pdf_and_pdf_reference_context import compute_pdf_and_pdf_reference_context
-from .compute_vector_context import compute_vector_context
-from .fit_each_dataframe_row_to_skew_t_pdf_ import fit_each_dataframe_row_to_skew_t_pdf_
-from .fit_vector_to_skew_t_pdf import fit_vector_to_skew_t_pdf
-from .make_context_matrix_ import make_context_matrix_
-from .make_reflecting_grid import make_reflecting_grid
-from .merge_2_dicts_recursively import merge_2_dicts_recursively
-from .plot_plotly_figure import plot_plotly_figure
-from .split_dataframe import split_dataframe
+from .CONSTANT import FLOAT_RESOLUTION
+from .information import get_kld
+from .support import merge_2_dicts
+from .plot import plot_plotly
 
 
 def compute_pdf_and_pdf_reference_context(
@@ -309,7 +300,7 @@ def plot_context(
 
     else:
 
-        layout = merge_2_dicts_recursively(layout_template, layout)
+        layout = merge_2_dicts(layout_template, layout)
 
     context_dict = compute_vector_context(
         series.values, **compute_vector_context_keyword_arguments
@@ -358,7 +349,7 @@ def plot_context(
             "marker": {"color": "#20d9ba"},
             "hoverinfo": "x+y",
         },
-        merge_2_dicts_recursively(
+        merge_2_dicts(
             data_template,
             {"name": "PDF", "y": context_dict["pdf"], "line": {"color": "#24e7c0"}},
         ),
@@ -397,7 +388,7 @@ def plot_context(
     shape_pdf_reference[context_dict["pdf"] <= shape_pdf_reference] = None
 
     data.append(
-        merge_2_dicts_recursively(
+        merge_2_dicts(
             data_template,
             {
                 "name": "Shape Reference",
@@ -414,7 +405,7 @@ def plot_context(
         location_pdf_reference[context_dict["pdf"] <= location_pdf_reference] = None
 
         data.append(
-            merge_2_dicts_recursively(
+            merge_2_dicts(
                 data_template,
                 {
                     "name": "Location Reference",
@@ -442,7 +433,7 @@ def plot_context(
     ):
 
         data.append(
-            merge_2_dicts_recursively(
+            merge_2_dicts(
                 data_template,
                 {
                     "name": name,
@@ -454,7 +445,7 @@ def plot_context(
             )
         )
 
-    plot_plotly_figure({"layout": layout, "data": data}, html_file_path)
+    plot_plotly({"layout": layout, "data": data}, html_file_path)
 
 
 def fit_each_dataframe_row_to_skew_t_pdf(dataframe, n_job=1, tsv_file_path=None):
@@ -510,7 +501,7 @@ def fit_vector_to_skew_t_pdf(vector, fit_initial_location=None, fit_initial_scal
 
     mean = vector_good.mean()
 
-    if abs(mean) <= ALMOST_ZERO:
+    if abs(mean) <= FLOAT_RESOLUTION:
 
         mean = 0
 
