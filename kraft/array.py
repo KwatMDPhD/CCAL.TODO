@@ -120,29 +120,6 @@ def normalize(array, method, rank_method="average"):
         return rankdata(array, method=rank_method)
 
 
-def shuffle_slice(matrix, axis, random_seed=RANDOM_SEED):
-
-    error_nan(matrix)
-
-    matrix_copy = matrix.copy()
-
-    seed(seed=random_seed)
-
-    if axis == 0:
-
-        for i in range(matrix.shape[1]):
-
-            shuffle(matrix_copy[:, i])
-
-    elif axis == 1:
-
-        for i in range(matrix.shape[0]):
-
-            shuffle(matrix_copy[i, :])
-
-    return matrix_copy
-
-
 def ignore_nan_and_function_1(
     array, function, *function_arguments, update=False, **function_keyword_arguments
 ):
@@ -178,3 +155,39 @@ def ignore_nan_and_function_2(
         *function_arguments,
         **function_keyword_arguments,
     )
+
+
+def shuffle_slice(matrix, axis, random_seed=RANDOM_SEED):
+
+    error_nan(matrix)
+
+    matrix_copy = matrix.copy()
+
+    seed(seed=random_seed)
+
+    if axis == 0:
+
+        for i in range(matrix.shape[1]):
+
+            shuffle(matrix_copy[:, i])
+
+    elif axis == 1:
+
+        for i in range(matrix.shape[0]):
+
+            shuffle(matrix_copy[i, :])
+
+    return matrix_copy
+
+
+def get_intersections_between_2_vectors(vector_0, vector_1, raise_for_bad=True):
+
+    diff_sign = sign(vector_0 - vector_1)
+
+    diff_sign_0_indices = (diff_sign == 0).nonzero()[0]
+
+    if 0 < diff_sign_0_indices.size:
+
+        diff_sign[diff_sign_0_indices] = diff_sign[diff_sign_0_indices + 1]
+
+    return insert(diff(diff_sign) != 0, 0, False)

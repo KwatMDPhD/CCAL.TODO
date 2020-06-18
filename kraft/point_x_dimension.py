@@ -90,3 +90,20 @@ def plot_grid_point_x_dimension(
             layout={"title": {"text": value_name}},
             html_file_path=html_file_path,
         )
+
+
+def reflect_grid(grid, reflecting_grid_value):
+
+    grid_ = grid.copy()
+
+    for i, grid_value in enumerate(grid_):
+
+        if grid_value < reflecting_grid_value:
+
+            grid_[i] += (reflecting_grid_value - grid_value) * 2
+
+        else:
+
+            grid_[i] -= (grid_value - reflecting_grid_value) * 2
+
+    return grid_
