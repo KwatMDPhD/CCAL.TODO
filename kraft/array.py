@@ -178,4 +178,3 @@ def ignore_nan_and_function_2(
         *function_arguments,
         **function_keyword_arguments,
     )
-

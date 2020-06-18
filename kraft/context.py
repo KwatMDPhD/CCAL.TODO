@@ -17,9 +17,8 @@ from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .CONSTANT import FLOAT_RESOLUTION
-from .information import get_kld
-from .support import merge_2_dicts
 from .plot import plot_plotly
+from .support import merge_2_dicts
 
 
 def compute_pdf_and_pdf_reference_context(

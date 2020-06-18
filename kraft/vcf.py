@@ -2,8 +2,6 @@ from os.path import isfile
 
 from pandas import read_csv, value_counts
 
-from .support import flatten, command
-
 
 def get_variants_from_vcf_or_vcf_gz(
     vcf_or_vcf_gz_file_path,

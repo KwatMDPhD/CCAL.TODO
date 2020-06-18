@@ -1,7 +1,7 @@
 from pandas import DataFrame
 
-from .plot import plot_plotly
 from .CONSTANT import RANDOM_SEED
+from .plot import plot_plotly
 from .support import merge_2_dicts
 
 
