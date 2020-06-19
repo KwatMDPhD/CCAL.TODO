@@ -54,7 +54,8 @@ from .gff import get_gff3_attribute, read_gff3
 from .git import get_git_versions, is_in_git_repository, make_gitkeep, normalize_git_url
 from .gps_map import (
     GPSMap,
-    get_triangulation_edges,
+    get_convex_hull,
+    get_triangulation,
     map_points,
     map_points_by_pull,
     plot_gps_map,
