@@ -56,25 +56,24 @@ def get_ic(vector_0, vector_1):
 
     bandwidth_factor = 1 - abs(r) * 2 / 3
 
-    bandwidths = tuple(
-        get_bandwidth(vector) * bandwidth_factor for vector in (vector_0, vector_1)
-    )
-
-    grids = tuple(
-        grid(vector.min(), vector.max(), 0.1, 24) for vector in (vector_0, vector_1)
-    )
-
     grid_point_x_dimension, point_pdf = get_pdf(
-        asarray((vector_0, vector_1)).T, plot=False, bandwidths=bandwidths, grids=grids,
+        asarray((vector_0, vector_1)).T,
+        plot=False,
+        bandwidths=tuple(
+            get_bandwidth(vector) * bandwidth_factor for vector in (vector_0, vector_1)
+        ),
+        grids=tuple(
+            grid(vector.min(), vector.max(), 0.1, 24) for vector in (vector_0, vector_1)
+        ),
     )
 
-    x_grid, y_grid = get_grids(grid_point_x_dimension)
+    grid_x, grid_y = get_grids(grid_point_x_dimension)
 
-    pxy = reshape(point_pdf, (x_grid, y_grid))
+    pxy = reshape(point_pdf, (grid_x, grid_y))
 
-    dx = x_grid[1] - x_grid[0]
+    dx = grid_x[1] - grid_x[0]
 
-    dy = y_grid[1] - y_grid[0]
+    dy = grid_y[1] - grid_y[0]
 
     px = pxy.sum(axis=1) * dy
 

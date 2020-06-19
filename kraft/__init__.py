@@ -1,137 +1,125 @@
-from .array import error_nan
-from .array import is_sorted
-from .array import guess_type
-from .array import clip
-from .array import shift_minimum
-from .array import log
-from .array import normalize
-from .array import ignore_nan_and_function_1
-from .array import ignore_nan_and_function_2
-from .array import shuffle_slice
-from .array import get_intersections_between_2_vectors
-from .clustering import cluster
-from .clustering import get_coclustering_distance
-from .clustering import cluster_hierarchical_clusterings
-from .conda import add_conda_to_path
-from .conda import get_conda_environments
-from .conda import get_conda_prefix
-from .conda import install_and_activate_conda
-from .conda import is_conda_directory_path
-from .context import compute_pdf_and_pdf_reference_context
-from .context import compute_vector_context
-from .context import make_context_matrix
-from .context import make_context_matrix_
-from .context import plot_context
+from .array import (
+    clip,
+    error_nan,
+    get_intersections_between_2_vectors,
+    guess_type,
+    ignore_nan_and_function_1,
+    ignore_nan_and_function_2,
+    is_sorted,
+    log,
+    normalize,
+    shift_minimum,
+    shuffle_slice,
+)
+from .clustering import (
+    cluster,
+    cluster_hierarchical_clusterings,
+    get_coclustering_distance,
+)
+from .conda import (
+    add_conda_to_path,
+    get_conda_environments,
+    get_conda_prefix,
+    install_and_activate_conda,
+    is_conda_directory_path,
+)
+from .context import (
+    compute_pdf_and_pdf_reference_context,
+    compute_vector_context,
+    make_context_matrix,
+    make_context_matrix_,
+    plot_context,
+)
 from .correlation import correlate_2_vectors
-from .dataframe import tidy
-from .dataframe import drop_slice
-from .dataframe import drop_slice_greedily
-from .dataframe import group
-from .dataframe import make_axis_same
-from .dataframe import make_axis_different
-from .dataframe import summarize
-from .dataframe import separate_type
-from .dataframe import sample_dataframe
-from .dataframe import process_feature_x_sample
+from .dataframe import (
+    drop_slice,
+    drop_slice_greedily,
+    group,
+    make_axis_different,
+    make_axis_same,
+    process_feature_x_sample,
+    sample_dataframe,
+    separate_type,
+    summarize,
+    tidy,
+)
 from .dimension_scaling import scale_element_x_dimension_dimension
-from .fasta import get_chromosome_size_from_fasta_gz
-from .fasta import get_sequence_from_fasta_or_fasta_gz
-from .function_heat_map import function_heat_map
-from .function_heat_map import function_heat_map_summary
-from .geo import parse_block
-from .geo import get_key_value
-from .geo import get_gse
-from .gff import get_gff3_attribute
-from .gff import read_gff3
-from .git import get_git_versions
-from .git import is_in_git_repository
-from .git import make_gitkeep
-from .git import normalize_git_url
-from .gps_map import get_triangulation_edges
-from .gps_map import map_points_by_pull
-from .gps_map import map_points
-from .gps_map import plot_gps_map
-from .gps_map import GPSMap
-from .gps_map import read_gps_map
-from .gps_map import write_gps_map
-from .information import get_entropy
-from .information import get_kld
-from .information import get_jsd
-from .information import get_zd
-from .information import get_ic
-from .internet import download
-from .internet import download_and_extract
-from .io import read_json
-from .io import write_json
-from .io import read_gct
-from .io import read_gmt
-from .kernel_density import get_bandwidth
-from .kernel_density import get_density
-from .matrix_factorization import factorize_matrix_by_nmf
-from .matrix_factorization import factorize_matrix
-from .matrix_factorization import plot_matrix_factorization
-from .matrix_factorization import solve_ax_b
-from .ml import train_and_classify
-from .ml import train_and_regress
+from .fasta import (
+    get_chromosome_size_from_fasta_gz,
+    get_sequence_from_fasta_or_fasta_gz,
+)
+from .function_heat_map import function_heat_map, function_heat_map_summary
+from .geo import get_gse, get_key_value, parse_block
+from .gff import get_gff3_attribute, read_gff3
+from .git import get_git_versions, is_in_git_repository, make_gitkeep, normalize_git_url
+from .gps_map import (
+    GPSMap,
+    get_triangulation_edges,
+    map_points,
+    map_points_by_pull,
+    plot_gps_map,
+    read_gps_map,
+    write_gps_map,
+)
+from .information import get_entropy, get_ic, get_jsd, get_kld, get_zd
+from .internet import download, download_and_extract
+from .io import read_gct, read_gmt, read_json, write_json
+from .kernel_density import get_bandwidth, get_density
+from .matrix_factorization import (
+    factorize_matrix,
+    factorize_matrix_by_nmf,
+    plot_matrix_factorization,
+    solve_ax_b,
+)
+from .ml import train_and_classify, train_and_regress
 from .name_biology import map_genes
-from .path import path
-from .path import get_child_paths
-from .plot import plot_plotly
-from .plot import get_color
-from .plot import plot_heat_map
-from .plot import plot_bubble_map
-from .plot import plot_histogram
-from .point_x_dimension import grid
-from .point_x_dimension import make_grid_point_x_dimension
-from .point_x_dimension import get_grids
-from .point_x_dimension import reshape
-from .point_x_dimension import plot_grid_point_x_dimension
-from .point_x_dimension import reflect_grid
+from .path import get_child_paths, path
+from .plot import get_color, plot_bubble_map, plot_heat_map, plot_histogram, plot_plotly
+from .point_x_dimension import (
+    get_grids,
+    grid,
+    make_grid_point_x_dimension,
+    plot_grid_point_x_dimension,
+    reflect_grid,
+    reshape,
+)
 from .polar_coordinate import rescale_x_y_coordiantes_in_polar_coordiante
-from .probability import get_pdf
-from .probability import target_posterior_pdf
-from .probability import get_posterior_pdf
-from .probability import plot_nomogram
-from .series import select_extreme
-from .series import binarize
-from .series import sample_from_each_series_value
-from .set_score import score_set
-from .set_score import get_c
-from .set_score import cumulate_rank
-from .set_score import cumulate_magnitude
-from .significance import get_moe
-from .significance import get_p_value
-from .significance import get_p_values_and_q_values
+from .probability import get_pdf, get_posterior_pdf, plot_nomogram, target_posterior_pdf
+from .series import binarize, sample_from_each_series_value, select_extreme
+from .set_score import cumulate_magnitude, cumulate_rank, get_c, score_set
+from .significance import get_moe, get_p_value, get_p_values_and_q_values
 from .single_cell import read_process_write_gene_x_cell
-from .skew_t import fit_each_dataframe_row_to_skew_t_pdf
-from .skew_t import fit_each_dataframe_row_to_skew_t_pdf_
-from .skew_t import fit_vector_to_skew_t_pdf
-from .string import title
-from .string import standardize
-from .string import is_version
-from .string import untitle
-from .string import skip_quote_and_split
-from .support import cast_builtin
-from .support import flatten
-from .support import make_unique
-from .support import merge_2_dicts
-from .support import command
-from .support import merge_2_dicts_with_function
-from .support import map_objects_to_ints
-from .support import get_machine
-from .support import get_shell_environment
-from .support import install_python_libraries
-from .support import is_program
-from .support import print_function_information
+from .skew_t import (
+    fit_each_dataframe_row_to_skew_t_pdf,
+    fit_each_dataframe_row_to_skew_t_pdf_,
+    fit_vector_to_skew_t_pdf,
+)
+from .string import is_version, skip_quote_and_split, standardize, title, untitle
+from .support import (
+    cast_builtin,
+    command,
+    flatten,
+    get_machine,
+    get_shell_environment,
+    install_python_libraries,
+    is_program,
+    make_unique,
+    map_objects_to_ints,
+    merge_2_dicts,
+    merge_2_dicts_with_function,
+    print_function_information,
+)
 from .tcga import select_and_group_feature_x_tcga_sample_by_sample_type
-from .vcf import get_variants_from_vcf_or_vcf_gz
-from .vcf import get_vcf_genotype
-from .vcf import get_vcf_info_ann
-from .vcf import get_vcf_info
-from .vcf import get_vcf_sample_format
-from .vcf import make_variant_dict_from_vcf_row
-from .vcf import make_variant_n_from_vcf_file_path
-from .vcf import make_variant_n_from_vcf_row
-from .vcf import count_gene_impacts_from_variant_dicts
-from .vcf import get_variant_start_and_end_positions
-from .vcf import update_variant_dict
+from .vcf import (
+    count_gene_impacts_from_variant_dicts,
+    get_variant_start_and_end_positions,
+    get_variants_from_vcf_or_vcf_gz,
+    get_vcf_genotype,
+    get_vcf_info,
+    get_vcf_info_ann,
+    get_vcf_sample_format,
+    make_variant_dict_from_vcf_row,
+    make_variant_n_from_vcf_file_path,
+    make_variant_n_from_vcf_row,
+    update_variant_dict,
+)
