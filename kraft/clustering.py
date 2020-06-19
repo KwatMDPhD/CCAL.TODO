@@ -39,23 +39,25 @@ def cluster(
 
 def get_coclustering_distance(clustering_x_point):
 
-    index_0_index_1 = tuple(zip(*triu_indices(clustering_x_point.shape[1], k=1)))
+    point_pair_indexs = tuple(zip(*triu_indices(clustering_x_point.shape[1], k=1)))
 
     def is_coclustered(clusters):
 
         return tuple(
-            clusters[index_0] == clusters[index_1]
-            for index_0, index_1 in index_0_index_1
+            clusters[point_0_index] == clusters[point_1_index]
+            for point_0_index, point_1_index in point_pair_indexs
         )
 
     n_coclustered = apply_along_axis(is_coclustered, 1, clustering_x_point).sum(axis=0)
 
     n = asarray(
         tuple(
-            (~isnan(clustering_x_point[:, index_0_index_1_])).all(axis=1).sum()
-            for index_0_index_1_ in index_0_index_1
+            (~isnan(clustering_x_point[:, point_pair_index])).all(axis=1).sum()
+            for point_pair_index in point_pair_indexs
         )
     )
+
+    assert 0 < n.min()
 
     return squareform(1 - n_coclustered / n)
 
@@ -78,7 +80,7 @@ def cluster_hierarchical_clusterings(
 
     point_index = arange(n_point)
 
-    n_choice = int(0.64 * n_point)
+    n_choice = int(n_point * 0.632)
 
     seed(seed=random_seed)
 
@@ -88,10 +90,10 @@ def cluster_hierarchical_clusterings(
 
             print("{}/{}...".format(clustering_index + 1, n_clustering))
 
-        point_index_ = choice(point_index, size=n_choice, replace=False)
+        point_index_choice = choice(point_index, size=n_choice, replace=False)
 
-        clustering_x_point[clustering_index, point_index_] = cluster(
-            point_x_dimension[point_index_], n_cluster=n_cluster,
+        clustering_x_point[clustering_index, point_index_choice] = cluster(
+            point_x_dimension[point_index_choice], n_cluster=n_cluster,
         )[1]
 
     leave_index, clusters = cluster(
