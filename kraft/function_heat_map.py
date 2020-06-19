@@ -14,11 +14,11 @@ from .significance import get_moe, get_p_values_and_q_values
 
 
 def function_heat_map(
-    vector,
-    matrix,
+    series,
+    dataframe,
     function,
-    vector_ascending=True,
-    statistics=None,
+    series_ascending=True,
+    scores=None,
     n_job=1,
     random_seed=RANDOM_SEED,
     n_sampling=10,
@@ -27,145 +27,145 @@ def function_heat_map(
     plot=True,
     n_extreme=8,
     fraction_extreme=None,
-    vector_data_type="continuous",
-    matrix_data_type="continuous",
+    series_data_type="continuous",
+    dataframe_data_type="continuous",
     plot_std=nan,
     directory_path=None,
 ):
 
-    intersection = vector.index & matrix.columns
+    common_pandas_index = series.index & dataframe.columns
 
     print(
-        "vector.index ({}) and matrix.columns ({}) share {}.".format(
-            vector.index.size, matrix.columns.size, intersection.size
+        "series.index ({}) and dataframe.columns ({}) have {} in common.".format(
+            series.index.size, dataframe.columns.size, common_pandas_index.size
         )
     )
 
-    vector = vector[intersection]
+    series = series[common_pandas_index]
 
-    if vector_ascending is not None:
+    if series_ascending is not None:
 
-        vector.sort_values(ascending=vector_ascending, inplace=True)
+        series.sort_values(ascending=series_ascending, inplace=True)
 
-    matrix = matrix[vector.index]
+    dataframe = dataframe[series.index]
 
-    if statistics is None:
+    if scores is None:
 
-        statistics = DataFrame(
-            index=matrix.index, columns=("Score", "0.95 MoE", "P-Value", "Q-Value")
+        scores = DataFrame(
+            index=dataframe.index, columns=("Score", "0.95 MoE", "P-Value", "Q-Value")
         )
 
-        n_matrix_row, n_matrix_column = matrix.shape
+        n_row, n_column = dataframe.shape
 
-        n_job = min(n_matrix_row, n_job)
+        n_job = min(n_job, n_row)
 
-        print("Computing statistics using {} process...".format(n_job))
+        print("Computing scores (n_job={})...".format(n_job))
 
         pool = Pool(n_job)
 
-        print("\tScore with {}...".format(function.__name__))
+        print("\tScore (function={})...".format(function.__name__))
 
         seed(seed=random_seed)
 
-        vector_ = vector.values
+        vector = series.values
 
-        statistics["Score"] = asarray(
+        scores["Score"] = asarray(
             pool.starmap(
                 ignore_nan_and_function_2,
-                ((vector_, matrix_row, function) for matrix_row in matrix.values),
+                ((vector, matrix_row, function) for matrix_row in dataframe.values),
             )
         )
 
         if 0 < n_sampling:
 
-            print("\t0.95 MoE with {} sampling...".format(n_sampling))
+            print("\t0.95 MoE (n_sampling={})...".format(n_sampling))
 
-            row_x_sampling = full((n_matrix_row, n_sampling), nan)
+            row_x_sampling = full((n_row, n_sampling), nan)
 
-            n_column_to_sample = ceil(0.632 * n_matrix_column)
+            n_column_to_sample = ceil(n_column * 0.632)
 
             for sampling_index in range(n_sampling):
 
-                columns = choice(n_matrix_column, size=n_column_to_sample)
+                row_name = choice(n_column, size=n_column_to_sample)
 
-                vector_ = vector.values[columns]
+                # TODO: confirm that initializing outside tuple comprehension is faster
+                vector = series.values[row_name]
 
                 row_x_sampling[:, sampling_index] = pool.starmap(
                     ignore_nan_and_function_2,
                     (
-                        (vector_, matrix_row, function)
-                        for matrix_row in matrix.values[:, columns]
+                        (vector, matrix_row, function)
+                        for matrix_row in dataframe.values[:, row_name]
                     ),
                 )
 
-            statistics["0.95 MoE"] = apply_along_axis(
+            scores["0.95 MoE"] = apply_along_axis(
                 lambda scores: get_moe(scores[~isnan(scores)]), 1, row_x_sampling,
             )
 
         if 0 < n_permutation:
 
-            print("\tP-Value and Q-Value with {} permutation...".format(n_sampling))
+            print("\tP-Value and Q-Value (n_permutation={})...".format(n_permutation))
 
-            row_x_permutation = full((n_matrix_row, n_permutation), nan)
+            row_x_permutation = full((n_row, n_permutation), nan)
 
-            vector_ = vector.values.copy()
+            vector = series.values.copy()
 
             for permuting_index in range(n_permutation):
 
-                shuffle(vector_)
+                shuffle(vector)
 
                 row_x_permutation[:, permuting_index] = pool.starmap(
                     ignore_nan_and_function_2,
-                    ((vector_, matrix_row, function) for matrix_row in matrix.values),
+                    ((vector, matrix_row, function) for matrix_row in dataframe.values),
                 )
 
-            statistics["P-Value"], statistics["Q-Value"] = get_p_values_and_q_values(
-                statistics["Score"].values, row_x_permutation.flatten(), "<>"
+            scores["P-Value"], scores["Q-Value"] = get_p_values_and_q_values(
+                scores["Score"].values, row_x_permutation.flatten(), "<>"
             )
 
         pool.terminate()
 
     else:
 
-        statistics = statistics.reindex(row_name=matrix.index)
+        scores = scores.reindex(row_name=dataframe.index)
 
-    statistics.sort_values("Score", ascending=score_ascending, inplace=True)
+    scores.sort_values("Score", ascending=score_ascending, inplace=True)
 
     if directory_path is not None:
 
         tsv_file_path = "{}/function_heat_map.tsv".format(directory_path)
 
-        statistics.to_csv(tsv_file_path, sep="\t")
+        scores.to_csv(tsv_file_path, sep="\t")
 
     if plot:
 
         plot_plotly(
             {
                 "layout": {
-                    "title": {"text": "Statistics"},
+                    "title": {"text": "Scores"},
                     "xaxis": {"title": {"text": "Rank"}},
                 },
                 "data": [
                     {
-                        "type": "scatter",
-                        "name": name,
-                        "x": values.index,
-                        "y": values.values,
+                        "name": score_name,
+                        "x": score_values.index,
+                        "y": score_values.values,
                     }
-                    for name, values in statistics.items()
+                    for score_name, score_values in scores.items()
                 ],
             },
         )
 
-        vector_ = vector.copy()
+        series_plot = series.copy()
 
-        statistics_ = statistics.copy()
+        scores_plot = scores.copy()
 
         if n_extreme is not None or fraction_extreme is not None:
 
-            statistics_ = statistics_.loc[
+            scores_plot = scores_plot.loc[
                 select_extreme(
-                    statistics_["Score"],
+                    scores_plot["Score"],
                     "<>",
                     n=n_extreme,
                     fraction=fraction_extreme,
@@ -173,61 +173,62 @@ def function_heat_map(
                 )
             ].sort_values("Score", ascending=score_ascending)
 
-        matrix_ = matrix.loc[statistics_.index]
+        dataframe_plot = dataframe.loc[scores_plot.index]
 
-        if vector_data_type == "continuous":
+        if series_data_type == "continuous":
 
-            vector_ = Series(
+            series_plot = Series(
                 ignore_nan_and_function_1(
-                    vector_.values, normalize, "-0-", update=True
+                    series_plot.values, normalize, "-0-", update=True
                 ),
-                name=vector_.name,
-                index=vector_.index,
+                name=series_plot.name,
+                index=series_plot.index,
             ).clip(lower=-plot_std, upper=plot_std)
 
-        if matrix_data_type == "continuous":
+        if dataframe_data_type == "continuous":
 
-            matrix_ = DataFrame(
+            dataframe_plot = DataFrame(
                 apply_along_axis(
                     ignore_nan_and_function_1,
                     1,
-                    matrix_.values,
+                    dataframe_plot.values,
                     normalize,
                     "-0-",
                     update=True,
                 ),
-                index=matrix_.index,
-                columns=matrix_.columns,
+                index=dataframe_plot.index,
+                columns=dataframe_plot.columns,
             ).clip(lower=-plot_std, upper=plot_std)
 
         if (
-            not vector_.isna().any()
-            and isinstance(vector_ascending, bool)
-            and (1 < vector_.value_counts()).all()
+            not series_plot.isna().any()
+            and isinstance(series_ascending, bool)
+            and 1 < series_plot.value_counts().min()
         ):
 
-            categories = vector_.values
+            vector = series_plot.values
 
-            matrix_values_t = matrix_.values.T
+            matrix = dataframe_plot.values
 
             leave_index = []
 
-            for category in unique(categories):
+            # TODO: check order
+            for n in unique(vector):
 
-                row_name = where(categories == category)[0]
+                row_name = where(vector == n)[0]
 
-                leave_index.append(row_name[cluster(matrix_values_t[row_name])[0]])
+                leave_index.append(row_name[cluster(matrix.T[row_name])[0]])
 
-            matrix_ = matrix_.iloc[:, concatenate(leave_index)]
+            dataframe_plot = dataframe_plot.iloc[:, concatenate(leave_index)]
 
-            vector_ = vector_[matrix_.columns]
+            series_plot = series_plot[dataframe_plot.columns]
 
-        n_row = 1 + 1 + matrix_.shape[0]
+        n_row_plot = 1 + 1 + dataframe_plot.shape[0]
 
-        fraction_row = 1 / n_row
+        fraction_row = 1 / n_row_plot
 
         layout = {
-            "height": max(480, 24 * n_row),
+            "height": max(480, 24 * n_row_plot),
             "width": 800,
             "margin": {"l": 200, "r": 200},
             "title": {"x": 0.5},
@@ -236,7 +237,7 @@ def function_heat_map(
             "annotations": [],
         }
 
-        annotation_ = {
+        annotation_template = {
             "xref": "paper",
             "yref": "paper",
             "yanchor": "middle",
@@ -244,43 +245,51 @@ def function_heat_map(
             "showarrow": False,
         }
 
+        y = 1 - fraction_row / 2
+
         layout["annotations"].append(
             {
                 "x": 0,
-                "y": 1 - fraction_row / 2,
+                "y": y,
                 "xanchor": "right",
-                "text": "<b>{}</b>".format(vector_.name),
-                **annotation_,
+                "text": "<b>{}</b>".format(series_plot.name),
+                **annotation_template,
             }
         )
 
-        def get_x(x_index):
+        def get_x(score_index):
 
-            return 1.1 + x_index / 6.4
+            return 1.1 + score_index / 6.4
 
-        y = 1 - fraction_row / 2
-
-        for x_index, str_ in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+        for score_index, score_name in enumerate(
+            ("Score (\u0394)", "P-Value", "Q-Value")
+        ):
 
             layout["annotations"].append(
                 {
-                    "x": get_x(x_index),
+                    "x": get_x(score_index),
                     "y": y,
                     "xanchor": "center",
-                    "text": "<b>{}</b>".format(str_),
-                    **annotation_,
+                    "text": "<b>{}</b>".format(score_name),
+                    **annotation_template,
                 }
             )
 
         y -= 2 * fraction_row
 
-        for row_name, (score, moe, p_value, q_value) in statistics_.iterrows():
+        for row_name, (score, moe, p_value, q_value) in scores_plot.iterrows():
 
             layout["annotations"].append(
-                {"x": 0, "y": y, "xanchor": "right", "text": row_name, **annotation_}
+                {
+                    "x": 0,
+                    "y": y,
+                    "xanchor": "right",
+                    "text": row_name,
+                    **annotation_template,
+                }
             )
 
-            for x_index, str_ in enumerate(
+            for score_index, score_str in enumerate(
                 (
                     "{:.2f} ({:.2f})".format(score, moe),
                     "{:.2e}".format(p_value),
@@ -290,11 +299,11 @@ def function_heat_map(
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(x_index),
+                        "x": get_x(score_index),
                         "y": y,
                         "xanchor": "center",
-                        "text": str_,
-                        **annotation_,
+                        "text": score_str,
+                        **annotation_template,
                     }
                 )
 
@@ -306,9 +315,9 @@ def function_heat_map(
 
         else:
 
-            html_file_path = tsv_file_path.repalce(".tsv", ".html")
+            html_file_path = tsv_file_path.replace(".tsv", ".html")
 
-        heatmap_trace_ = {
+        heatmap_trace_template = {
             "type": "heatmap",
             "showscale": False,
         }
@@ -319,25 +328,25 @@ def function_heat_map(
                 "data": [
                     {
                         "yaxis": "y2",
-                        "x": vector_.index,
-                        "z": vector_.to_frame().T,
-                        "colorscale": DATA_TYPE_COLORSCALE[vector_data_type],
-                        **heatmap_trace_,
+                        "x": series_plot.index,
+                        "z": series_plot.to_frame().T,
+                        "colorscale": DATA_TYPE_COLORSCALE[series_data_type],
+                        **heatmap_trace_template,
                     },
                     {
                         "yaxis": "y",
-                        "x": matrix_.columns,
-                        "y": matrix_.index[::-1],
-                        "z": matrix_.iloc[::-1],
-                        "colorscale": DATA_TYPE_COLORSCALE[matrix_data_type],
-                        **heatmap_trace_,
+                        "x": dataframe_plot.columns,
+                        "y": dataframe_plot.index[::-1],
+                        "z": dataframe_plot.iloc[::-1],
+                        "colorscale": DATA_TYPE_COLORSCALE[dataframe_data_type],
+                        **heatmap_trace_template,
                     },
                 ],
             },
             html_file_path=html_file_path,
         )
 
-    return statistics
+    return scores
 
 
 def function_heat_map_summary(
