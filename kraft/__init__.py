@@ -71,7 +71,6 @@ from .matrix_factorization import (
     plot_matrix_factorization,
     solve_ax_b,
 )
-from .ml import train_and_classify, train_and_regress
 from .name_biology import map_genes
 from .path import get_child_paths, path
 from .plot import get_color, plot_bubble_map, plot_heat_map, plot_histogram, plot_plotly
@@ -84,6 +83,7 @@ from .point_x_dimension import (
     reshape,
 )
 from .polar_coordinate import rescale_x_y_coordiantes_in_polar_coordiante
+from .predict import train_and_classify, train_and_regress
 from .probability import get_pdf, get_posterior_pdf, plot_nomogram, target_posterior_pdf
 from .series import binarize, sample_from_each_series_value, select_extreme
 from .set_score import cumulate_magnitude, cumulate_rank, get_c, score_set
