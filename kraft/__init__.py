@@ -50,12 +50,11 @@ from .fasta import (
 )
 from .function_heat_map import function_heat_map, function_heat_map_summary
 from .geo import get_gse, get_key_value, parse_block
+from .geometry import get_convex_hull, get_triangulation
 from .gff import get_gff3_attribute, read_gff3
 from .git import get_git_versions, is_in_git_repository, make_gitkeep, normalize_git_url
 from .gps_map import (
     GPSMap,
-    get_convex_hull,
-    get_triangulation,
     map_points,
     map_points_by_pull,
     plot_gps_map,
