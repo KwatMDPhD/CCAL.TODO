@@ -27,6 +27,11 @@ def get_grids(point_x_dimension):
     return tuple(unique(dimension) for dimension in point_x_dimension.T)
 
 
+def reshape(point_value, grids):
+
+    return point_value.reshape(tuple(grid.size for grid in grids))
+
+
 def plot_grid_point_x_dimension(
     grid_point_x_dimension,
     grid_point_value,
@@ -43,7 +48,7 @@ def plot_grid_point_x_dimension(
 
     grids = get_grids(grid_point_x_dimension)
 
-    grid_point_value = grid_point_value.reshape(tuple(grid.size for grid in grids))
+    grid_point_value = reshape(grid_point_value, grids)
 
     for grid_index, grid in enumerate(grids):
 

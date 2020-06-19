@@ -257,17 +257,13 @@ def function_heat_map(
             }
         )
 
-        def get_x(score_index):
-
-            return 1.1 + score_index / 6.4
-
         for score_index, score_name in enumerate(
             ("Score (\u0394)", "P-Value", "Q-Value")
         ):
 
             layout["annotations"].append(
                 {
-                    "x": get_x(score_index),
+                    "x": _get_x(score_index),
                     "y": y,
                     "xanchor": "center",
                     "text": "<b>{}</b>".format(score_name),
@@ -299,7 +295,7 @@ def function_heat_map(
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(score_index),
+                        "x": _get_x(score_index),
                         "y": y,
                         "xanchor": "center",
                         "text": score_str,
@@ -350,57 +346,59 @@ def function_heat_map(
 
 
 def function_heat_map_summary(
-    vector,
-    matrix_dicts,
-    statistics,
+    series,
+    dataframe_dicts,
+    scores,
     plot_only_shared=False,
-    vector_ascending=True,
-    vector_data_type="continuous",
+    series_ascending=True,
+    series_data_type="continuous",
     plot_std=nan,
     html_file_path=None,
 ):
 
     if plot_only_shared:
 
-        for matrix_dict in matrix_dicts.values():
+        for dataframe_dict in dataframe_dicts.values():
 
-            vector = vector.loc[vector.index & matrix_dict["matrix"].columns]
+            series = series.loc[series.index & dataframe_dict["dataframe"].columns]
 
-    if vector_ascending is not None:
+    if series_ascending is not None:
 
-        vector.sort_values(ascending=vector_ascending, inplace=True)
+        series.sort_values(ascending=series_ascending, inplace=True)
 
-    vector_ = vector.copy()
+    series_plot = series.copy()
 
-    if vector_data_type == "continuous":
+    if series_data_type == "continuous":
 
-        vector_ = Series(
-            ignore_nan_and_function_1(vector_.values, normalize, "-0-", update=True),
-            name=vector_.name,
-            index=vector_.index,
+        series_plot = Series(
+            ignore_nan_and_function_1(
+                series_plot.values, normalize, "-0-", update=True
+            ),
+            name=series_plot.name,
+            index=series_plot.index,
         ).clip(lower=-plot_std, upper=plot_std)
 
     n_space = 2
 
-    n_row = 1
+    n_row_plot = 1
 
-    for matrix_dict in matrix_dicts.values():
+    for dataframe_dict in dataframe_dicts.values():
 
-        n_row += n_space
+        n_row_plot += n_space
 
-        n_row += matrix_dict["matrix"].shape[0]
+        n_row_plot += dataframe_dict["dataframe"].shape[0]
 
     layout = {
-        "height": max(480, 24 * n_row),
+        "height": max(480, 24 * n_row_plot),
         "width": 800,
         "margin": {"l": 200, "r": 200},
         "title": {"x": 0.5},
         "annotations": [],
     }
 
-    fraction_row = 1 / n_row
+    fraction_row = 1 / n_row_plot
 
-    yaxis = "yaxis{}".format(len(matrix_dicts) + 1)
+    yaxis = "yaxis{}".format(len(dataframe_dicts) + 1)
 
     domain = 1 - fraction_row, 1
 
@@ -410,14 +408,14 @@ def function_heat_map_summary(
         {
             "yaxis": yaxis.replace("axis", ""),
             "type": "heatmap",
-            "x": vector_.index,
-            "z": vector_.to_frame().T,
-            "colorscale": DATA_TYPE_COLORSCALE[vector_data_type],
+            "x": series_plot.index,
+            "z": series_plot.to_frame().T,
+            "colorscale": DATA_TYPE_COLORSCALE[series_data_type],
             "showscale": False,
         }
     ]
 
-    annotation_ = {
+    annotation_template = {
         "xref": "paper",
         "yref": "paper",
         "yanchor": "middle",
@@ -430,48 +428,50 @@ def function_heat_map_summary(
             "x": 0,
             "y": 1 - fraction_row / 2,
             "xanchor": "right",
-            "text": "<b>{}</b>".format(vector.name),
-            **annotation_,
+            "text": "<b>{}</b>".format(series.name),
+            **annotation_template,
         }
     )
 
-    for matrix_index, (matrix_name, matrix_dict) in enumerate(matrix_dicts.items()):
+    for dataframe_index, (dataframe_name, dataframe_dict) in enumerate(
+        dataframe_dicts.items()
+    ):
 
-        matrix_ = matrix_dict["matrix"].reindex(columns=vector_.index)
+        dataframe_plot = dataframe_dict["dataframe"].reindex(columns=series_plot.index)
 
-        statistics_ = statistics[matrix_name].reindex(index=matrix_.index)
+        scores_plot = scores[dataframe_name].reindex(index=dataframe_plot.index)
 
-        if "emphasis" in matrix_dict:
+        if "emphasis" in dataframe_dict:
 
-            score_ascending = matrix_dict["emphasis"] == "-"
+            score_ascending = dataframe_dict["emphasis"] == "-"
 
         else:
 
             score_ascending = False
 
-        statistics_.sort_values("Score", ascending=score_ascending, inplace=True)
+        scores_plot.sort_values("Score", ascending=score_ascending, inplace=True)
 
-        matrix_ = matrix_.loc[statistics_.index]
+        dataframe_plot = dataframe_plot.loc[scores_plot.index]
 
-        if matrix_dict["data_type"] == "continuous":
+        if dataframe_dict["data_type"] == "continuous":
 
-            matrix_ = DataFrame(
+            dataframe_plot = DataFrame(
                 apply_along_axis(
                     ignore_nan_and_function_1,
                     1,
-                    matrix_.values,
+                    dataframe_plot.values,
                     normalize,
                     "-0-",
                     update=True,
                 ),
-                index=matrix_.index,
-                columns=matrix_.columns,
+                index=dataframe_plot.index,
+                columns=dataframe_plot.columns,
             ).clip(lower=-plot_std, upper=plot_std)
 
-        yaxis = "yaxis{}".format(len(matrix_dicts) - matrix_index)
+        yaxis = "yaxis{}".format(len(dataframe_dicts) - dataframe_index)
 
         domain = (
-            max(0, domain[0] - fraction_row * (n_space + matrix_.shape[0])),
+            max(0, domain[0] - fraction_row * (n_space + dataframe_plot.shape[0])),
             domain[0] - fraction_row * n_space,
         )
 
@@ -481,10 +481,10 @@ def function_heat_map_summary(
             {
                 "yaxis": yaxis.replace("axis", ""),
                 "type": "heatmap",
-                "x": matrix_.columns,
-                "y": matrix_.index[::-1],
-                "z": matrix_.values[::-1],
-                "colorscale": DATA_TYPE_COLORSCALE[matrix_dict["data_type"]],
+                "x": dataframe_plot.columns,
+                "y": dataframe_plot.index[::-1],
+                "z": dataframe_plot.values[::-1],
+                "colorscale": DATA_TYPE_COLORSCALE[dataframe_dict["data_type"]],
                 "showscale": False,
             }
         )
@@ -494,38 +494,42 @@ def function_heat_map_summary(
                 "x": 0.5,
                 "y": domain[1] + fraction_row / 2,
                 "xanchor": "center",
-                "text": "<b>{}</b>".format(matrix_name),
-                **annotation_,
+                "text": "<b>{}</b>".format(dataframe_name),
+                **annotation_template,
             }
         )
 
-        def get_x(x_index):
+        y = domain[1] - fraction_row / 2
 
-            return 1.1 + x_index / 6.4
+        if dataframe_index == 0:
 
-        if matrix_index == 0:
-
-            for x_index, str_ in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+            for score_index, score_str in enumerate(
+                ("Score (\u0394)", "P-Value", "Q-Value")
+            ):
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(x_index),
-                        "y": 1 - fraction_row / 2,
+                        "x": _get_x(score_index),
+                        "y": y,
                         "xanchor": "center",
-                        "text": "<b>{}</b>".format(str_),
-                        **annotation_,
+                        "text": "<b>{}</b>".format(score_str),
+                        **annotation_template,
                     }
                 )
 
-        y = domain[1] - fraction_row / 2
-
-        for row_name, (score, moe, p_value, q_value) in statistics_.iterrows():
+        for row_name, (score, moe, p_value, q_value) in scores_plot.iterrows():
 
             layout["annotations"].append(
-                {"x": 0, "y": y, "xanchor": "right", "text": row_name, **annotation_}
+                {
+                    "x": 0,
+                    "y": y,
+                    "xanchor": "right",
+                    "text": row_name,
+                    **annotation_template,
+                }
             )
 
-            for x_index, str_ in enumerate(
+            for score_index, score_str in enumerate(
                 (
                     "{:.2f} ({:.2f})".format(score, moe),
                     "{:.2e}".format(p_value),
@@ -535,14 +539,18 @@ def function_heat_map_summary(
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(x_index),
+                        "x": _get_x(score_index),
                         "y": y,
                         "xanchor": "center",
-                        "text": str_,
-                        **annotation_,
+                        "text": score_str,
+                        **annotation_template,
                     }
                 )
 
             y -= fraction_row
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+
+    def _get_x(score_index):
+
+        return 1.1 + score_index / 6.4
