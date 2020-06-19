@@ -13,6 +13,11 @@ from .series import select_extreme
 from .significance import get_moe, get_p_values_and_q_values
 
 
+def _get_x(score_index):
+
+    return 1.1 + score_index / 6.4
+
+
 def function_heat_map(
     series,
     dataframe,
@@ -258,6 +263,8 @@ def function_heat_map(
             }
         )
 
+        y -= fraction_row
+
         for score_index, score_name in enumerate(
             ("Score (\u0394)", "P-Value", "Q-Value")
         ):
@@ -272,7 +279,7 @@ def function_heat_map(
                 }
             )
 
-        y -= 2 * fraction_row
+        y -= fraction_row
 
         for row_name, (score, moe, p_value, q_value) in scores_plot.iterrows():
 
@@ -316,6 +323,8 @@ def function_heat_map(
 
         heatmap_trace_template = {
             "type": "heatmap",
+            "zmin": -plot_std,
+            "zmax": plot_std,
             "showscale": False,
         }
 
@@ -405,14 +414,20 @@ def function_heat_map_summary(
 
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
+    heatmap_trace_template = {
+        "type": "heatmap",
+        "zmin": -plot_std,
+        "zmax": plot_std,
+        "showscale": False,
+    }
+
     data = [
         {
             "yaxis": yaxis.replace("axis", ""),
-            "type": "heatmap",
             "x": series_plot.index,
             "z": series_plot.to_frame().T,
             "colorscale": DATA_TYPE_COLORSCALE[series_data_type],
-            "showscale": False,
+            **heatmap_trace_template,
         }
     ]
 
@@ -481,26 +496,25 @@ def function_heat_map_summary(
         data.append(
             {
                 "yaxis": yaxis.replace("axis", ""),
-                "type": "heatmap",
                 "x": dataframe_plot.columns,
                 "y": dataframe_plot.index[::-1],
                 "z": dataframe_plot.values[::-1],
                 "colorscale": DATA_TYPE_COLORSCALE[dataframe_dict["data_type"]],
-                "showscale": False,
+                **heatmap_trace_template,
             }
         )
+
+        y = domain[1] + fraction_row / 2
 
         layout["annotations"].append(
             {
                 "x": 0.5,
-                "y": domain[1] + fraction_row / 2,
+                "y": y,
                 "xanchor": "center",
                 "text": "<b>{}</b>".format(dataframe_name),
                 **annotation_template,
             }
         )
-
-        y = domain[1] - fraction_row / 2
 
         if dataframe_index == 0:
 
@@ -517,6 +531,8 @@ def function_heat_map_summary(
                         **annotation_template,
                     }
                 )
+
+        y -= fraction_row
 
         for row_name, (score, moe, p_value, q_value) in scores_plot.iterrows():
 
@@ -551,8 +567,3 @@ def function_heat_map_summary(
             y -= fraction_row
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
-
-
-def _get_x(score_index):
-
-    return 1.1 + score_index / 6.4
