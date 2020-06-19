@@ -206,13 +206,14 @@ def function_heat_map(
             and 1 < series_plot.value_counts().min()
         ):
 
+            print("Clustering within category...")
+
             vector = series_plot.values
 
             matrix = dataframe_plot.values
 
             leave_index = []
 
-            # TODO: check order
             for n in unique(vector):
 
                 row_name = where(vector == n)[0]
