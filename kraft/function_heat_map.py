@@ -551,6 +551,7 @@ def function_heat_map_summary(
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
 
-    def _get_x(score_index):
 
-        return 1.1 + score_index / 6.4
+def _get_x(score_index):
+
+    return 1.1 + score_index / 6.4
