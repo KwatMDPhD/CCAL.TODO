@@ -12,7 +12,7 @@ from .geometry import get_convex_hull, get_triangulation
 from .kernel_density import get_bandwidth
 from .plot import COLORBAR, get_color, plot_heat_map, plot_plotly
 from .point import map_point, pull_point
-from .point_x_dimension import get_grids, grid
+from .point_x_dimension import get_grids, grid, reshape
 from .probability import get_pdf
 from .support import merge_2_dicts
 
@@ -405,14 +405,16 @@ class GPSMap:
 
         for label in self.point_label.unique():
 
-            label_grid_probability[label] = get_grids(
-                *get_pdf(
-                    self.point_x_dimension[self.point_label == label].values,
-                    plot=False,
-                    bandwidths=bandwidths,
-                    grids=grids,
-                )
-            )[1]
+            grid_point_x_dimension, point_pdf = get_pdf(
+                self.point_x_dimension[self.point_label == label].values,
+                plot=False,
+                bandwidths=bandwidths,
+                grids=grids,
+            )
+
+            label_grid_probability[label] = reshape(
+                point_pdf, get_grids(grid_point_x_dimension)
+            )
 
         self.grid_probability = full((n_grid,) * 2, nan)
 
