@@ -5,62 +5,19 @@ from numpy import apply_along_axis, full, isnan, nan, unique
 from pandas import DataFrame
 from plotly.colors import make_colorscale
 from scipy.spatial import Delaunay
-from sklearn.manifold import MDS
 
 from .array import normalize
 from .CONSTANT import RANDOM_SEED
+from .geometry import get_convex_hull, get_triangulation
 from .kernel_density import get_bandwidth
 from .plot import COLORBAR, get_color, plot_heat_map, plot_plotly
+from .point import map_point, pull_point
 from .point_x_dimension import get_grids, grid
 from .probability import get_pdf
 from .support import merge_2_dicts
 
 
-def map_points_by_pull(node_x_dimension, point_x_node):
-
-    point_x_dimension = full((point_x_node.shape[0], node_x_dimension.shape[1]), nan)
-
-    for point_index in range(point_x_node.shape[0]):
-
-        pulls = point_x_node[point_index, :]
-
-        for dimension_index in range(node_x_dimension.shape[1]):
-
-            point_x_dimension[point_index, dimension_index] = (
-                pulls * node_x_dimension[:, dimension_index]
-            ).sum() / pulls.sum()
-
-    return point_x_dimension
-
-
-def map_points(
-    point_x_point_distance,
-    n_dimension,
-    metric=True,
-    n_init=int(1e3),
-    max_iter=int(1e3),
-    verbose=0,
-    eps=1e-3,
-    n_job=1,
-    random_seed=RANDOM_SEED,
-):
-
-    point_x_dimension = MDS(
-        n_components=n_dimension,
-        metric=metric,
-        n_init=n_init,
-        max_iter=max_iter,
-        verbose=verbose,
-        eps=eps,
-        n_jobs=n_job,
-        random_state=random_seed,
-        dissimilarity="precomputed",
-    ).fit_transform(point_x_point_distance)
-
-    return apply_along_axis(normalize, 0, point_x_dimension, "0-1")
-
-
-def plot_gps_map(
+def _plot_gps_map(
     node_x_dimension,
     point_x_dimension,
     node_marker_size=16,
@@ -135,14 +92,16 @@ def plot_gps_map(
 
         layout = merge_2_dicts(layout_template, layout)
 
-    edge_xs, edge_ys = get_triangulation_edges(node_x_dimension)
+    triangulation_xs, triangulation_ys = get_triangulation(node_x_dimension)
+
+    convex_hull_xs, convex_hull_ys = get_convex_hull(node_x_dimension)
 
     data = [
         {
             "type": "scatter",
             "name": "Triangulation",
-            "x": edge_xs,
-            "y": edge_ys,
+            "x": triangulation_xs + convex_hull_xs,
+            "y": triangulation_ys + convex_hull_ys,
             "line": {"color": "#171412"},
         }
     ]
@@ -382,12 +341,12 @@ class GPSMap:
         self.point_x_node = point_x_node
 
         self.node_x_dimension = DataFrame(
-            map_points(node_x_node_distance, 2, random_seed=random_seed),
+            map_point(node_x_node_distance, 2, random_seed=random_seed),
             index=self.point_x_node.columns,
         )
 
         self.point_x_dimension = DataFrame(
-            map_points_by_pull(self.node_x_dimension.values, self.point_x_node.values),
+            pull_point(self.node_x_dimension.values, self.point_x_node.values),
             index=self.point_x_node.index,
         )
 
@@ -403,7 +362,7 @@ class GPSMap:
 
     def plot(self, **plot_gps_map_keyword_arguments):
 
-        plot_gps_map(
+        _plot_gps_map(
             self.node_x_dimension,
             self.point_x_dimension,
             point_label=self.point_label,
@@ -498,12 +457,10 @@ class GPSMap:
 
     def predict(self, new_point_x_node, **plot_gps_map_keyword_arguments):
 
-        plot_gps_map(
+        _plot_gps_map(
             self.node_x_dimension,
             DataFrame(
-                map_points_by_pull(
-                    self.node_x_dimension.values, new_point_x_node.values
-                ),
+                pull_point(self.node_x_dimension.values, new_point_x_node.values),
                 index=new_point_x_node.index,
                 columns=self.node_x_dimension.columns,
             ),
