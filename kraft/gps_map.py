@@ -17,14 +17,18 @@ from .probability import get_pdf
 from .support import merge_2_dicts
 
 
-def _plot_gps_map(
+def plot_node_point(
     node_x_dimension,
     point_x_dimension,
     node_marker_size=16,
     opacity=0.8,
+    # TODO: consider using vector
     point_label=None,
+    # TODO: consider renaming
     dimension_grid=None,
+    # TODO: consider renaming
     grid_probability=None,
+    # TODO: consider renaming
     grid_label=None,
     point_label_colorscale=None,
     point_value=None,
@@ -41,7 +45,7 @@ def _plot_gps_map(
     node_x_dimension = DataFrame(
         {
             "x": node_x_dimension.iloc[:, 1].values,
-            "y": 1 - node_x_dimension.iloc[::1, 0].values,
+            "y": 1 - node_x_dimension.iloc[:, 0].values,
         },
         index=node_x_dimension.index,
     )
@@ -49,12 +53,12 @@ def _plot_gps_map(
     point_x_dimension = DataFrame(
         {
             "x": point_x_dimension.iloc[:, 1].values,
-            "y": 1 - point_x_dimension.iloc[::1, 0].values,
+            "y": 1 - point_x_dimension.iloc[:, 0].values,
         },
         index=point_x_dimension.index,
     )
 
-    title_text = "{} {} & {} {}".format(
+    title_text = "{} {} and {} {}".format(
         node_x_dimension.index.size,
         node_x_dimension.index.name,
         point_x_dimension.index.size,
@@ -98,17 +102,16 @@ def _plot_gps_map(
 
     data = [
         {
-            "type": "scatter",
-            "name": "Triangulation",
+            "name": "Line",
             "x": triangulation_xs + convex_hull_xs,
             "y": triangulation_ys + convex_hull_ys,
+            "mode": "lines",
             "line": {"color": "#171412"},
         }
     ]
 
     data.append(
         {
-            "type": "scatter",
             "name": node_x_dimension.index.name,
             "x": node_x_dimension["x"],
             "y": node_x_dimension["y"],
@@ -133,7 +136,7 @@ def _plot_gps_map(
             {
                 "x": x,
                 "y": y,
-                "text": "<b>{}</b>".format(node),
+                "text": "<b>{}</b>".format(node_name),
                 "font": {
                     "size": 16,
                     "color": "#23191e",
@@ -147,11 +150,10 @@ def _plot_gps_map(
                 "arrowcolor": border_arrow_color,
                 "opacity": opacity,
             }
-            for node, (x, y) in node_x_dimension.iterrows()
+            for node_name, (x, y) in node_x_dimension.iterrows()
         ]
 
     point_trace_template = {
-        "type": "scatter",
         "name": point_x_dimension.index.name,
         "mode": "markers",
         "marker": {
@@ -175,10 +177,11 @@ def _plot_gps_map(
 
         grid_label_not_nan_unique = unique(grid_label[~isnan(grid_label)])
 
-        n_unique_label = grid_label_not_nan_unique.size
-
+        # TODO: consider renaming label to reflect int
         label_color = {
-            label: get_color(point_label_colorscale, label, n_unique_label)
+            label: get_color(
+                point_label_colorscale, label, grid_label_not_nan_unique.size
+            )
             for label in grid_label_not_nan_unique
         }
 
@@ -186,8 +189,10 @@ def _plot_gps_map(
             {
                 "type": "contour",
                 "showlegend": False,
+                # TODO: rename
                 "x": dimension_grid,
                 "y": 1 - dimension_grid,
+                # TODO: rename
                 "z": grid_probability,
                 "autocontour": False,
                 "ncontours": 24,
@@ -207,11 +212,11 @@ def _plot_gps_map(
                     "x": dimension_grid,
                     "y": 1 - dimension_grid,
                     "z": z,
-                    "opacity": opacity,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", label_color[label])
                     ),
                     "showscale": False,
+                    "opacity": opacity,
                     "hoverinfo": "none",
                 }
             )
@@ -261,11 +266,10 @@ def _plot_gps_map(
                     "x": point_x_dimension["x"],
                     "y": point_x_dimension["y"],
                     "text": tuple(
-                        "{}<br>{:.2e}".format(point, value)
-                        for point, value in point_value.items()
+                        "{}<br>{:.2e}".format(point_name, value)
+                        for point_name, value in point_value.items()
                     ),
                     "marker": {
-                        "opacity": point_value_opacity,
                         "color": point_value,
                         "colorscale": point_value_colorscale,
                         "colorbar": merge_2_dicts(
@@ -278,6 +282,7 @@ def _plot_gps_map(
                                 ),
                             },
                         ),
+                        "opacity": point_value_opacity,
                     },
                 },
             )
@@ -362,7 +367,7 @@ class GPSMap:
 
     def plot(self, **plot_gps_map_keyword_arguments):
 
-        _plot_gps_map(
+        plot_node_point(
             self.node_x_dimension,
             self.point_x_dimension,
             point_label=self.point_label,
@@ -459,7 +464,7 @@ class GPSMap:
 
     def predict(self, new_point_x_node, **plot_gps_map_keyword_arguments):
 
-        _plot_gps_map(
+        plot_node_point(
             self.node_x_dimension,
             DataFrame(
                 pull_point(self.node_x_dimension.values, new_point_x_node.values),

@@ -52,7 +52,7 @@ from .geo import get_gse, get_key_value, parse_block
 from .geometry import get_convex_hull, get_triangulation
 from .gff import get_gff3_attribute, read_gff3
 from .git import get_git_versions, is_in_git_repository, make_gitkeep, normalize_git_url
-from .gps_map import GPSMap, read_gps_map, write_gps_map
+from .gps_map import GPSMap, plot_node_point, read_gps_map, write_gps_map
 from .information import get_entropy, get_ic, get_jsd, get_kld, get_zd
 from .internet import download, download_and_extract
 from .io import read_gct, read_gmt, read_json, write_json
