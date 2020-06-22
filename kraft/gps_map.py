@@ -44,11 +44,11 @@ class GPSMap:
         plot_node_point(
             self.node_x_dimension,
             self.point_x_dimension,
-            point_label=self.point_label,
-            dimension_grid=self.dimension_grid,
+            point_group=self.point_label,
+            group_colorscale=self.point_label_colorscale,
+            grid=self.dimension_grid,
             grid_point_probability=self.grid_probability,
-            grid_label=self.grid_label,
-            point_label_colorscale=self.point_label_colorscale,
+            grid_point_group=self.grid_label,
             **plot_gps_map_keyword_arguments,
         )
 
@@ -145,11 +145,11 @@ class GPSMap:
                 index=new_point_x_node.index,
                 columns=self.node_x_dimension.columns,
             ),
-            point_label=None,
-            dimension_grid=self.dimension_grid,
+            point_group=None,
+            group_colorscale=self.point_label_colorscale,
+            grid=self.dimension_grid,
             grid_point_probability=self.grid_probability,
-            grid_label=self.grid_label,
-            point_label_colorscale=self.point_label_colorscale,
+            grid_point_group=self.grid_label,
             **plot_gps_map_keyword_arguments,
         )
 

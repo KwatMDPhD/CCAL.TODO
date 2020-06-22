@@ -57,6 +57,7 @@ def plot_node_point(
     node_x_dimension,
     point_x_dimension,
     show_node_text=True,
+    point_trace=None,
     point_group=None,
     group_colorscale=None,
     grid=None,
@@ -228,6 +229,10 @@ def plot_node_point(
         },
         "hoverinfo": "text",
     }
+
+    if point_trace is not None:
+
+        point_trace_template = merge_2_dicts(point_trace_template, point_trace)
 
     if point_value is not None:
 
