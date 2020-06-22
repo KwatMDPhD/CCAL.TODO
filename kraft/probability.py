@@ -25,7 +25,7 @@ def get_pdf(
     if plot:
 
         plot_grid_point_x_dimension(
-            grid_point_x_dimension, point_pdf, names=names, value_name="PDF",
+            grid_point_x_dimension, point_pdf, names=names, number_name="PDF",
         )
 
     return grid_point_x_dimension, point_pdf
@@ -53,7 +53,7 @@ def target_posterior_pdf(
             grid_point_x_dimension_,
             point_posterior_probability_,
             names=names,
-            value_name="P({} = {:.2e} (~{}) | {})".format(
+            number_name="P({} = {:.2e} (~{}) | {})".format(
                 names[-1],
                 target_dimension_grid[target_value_index],
                 value,
@@ -92,7 +92,7 @@ def get_posterior_pdf(
             grid_point_x_dimension,
             point_posterior_pdf,
             names=names,
-            value_name="Posterior PDF",
+            number_name="Posterior PDF",
         )
 
     return grid_point_x_dimension, point_posterior_pdf

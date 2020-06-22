@@ -17,6 +17,23 @@ def grid(min_, max_, fraction_extension, n):
     return linspace(min_, max_, num=n)
 
 
+def reflect(grid, reflecting_grid_number):
+
+    grid_copy = grid.copy()
+
+    for i, grid_number in enumerate(grid_copy):
+
+        if grid_number < reflecting_grid_number:
+
+            grid_copy[i] += (reflecting_grid_number - grid_number) * 2
+
+        else:
+
+            grid_copy[i] -= (grid_number - reflecting_grid_number) * 2
+
+    return grid_copy
+
+
 def make_grid_point_x_dimension(grids):
 
     return asarray(tuple(array.ravel() for array in meshgrid(*grids, indexing="ij"))).T
@@ -27,16 +44,16 @@ def get_grids(point_x_dimension):
     return tuple(unique(dimension) for dimension in point_x_dimension.T)
 
 
-def reshape(point_value, grids):
+def reshape(grid_point_x_dimension_number, grids):
 
-    return point_value.reshape(tuple(grid.size for grid in grids))
+    return grid_point_x_dimension_number.reshape(tuple(grid.size for grid in grids))
 
 
 def plot_grid_point_x_dimension(
     grid_point_x_dimension,
-    grid_point_value,
+    grid_point_x_dimension_number,
     names=None,
-    value_name="Value",
+    number_name="Number",
     html_file_path=None,
 ):
 
@@ -48,7 +65,7 @@ def plot_grid_point_x_dimension(
 
     grids = get_grids(grid_point_x_dimension)
 
-    grid_point_value = reshape(grid_point_value, grids)
+    grid_point_x_dimension_number = reshape(grid_point_x_dimension_number, grids)
 
     for grid_index, grid in enumerate(grids):
 
@@ -59,8 +76,8 @@ def plot_grid_point_x_dimension(
         )
 
     print(
-        "Value: min={:.2e} max={:.2e}".format(
-            grid_point_value.min(), grid_point_value.max()
+        "Number: min={:.2e} max={:.2e}".format(
+            grid_point_x_dimension_number.min(), grid_point_x_dimension_number.max()
         )
     )
 
@@ -70,15 +87,10 @@ def plot_grid_point_x_dimension(
             {
                 "layout": {
                     "xaxis": {"title": {"text": names[0]}},
-                    "yaxis": {"title": {"text": value_name}},
+                    "yaxis": {"title": {"text": number_name}},
                 },
                 "data": [
-                    {
-                        "type": "scatter",
-                        "x": grids[0],
-                        "y": grid_point_value,
-                        "mode": "lines",
-                    }
+                    {"x": grids[0], "y": grid_point_x_dimension_number, "mode": "lines"}
                 ],
             },
             html_file_path=html_file_path,
@@ -88,27 +100,10 @@ def plot_grid_point_x_dimension(
 
         plot_heat_map(
             DataFrame(
-                grid_point_value,
-                index=Index(("{:.2e} *".format(i) for i in grids[0]), name=names[0]),
-                columns=Index(("* {:.2e}".format(i) for i in grids[1]), name=names[1]),
+                grid_point_x_dimension_number,
+                index=Index(("{:.2e} *".format(n) for n in grids[0]), name=names[0]),
+                columns=Index(("* {:.2e}".format(n) for n in grids[1]), name=names[1]),
             ),
-            layout={"title": {"text": value_name}},
+            layout={"title": {"text": number_name}},
             html_file_path=html_file_path,
         )
-
-
-def reflect_grid(grid, reflecting_grid_value):
-
-    grid_ = grid.copy()
-
-    for i, grid_value in enumerate(grid_):
-
-        if grid_value < reflecting_grid_value:
-
-            grid_[i] += (reflecting_grid_value - grid_value) * 2
-
-        else:
-
-            grid_[i] -= (grid_value - reflecting_grid_value) * 2
-
-    return grid_

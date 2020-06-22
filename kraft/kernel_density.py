@@ -38,7 +38,7 @@ def get_density(point_x_dimension, bandwidths=None, grids=None, plot=True, names
     if plot:
 
         plot_grid_point_x_dimension(
-            grid_point_x_dimension, point_density, names=names, value_name="Density",
+            grid_point_x_dimension, point_density, names=names, number_name="Density",
         )
 
     return grid_point_x_dimension, point_density
