@@ -11,7 +11,7 @@ from .kernel_density import get_bandwidth
 from .plot import plot_heat_map
 from .point import map_point, plot_node_point, pull_point
 from .point_x_dimension import get_grids, grid, reshape
-from .probability import get_pdf
+from .probability import get_probability
 
 
 class GPSMap:
@@ -84,7 +84,7 @@ class GPSMap:
 
         for label in self.point_label.unique():
 
-            grid_point_x_dimension, point_pdf = get_pdf(
+            grid_point_x_dimension, point_pdf = get_probability(
                 self.point_x_dimension[self.point_label == label].values,
                 plot=False,
                 bandwidths=bandwidths,

@@ -72,12 +72,12 @@ from .point_x_dimension import (
     grid,
     make_grid_point_x_dimension,
     plot_grid_point_x_dimension,
-    reflect_grid,
+    reflect,
     reshape,
 )
 from .polar_coordinate import rescale_x_y_coordiantes_in_polar_coordiante
 from .predict import train_and_classify, train_and_regress
-from .probability import get_pdf, get_posterior_pdf, plot_nomogram, target_posterior_pdf
+from .probability import get_posterior_probability, get_probability, plot_nomogram
 from .series import binarize, sample_from_each_series_value, select_extreme
 from .set_score import cumulate_magnitude, cumulate_rank, get_c, score_set
 from .significance import get_moe, get_p_value, get_p_values_and_q_values

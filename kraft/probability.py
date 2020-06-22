@@ -2,19 +2,19 @@ from numpy import absolute, apply_along_axis, diff, log2, product, unique
 
 from .kernel_density import get_density
 from .plot import plot_plotly
-from .point_x_dimension import get_grids, plot_grid_point_x_dimension
+from .point_x_dimension import get_grids, plot_grid_point_x_dimension, reshape
 
 
-def get_pdf(
-    point_x_dimension, plot=True, names=None, **estimate_density_keyword_arguments,
+def get_probability(
+    point_x_dimension, plot=True, names=None, **get_density_keyword_arguments,
 ):
 
-    grid_point_x_dimension, point_density = get_density(
-        point_x_dimension, plot=plot, names=names, **estimate_density_keyword_arguments,
+    grid_point_x_dimension, grid_point_x_dimension_density = get_density(
+        point_x_dimension, plot=plot, names=names, **get_density_keyword_arguments,
     )
 
-    point_pdf = point_density / (
-        point_density.sum()
+    grid_point_x_dimension_probability = grid_point_x_dimension_density / (
+        grid_point_x_dimension_density.sum()
         * product(
             tuple(
                 diff(unique(dimension)).min() for dimension in grid_point_x_dimension.T
@@ -25,77 +25,95 @@ def get_pdf(
     if plot:
 
         plot_grid_point_x_dimension(
-            grid_point_x_dimension, point_pdf, names=names, number_name="PDF",
-        )
-
-    return grid_point_x_dimension, point_pdf
-
-
-def target_posterior_pdf(
-    grid_point_x_dimension, point_posterior_probability, value, plot=True, names=None,
-):
-
-    target_dimension_grid = unique(grid_point_x_dimension[:, -1])
-
-    target_value_index = absolute(target_dimension_grid - value).argmin()
-
-    grid_point_x_dimension_ = grid_point_x_dimension[
-        target_value_index :: target_dimension_grid.size, :-1
-    ]
-
-    point_posterior_probability_ = point_posterior_probability[
-        target_value_index :: target_dimension_grid.size
-    ]
-
-    if plot:
-
-        plot_grid_point_x_dimension(
-            grid_point_x_dimension_,
-            point_posterior_probability_,
+            grid_point_x_dimension,
+            grid_point_x_dimension_probability,
             names=names,
-            number_name="P({} = {:.2e} (~{}) | {})".format(
-                names[-1],
-                target_dimension_grid[target_value_index],
-                value,
-                *names[:-1],
-            ),
+            number_name="Probability",
         )
 
-    return grid_point_x_dimension_, point_posterior_probability_
+    return grid_point_x_dimension, grid_point_x_dimension_probability
 
 
-def get_posterior_pdf(
-    point_x_dimension, plot=True, names=None, **estimate_density_keyword_arguments,
+def get_posterior_probability(
+    point_x_dimension,
+    target_dimension_number=None,
+    plot=True,
+    names=None,
+    **get_density_keyword_arguments,
 ):
 
-    grid_point_x_dimension, point_joint_pdf = get_pdf(
-        point_x_dimension, plot=plot, names=names, **estimate_density_keyword_arguments,
+    grid_point_x_dimension, grid_point_x_dimension_joint_probability = get_probability(
+        point_x_dimension, plot=plot, names=names, **get_density_keyword_arguments,
     )
 
-    target_dimension_resolution = diff(unique(grid_point_x_dimension[:, -1])).min()
+    d_target_dimension = diff(unique(grid_point_x_dimension[:, -1])).min()
 
-    def get_posterior_probability(array):
+    def get_probability_(array):
 
-        return array / (array.sum() * target_dimension_resolution)
+        return array / array.sum()
 
-    point_posterior_pdf = apply_along_axis(
-        get_posterior_probability,
-        -1,
-        point_joint_pdf.reshape(
-            tuple(grid.size for grid in get_grids(grid_point_x_dimension))
-        ),
-    ).reshape(point_joint_pdf.shape)
+    grid_point_x_dimension_posterior_probability = (
+        apply_along_axis(
+            get_probability_,
+            -1,
+            reshape(
+                grid_point_x_dimension_joint_probability,
+                get_grids(grid_point_x_dimension),
+            ),
+        )
+        * d_target_dimension
+    ).reshape(grid_point_x_dimension_joint_probability.shape)
 
     if plot:
 
         plot_grid_point_x_dimension(
             grid_point_x_dimension,
-            point_posterior_pdf,
+            grid_point_x_dimension_posterior_probability,
             names=names,
-            number_name="Posterior PDF",
+            number_name="Posterior Probability",
         )
 
-    return grid_point_x_dimension, point_posterior_pdf
+    if target_dimension_number is None:
+
+        return grid_point_x_dimension, grid_point_x_dimension_posterior_probability
+
+    else:
+
+        target_dimension_grid = unique(grid_point_x_dimension[:, -1])
+
+        target_dimension_index = absolute(
+            target_dimension_grid - target_dimension_number
+        ).argmin()
+
+        grid_point_x_dimension_ = grid_point_x_dimension[
+            target_dimension_index :: target_dimension_grid.size, :-1
+        ]
+
+        grid_point_x_dimension_posterior_probability_ = grid_point_x_dimension_posterior_probability[
+            target_dimension_index :: target_dimension_grid.size
+        ]
+
+        if plot:
+
+            n_dimension = grid_point_x_dimension.shape[1]
+
+            if names is None:
+
+                names = tuple("Dimension {}".format(i) for i in range(n_dimension))
+
+            plot_grid_point_x_dimension(
+                grid_point_x_dimension_,
+                grid_point_x_dimension_posterior_probability_,
+                names=names,
+                number_name="P({} = {:.2e} (~{}) | {})".format(
+                    names[-1],
+                    target_dimension_grid[target_dimension_index],
+                    target_dimension_number,
+                    *names[:-1],
+                ),
+            )
+
+        return grid_point_x_dimension_, grid_point_x_dimension_posterior_probability_
 
 
 def plot_nomogram(p_t1, p_t0, names, p_t10__, plot_=False):

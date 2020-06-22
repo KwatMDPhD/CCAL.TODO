@@ -4,7 +4,7 @@ from scipy.stats import pearsonr
 from .array import normalize
 from .kernel_density import get_bandwidth
 from .point_x_dimension import get_grids, grid, reshape
-from .probability import get_pdf
+from .probability import get_probability
 
 
 def get_entropy(vector):
@@ -56,7 +56,7 @@ def get_ic(vector_0, vector_1):
 
     bandwidth_factor = 1 - abs(r) * 2 / 3
 
-    grid_point_x_dimension, point_pdf = get_pdf(
+    grid_point_x_dimension, grid_point_x_dimension_probability = get_probability(
         asarray((vector_0, vector_1)).T,
         plot=False,
         bandwidths=tuple(
@@ -69,7 +69,7 @@ def get_ic(vector_0, vector_1):
 
     grid_x, grid_y = get_grids(grid_point_x_dimension)
 
-    pxy = reshape(point_pdf, (grid_x, grid_y))
+    pxy = reshape(grid_point_x_dimension_probability, (grid_x, grid_y))
 
     dx = grid_x[1] - grid_x[0]
 
