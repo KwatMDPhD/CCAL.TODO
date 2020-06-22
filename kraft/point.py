@@ -1,4 +1,4 @@
-from numpy import apply_along_axis, full, isnan, nan, unique
+from numpy import apply_along_axis, full, isnan, nan, unique, where
 from pandas import DataFrame
 from sklearn.manifold import MDS
 
@@ -56,26 +56,23 @@ def map_point(
 def plot_node_point(
     node_x_dimension,
     point_x_dimension,
-    node_marker_size=16,
-    opacity=0.8,
-    # TODO: consider using vector
-    point_group=None,
-    GRID=None,
-    grid_point_probability=None,
-    grid_point_group=None,
-    point_group_colorscale=None,
-    point_value=None,
-    point_value_na_opacity=None,
-    point_value_colorscale=None,
-    ticktext_function=None,
-    layout=None,
     show_node_text=True,
-    point_trace=None,
+    point_group=None,
+    group_colorscale=None,
+    grid=None,
+    # TODO: rename
+    grid_point_probability=None,
+    # TODO: rename
+    grid_point_group=None,
+    point_value=None,
+    value_colorscale=None,
+    value_opacity=0.8,
+    value_na_opacity=0.2,
     points_to_highlight=(),
     html_file_path=None,
 ):
 
-    node_x_dimension = DataFrame(
+    node_x_y = DataFrame(
         {
             "x": node_x_dimension.iloc[:, 1].values,
             "y": 1 - node_x_dimension.iloc[:, 0].values,
@@ -83,7 +80,7 @@ def plot_node_point(
         index=node_x_dimension.index,
     )
 
-    point_x_dimension = DataFrame(
+    point_x_y = DataFrame(
         {
             "x": point_x_dimension.iloc[:, 1].values,
             "y": 1 - point_x_dimension.iloc[:, 0].values,
@@ -92,10 +89,10 @@ def plot_node_point(
     )
 
     title_text = "{} {} and {} {}".format(
-        node_x_dimension.index.size,
-        node_x_dimension.index.name,
-        point_x_dimension.index.size,
-        point_x_dimension.index.name,
+        node_x_y.index.size,
+        node_x_y.index.name,
+        point_x_y.index.size,
+        point_x_y.index.name,
     )
 
     if point_value is not None:
@@ -104,7 +101,7 @@ def plot_node_point(
 
     axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
 
-    layout_template = {
+    layout = {
         "height": 880,
         "width": 880,
         "title": {
@@ -121,19 +118,13 @@ def plot_node_point(
         "annotations": [],
     }
 
-    if layout is None:
+    data = []
 
-        layout = layout_template
+    triangulation_xs, triangulation_ys = get_triangulation(node_x_y)
 
-    else:
+    convex_hull_xs, convex_hull_ys = get_convex_hull(node_x_y)
 
-        layout = merge_2_dicts(layout_template, layout)
-
-    triangulation_xs, triangulation_ys = get_triangulation(node_x_dimension)
-
-    convex_hull_xs, convex_hull_ys = get_convex_hull(node_x_dimension)
-
-    data = [
+    data.append(
         {
             "name": "Line",
             "x": triangulation_xs + convex_hull_xs,
@@ -141,17 +132,17 @@ def plot_node_point(
             "mode": "lines",
             "line": {"color": "#171412"},
         }
-    ]
+    )
 
     data.append(
         {
-            "name": node_x_dimension.index.name,
-            "x": node_x_dimension["x"],
-            "y": node_x_dimension["y"],
-            "text": node_x_dimension.index,
+            "name": node_x_y.index.name,
+            "x": node_x_y["x"],
+            "y": node_x_y["y"],
+            "text": node_x_y.index,
             "mode": "markers",
             "marker": {
-                "size": node_marker_size,
+                "size": 20,
                 "color": "#23191e",
                 "line": {"width": 1, "color": "#ebf6f7"},
             },
@@ -161,69 +152,38 @@ def plot_node_point(
 
     if show_node_text:
 
-        border_arrow_width = 1.6
+        arrowwidth = 1.6
 
-        border_arrow_color = "#ebf6f7"
+        arrowcolor = "#ebf6f7"
 
         layout["annotations"] += [
             {
                 "x": x,
                 "y": y,
-                "text": "<b>{}</b>".format(node_name),
+                "text": "<b>{}</b>".format(node),
                 "font": {
                     "size": 16,
                     "color": "#23191e",
                     "family": "Gravitas One, monospace",
                 },
-                "bgcolor": "#ffffff",
                 "borderpad": 2,
-                "borderwidth": border_arrow_width,
-                "bordercolor": border_arrow_color,
-                "arrowwidth": border_arrow_width,
-                "arrowcolor": border_arrow_color,
-                "opacity": opacity,
+                "borderwidth": arrowwidth,
+                "bordercolor": arrowcolor,
+                "bgcolor": "#ffffff",
+                "arrowwidth": arrowwidth,
+                "arrowcolor": arrowcolor,
             }
-            for node_name, (x, y) in node_x_dimension.iterrows()
+            for node, (x, y) in node_x_y.iterrows()
         ]
 
-    point_trace_template = {
-        "name": point_x_dimension.index.name,
-        "mode": "markers",
-        "marker": {
-            "size": 16,
-            "color": "#20d9ba",
-            "line": {"width": 0.8, "color": "#ebf6f7"},
-            "opacity": opacity,
-        },
-        "hoverinfo": "text",
-    }
-
-    if point_trace is None:
-
-        point_trace = point_trace_template
-
-    else:
-
-        point_trace = merge_2_dicts(point_trace_template, point_trace)
-
     if grid_point_group is not None:
-
-        grid_group_not_nan_unique = unique(grid_point_group[~isnan(grid_point_group)])
-
-        # TODO: consider renaming group to reflect int
-        group_color = {
-            group: get_color(
-                point_group_colorscale, group, grid_group_not_nan_unique.size
-            )
-            for group in grid_group_not_nan_unique
-        }
 
         data.append(
             {
                 "type": "contour",
                 "showlegend": False,
-                "x": GRID,
-                "y": 1 - GRID,
+                "x": grid,
+                "y": 1 - grid,
                 "z": grid_point_probability,
                 "autocontour": False,
                 "ncontours": 24,
@@ -231,7 +191,14 @@ def plot_node_point(
             }
         )
 
-        for group in grid_group_not_nan_unique:
+        unique_groups = unique(grid_point_group[~isnan(grid_point_group)])
+
+        group_color = {
+            group: get_color(group_colorscale, group, unique_groups.size)
+            for group in unique_groups
+        }
+
+        for group in unique_groups:
 
             z = grid_point_probability.copy()
 
@@ -240,47 +207,51 @@ def plot_node_point(
             data.append(
                 {
                     "type": "heatmap",
-                    "x": GRID,
-                    "y": 1 - GRID,
+                    "x": grid,
+                    "y": 1 - grid,
                     "z": z,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", group_color[group])
                     ),
                     "showscale": False,
-                    "opacity": opacity,
                     "hoverinfo": "none",
                 }
             )
 
+    point_trace_template = {
+        "name": point_x_y.index.name,
+        "mode": "markers",
+        "marker": {
+            "size": 16,
+            "color": "#20d9ba",
+            "line": {"width": 0.8, "color": "#ebf6f7"},
+        },
+        "hoverinfo": "text",
+    }
+
     if point_value is not None:
 
-        point_value = point_value.reindex(index=point_x_dimension.index)
-
-        point_value_opacity = opacity
-
-        if point_value_na_opacity is None:
-
-            point_value.dropna(inplace=True)
-
-        else:
-
-            point_value_opacity = point_value.where(
-                isnan, other=point_value_opacity
-            ).fillna(value=point_value_na_opacity)
+        point_value = point_value.reindex(index=point_x_y.index)
 
         point_value = point_value[
             point_value.abs().sort_values(na_position="first").index
         ]
 
-        point_x_dimension = point_x_dimension.loc[point_value.index]
+        if value_na_opacity == 0:
+
+            point_value.dropna(inplace=True)
+
+        else:
+
+            value_opacity = where(point_value.isna(), value_na_opacity, value_opacity)
+
+        point_x_y = point_x_y.loc[point_value.index]
 
         if point_value.astype(float).map(float.is_integer).all():
 
             tickvals = point_value.unique()
 
-            if ticktext_function is None:
-
-                ticktext_function = "{:.0f}".format
+            ticktext_format = "{:.0f}".format
 
         else:
 
@@ -288,32 +259,30 @@ def plot_node_point(
                 ["min", "25%", "50%", "mean", "75%", "max"]
             ].values
 
-            ticktext_function = "{:.2e}".format
+            ticktext_format = "{:.2e}".format
 
         data.append(
             merge_2_dicts(
-                point_trace,
+                point_trace_template,
                 {
-                    "x": point_x_dimension["x"],
-                    "y": point_x_dimension["y"],
+                    "x": point_x_y["x"],
+                    "y": point_x_y["y"],
                     "text": tuple(
-                        "{}<br>{:.2e}".format(point_name, value)
-                        for point_name, value in point_value.items()
+                        "{}<br>{:.2e}".format(point, value)
+                        for point, value in point_value.items()
                     ),
                     "marker": {
                         "color": point_value,
-                        "colorscale": point_value_colorscale,
-                        "colorbar": merge_2_dicts(
-                            COLORBAR,
-                            {
-                                "tickmode": "array",
-                                "tickvals": tickvals,
-                                "ticktext": tuple(
-                                    ticktext_function(tickval) for tickval in tickvals
-                                ),
-                            },
-                        ),
-                        "opacity": point_value_opacity,
+                        "colorscale": value_colorscale,
+                        "colorbar": {
+                            **COLORBAR,
+                            "tickmode": "array",
+                            "tickvals": tickvals,
+                            "ticktext": tuple(
+                                ticktext_format(tickval) for tickval in tickvals
+                            ),
+                        },
+                        "opacity": value_opacity,
                     },
                 },
             )
@@ -321,51 +290,48 @@ def plot_node_point(
 
     elif point_group is not None:
 
-        for group in grid_group_not_nan_unique:
+        for group in unique_groups:
+
+            name = "Group {:.0f}".format(group)
 
             is_group = point_group == group
 
-            name = "Label {:.0f}".format(group)
-
             data.append(
                 merge_2_dicts(
-                    point_trace,
+                    point_trace_template,
                     {
                         "legendgroup": name,
                         "name": name,
-                        "x": point_x_dimension["x"][is_group],
-                        "y": point_x_dimension["y"][is_group],
-                        "text": point_x_dimension.index[is_group],
+                        "x": point_x_y["x"][is_group],
+                        "y": point_x_y["y"][is_group],
+                        "text": point_x_y.index[is_group],
                         "marker": {"color": group_color[group]},
                     },
                 )
             )
-
     else:
 
         data.append(
-            merge_2_dicts(
-                point_trace,
-                {
-                    "x": point_x_dimension["x"],
-                    "y": point_x_dimension["y"],
-                    "text": point_x_dimension.index,
-                },
-            )
+            {
+                **point_trace_template,
+                "x": point_x_y["x"],
+                "y": point_x_y["y"],
+                "text": point_x_y.index,
+            }
         )
 
     layout["annotations"] += [
         {
-            "x": point_x_dimension.loc[point, "x"],
-            "y": point_x_dimension.loc[point, "y"],
-            "text": "<b>{}</b>".format(point),
+            "x": point_x_y.loc[point_name, "x"],
+            "y": point_x_y.loc[point_name, "y"],
+            "text": "<b>{}</b>".format(point_name),
             "arrowhead": 2,
             "arrowwidth": 2,
             "arrowcolor": "#c93756",
             "standoff": None,
             "clicktoshow": "onoff",
         }
-        for point in points_to_highlight
+        for point_name in points_to_highlight
     ]
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)

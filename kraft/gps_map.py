@@ -9,7 +9,7 @@ from .array import normalize
 from .CONSTANT import RANDOM_SEED
 from .kernel_density import get_bandwidth
 from .plot import plot_heat_map
-from .point import map_point, pull_point
+from .point import map_point, plot_node_point, pull_point
 from .point_x_dimension import get_grids, grid, reshape
 from .probability import get_pdf
 
@@ -46,7 +46,7 @@ class GPSMap:
             self.point_x_dimension,
             point_label=self.point_label,
             dimension_grid=self.dimension_grid,
-            grid_probability=self.grid_probability,
+            grid_point_probability=self.grid_probability,
             grid_label=self.grid_label,
             point_label_colorscale=self.point_label_colorscale,
             **plot_gps_map_keyword_arguments,
@@ -147,7 +147,7 @@ class GPSMap:
             ),
             point_label=None,
             dimension_grid=self.dimension_grid,
-            grid_probability=self.grid_probability,
+            grid_point_probability=self.grid_probability,
             grid_label=self.grid_label,
             point_label_colorscale=self.point_label_colorscale,
             **plot_gps_map_keyword_arguments,
