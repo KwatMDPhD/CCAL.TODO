@@ -10,7 +10,7 @@ from .CONSTANT import RANDOM_SEED
 from .kernel_density import get_bandwidth
 from .plot import plot_heat_map
 from .point import map_point, plot_node_point, pull_point
-from .point_x_dimension import get_grids, grid, reshape
+from .point_x_dimension import get_grid_1ds, make_grid_1d, shape
 from .probability import get_probability
 
 
@@ -66,7 +66,7 @@ class GPSMap:
 
         triangulation = Delaunay(self.node_x_dimension)
 
-        self.dimension_grid = grid(0, 1, 1e-3, n_grid)
+        self.dimension_grid = make_grid_1d(0, 1, 1e-3, n_grid)
 
         for i in range(n_grid):
 
@@ -91,8 +91,8 @@ class GPSMap:
                 grids=grids,
             )
 
-            label_grid_probability[label] = reshape(
-                point_pdf, get_grids(grid_point_x_dimension)
+            label_grid_probability[label] = shape(
+                point_pdf, get_grid_1ds(grid_point_x_dimension)
             )
 
         self.grid_probability = full((n_grid,) * 2, nan)

@@ -68,12 +68,12 @@ from .path import get_child_paths, path
 from .plot import get_color, plot_bubble_map, plot_heat_map, plot_histogram, plot_plotly
 from .point import map_point, plot_node_point, pull_point
 from .point_x_dimension import (
-    get_grids,
-    grid,
-    make_grid_point_x_dimension,
-    plot_grid_point_x_dimension,
-    reflect,
-    reshape,
+    get_grid_1ds,
+    make_grid_1d,
+    make_grid_1d_for_reflecting,
+    make_grid_nd,
+    plot_grid_nd,
+    shape,
 )
 from .polar_coordinate import rescale_x_y_coordiantes_in_polar_coordiante
 from .predict import train_and_classify, train_and_regress

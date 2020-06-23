@@ -4,7 +4,7 @@ from pandas import DataFrame, Index
 from .plot import plot_heat_map, plot_plotly
 
 
-def grid(min_, max_, fraction_extension, n):
+def make_grid_1d(min_, max_, fraction_extension, n):
 
     assert 0 <= fraction_extension
 
@@ -17,67 +17,72 @@ def grid(min_, max_, fraction_extension, n):
     return linspace(min_, max_, num=n)
 
 
-def reflect(grid, reflecting_grid_number):
+def make_grid_1d_for_reflecting(grid_1d, grid_number_for_reflecting):
 
-    grid_copy = grid.copy()
+    grid_1d_for_reflection = grid_1d.copy()
 
-    for i, grid_number in enumerate(grid_copy):
+    for i, grid_number in enumerate(grid_1d):
 
-        if grid_number < reflecting_grid_number:
+        if grid_number < grid_number_for_reflecting:
 
-            grid_copy[i] += (reflecting_grid_number - grid_number) * 2
+            grid_1d_for_reflection[i] += (grid_number_for_reflecting - grid_number) * 2
 
         else:
 
-            grid_copy[i] -= (grid_number - reflecting_grid_number) * 2
+            grid_1d_for_reflection[i] -= (grid_number - grid_number_for_reflecting) * 2
 
-    return grid_copy
-
-
-def make_grid_point_x_dimension(grids):
-
-    return asarray(tuple(array.ravel() for array in meshgrid(*grids, indexing="ij"))).T
+    return grid_1d_for_reflection
 
 
-def get_grids(point_x_dimension):
+def make_grid_nd(grid_1ds):
+
+    return asarray(
+        tuple(
+            meshgrid_dimension.ravel()
+            for meshgrid_dimension in meshgrid(*grid_1ds, indexing="ij")
+        )
+    ).T
+
+
+def get_grid_1ds(point_x_dimension):
 
     return tuple(unique(dimension) for dimension in point_x_dimension.T)
 
 
-def reshape(grid_point_x_dimension_number, grids):
+def shape(numbers, grid_1ds):
 
-    return grid_point_x_dimension_number.reshape(tuple(grid.size for grid in grids))
+    return numbers.reshape(tuple(grid_1d.size for grid_1d in grid_1ds))
 
 
-def plot_grid_point_x_dimension(
-    grid_point_x_dimension,
-    grid_point_x_dimension_number,
-    names=None,
+def plot_grid_nd(
+    grid_nd,
+    numbers_in_shape,
+    dimension_names=None,
     number_name="Number",
     html_file_path=None,
 ):
 
-    n_dimension = grid_point_x_dimension.shape[1]
+    n_dimension = grid_nd.shape[1]
 
-    if names is None:
+    if dimension_names is None:
 
-        names = tuple("Dimension {}".format(i) for i in range(n_dimension))
+        dimension_names = tuple("Dimension {}".format(i) for i in range(n_dimension))
 
-    grids = get_grids(grid_point_x_dimension)
+    grid_1ds = get_grid_1ds(grid_nd)
 
-    grid_point_x_dimension_number = reshape(grid_point_x_dimension_number, grids)
+    numbers_in_shape = shape(numbers_in_shape, grid_1ds)
 
-    for grid_index, grid in enumerate(grids):
+    for grid_1d_i, grid_1d in enumerate(grid_1ds):
 
         print(
             "Grid {}: size={} min={:.2e} max={:.2e}".format(
-                grid_index, grid.size, grid.min(), grid.max()
+                grid_1d_i, grid_1d.size, grid_1d.min(), grid_1d.max()
             )
         )
 
     print(
         "Number: min={:.2e} max={:.2e}".format(
-            grid_point_x_dimension_number.min(), grid_point_x_dimension_number.max()
+            numbers_in_shape.min(), numbers_in_shape.max()
         )
     )
 
@@ -86,12 +91,10 @@ def plot_grid_point_x_dimension(
         plot_plotly(
             {
                 "layout": {
-                    "xaxis": {"title": {"text": names[0]}},
+                    "xaxis": {"title": {"text": dimension_names[0]}},
                     "yaxis": {"title": {"text": number_name}},
                 },
-                "data": [
-                    {"x": grids[0], "y": grid_point_x_dimension_number, "mode": "lines"}
-                ],
+                "data": [{"x": grid_1ds[0], "y": numbers_in_shape}],
             },
             html_file_path=html_file_path,
         )
@@ -100,9 +103,13 @@ def plot_grid_point_x_dimension(
 
         plot_heat_map(
             DataFrame(
-                grid_point_x_dimension_number,
-                index=Index(("{:.2e} *".format(n) for n in grids[0]), name=names[0]),
-                columns=Index(("* {:.2e}".format(n) for n in grids[1]), name=names[1]),
+                numbers_in_shape,
+                index=Index(
+                    ("{:.2e} *".format(n) for n in grid_1ds[0]), name=dimension_names[0]
+                ),
+                columns=Index(
+                    ("* {:.2e}".format(n) for n in grid_1ds[1]), name=dimension_names[1]
+                ),
             ),
             layout={"title": {"text": number_name}},
             html_file_path=html_file_path,

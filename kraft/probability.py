@@ -2,7 +2,7 @@ from numpy import absolute, apply_along_axis, diff, log2, product, unique
 
 from .kernel_density import get_density
 from .plot import plot_plotly
-from .point_x_dimension import get_grids, plot_grid_point_x_dimension, reshape
+from .point_x_dimension import get_grid_1ds, plot_grid_nd, shape
 
 
 def get_probability(
@@ -24,11 +24,11 @@ def get_probability(
 
     if plot:
 
-        plot_grid_point_x_dimension(
+        plot_grid_nd(
             grid_point_x_dimension,
             grid_point_x_dimension_probability,
-            names=names,
-            number_name="Probability",
+            dimension_names=names,
+            value_name="Probability",
         )
 
     return grid_point_x_dimension, grid_point_x_dimension_probability
@@ -56,9 +56,9 @@ def get_posterior_probability(
         apply_along_axis(
             get_probability_,
             -1,
-            reshape(
+            shape(
                 grid_point_x_dimension_joint_probability,
-                get_grids(grid_point_x_dimension),
+                get_grid_1ds(grid_point_x_dimension),
             ),
         )
         * d_target_dimension
@@ -66,11 +66,11 @@ def get_posterior_probability(
 
     if plot:
 
-        plot_grid_point_x_dimension(
+        plot_grid_nd(
             grid_point_x_dimension,
             grid_point_x_dimension_posterior_probability,
-            names=names,
-            number_name="Posterior Probability",
+            dimension_names=names,
+            value_name="Posterior Probability",
         )
 
     if target_dimension_number is None:
@@ -101,11 +101,11 @@ def get_posterior_probability(
 
                 names = tuple("Dimension {}".format(i) for i in range(n_dimension))
 
-            plot_grid_point_x_dimension(
+            plot_grid_nd(
                 grid_point_x_dimension_,
                 grid_point_x_dimension_posterior_probability_,
-                names=names,
-                number_name="P({} = {:.2e} (~{}) | {})".format(
+                dimension_names=names,
+                value_name="P({} = {:.2e} (~{}) | {})".format(
                     names[-1],
                     target_dimension_grid[target_dimension_index],
                     target_dimension_number,

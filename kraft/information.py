@@ -3,7 +3,7 @@ from scipy.stats import pearsonr
 
 from .array import normalize
 from .kernel_density import get_bandwidth
-from .point_x_dimension import get_grids, grid, reshape
+from .point_x_dimension import get_grid_1ds, make_grid_1d, shape
 from .probability import get_probability
 
 
@@ -63,13 +63,14 @@ def get_ic(vector_0, vector_1):
             get_bandwidth(vector) * bandwidth_factor for vector in (vector_0, vector_1)
         ),
         grids=tuple(
-            grid(vector.min(), vector.max(), 0.1, 24) for vector in (vector_0, vector_1)
+            make_grid_1d(vector.min(), vector.max(), 0.1, 24)
+            for vector in (vector_0, vector_1)
         ),
     )
 
-    grid_x, grid_y = get_grids(grid_point_x_dimension)
+    grid_x, grid_y = get_grid_1ds(grid_point_x_dimension)
 
-    pxy = reshape(grid_point_x_dimension_probability, (grid_x, grid_y))
+    pxy = shape(grid_point_x_dimension_probability, (grid_x, grid_y))
 
     dx = grid_x[1] - grid_x[0]
 

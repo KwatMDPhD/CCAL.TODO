@@ -2,11 +2,7 @@ from KDEpy import FFTKDE
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
 from .CONSTANT import FLOAT_RESOLUTION
-from .point_x_dimension import (
-    grid,
-    make_grid_point_x_dimension,
-    plot_grid_point_x_dimension,
-)
+from .point_x_dimension import make_grid_1d, make_grid_nd, plot_grid_nd
 
 
 def get_bandwidth(vector):
@@ -25,11 +21,11 @@ def get_density(point_x_dimension, bandwidths=None, grids=None, plot=True, names
     if grids is None:
 
         grids = tuple(
-            grid(dimension.min(), dimension.max(), 0.1, 8)
+            make_grid_1d(dimension.min(), dimension.max(), 0.1, 8)
             for dimension in dimension_x_point
         )
 
-    grid_point_x_dimension = make_grid_point_x_dimension(grids)
+    grid_point_x_dimension = make_grid_nd(grids)
 
     grid_point_x_dimension_density = (
         FFTKDE(bw=bandwidths).fit(point_x_dimension).evaluate(grid_point_x_dimension)
@@ -37,11 +33,11 @@ def get_density(point_x_dimension, bandwidths=None, grids=None, plot=True, names
 
     if plot:
 
-        plot_grid_point_x_dimension(
+        plot_grid_nd(
             grid_point_x_dimension,
             grid_point_x_dimension_density,
-            names=names,
-            number_name="Density",
+            dimension_names=names,
+            value_name="Density",
         )
 
     return grid_point_x_dimension, grid_point_x_dimension_density
