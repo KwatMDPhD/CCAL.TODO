@@ -56,7 +56,7 @@ def get_ic(vector_0, vector_1):
 
     bandwidth_factor = 1 - abs(r) * 2 / 3
 
-    grid_point_x_dimension, grid_point_x_dimension_probability = get_probability(
+    grid_nd, probabilities = get_probability(
         asarray((vector_0, vector_1)).T,
         plot=False,
         bandwidths=tuple(
@@ -68,9 +68,9 @@ def get_ic(vector_0, vector_1):
         ),
     )
 
-    grid_x, grid_y = get_grid_1ds(grid_point_x_dimension)
+    grid_x, grid_y = get_grid_1ds(grid_nd)
 
-    pxy = shape(grid_point_x_dimension_probability, (grid_x, grid_y))
+    pxy = shape(probabilities, (grid_x, grid_y))
 
     dx = grid_x[1] - grid_x[0]
 
