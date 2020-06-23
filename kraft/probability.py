@@ -9,32 +9,28 @@ def get_probability(
     point_x_dimension, plot=True, dimension_names=None, **get_density_keyword_arguments,
 ):
 
-    grid_point_x_dimension, grid_point_x_dimension_density = get_density(
+    grid_nd, densities = get_density(
         point_x_dimension,
         plot=plot,
         dimension_names=dimension_names,
         **get_density_keyword_arguments,
     )
 
-    grid_point_x_dimension_probability = grid_point_x_dimension_density / (
-        grid_point_x_dimension_density.sum()
-        * product(
-            tuple(
-                diff(unique(dimension)).min() for dimension in grid_point_x_dimension.T
-            )
-        )
+    probabilities = densities / (
+        densities.sum()
+        * product(tuple(diff(unique(dimension)).min() for dimension in grid_nd.T))
     )
 
     if plot:
 
         plot_grid_nd(
-            grid_point_x_dimension,
-            grid_point_x_dimension_probability,
+            grid_nd,
+            probabilities,
             dimension_names=dimension_names,
-            value_name="Probability",
+            number_name="Probability",
         )
 
-    return grid_point_x_dimension, grid_point_x_dimension_probability
+    return grid_nd, probabilities
 
 
 def get_posterior_probability(
@@ -76,7 +72,7 @@ def get_posterior_probability(
             grid_point_x_dimension,
             grid_point_x_dimension_posterior_probability,
             dimension_names=names,
-            value_name="Posterior Probability",
+            number_name="Posterior Probability",
         )
 
     if target_dimension_number is None:
@@ -111,7 +107,7 @@ def get_posterior_probability(
                 grid_point_x_dimension_,
                 grid_point_x_dimension_posterior_probability_,
                 dimension_names=names,
-                value_name="P({} = {:.2e} (~{}) | {})".format(
+                number_name="P({} = {:.2e} (~{}) | {})".format(
                     names[-1],
                     target_dimension_grid[target_dimension_index],
                     target_dimension_number,
