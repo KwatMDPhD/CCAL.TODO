@@ -6,11 +6,14 @@ from .point_x_dimension import get_grid_1ds, plot_grid_nd, shape
 
 
 def get_probability(
-    point_x_dimension, plot=True, names=None, **get_density_keyword_arguments,
+    point_x_dimension, plot=True, dimension_names=None, **get_density_keyword_arguments,
 ):
 
     grid_point_x_dimension, grid_point_x_dimension_density = get_density(
-        point_x_dimension, plot=plot, names=names, **get_density_keyword_arguments,
+        point_x_dimension,
+        plot=plot,
+        dimension_names=dimension_names,
+        **get_density_keyword_arguments,
     )
 
     grid_point_x_dimension_probability = grid_point_x_dimension_density / (
@@ -27,7 +30,7 @@ def get_probability(
         plot_grid_nd(
             grid_point_x_dimension,
             grid_point_x_dimension_probability,
-            dimension_names=names,
+            dimension_names=dimension_names,
             value_name="Probability",
         )
 
@@ -43,7 +46,10 @@ def get_posterior_probability(
 ):
 
     grid_point_x_dimension, grid_point_x_dimension_joint_probability = get_probability(
-        point_x_dimension, plot=plot, names=names, **get_density_keyword_arguments,
+        point_x_dimension,
+        plot=plot,
+        dimension_names=names,
+        **get_density_keyword_arguments,
     )
 
     d_target_dimension = diff(unique(grid_point_x_dimension[:, -1])).min()

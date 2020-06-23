@@ -10,7 +10,9 @@ def get_bandwidth(vector):
     return KDEMultivariate(vector, "c").bw[0]
 
 
-def get_density(point_x_dimension, bandwidths=None, grids=None, plot=True, names=None):
+def get_density(
+    point_x_dimension, bandwidths=None, grid_1ds=None, plot=True, dimension_names=None
+):
 
     dimension_x_point = point_x_dimension.T
 
@@ -18,26 +20,23 @@ def get_density(point_x_dimension, bandwidths=None, grids=None, plot=True, names
 
         bandwidths = tuple(get_bandwidth(dimension) for dimension in dimension_x_point)
 
-    if grids is None:
+    if grid_1ds is None:
 
-        grids = tuple(
+        grid_1ds = tuple(
             make_grid_1d(dimension.min(), dimension.max(), 0.1, 8)
             for dimension in dimension_x_point
         )
 
-    grid_point_x_dimension = make_grid_nd(grids)
+    grid_nd = make_grid_nd(grid_1ds)
 
-    grid_point_x_dimension_density = (
-        FFTKDE(bw=bandwidths).fit(point_x_dimension).evaluate(grid_point_x_dimension)
-    ).clip(min=FLOAT_RESOLUTION)
+    densities = (FFTKDE(bw=bandwidths).fit(point_x_dimension).evaluate(grid_nd)).clip(
+        min=FLOAT_RESOLUTION
+    )
 
     if plot:
 
         plot_grid_nd(
-            grid_point_x_dimension,
-            grid_point_x_dimension_density,
-            dimension_names=names,
-            value_name="Density",
+            grid_nd, densities, dimension_names=dimension_names, number_name="Density",
         )
 
-    return grid_point_x_dimension, grid_point_x_dimension_density
+    return grid_nd, densities
