@@ -62,7 +62,7 @@ def get_ic(vector_0, vector_1):
         bandwidths=tuple(
             get_bandwidth(vector) * bandwidth_factor for vector in (vector_0, vector_1)
         ),
-        grids=tuple(
+        grid_1ds=tuple(
             make_grid_1d(vector.min(), vector.max(), 0.1, 24)
             for vector in (vector_0, vector_1)
         ),
