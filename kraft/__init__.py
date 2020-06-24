@@ -84,7 +84,7 @@ from .probability import (
     target_posterior_probability,
 )
 from .series import binarize, sample_from_each_series_value, select_extreme
-from .set_score import cumulate_magnitude, cumulate_rank, get_c, score_set
+from .set_score import score_set
 from .significance import get_moe, get_p_value, get_p_values_and_q_values
 from .single_cell import read_process_write_gene_x_cell
 from .skew_t import (
