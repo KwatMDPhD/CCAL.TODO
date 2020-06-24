@@ -10,7 +10,7 @@ from .CONSTANT import RANDOM_SEED
 from .kernel_density import get_bandwidth
 from .plot import plot_heat_map
 from .point import map_point, plot_node_point, pull_point
-from .point_x_dimension import get_grid_1ds, make_grid_1d, shape
+from .point_x_dimension import make_grid_1d, shape
 from .probability import get_probability
 
 
@@ -29,101 +29,103 @@ class GPSMap:
             index=self.point_x_node.index,
         )
 
-        self.point_label = None
+        self.point_group = None
 
-        self.dimension_grid = None
+        self.grid_1d = None
 
-        self.grid_probability = None
+        self.grid_nd_probabilities = None
 
-        self.grid_label = None
+        self.grid_nd_group = None
 
-        self.point_label_colorscale = None
+        self.group_colorscale = None
 
-    def plot(self, **plot_gps_map_keyword_arguments):
+    def plot(self, **plot_node_point_keyword_arguments):
 
         plot_node_point(
             self.node_x_dimension,
             self.point_x_dimension,
-            point_group=self.point_label,
-            group_colorscale=self.point_label_colorscale,
-            grid_1d=self.dimension_grid,
-            grid_nd_probabilities=self.grid_probability,
-            grid_nd_group=self.grid_label,
-            **plot_gps_map_keyword_arguments,
+            point_group=self.point_group,
+            group_colorscale=self.group_colorscale,
+            grid_1d=self.grid_1d,
+            grid_nd_probabilities=self.grid_nd_probabilities,
+            grid_nd_group=self.grid_nd_group,
+            **plot_node_point_keyword_arguments,
         )
 
-    def set_point_label(
-        self, point_label, point_label_colorscale=None, n_grid=64,
+    def set_point_group(
+        self, point_group, group_colorscale=None, n_grid=64,
     ):
 
-        assert 3 <= point_label.value_counts().min()
+        assert 3 <= point_group.value_counts().min()
 
-        assert not point_label.isna().any()
+        assert not point_group.isna().any()
 
-        self.point_label = point_label
+        self.point_group = point_group
 
-        mask_grid = full((n_grid,) * 2, nan)
+        self.group_colorscale = group_colorscale
+
+        mask = full((n_grid,) * 2, nan)
 
         triangulation = Delaunay(self.node_x_dimension)
 
-        self.dimension_grid = make_grid_1d(0, 1, 1e-3, n_grid)
+        self.grid_1d = make_grid_1d(0, 1, 1e-3, n_grid)
 
-        for i in range(n_grid):
+        for i_0 in range(n_grid):
 
-            for j in range(n_grid):
+            for i_1 in range(n_grid):
 
-                mask_grid[i, j] = triangulation.find_simplex(
-                    (self.dimension_grid[i], self.dimension_grid[j])
+                mask[i_0, i_1] = triangulation.find_simplex(
+                    (self.grid_1d[i_0], self.grid_1d[i_1])
                 )
 
-        label_grid_probability = {}
+        group_grid_nd_probabilities = {}
 
         bandwidths = tuple(self.point_x_dimension.apply(get_bandwidth))
 
-        grids = (self.dimension_grid,) * 2
+        grid_1ds = (self.grid_1d,) * 2
 
-        for label in self.point_label.unique():
+        for group in self.point_group.unique():
 
-            grid_point_x_dimension, point_pdf = get_probability(
-                self.point_x_dimension[self.point_label == label].values,
-                plot=False,
-                bandwidths=bandwidths,
-                grid_1ds=grids,
+            group_grid_nd_probabilities[group] = shape(
+                get_probability(
+                    self.point_x_dimension[self.point_group == group].values,
+                    plot=False,
+                    bandwidths=bandwidths,
+                    grid_1ds=grid_1ds,
+                )[1],
+                grid_1ds,
             )
 
-            label_grid_probability[label] = shape(
-                point_pdf, get_grid_1ds(grid_point_x_dimension)
-            )
+        self.grid_nd_probabilities = full((n_grid,) * 2, nan)
 
-        self.grid_probability = full((n_grid,) * 2, nan)
+        self.grid_nd_group = full((n_grid,) * 2, nan)
 
-        self.grid_label = full((n_grid,) * 2, nan)
+        for i_0 in range(n_grid):
 
-        for i in range(n_grid):
+            for i_1 in range(n_grid):
 
-            for j in range(n_grid):
-
-                if mask_grid[i, j] != -1:
+                if mask[i_0, i_1] != -1:
 
                     max_probability = 0
 
-                    max_label = nan
+                    max_group = nan
 
-                    for label, grid_probability in label_grid_probability.items():
+                    for (
+                        group,
+                        grid_nd_probabilities,
+                    ) in group_grid_nd_probabilities.items():
 
-                        probability = grid_probability[i, j]
+                        probability = grid_nd_probabilities[i_0, i_1]
 
                         if max_probability < probability:
 
                             max_probability = probability
 
-                            max_label = label
+                            max_group = group
 
-                    self.grid_probability[i, j] = max_probability
+                    self.grid_nd_probabilities[i_0, i_1] = max_probability
 
-                    self.grid_label[i, j] = max_label
-
-        self.point_label_colorscale = point_label_colorscale
+                    self.grid_nd_group[i_0, i_1] = max_group
 
         plot_heat_map(
             DataFrame(
@@ -131,12 +133,12 @@ class GPSMap:
                 index=self.point_x_node.index,
                 columns=self.point_x_node.columns,
             ).T,
-            column_annotations=self.point_label,
-            column_annotation_colorscale=self.point_label_colorscale,
+            column_annotations=self.point_group,
+            column_annotation_colorscale=self.group_colorscale,
             layout={"yaxis": {"dtick": 1}},
         )
 
-    def predict(self, new_point_x_node, **plot_gps_map_keyword_arguments):
+    def predict(self, new_point_x_node, **plot_node_point_keyword_arguments):
 
         plot_node_point(
             self.node_x_dimension,
@@ -146,11 +148,11 @@ class GPSMap:
                 columns=self.node_x_dimension.columns,
             ),
             point_group=None,
-            group_colorscale=self.point_label_colorscale,
-            grid_1d=self.dimension_grid,
-            grid_nd_probabilities=self.grid_probability,
-            grid_nd_group=self.grid_label,
-            **plot_gps_map_keyword_arguments,
+            group_colorscale=self.group_colorscale,
+            grid_1d=self.grid_1d,
+            grid_nd_probabilities=self.grid_nd_probabilities,
+            grid_nd_group=self.grid_nd_group,
+            **plot_node_point_keyword_arguments,
         )
 
 
