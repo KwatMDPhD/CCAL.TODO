@@ -114,15 +114,14 @@ def target_posterior_probability(
     return grid_nd_, grid_nd_posterior_probabilities_
 
 
-# TODO: refactor
-def plot_nomogram(p_t0, p_t1, dimension_names, p_t01__):
+def plot_nomogram(p_t0, p_t1, dimension_names, p_t0__s, p_t1__s, html_file_path=None):
 
     layout = {
         "title": {"text": "Nomogram"},
         "xaxis": {"title": {"text": "Log Odd Ratio"}},
         "yaxis": {
             "title": {"text": "Evidence"},
-            "tickvals": tuple(range(1 + len(p_t01__))),
+            "tickvals": tuple(range(1 + len(dimension_names))),
             "ticktext": ("Prior", *dimension_names),
         },
     }
@@ -138,8 +137,8 @@ def plot_nomogram(p_t0, p_t1, dimension_names, p_t01__):
         }
     ]
 
-    for i, (dimension_name, (p_t0__, p_t1__)) in enumerate(
-        zip(dimension_names, p_t01__)
+    for i, (dimension_name, p_t0__, p_t1__) in enumerate(
+        zip(dimension_names, p_t0__s, p_t1__s)
     ):
 
         log_odd_ratios = log2((p_t1__ / p_t0__) / (p_t1 / p_t0))
@@ -163,4 +162,4 @@ def plot_nomogram(p_t0, p_t1, dimension_names, p_t01__):
             }
         )
 
-    plot_plotly({"layout": layout, "data": data})
+    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
