@@ -60,15 +60,13 @@ def plot_node_point(
     point_trace=None,
     point_group=None,
     group_colorscale=None,
-    grid=None,
-    # TODO: rename
-    grid_point_probability=None,
-    # TODO: rename
-    grid_point_group=None,
-    point_value=None,
-    value_colorscale=None,
-    value_opacity=0.8,
-    value_na_opacity=0.2,
+    grid_1d=None,
+    grid_nd_probabilities=None,
+    grid_nd_group=None,
+    point_score=None,
+    score_colorscale=None,
+    score_opacity=0.8,
+    score_na_opacity=0.1,
     points_to_highlight=(),
     html_file_path=None,
 ):
@@ -96,11 +94,16 @@ def plot_node_point(
         point_x_y.index.name,
     )
 
-    if point_value is not None:
+    if point_score is not None:
 
-        title_text = "{}<br>{}".format(title_text, point_value.name)
+        title_text = "{}<br>{}".format(title_text, point_score.name)
 
-    axis = {"showgrid": False, "zeroline": False, "showticklabels": False}
+    axis = {
+        "showgrid": False,
+        "showline": False,
+        "zeroline": False,
+        "showticklabels": False,
+    }
 
     layout = {
         "height": 880,
@@ -127,6 +130,7 @@ def plot_node_point(
 
     data.append(
         {
+            "legendgroup": "Node",
             "name": "Line",
             "x": triangulation_xs + convex_hull_xs,
             "y": triangulation_ys + convex_hull_ys,
@@ -137,6 +141,7 @@ def plot_node_point(
 
     data.append(
         {
+            "legendgroup": "Node",
             "name": node_x_y.index.name,
             "x": node_x_y["x"],
             "y": node_x_y["y"],
@@ -177,22 +182,22 @@ def plot_node_point(
             for node, (x, y) in node_x_y.iterrows()
         ]
 
-    if grid_point_group is not None:
+    if grid_nd_group is not None:
 
         data.append(
             {
                 "type": "contour",
                 "showlegend": False,
-                "x": grid,
-                "y": 1 - grid,
-                "z": grid_point_probability,
+                "x": grid_1d,
+                "y": 1 - grid_1d,
+                "z": grid_nd_probabilities,
                 "autocontour": False,
                 "ncontours": 24,
                 "contours": {"coloring": "none"},
             }
         )
 
-        unique_groups = unique(grid_point_group[~isnan(grid_point_group)])
+        unique_groups = unique(grid_nd_group[~isnan(grid_nd_group)])
 
         group_color = {
             group: get_color(group_colorscale, group, unique_groups.size)
@@ -201,16 +206,16 @@ def plot_node_point(
 
         for group in unique_groups:
 
-            z = grid_point_probability.copy()
+            grid_nd_probabilities_copy = grid_nd_probabilities.copy()
 
-            z[grid_point_group != group] = nan
+            grid_nd_probabilities_copy[grid_nd_group != group] = nan
 
             data.append(
                 {
                     "type": "heatmap",
-                    "x": grid,
-                    "y": 1 - grid,
-                    "z": z,
+                    "x": grid_1d,
+                    "y": 1 - grid_1d,
+                    "z": grid_nd_probabilities_copy,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", group_color[group])
                     ),
@@ -234,33 +239,33 @@ def plot_node_point(
 
         point_trace_template = merge_2_dicts(point_trace_template, point_trace)
 
-    if point_value is not None:
+    if point_score is not None:
 
-        point_value = point_value.reindex(index=point_x_y.index)
+        point_score = point_score.reindex(index=point_x_y.index)
 
-        point_value = point_value[
-            point_value.abs().sort_values(na_position="first").index
+        point_score = point_score[
+            point_score.abs().sort_values(na_position="first").index
         ]
 
-        if value_na_opacity == 0:
+        if score_na_opacity == 0:
 
-            point_value.dropna(inplace=True)
+            point_score.dropna(inplace=True)
 
         else:
 
-            value_opacity = where(point_value.isna(), value_na_opacity, value_opacity)
+            score_opacity = where(point_score.isna(), score_na_opacity, score_opacity)
 
-        point_x_y = point_x_y.loc[point_value.index]
+        point_x_y = point_x_y.loc[point_score.index]
 
-        if point_value.astype(float).map(float.is_integer).all():
+        if point_score.astype(float).map(float.is_integer).all():
 
-            tickvals = point_value.unique()
+            tickvals = point_score.unique()
 
             ticktext_format = "{:.0f}".format
 
         else:
 
-            tickvals = point_value.describe()[
+            tickvals = point_score.describe()[
                 ["min", "25%", "50%", "mean", "75%", "max"]
             ].values
 
@@ -273,12 +278,12 @@ def plot_node_point(
                     "x": point_x_y["x"],
                     "y": point_x_y["y"],
                     "text": tuple(
-                        "{}<br>{:.2e}".format(point, value)
-                        for point, value in point_value.items()
+                        "{}<br>{:.2e}".format(point, score)
+                        for point, score in point_score.items()
                     ),
                     "marker": {
-                        "color": point_value,
-                        "colorscale": value_colorscale,
+                        "color": point_score,
+                        "colorscale": score_colorscale,
                         "colorbar": {
                             **COLORBAR,
                             "tickmode": "array",
@@ -287,7 +292,7 @@ def plot_node_point(
                                 ticktext_format(tickval) for tickval in tickvals
                             ),
                         },
-                        "opacity": value_opacity,
+                        "opacity": score_opacity,
                     },
                 },
             )
@@ -327,16 +332,16 @@ def plot_node_point(
 
     layout["annotations"] += [
         {
-            "x": point_x_y.loc[point_name, "x"],
-            "y": point_x_y.loc[point_name, "y"],
-            "text": "<b>{}</b>".format(point_name),
+            "x": point_x_y.loc[point, "x"],
+            "y": point_x_y.loc[point, "y"],
+            "text": "<b>{}</b>".format(point),
             "arrowhead": 2,
             "arrowwidth": 2,
             "arrowcolor": "#c93756",
             "standoff": None,
             "clicktoshow": "onoff",
         }
-        for point_name in points_to_highlight
+        for point in points_to_highlight
     ]
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)

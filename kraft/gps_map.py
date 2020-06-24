@@ -46,9 +46,9 @@ class GPSMap:
             self.point_x_dimension,
             point_group=self.point_label,
             group_colorscale=self.point_label_colorscale,
-            grid=self.dimension_grid,
-            grid_point_probability=self.grid_probability,
-            grid_point_group=self.grid_label,
+            grid_1d=self.dimension_grid,
+            grid_nd_probabilities=self.grid_probability,
+            grid_nd_group=self.grid_label,
             **plot_gps_map_keyword_arguments,
         )
 
@@ -88,7 +88,7 @@ class GPSMap:
                 self.point_x_dimension[self.point_label == label].values,
                 plot=False,
                 bandwidths=bandwidths,
-                grids=grids,
+                grid_1ds=grids,
             )
 
             label_grid_probability[label] = shape(
@@ -147,9 +147,9 @@ class GPSMap:
             ),
             point_group=None,
             group_colorscale=self.point_label_colorscale,
-            grid=self.dimension_grid,
-            grid_point_probability=self.grid_probability,
-            grid_point_group=self.grid_label,
+            grid_1d=self.dimension_grid,
+            grid_nd_probabilities=self.grid_probability,
+            grid_nd_group=self.grid_label,
             **plot_gps_map_keyword_arguments,
         )
 
