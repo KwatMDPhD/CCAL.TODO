@@ -49,14 +49,14 @@ def get_grid_1ds(point_x_dimension):
     return tuple(unique(dimension) for dimension in point_x_dimension.T)
 
 
-def shape(numbers, grid_1ds):
+def shape(grid_nd_numbers, grid_1ds):
 
-    return numbers.reshape(tuple(grid_1d.size for grid_1d in grid_1ds))
+    return grid_nd_numbers.reshape(tuple(grid_1d.size for grid_1d in grid_1ds))
 
 
 def plot_grid_nd(
     grid_nd,
-    numbers_in_shape,
+    grid_nd_numbers,
     dimension_names=None,
     number_name="Number",
     html_file_path=None,
@@ -70,7 +70,7 @@ def plot_grid_nd(
 
     grid_1ds = get_grid_1ds(grid_nd)
 
-    numbers_in_shape = shape(numbers_in_shape, grid_1ds)
+    grid_nd_numbers_shape = shape(grid_nd_numbers, grid_1ds)
 
     for grid_1d_i, grid_1d in enumerate(grid_1ds):
 
@@ -82,7 +82,7 @@ def plot_grid_nd(
 
     print(
         "Number: min={:.2e} max={:.2e}".format(
-            numbers_in_shape.min(), numbers_in_shape.max()
+            grid_nd_numbers_shape.min(), grid_nd_numbers_shape.max()
         )
     )
 
@@ -94,7 +94,7 @@ def plot_grid_nd(
                     "xaxis": {"title": {"text": dimension_names[0]}},
                     "yaxis": {"title": {"text": number_name}},
                 },
-                "data": [{"x": grid_1ds[0], "y": numbers_in_shape}],
+                "data": [{"x": grid_1ds[0], "y": grid_nd_numbers_shape}],
             },
             html_file_path=html_file_path,
         )
@@ -103,7 +103,7 @@ def plot_grid_nd(
 
         plot_heat_map(
             DataFrame(
-                numbers_in_shape,
+                grid_nd_numbers_shape,
                 index=Index(
                     ("{:.2e} *".format(n) for n in grid_1ds[0]), name=dimension_names[0]
                 ),

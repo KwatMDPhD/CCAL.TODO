@@ -53,6 +53,14 @@ from .geometry import get_convex_hull, get_triangulation
 from .gff import get_gff3_attribute, read_gff3
 from .git import get_git_versions, is_in_git_repository, make_gitkeep, normalize_git_url
 from .gps_map import GPSMap, read_gps_map, write_gps_map
+from .grid import (
+    get_grid_1ds,
+    make_grid_1d,
+    make_grid_1d_for_reflecting,
+    make_grid_nd,
+    plot_grid_nd,
+    shape,
+)
 from .information import get_entropy, get_ic, get_jsd, get_kld, get_zd
 from .internet import download, download_and_extract
 from .io import read_gct, read_gmt, read_json, write_json
@@ -67,14 +75,6 @@ from .name_biology import map_genes
 from .path import get_child_paths, path
 from .plot import get_color, plot_bubble_map, plot_heat_map, plot_histogram, plot_plotly
 from .point import map_point, plot_node_point, pull_point
-from .point_x_dimension import (
-    get_grid_1ds,
-    make_grid_1d,
-    make_grid_1d_for_reflecting,
-    make_grid_nd,
-    plot_grid_nd,
-    shape,
-)
 from .polar_coordinate import rescale_x_y_coordiantes_in_polar_coordiante
 from .predict import train_and_classify, train_and_regress
 from .probability import (

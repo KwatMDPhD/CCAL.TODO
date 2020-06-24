@@ -7,10 +7,10 @@ from scipy.spatial import Delaunay
 
 from .array import normalize
 from .CONSTANT import RANDOM_SEED
+from .grid import make_grid_1d, shape
 from .kernel_density import get_bandwidth
 from .plot import plot_heat_map
 from .point import map_point, plot_node_point, pull_point
-from .point_x_dimension import make_grid_1d, shape
 from .probability import get_probability
 
 

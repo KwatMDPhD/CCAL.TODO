@@ -2,8 +2,8 @@ from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
 from .array import normalize
+from .grid import get_grid_1ds, make_grid_1d, shape
 from .kernel_density import get_bandwidth
-from .point_x_dimension import get_grid_1ds, make_grid_1d, shape
 from .probability import get_probability
 
 
@@ -56,7 +56,7 @@ def get_ic(vector_0, vector_1):
 
     bandwidth_factor = 1 - abs(r) * 2 / 3
 
-    grid_nd, probabilities = get_probability(
+    grid_nd, grid_nd_probabilities = get_probability(
         asarray((vector_0, vector_1)).T,
         plot=False,
         bandwidths=tuple(
@@ -70,7 +70,7 @@ def get_ic(vector_0, vector_1):
 
     grid_x, grid_y = get_grid_1ds(grid_nd)
 
-    pxy = shape(probabilities, (grid_x, grid_y))
+    pxy = shape(grid_nd_probabilities, (grid_x, grid_y))
 
     dx = grid_x[1] - grid_x[0]
 
