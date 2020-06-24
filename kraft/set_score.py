@@ -66,7 +66,7 @@ def _hm_1_p_lrc(h_1, m_1, a, plot_process):
     return h_1_p_lc, m_1_p_lc, h_1_p_rc, m_1_p_rc
 
 
-def _hm_v_p_lrc(h_1, m_1, a, plot_process):
+def _hm_a_p_lrc(h_1, m_1, a, plot_process):
 
     h_a = h_1 * a
 
@@ -124,6 +124,11 @@ def _hm_v_p_lrc(h_1, m_1, a, plot_process):
     return h_a_p_lc, m_a_p_lc, a_p_lc, h_a_p_rc, m_a_p_rc, a_p_rc
 
 
+def _get_ksd(vector_0, vector_1):
+
+    return vector_0, vector_1, vector_0 - vector_1
+
+
 def score_set(
     element_score,
     set_elements,
@@ -141,8 +146,6 @@ def score_set(
 
     element_score = element_score.sort_values()
 
-    absolutes = element_score.abs().values
-
     set_elements = {element: None for element in set_elements}
 
     h_1 = asarray(
@@ -151,21 +154,25 @@ def score_set(
 
     m_1 = 1 - h_1
 
+    a = element_score.abs().values
+
     if method == "classic":
 
-        h_l, m_l, h_r, m_r = _hm_1_p_lrc(h_1, m_1, absolutes, plot_process)
+        h_1_p_lc, m_1_p_lc, h_1_p_rc, m_1_p_rc = _hm_1_p_lrc(h_1, m_1, a, plot_process)
 
-        l_h, l_m, l = h_l, m_l, h_l - m_l
+        l_h, l_m, l = _get_ksd(h_1_p_lc, m_1_p_lc)
 
-        r_h, r_m, r = h_r, m_r, h_r - m_r
+        r_h, r_m, r = _get_ksd(h_1_p_rc, m_1_p_rc)
 
     elif method == "2020":
 
-        h_l, m_l, _l, h_r, m_r, _r = _hm_v_p_lrc(h_1, m_1, absolutes, plot_process)
+        h_a_p_lc, m_a_p_lc, a_p_lc, h_a_p_rc, m_a_p_rc, a_p_rc = _hm_a_p_lrc(
+            h_1, m_1, a, plot_process
+        )
 
-        l_h, l_m, l = get_jsd(h_l, m_l, vector_reference=_l)
+        l_h, l_m, l = get_jsd(h_a_p_lc, m_a_p_lc, vector_reference=a_p_lc)
 
-        r_h, r_m, r = get_jsd(h_r, m_r, vector_reference=_r)
+        r_h, r_m, r = get_jsd(h_a_p_rc, m_a_p_rc, vector_reference=a_p_rc)
 
     if plot_process:
 
@@ -255,7 +262,7 @@ def score_set(
             },
         ]
 
-        for name, is_, color in (
+        for name, _1, color in (
             ("- Enrichment", s < 0, "#0088ff"),
             ("+ Enrichment", 0 < s, "#ff1968"),
         ):
@@ -264,7 +271,7 @@ def score_set(
                 {
                     "name": name,
                     "yaxis": "y2",
-                    "y": where(is_, s, 0),
+                    "y": where(_1, s, 0),
                     "mode": "lines",
                     "line": {"width": 0, "color": color},
                     "fill": "tozeroy",
