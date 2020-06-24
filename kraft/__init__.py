@@ -83,8 +83,8 @@ from .probability import (
     plot_nomogram,
     target_posterior_probability,
 )
+from .sea import score_set
 from .series import binarize, sample_from_each_series_value, select_extreme
-from .set_score import score_set
 from .significance import get_moe, get_p_value, get_p_values_and_q_values
 from .single_cell import read_process_write_gene_x_cell
 from .skew_t import (
