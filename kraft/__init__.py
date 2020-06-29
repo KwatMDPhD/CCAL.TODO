@@ -48,6 +48,7 @@ from .fasta import (
     get_sequence_from_fasta_or_fasta_gz,
 )
 from .function_heat_map import function_heat_map, function_heat_map_summary
+from .gene import get_gene_symbol
 from .geo import get_gse, get_key_value, parse_block
 from .geometry import get_convex_hull, get_triangulation
 from .gff import get_gff3_attribute, read_gff3

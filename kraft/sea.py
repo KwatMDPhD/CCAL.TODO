@@ -1,4 +1,4 @@
-from numpy import asarray, isclose, where
+from numpy import asarray, isclose, nan, where
 
 from .information import get_jsd
 from .plot import plot_plotly
@@ -131,9 +131,8 @@ def _get_ksd(vector_0, vector_1):
 
 def score_set(
     element_score,
-    set_elements,
+    elements,
     method="classic",
-    symmetry=False,
     plot_process=False,
     plot=True,
     title="Score Set",
@@ -146,11 +145,15 @@ def score_set(
 
     element_score = element_score.sort_values()
 
-    set_elements = {element: None for element in set_elements}
+    elements = {element: None for element in elements}
 
     h_1 = asarray(
-        tuple(element in set_elements for element in element_score.index), dtype=float
+        tuple(element in elements for element in element_score.index), dtype=float
     )
+
+    if h_1.sum() == 0:
+
+        return nan
 
     m_1 = 1 - h_1
 
@@ -206,13 +209,13 @@ def score_set(
             },
         )
 
-    if symmetry:
-
-        s = r - l
-
-    else:
+    if method == "classic":
 
         s = r
+
+    elif method == "2020":
+
+        s = r - l
 
     score = s.sum() / s.size
 
@@ -222,9 +225,7 @@ def score_set(
 
         layout = {
             "title": {
-                "text": "{}<br>Score (method={}, symmetry={}) = {:.2f}".format(
-                    title, method, symmetry, score
-                ),
+                "text": "{}<br>Score (method={}) = {:.2f}".format(title, method, score),
                 "x": 0.5,
             },
             "xaxis": {"anchor": "y"},
