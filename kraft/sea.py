@@ -1,132 +1,7 @@
-from numpy import asarray, isclose, nan, where
+from numpy import asarray, nan, where
 
 from .information import get_jsd
 from .plot import plot_plotly
-
-
-def _lrc(p):
-
-    assert isclose(p.sum(), 1)
-
-    lc = p.cumsum()
-
-    rc = p[::-1].cumsum()[::-1]
-
-    add = 1e-8
-
-    return lc + add, rc + add
-
-
-def _hm_1_p_lrc(h_1, m_1, a, plot_process):
-
-    h_1 *= a
-
-    h_1_p = h_1 / h_1.sum()
-
-    m_1_p = m_1 / m_1.sum()
-
-    if plot_process:
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "PDF"}},
-                "data": [
-                    {"name": "Hit", "y": h_1_p, "mode": "lines"},
-                    {"name": "Miss", "y": m_1_p, "mode": "lines"},
-                ],
-            },
-        )
-
-    h_1_p_lc, h_1_p_rc = _lrc(h_1_p)
-
-    m_1_p_lc, m_1_p_rc = _lrc(m_1_p)
-
-    if plot_process:
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "CDF >"}},
-                "data": [
-                    {"name": "Hit", "y": h_1_p_lc, "mode": "lines"},
-                    {"name": "Miss", "y": m_1_p_lc, "mode": "lines"},
-                ],
-            },
-        )
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "< CDF"}},
-                "data": [
-                    {"name": "Hit", "y": h_1_p_rc, "mode": "lines"},
-                    {"name": "Miss", "y": m_1_p_rc, "mode": "lines"},
-                ],
-            },
-        )
-
-    return h_1_p_lc, m_1_p_lc, h_1_p_rc, m_1_p_rc
-
-
-def _hm_a_p_lrc(h_1, m_1, a, plot_process):
-
-    h_a = h_1 * a
-
-    m_a = m_1 * a
-
-    h_a_p = h_a / h_a.sum()
-
-    m_a_p = m_a / m_a.sum()
-
-    a_p = a / a.sum()
-
-    if plot_process:
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "Magnitude"}},
-                "data": [
-                    {"name": "Hit", "y": h_a_p, "mode": "lines"},
-                    {"name": "Miss", "y": m_a_p, "mode": "lines"},
-                    {"name": "All", "y": a_p, "mode": "lines"},
-                ],
-            },
-        )
-
-    h_a_p_lc, h_a_p_rc = _lrc(h_a_p)
-
-    m_a_p_lc, m_a_p_rc = _lrc(m_a_p)
-
-    a_p_lc, a_p_rc = _lrc(a_p)
-
-    if plot_process:
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "CDF >"}},
-                "data": [
-                    {"name": "Hit", "y": h_a_p_lc, "mode": "lines"},
-                    {"name": "Miss", "y": m_a_p_lc, "mode": "lines"},
-                    {"name": "All", "y": a_p_lc, "mode": "lines"},
-                ],
-            },
-        )
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "< CDF"}},
-                "data": [
-                    {"name": "Hit", "y": h_a_p_rc, "mode": "lines"},
-                    {"name": "Miss", "y": m_a_p_rc, "mode": "lines"},
-                    {"name": "All", "y": a_p_rc, "mode": "lines"},
-                ],
-            },
-        )
-
-    return h_a_p_lc, m_a_p_lc, a_p_lc, h_a_p_rc, m_a_p_rc, a_p_rc
-
-
-def _get_ksd(vector_0, vector_1):
-
-    return vector_0, vector_1, vector_0 - vector_1
 
 
 def score_set(
@@ -161,21 +36,116 @@ def score_set(
 
     if method == "classic":
 
-        h_1_p_lc, m_1_p_lc, h_1_p_rc, m_1_p_rc = _hm_1_p_lrc(h_1, m_1, a, plot_process)
+        h_1 *= a
 
-        l_h, l_m, l = _get_ksd(h_1_p_lc, m_1_p_lc)
+        h_1_p = h_1 / h_1.sum()
 
-        r_h, r_m, r = _get_ksd(h_1_p_rc, m_1_p_rc)
+        m_1_p = m_1 / m_1.sum()
+
+        if plot_process:
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "PDF"}},
+                    "data": [
+                        {"name": "Hit", "y": h_1_p, "mode": "lines"},
+                        {"name": "Miss", "y": m_1_p, "mode": "lines"},
+                    ],
+                },
+            )
+
+        h_1_p_rc = h_1_p[::-1].cumsum()[::-1]
+
+        m_1_p_rc = m_1_p[::-1].cumsum()[::-1]
+
+        if plot_process:
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "< CDF"}},
+                    "data": [
+                        {"name": "Hit", "y": h_1_p_rc, "mode": "lines"},
+                        {"name": "Miss", "y": m_1_p_rc, "mode": "lines"},
+                    ],
+                },
+            )
+
+        r_h = h_1_p_rc
+
+        r_m = m_1_p_rc
+
+        r = h_1_p_rc - m_1_p_rc
+
+        s = r
 
     elif method == "2020":
 
-        h_a_p_lc, m_a_p_lc, a_p_lc, h_a_p_rc, m_a_p_rc, a_p_rc = _hm_a_p_lrc(
-            h_1, m_1, a, plot_process
-        )
+        h_a = h_1 * a
+
+        m_a = m_1 * a
+
+        h_a_p = h_a / h_a.sum()
+
+        m_a_p = m_a / m_a.sum()
+
+        a_p = a / a.sum()
+
+        if plot_process:
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "Magnitude"}},
+                    "data": [
+                        {"name": "Hit", "y": h_a_p, "mode": "lines"},
+                        {"name": "Miss", "y": m_a_p, "mode": "lines"},
+                        {"name": "All", "y": a_p, "mode": "lines"},
+                    ],
+                },
+            )
+
+        add = 1e-8
+
+        h_a_p_lc = h_a_p.cumsum() + add
+
+        h_a_p_rc = h_a_p[::-1].cumsum()[::-1] + add
+
+        m_a_p_lc = m_a_p.cumsum() + add
+
+        m_a_p_rc = m_a_p[::-1].cumsum()[::-1] + add
+
+        a_p_lc = a_p.cumsum() + add
+
+        a_p_rc = a_p[::-1].cumsum()[::-1] + add
+
+        if plot_process:
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "CDF >"}},
+                    "data": [
+                        {"name": "Hit", "y": h_a_p_lc, "mode": "lines"},
+                        {"name": "Miss", "y": m_a_p_lc, "mode": "lines"},
+                        {"name": "All", "y": a_p_lc, "mode": "lines"},
+                    ],
+                },
+            )
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "< CDF"}},
+                    "data": [
+                        {"name": "Hit", "y": h_a_p_rc, "mode": "lines"},
+                        {"name": "Miss", "y": m_a_p_rc, "mode": "lines"},
+                        {"name": "All", "y": a_p_rc, "mode": "lines"},
+                    ],
+                },
+            )
 
         l_h, l_m, l = get_jsd(h_a_p_lc, m_a_p_lc, vector_reference=a_p_lc)
 
         r_h, r_m, r = get_jsd(h_a_p_rc, m_a_p_rc, vector_reference=a_p_rc)
+
+        s = r - l
 
     if plot_process:
 
@@ -187,16 +157,18 @@ def score_set(
             "marker": {"color": "#ff1968"},
         }
 
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "Signal >"}},
-                "data": [
-                    {"name": "Hit", "y": l_h, "opacity": opacity, "mode": "lines"},
-                    {"name": "Miss", "y": l_m, "opacity": opacity, "mode": "lines"},
-                    {"y": l, **signal_template},
-                ],
-            },
-        )
+        if method == "2020":
+
+            plot_plotly(
+                {
+                    "layout": {"title": {"text": "Signal >"}},
+                    "data": [
+                        {"name": "Hit", "y": l_h, "opacity": opacity, "mode": "lines"},
+                        {"name": "Miss", "y": l_m, "opacity": opacity, "mode": "lines"},
+                        {"y": l, **signal_template},
+                    ],
+                },
+            )
 
         plot_plotly(
             {
@@ -208,14 +180,6 @@ def score_set(
                 ],
             },
         )
-
-    if method == "classic":
-
-        s = r
-
-    elif method == "2020":
-
-        s = r - l
 
     score = s.sum() / s.size
 
