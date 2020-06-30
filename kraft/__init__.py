@@ -11,6 +11,7 @@ from .array import (
     shift_minimum,
     shuffle_slice,
 )
+from .cell_line import normalize_cell_line_names
 from .clustering import (
     cluster,
     cluster_hierarchical_clusterings,
