@@ -32,4 +32,6 @@ def normalize_cell_line_names(names):
 
         print("Failed to map {}.".format(set(names_failed)))
 
+    assert len(ahts) == len(set(ahts))
+
     return ahts
