@@ -7,6 +7,7 @@ from .plot import plot_plotly
 def score_set(
     element_score,
     elements,
+    sort_element_score=True,
     method="classic",
     plot_process=False,
     plot=True,
@@ -18,7 +19,9 @@ def score_set(
     html_file_path=None,
 ):
 
-    element_score = element_score.sort_values()
+    if sort_element_score:
+
+        element_score = element_score.sort_values()
 
     elements = {element: None for element in elements}
 
