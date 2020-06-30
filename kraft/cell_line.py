@@ -6,7 +6,7 @@ from .CONSTANT import DATA_DIRECTORY_PATH
 def normalize_cell_line_names(names):
 
     name_aht = read_csv(
-        "{}/cell_line_name_aht.tsv".format(DATA_DIRECTORY_PATH),
+        "{}/cell_line_name_aht.tsv.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         index_col=0,
         squeeze=True,
