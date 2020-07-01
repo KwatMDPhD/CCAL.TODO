@@ -37,3 +37,14 @@ def read_gmt(gmt_file_path):
             gene_set_genes[line_split[0]] = line_split[2:]
 
     return gene_set_genes
+
+
+def read_gmts(gmt_file_paths):
+
+    gene_set_genes = {}
+
+    for file_path in gmt_file_paths:
+
+        gene_set_genes.update(read_gmt(file_path))
+
+    return gene_set_genes

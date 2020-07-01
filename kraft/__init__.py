@@ -65,7 +65,7 @@ from .grid import (
 )
 from .information import get_entropy, get_ic, get_jsd, get_kld, get_zd
 from .internet import download, download_and_extract
-from .io import read_gct, read_gmt, read_json, write_json
+from .io import read_gct, read_gmt, read_gmts, read_json, write_json
 from .kernel_density import get_bandwidth, get_density
 from .matrix_factorization import (
     factorize_matrix,
