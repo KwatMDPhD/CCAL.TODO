@@ -35,6 +35,7 @@ from .correlation import correlate_2_vectors
 from .dataframe import (
     drop_slice,
     drop_slice_greedily,
+    error_index,
     group,
     make_axis_different,
     make_axis_same,
@@ -42,7 +43,6 @@ from .dataframe import (
     sample_dataframe,
     separate_type,
     summarize,
-    tidy,
 )
 from .fasta import (
     get_chromosome_size_from_fasta_gz,

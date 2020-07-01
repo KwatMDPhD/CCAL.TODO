@@ -11,17 +11,25 @@ from .string import BAD_STR
 from .support import cast_builtin
 
 
-def tidy(dataframe):
+def error_index(df, index_name=None, column_name=None):
 
-    assert not dataframe.index.hasnans
+    n_index_na = df.index.isna().sum()
 
-    assert not dataframe.index.has_duplicates
+    assert n_index_na == 0, n_index_na
 
-    assert not dataframe.columns.hasnans
+    index_n_duplicate = df.index[df.index.duplicated(keep=False)].value_counts()
 
-    assert not dataframe.columns.has_duplicates
+    index_n_duplicate.name = "N Duplicate"
 
-    return dataframe.sort_index().sort_index(axis=1)
+    assert index_n_duplicate.size == 0, index_n_duplicate
+
+    if index_name is not None:
+
+        df.index.name = index_name
+
+    if column_name is not None:
+
+        df.columns.name = column_name
 
 
 def drop_slice(

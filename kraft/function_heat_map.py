@@ -139,7 +139,7 @@ def function_heat_map(
 
     if directory_path is not None:
 
-        tsv_file_path = "{}/function_heat_map.tsv".format(directory_path)
+        tsv_file_path = "{}/scores.tsv".format(directory_path)
 
         scores.to_csv(tsv_file_path, sep="\t")
 

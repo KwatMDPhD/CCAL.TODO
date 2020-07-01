@@ -1,4 +1,4 @@
-from numpy import diff, full, isnan, log as loge, log2, log10, nan, nanmin, unique
+from numpy import diff, full, isnan, log as loge, log2, log10, nan, nanmin, sign, unique
 from numpy.random import seed, shuffle
 from scipy.stats import rankdata
 
@@ -126,6 +126,10 @@ def ignore_nan_and_function_1(
 
     is_not_nan = ~isnan(array)
 
+    if not is_not_nan.any():
+
+        return nan
+
     output = function(
         array[is_not_nan], *function_arguments, **function_keyword_arguments
     )
@@ -148,6 +152,10 @@ def ignore_nan_and_function_2(
 ):
 
     is_not_nan = ~isnan(array_0) & ~isnan(array_1)
+
+    if not is_not_nan.any():
+
+        return nan
 
     return function(
         array_0[is_not_nan],

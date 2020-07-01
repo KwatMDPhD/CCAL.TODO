@@ -2,9 +2,9 @@ from os import mkdir, walk
 from os.path import isdir, split
 
 
-def path(path, path_type):
+def path(path):
 
-    directory_path, file_name = split(path)
+    directory_path = split(path)[0]
 
     missing_directory_paths = []
 
@@ -12,7 +12,7 @@ def path(path, path_type):
 
         missing_directory_paths.append(directory_path)
 
-        directory_path, file_name = split(directory_path)
+        directory_path = split(directory_path)[0]
 
     for directory_path in reversed(missing_directory_paths):
 

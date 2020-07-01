@@ -2,7 +2,7 @@ from gzip import open
 
 from pandas import DataFrame
 
-from .dataframe import group, tidy
+from .dataframe import group
 from .internet import download
 from .name_biology import map_genes
 from .support import cast_builtin
@@ -128,15 +128,13 @@ def get_gse(gse_id, directory_path, overwrite=True):
 
     information_x_sample = DataFrame(samples)
 
-    information_x_sample.index.name = "Information"
-
     id_sample_name = information_x_sample.loc["Sample_title"].to_dict()
 
     information_x_sample.columns = information_x_sample.columns.map(id_sample_name)
 
-    information_x_sample.columns.name = "Sample"
+    error_index(information_x_sample, index_name="Information", column_name="Sample")
 
-    _x_samples = [tidy(information_x_sample)]
+    _x_samples = [information_x_sample]
 
     for platform, platform_dict in platforms.items():
 
