@@ -5,7 +5,7 @@ Program to do many things.
 ## Get
 
 ```sh
-pip install git+https://github.com/KwatME/kraft
+pip install git+https://github.com/kwatme/kraft
 ```
 
 ## Use
