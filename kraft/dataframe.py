@@ -11,7 +11,7 @@ from .string import BAD_STR
 from .support import cast_builtin
 
 
-def error_index(df, index_name=None, column_name=None):
+def error_axis(df):
 
     n_index_na = df.index.isna().sum()
 
@@ -22,14 +22,6 @@ def error_index(df, index_name=None, column_name=None):
     index_n_duplicate.name = "N Duplicate"
 
     assert index_n_duplicate.size == 0, index_n_duplicate
-
-    if index_name is not None:
-
-        df.index.name = index_name
-
-    if column_name is not None:
-
-        df.columns.name = column_name
 
 
 def drop_slice(

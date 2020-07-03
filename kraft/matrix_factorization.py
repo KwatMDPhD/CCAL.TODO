@@ -206,8 +206,8 @@ def plot_matrix_factorization(ws, hs, errors=None, axis_size=320, directory_path
                     ],
                 },
                 "data": [
-                    {"name": error_index, "y": error}
-                    for error_index, error in enumerate(errors)
+                    {"name": error_axis, "y": error}
+                    for error_axis, error in enumerate(errors)
                 ],
             },
             html_file_path=html_file_path,

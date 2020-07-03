@@ -132,7 +132,7 @@ def get_gse(gse_id, directory_path, overwrite=True):
 
     information_x_sample.columns = information_x_sample.columns.map(id_sample_name)
 
-    error_index(information_x_sample, index_name="Information", column_name="Sample")
+    error_axis(information_x_sample, index_name="Information", column_name="Sample")
 
     _x_samples = [information_x_sample]
 
