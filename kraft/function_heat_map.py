@@ -11,6 +11,7 @@ from .CONSTANT import RANDOM_SEED
 from .plot import DATA_TYPE_COLORSCALE, plot_plotly
 from .series import select_extreme
 from .significance import get_moe, get_p_values_and_q_values
+from .support import merge_2_dicts
 
 
 def _get_x(score_index):
@@ -35,6 +36,7 @@ def function_heat_map(
     series_data_type="continuous",
     dataframe_data_type="continuous",
     plot_std=nan,
+    layout=None,
     directory_path=None,
 ):
 
@@ -233,7 +235,7 @@ def function_heat_map(
 
         fraction_row = 1 / n_row_plot
 
-        layout = {
+        layout_template = {
             "height": max(480, 24 * n_row_plot),
             "width": 800,
             "margin": {"l": 200, "r": 200},
@@ -242,6 +244,10 @@ def function_heat_map(
             "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
             "annotations": [],
         }
+
+        if layout is not None:
+
+            layout = merge_2_dicts(layout_template, layout)
 
         annotation_template = {
             "xref": "paper",
