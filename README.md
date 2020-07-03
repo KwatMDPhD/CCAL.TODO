@@ -1,6 +1,6 @@
 # Kraft
 
-Program to do many things.
+Program for doing many things.
 
 ## Get
 
