@@ -103,7 +103,6 @@ from .support import (
     get_shell_environment,
     install_python_libraries,
     is_program,
-    make_dict_object_i,
     make_unique,
     map_objects_to_ints,
     merge_2_dicts,

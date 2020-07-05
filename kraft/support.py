@@ -107,11 +107,6 @@ def merge_2_dicts(dict_0, dict_1):
     return dict_
 
 
-def make_dict_object_i(objects):
-
-    return {object_: i for i, object_ in enumerate(objects)}
-
-
 def command(command):
 
     print(command)
