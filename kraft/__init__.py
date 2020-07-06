@@ -1,1 +1,1 @@
-from . import dataframe, path, series
+from . import cell_line, dataframe, path, series

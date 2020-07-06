@@ -6,15 +6,15 @@ def path(path):
 
     directory_path = split(path)[0]
 
-    missing_directory_paths = []
+    directory_paths_missing = []
 
     while directory_path != "" and not isdir(directory_path):
 
-        missing_directory_paths.append(directory_path)
+        directory_paths_missing.append(directory_path)
 
         directory_path = split(directory_path)[0]
 
-    for directory_path in reversed(missing_directory_paths):
+    for directory_path in reversed(directory_paths_missing):
 
         mkdir(directory_path)
 

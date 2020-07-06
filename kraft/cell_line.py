@@ -3,9 +3,9 @@ from pandas import read_csv
 from .CONSTANT import DATA_DIRECTORY_PATH
 
 
-def normalize_cell_line_names(names):
+def rename(names):
 
-    name_aht = read_csv(
+    name_to_aht = read_csv(
         "{}/cell_line_name_aht.tsv.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         index_col=0,
@@ -18,9 +18,9 @@ def normalize_cell_line_names(names):
 
     for name in names:
 
-        if name in name_aht:
+        if name in name_to_aht:
 
-            ahts.append(name_aht[name])
+            ahts.append(name_to_aht[name])
 
         else:
 
@@ -30,6 +30,6 @@ def normalize_cell_line_names(names):
 
     if 0 < len(names_failed):
 
-        print("Failed to map {}.".format(set(names_failed)))
+        print("Failed to map {}.".format(sorted(set(names_failed))))
 
     return ahts
