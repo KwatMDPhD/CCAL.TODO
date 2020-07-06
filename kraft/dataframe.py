@@ -11,9 +11,9 @@ from .string import BAD_STR
 from .support import cast_builtin, map_objects_to_ints
 
 
-def check_axes(df):
+def check_axes(dataframe):
 
-    for axis_labels in (df.index, df.columns):
+    for axis_labels in (dataframe.index, dataframe.columns):
 
         labels, counts = unique(axis_labels, return_counts=True)
 
@@ -24,68 +24,68 @@ def check_axes(df):
         assert (counts == 1).all()
 
 
-def sync_axis(dfs, axis, method):
+def sync_axis(dataframes, axis, method):
 
     if method == "union":
 
-        df0 = dfs[0]
+        dataframe0 = dataframes[0]
 
         if axis == 0:
 
-            labels = set(df0.index)
+            labels = set(dataframe0.index)
 
         else:
 
-            labels = set(df0.columns)
+            labels = set(dataframe0.columns)
 
-        for df in dfs[1:]:
+        for dataframe in dataframes[1:]:
 
             if axis == 0:
 
-                labels = labels.union(set(df.index))
+                labels = labels.union(set(dataframe.index))
 
             else:
 
-                labels = labels.union(set(df.columns))
+                labels = labels.union(set(dataframe.columns))
 
         labels = asarray(sorted(labels))
 
     elif method == "intersection":
 
-        df0 = dfs[0]
+        dataframe0 = dataframes[0]
 
         if axis == 0:
 
-            labels = df0.index.to_list()
+            labels = dataframe0.index.to_list()
 
         else:
 
-            labels = df0.columns.to_list()
+            labels = dataframe0.columns.to_list()
 
-        for df in dfs[1:]:
+        for dataframe in dataframes[1:]:
 
             if axis == 0:
 
-                labels += df.index.to_list()
+                labels += dataframe.index.to_list()
 
             else:
 
-                labels += df.columns.to_list()
+                labels += dataframe.columns.to_list()
 
         labels, counts = unique(labels, return_counts=True)
 
-        labels = labels[counts == len(dfs)]
+        labels = labels[counts == len(dataframes)]
 
     print("Selected {} label.".format(labels.size))
 
-    return tuple(df.reindex(labels, axis=axis) for df in dfs)
+    return tuple(dataframe.reindex(labels, axis=axis) for dataframe in dataframes)
 
 
-def drop_axis_label(df, axis, min_good_value=None, min_good_unique_value=None):
+def drop_axis_label(dataframe, axis, min_good_value=None, min_good_unique_value=None):
 
     assert min_good_value is not None or min_good_unique_value is not None
 
-    shape_before = df.shape
+    shape_before = dataframe.shape
 
     is_kept = full(shape_before[axis], True)
 
@@ -97,7 +97,7 @@ def drop_axis_label(df, axis, min_good_value=None, min_good_unique_value=None):
 
         axis_apply = 0
 
-    matrix = df.to_numpy()
+    matrix = dataframe.to_numpy()
 
     if min_good_value is not None:
 
@@ -113,7 +113,7 @@ def drop_axis_label(df, axis, min_good_value=None, min_good_unique_value=None):
 
         if min_good_unique_value < 1:
 
-            min_good_unique_value = min_good_unique_value * df.shape[axis_apply]
+            min_good_unique_value = min_good_unique_value * dataframe.shape[axis_apply]
 
         is_kept &= apply_along_axis(
             lambda vector: min_good_unique_value <= unique(vector[~isna(vector)]).size,
@@ -123,20 +123,22 @@ def drop_axis_label(df, axis, min_good_value=None, min_good_unique_value=None):
 
     if axis == 0:
 
-        df = df.loc[is_kept, :]
+        dataframe = dataframe.loc[is_kept, :]
 
     elif axis == 1:
 
-        df = df.loc[:, is_kept]
+        dataframe = dataframe.loc[:, is_kept]
 
-    print("{} ==> {}".format(shape_before, df.shape))
+    print("{} ==> {}".format(shape_before, dataframe.shape))
 
-    return df
+    return dataframe
 
 
-def drop_axes_label(df, axis=None, min_good_value=None, min_good_unique_value=None):
+def drop_axes_label(
+    dataframe, axis=None, min_good_value=None, min_good_unique_value=None
+):
 
-    shape_before = df.shape
+    shape_before = dataframe.shape
 
     if axis is None:
 
@@ -146,18 +148,18 @@ def drop_axes_label(df, axis=None, min_good_value=None, min_good_unique_value=No
 
     while True:
 
-        df = drop_axis_label(
-            df,
+        dataframe = drop_axis_label(
+            dataframe,
             axis,
             min_good_value=min_good_value,
             min_good_unique_value=min_good_unique_value,
         )
 
-        shape_after = df.shape
+        shape_after = dataframe.shape
 
         if return_ and shape_before == shape_after:
 
-            return df
+            return dataframe
 
         shape_before = shape_after
 
@@ -173,20 +175,20 @@ def drop_axes_label(df, axis=None, min_good_value=None, min_good_unique_value=No
 
 
 def pivot(
-    df, axis_1_label_for_axis_0, axis_1_label_for_axis_1, axis_1_label_for_axis_2
+    dataframe, axis_1_label_for_axis_0, axis_1_label_for_axis_1, axis_1_label_for_axis_2
 ):
 
-    axis_0_labels = unique(df[axis_1_label_for_axis_0].to_numpy())
+    axis_0_labels = unique(dataframe[axis_1_label_for_axis_0].to_numpy())
 
     axis_0_label_to_i = map_objects_to_ints(axis_0_labels)[0]
 
-    axis_1_labels = unique(df[axis_1_label_for_axis_1].to_numpy())
+    axis_1_labels = unique(dataframe[axis_1_label_for_axis_1].to_numpy())
 
     axis_1_label_to_i = map_objects_to_ints(axis_1_labels)[0]
 
     matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
 
-    for axis_0_label, axis_1_label, value in df[
+    for axis_0_label, axis_1_label, value in dataframe[
         [axis_1_label_for_axis_0, axis_1_label_for_axis_1, axis_1_label_for_axis_2]
     ].to_numpy():
 
@@ -195,71 +197,77 @@ def pivot(
     return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
 
 
-def normalize(df, method, normalize_keyword_arguments):
+def normalize(dataframe, method, normalize_keyword_arguments):
 
     return DataFrame(
-        normalize(df.to_numpy(), method, **normalize_keyword_arguments),
-        index=df.index,
-        columns=df.columns,
+        normalize(dataframe.to_numpy(), method, **normalize_keyword_arguments),
+        index=dataframe.index,
+        columns=dataframe.columns,
     )
 
 
 def summarize(
-    df, plot=True, plot_heat_map_max_size=int(1e6), plot_histogram_max_size=int(1e3)
+    dataframe,
+    plot=True,
+    plot_heat_map_max_size=int(1e6),
+    plot_histogram_max_size=int(1e3),
 ):
 
-    print("Shape: {}".format(df.shape))
+    print("Shape: {}".format(dataframe.shape))
 
-    if plot and df.size <= plot_heat_map_max_size:
+    if plot and dataframe.size <= plot_heat_map_max_size:
 
-        plot_heat_map(df)
+        plot_heat_map(dataframe)
 
-    df.to_numpy().flatten()
+    dataframe.to_numpy().flatten()
 
-    df_not_na_values = df.unstack().dropna()
+    dataframe_not_na_values = dataframe.unstack().dropna()
 
-    print("Not-NA min: {:.2e}".format(df_not_na_values.min()))
+    print("Not-NA min: {:.2e}".format(dataframe_not_na_values.min()))
 
-    print("Not-NA median: {:.2e}".format(df_not_na_values.median()))
+    print("Not-NA median: {:.2e}".format(dataframe_not_na_values.median()))
 
-    print("Not-NA mean: {:.2e}".format(df_not_na_values.mean()))
+    print("Not-NA mean: {:.2e}".format(dataframe_not_na_values.mean()))
 
-    print("Not-NA max: {:.2e}".format(df_not_na_values.max()))
+    print("Not-NA max: {:.2e}".format(dataframe_not_na_values.max()))
 
     if plot:
 
-        if plot_histogram_max_size < df_not_na_values.size:
+        if plot_histogram_max_size < dataframe_not_na_values.size:
 
             print("Sampling random {} for histogram...".format(plot_histogram_max_size))
 
-            df_not_na_values = df_not_na_values[
+            dataframe_not_na_values = dataframe_not_na_values[
                 choice(
-                    df_not_na_values.index, size=plot_histogram_max_size, replace=False,
+                    dataframe_not_na_values.index,
+                    size=plot_histogram_max_size,
+                    replace=False,
                 ).tolist()
-                + [df_not_na_values.idxmin(), df_not_na_values.idxmax()]
+                + [dataframe_not_na_values.idxmin(), dataframe_not_na_values.idxmax()]
             ]
 
         plot_histogram(
-            (df_not_na_values,), layout={"xaxis": {"title": {"text": "Not-NA Value"}}},
+            (dataframe_not_na_values,),
+            layout={"xaxis": {"title": {"text": "Not-NA Value"}}},
         )
 
-    df_isna = df.isna()
+    dataframe_isna = dataframe.isna()
 
-    n_na = df_isna.values.sum()
+    n_na = dataframe_isna.values.sum()
 
     if 0 < n_na:
 
-        axis0_n_na = df_isna.sum(axis=1)
+        axis0_n_na = dataframe_isna.sum(axis=1)
 
-        axis0_n_na.name = df_isna.index.name
+        axis0_n_na.name = dataframe_isna.index.name
 
         if axis0_n_na.name is None:
 
             axis0_n_na.name = "Axis 0"
 
-        axis1_n_na = df_isna.sum()
+        axis1_n_na = dataframe_isna.sum()
 
-        axis1_n_na.name = df_isna.columns.name
+        axis1_n_na.name = dataframe_isna.columns.name
 
         if axis1_n_na.name is None:
 
@@ -270,7 +278,9 @@ def summarize(
             plot_histogram(
                 (axis0_n_na, axis1_n_na),
                 layout={
-                    "title": {"text": "Fraction NA: {:.2e}".format(n_na / df.size)},
+                    "title": {
+                        "text": "Fraction NA: {:.2e}".format(n_na / dataframe.size)
+                    },
                     "xaxis": {"title": {"text": "N NA"}},
                 },
             )
@@ -324,29 +334,43 @@ def separate_type(information_x_, bad_values=BAD_STR):
     return continuous_x_, binary_x_
 
 
-def sample_dataframe(df, axis0_size, axis1_size):
+def sample_dataframe(dataframe, axis0_size, axis1_size):
 
     assert axis0_size is not None or axis1_size is not None
 
     if axis0_size is not None and axis1_size is not None:
 
-        return df.loc[
-            choice(df.index, size=int(floor(df.shape[0] * axis0_size)), replace=False),
+        return dataframe.loc[
             choice(
-                df.columns, size=int(floor(df.shape[1] * axis1_size)), replace=False
+                dataframe.index,
+                size=int(floor(dataframe.shape[0] * axis0_size)),
+                replace=False,
+            ),
+            choice(
+                dataframe.columns,
+                size=int(floor(dataframe.shape[1] * axis1_size)),
+                replace=False,
             ),
         ]
 
     elif axis0_size is not None:
 
-        return df.loc[
-            choice(df.index, size=int(floor(df.shape[0] * axis0_size)), replace=False),
+        return dataframe.loc[
+            choice(
+                dataframe.index,
+                size=int(floor(dataframe.shape[0] * axis0_size)),
+                replace=False,
+            ),
         ]
 
     else:
 
-        return df[
-            choice(df.columns, size=int(floor(df.shape[1] * axis1_size)), replace=False)
+        return dataframe[
+            choice(
+                dataframe.columns,
+                size=int(floor(dataframe.shape[1] * axis1_size)),
+                replace=False,
+            )
         ]
 
 
