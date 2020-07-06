@@ -4,7 +4,7 @@ from numpy import apply_along_axis, asarray, full, isnan, nan, unique
 from numpy.random import choice
 from pandas import DataFrame, concat, isna
 
-from .array import guess_type, log, normalize
+from .array import guess_type, log, normalize as array_normalize
 from .plot import plot_heat_map, plot_histogram
 from .series import binarize
 from .string import BAD_STR
@@ -205,13 +205,23 @@ def pivot(dataframe, axis0, axis1, values, function=None):
     return DataFrame(matrix, index=axis0_labels, columns=axis1_labels)
 
 
-def normalize(dataframe, method, normalize_keyword_arguments):
+def normalize(dataframe, axis, method, **normalize_keyword_arguments):
 
-    return DataFrame(
-        normalize(dataframe.to_numpy(), method, **normalize_keyword_arguments),
-        index=dataframe.index,
-        columns=dataframe.columns,
-    )
+    matrix = dataframe.to_numpy()
+
+    if axis is None:
+
+        matrix = array_normalize(matrix, method, **normalize_keyword_arguments).reshape(
+            matrix.shape
+        )
+
+    else:
+
+        matrix = apply_along_axis(
+            array_normalize, axis, matrix, method, **normalize_keyword_arguments
+        )
+
+    return DataFrame(matrix, index=dataframe.index, columns=dataframe.columns,)
 
 
 def summarize(
