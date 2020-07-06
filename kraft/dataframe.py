@@ -1,6 +1,6 @@
 from math import floor
 
-from numpy import apply_along_axis, asarray, full, nan, unique
+from numpy import apply_along_axis, asarray, full, isnan, nan, unique
 from numpy.random import choice
 from pandas import DataFrame, concat, isna
 
@@ -174,27 +174,35 @@ def drop_axes_label(
         return_ = True
 
 
-def pivot(
-    dataframe, axis_1_label_for_axis_0, axis_1_label_for_axis_1, axis_1_label_for_axis_2
-):
+def pivot(dataframe, axis0, axis1, values, function=None):
 
-    axis_0_labels = unique(dataframe[axis_1_label_for_axis_0].to_numpy())
+    axis0_labels = unique(dataframe[axis0].to_numpy())
 
-    axis_0_label_to_i = map_objects_to_ints(axis_0_labels)[0]
+    axis1_labels = unique(dataframe[axis1].to_numpy())
 
-    axis_1_labels = unique(dataframe[axis_1_label_for_axis_1].to_numpy())
+    axis0_label_to_i = map_objects_to_ints(axis0_labels)[0]
 
-    axis_1_label_to_i = map_objects_to_ints(axis_1_labels)[0]
+    axis1_label_to_i = map_objects_to_ints(axis1_labels)[0]
 
-    matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
+    matrix = full((axis0_labels.size, axis1_labels.size), nan)
 
-    for axis_0_label, axis_1_label, value in dataframe[
-        [axis_1_label_for_axis_0, axis_1_label_for_axis_1, axis_1_label_for_axis_2]
-    ].to_numpy():
+    for axis0_label, axis1_label, value in dataframe[[axis0, axis1, values]].to_numpy():
 
-        matrix[axis_0_label_to_i[axis_0_label], axis_1_label_to_i[axis_1_label]] = value
+        axis0_i = axis0_label_to_i[axis0_label]
 
-    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
+        axis1_i = axis1_label_to_i[axis1_label]
+
+        value_now = matrix[axis0_i, axis1_i]
+
+        if isnan(value_now):
+
+            matrix[axis0_i, axis1_i] = value
+
+        else:
+
+            matrix[axis0_i, axis1_i] = function(value_now, value)
+
+    return DataFrame(matrix, index=axis0_labels, columns=axis1_labels)
 
 
 def normalize(dataframe, method, normalize_keyword_arguments):
