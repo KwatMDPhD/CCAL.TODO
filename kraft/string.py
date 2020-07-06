@@ -1,5 +1,3 @@
-from re import sub
-
 BAD_STR = (
     "",
     "--",
@@ -98,9 +96,9 @@ def title(str_):
     return " ".join(sub_str.strip() for sub_str in str_.split())
 
 
-def standardize(file_name):
+def untitle(str_):
 
-    return sub(r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_"))
+    return str_.lower().replace(" ", "_").replace("-", "_")
 
 
 def is_version(str_):
@@ -108,11 +106,6 @@ def is_version(str_):
     str_split = str_.split(sep=".")
 
     return "." in str_ and len(str_split) == 3 and all(i.isnumeric() for i in str_split)
-
-
-def untitle(str_):
-
-    return str_.lower().replace(" ", "_").replace("-", "_")
 
 
 def skip_quote_and_split(str_, separator):

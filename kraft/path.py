@@ -1,5 +1,6 @@
 from os import mkdir, walk
 from os.path import isdir, split
+from re import sub
 
 
 def path(path):
@@ -44,3 +45,8 @@ def get_child_paths(parent_directory_path, relative=True):
     else:
 
         return tuple(child_paths)
+
+
+def clean(file_name):
+
+    return sub(r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_"))
