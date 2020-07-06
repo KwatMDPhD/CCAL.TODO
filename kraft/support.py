@@ -148,11 +148,17 @@ def map_objects_to_ints(iterable):
 
     int_object = {}
 
-    for i, object_ in enumerate(sorted(set(iterable))):
+    i = 0
 
-        object_int[object_] = i
+    for object_ in iterable:
 
-        int_object[i] = object_
+        if object_ not in object_int:
+
+            object_int[object_] = i
+
+            int_object[i] = object_
+
+            i += 1
 
     return object_int, int_object
 

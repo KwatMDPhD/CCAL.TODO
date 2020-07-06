@@ -3,7 +3,7 @@ from os.path import join
 from pandas import DataFrame, read_csv
 from scipy.io import mmread
 
-from .dataframe import process_feature_x_sample
+from .df import process_feature_x_sample
 
 
 def read_process_write_gene_x_cell(

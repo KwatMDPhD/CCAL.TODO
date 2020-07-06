@@ -2,7 +2,7 @@ from gzip import open
 
 from pandas import DataFrame
 
-from .dataframe import group
+from .df import group
 from .internet import download
 from .name_biology import map_genes
 from .support import cast_builtin
