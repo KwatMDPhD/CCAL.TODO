@@ -1,5 +1,5 @@
-from numpy import diff, full, isnan, log as loge, log2, log10, nan, nanmin, sign, unique
-from numpy.random import seed, shuffle
+from numpy import diff, isnan, log as loge, log2, log10, nan, nanmin, unique
+from numpy.random import seed, shuffle as numpy_shuffle
 from scipy.stats import rankdata
 
 from .CONSTANT import RANDOM_SEED
@@ -10,20 +10,11 @@ def error_nan(array):
     assert not isnan(array).any()
 
 
-def is_sorted(array):
-
-    error_nan(array)
-
-    diff_ = diff(array)
-
-    return (diff_ <= 0).all() or (0 <= diff_).all()
-
-
 def guess_type(array):
 
     error_nan(array)
 
-    if all(float(x).is_integer() for x in array.flatten()):
+    if all(float(number).is_integer() for number in array.flatten()):
 
         n_unique = unique(array).size
 
@@ -70,17 +61,17 @@ def log(array, log_base=2):
 
     if log_base in (2, "2"):
 
-        log_ = log2
+        log_function = log2
 
     elif log_base == "e":
 
-        log_ = loge
+        log_function = loge
 
     elif log_base in (10, "10"):
 
-        log_ = log10
+        log_function = log10
 
-    return log_(array)
+    return log_function(array)
 
 
 def normalize(array, method, rank_method="average"):
@@ -91,7 +82,7 @@ def normalize(array, method, rank_method="average"):
 
         standard_deviation = array.std()
 
-        assert not standard_deviation == 0
+        assert standard_deviation != 0
 
         return (array - array.mean()) / standard_deviation
 
@@ -101,7 +92,7 @@ def normalize(array, method, rank_method="average"):
 
         range_ = array.max() - min_
 
-        assert not range_ == 0
+        assert range_ != 0
 
         return (array - min_) / range_
 
@@ -111,65 +102,78 @@ def normalize(array, method, rank_method="average"):
 
         sum_ = array.sum()
 
-        assert not sum_ == 0
+        assert sum_ != 0
 
         return array / sum_
 
     elif method == "rank":
 
-        return rankdata(array, method=rank_method)
+        return rankdata(array, method=rank_method).reshape(array.shape)
 
 
 def ignore_nan_and_function_1(
     array, function, *function_arguments, update=False, **function_keyword_arguments
 ):
 
-    is_not_nan = ~isnan(array)
+    is_good = ~isnan(array)
 
-    if not is_not_nan.any():
+    if not is_good.any():
 
         return nan
 
-    output = function(
-        array[is_not_nan], *function_arguments, **function_keyword_arguments
+    returned = function(
+        array[is_good], *function_arguments, **function_keyword_arguments
     )
 
     if update:
 
-        array_ = full(array.shape, nan)
+        array = array.copy()
 
-        array_[is_not_nan] = output
+        array[is_good] = returned
 
-        return array_
+        return array
 
     else:
 
-        return output
+        return returned
 
 
 def ignore_nan_and_function_2(
-    array_0, array_1, function, *function_arguments, **function_keyword_arguments,
+    array0, array1, function, *function_arguments, **function_keyword_arguments,
 ):
 
-    is_not_nan = ~isnan(array_0) & ~isnan(array_1)
+    is_good = ~isnan(array0) & ~isnan(array1)
 
-    if not is_not_nan.any():
+    if not is_good.any():
 
         return nan
 
     return function(
-        array_0[is_not_nan],
-        array_1[is_not_nan],
+        array0[is_good],
+        array1[is_good],
         *function_arguments,
         **function_keyword_arguments,
     )
 
 
-def shuffle_slice(matrix, axis, random_seed=RANDOM_SEED):
+def check_is_sorted(vector):
+
+    assert vector.ndim == 1
+
+    error_nan(vector)
+
+    differences = diff(vector)
+
+    return (differences <= 0).all() or (0 <= differences).all()
+
+
+def shuffle(matrix, axis, random_seed=RANDOM_SEED):
+
+    assert matrix.ndim == 2
 
     error_nan(matrix)
 
-    matrix_copy = matrix.copy()
+    matrix = matrix.copy()
 
     seed(seed=random_seed)
 
@@ -177,25 +181,12 @@ def shuffle_slice(matrix, axis, random_seed=RANDOM_SEED):
 
         for i in range(matrix.shape[1]):
 
-            shuffle(matrix_copy[:, i])
+            numpy_shuffle(matrix[:, i])
 
     elif axis == 1:
 
         for i in range(matrix.shape[0]):
 
-            shuffle(matrix_copy[i, :])
+            numpy_shuffle(matrix[i, :])
 
-    return matrix_copy
-
-
-def get_intersections_between_2_vectors(vector_0, vector_1, raise_for_bad=True):
-
-    diff_sign = sign(vector_0 - vector_1)
-
-    diff_sign_0_indices = (diff_sign == 0).nonzero()[0]
-
-    if 0 < diff_sign_0_indices.size:
-
-        diff_sign[diff_sign_0_indices] = diff_sign[diff_sign_0_indices + 1]
-
-    return insert(diff(diff_sign) != 0, 0, False)
+    return matrix

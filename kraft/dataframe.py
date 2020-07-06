@@ -11,7 +11,7 @@ from .string import BAD_STR
 from .support import cast_builtin, map_objects_to_ints
 
 
-def check_axes(dataframe):
+def error_axes(dataframe):
 
     for axis_labels in (dataframe.index, dataframe.columns):
 
