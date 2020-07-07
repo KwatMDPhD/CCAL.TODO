@@ -52,11 +52,13 @@ def check_is_installed(program):
 def install_python_libraries(libraries):
 
     libraries_installed = tuple(
-        line.split()[0]
+        line.split()[0].lower()
         for line in command("pip list").stdout.strip().split(sep="\n")[2:]
     )
 
     for library in libraries:
+
+        library = library.lower()
 
         if library not in libraries_installed:
 

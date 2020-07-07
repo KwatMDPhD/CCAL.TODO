@@ -6,7 +6,7 @@ from .array import normalize
 from .CONSTANT import RANDOM_SEED
 from .geometry import get_convex_hull, get_triangulation
 from .plot import COLORBAR, get_color, make_colorscale, plot_plotly
-from .support import merge_2_dicts
+from .support import merge
 
 
 def pull_point(node_x_dimension, point_x_node):
@@ -237,7 +237,7 @@ def plot_node_point(
 
     if point_trace is not None:
 
-        point_trace_template = merge_2_dicts(point_trace_template, point_trace)
+        point_trace_template = merge(point_trace_template, point_trace)
 
     if point_score is not None:
 
@@ -272,7 +272,7 @@ def plot_node_point(
             ticktext_format = "{:.2e}".format
 
         data.append(
-            merge_2_dicts(
+            merge(
                 point_trace_template,
                 {
                     "x": point_x_y["x"],
@@ -307,7 +307,7 @@ def plot_node_point(
             is_group = point_group == group
 
             data.append(
-                merge_2_dicts(
+                merge(
                     point_trace_template,
                     {
                         "legendgroup": name,

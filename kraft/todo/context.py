@@ -14,7 +14,7 @@ from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
 from .plot import plot_plotly
-from .support import merge_2_dicts
+from .support import merge
 
 
 def compute_pdf_and_pdf_reference_context(
@@ -295,7 +295,7 @@ def plot_context(
 
     else:
 
-        layout = merge_2_dicts(layout_template, layout)
+        layout = merge(layout_template, layout)
 
     context_dict = compute_vector_context(
         series.values, **compute_vector_context_keyword_arguments
@@ -344,7 +344,7 @@ def plot_context(
             "marker": {"color": "#20d9ba"},
             "hoverinfo": "x+y",
         },
-        merge_2_dicts(
+        merge(
             data_template,
             {"name": "PDF", "y": context_dict["pdf"], "line": {"color": "#24e7c0"}},
         ),
@@ -383,7 +383,7 @@ def plot_context(
     shape_pdf_reference[context_dict["pdf"] <= shape_pdf_reference] = None
 
     data.append(
-        merge_2_dicts(
+        merge(
             data_template,
             {
                 "name": "Shape Reference",
@@ -400,7 +400,7 @@ def plot_context(
         location_pdf_reference[context_dict["pdf"] <= location_pdf_reference] = None
 
         data.append(
-            merge_2_dicts(
+            merge(
                 data_template,
                 {
                     "name": "Location Reference",
@@ -428,7 +428,7 @@ def plot_context(
     ):
 
         data.append(
-            merge_2_dicts(
+            merge(
                 data_template,
                 {
                     "name": name,

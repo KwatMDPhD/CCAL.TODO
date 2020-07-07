@@ -1,8 +1,8 @@
 from numpy import full, quantile
 from pandas import DataFrame, isna
 
+from .dict_ import merge
 from .plot import plot_plotly
-from .support import merge_2_dicts
 
 
 def select_extreme(
@@ -80,7 +80,7 @@ def select_extreme(
 
         else:
 
-            layout = merge_2_dicts(layout_template, layout)
+            layout = merge(layout_template, layout)
 
         plot_plotly(
             {

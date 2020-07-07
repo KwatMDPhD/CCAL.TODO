@@ -11,7 +11,7 @@ from .CONSTANT import RANDOM_SEED
 from .plot import DATA_TYPE_COLORSCALE, plot_plotly
 from .series import select_extreme
 from .significance import get_moe, get_p_values_and_q_values
-from .support import merge_2_dicts
+from .support import merge
 
 
 def _get_x(score_index):
@@ -247,7 +247,7 @@ def function_heat_map(
 
         if layout is not None:
 
-            layout = merge_2_dicts(layout_template, layout)
+            layout = merge(layout_template, layout)
 
         annotation_template = {
             "xref": "paper",

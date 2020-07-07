@@ -101,7 +101,7 @@ def untitle(str_):
     return str_.lower().replace(" ", "_").replace("-", "_")
 
 
-def is_version(str_):
+def check_is_version(str_):
 
     str_split = str_.split(sep=".")
 

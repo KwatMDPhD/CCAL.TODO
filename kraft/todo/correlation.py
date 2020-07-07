@@ -5,7 +5,7 @@ from sklearn.linear_model import LinearRegression
 from .CONSTANT import RANDOM_SEED
 from .plot import plot_plotly
 from .significance import get_p_value
-from .support import merge_2_dicts
+from .support import merge
 
 
 def correlate_2_vectors(
@@ -84,7 +84,7 @@ def correlate_2_vectors(
 
         else:
 
-            layout = merge_2_dicts(layout_template, layout)
+            layout = merge(layout_template, layout)
 
         plot_plotly(
             {

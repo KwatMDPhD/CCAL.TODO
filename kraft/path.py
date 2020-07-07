@@ -49,4 +49,10 @@ def get_child_paths(parent_directory_path, relative=True):
 
 def clean(file_name):
 
-    return sub(r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_"))
+    file_name_clean = sub(
+        r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_")
+    )
+
+    print("{} ==> {}".format(file_name, file_name_clean))
+
+    return file_name_clean
