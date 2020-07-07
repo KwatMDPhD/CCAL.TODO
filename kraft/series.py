@@ -116,7 +116,7 @@ def binarize(series):
 
     for object_ in series:
 
-        if not (isna(object_) or object_ in object_to_i):
+        if not isna(object_) and object_ not in object_to_i:
 
             object_to_i[object_] = i
 
