@@ -52,7 +52,7 @@ def check_is_version(str_):
     return len(split) == 3 and all(str_.isnumeric() for str_ in split)
 
 
-def skip_quote_and_split(str_, separator):
+def skip_quote_and_split(str_, separator=" "):
 
     splits = []
 
