@@ -23,7 +23,7 @@ def get_machine():
     return "{}_{}".format(uname_.system, uname_.machine)
 
 
-def get_shell_environment():
+def get_environment():
 
     environemnt = {}
 

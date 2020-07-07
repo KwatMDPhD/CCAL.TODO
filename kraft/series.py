@@ -19,9 +19,9 @@ def select_extreme(
 
     series = series.dropna().sort_values()
 
-    labels = series.index.to_numpy()
-
     vector = series.to_numpy()
+
+    labels = series.index.to_numpy()
 
     if thresholds is None:
 
