@@ -3,6 +3,7 @@ from pandas import read_csv
 from .CONSTANT import DATA_DIRECTORY_PATH
 
 
+# TODO: use lowercase
 def rename(names):
 
     name_to_aht = read_csv(
@@ -30,6 +31,6 @@ def rename(names):
 
     if 0 < len(names_failed):
 
-        print("Failed to map {}.".format(sorted(set(names_failed))))
+        print("Failed {}.".format(sorted(set(names_failed))))
 
     return ahts

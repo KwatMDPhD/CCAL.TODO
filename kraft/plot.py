@@ -9,7 +9,8 @@ from plotly.colors import (
 from plotly.io import show, templates, write_html
 
 from .array import normalize
-from .support import cast_builtin, merge_2_dicts
+from .dict_ import merge
+from .support import cast_builtin
 
 COLORBAR = {
     "thicknessmode": "fraction",
@@ -160,7 +161,7 @@ def plot_heat_map(
 
     else:
 
-        layout = merge_2_dicts(layout_template, layout)
+        layout = merge(layout_template, layout)
 
     if any(isinstance(cast_builtin(x), str) for x in matrix.columns):
 
@@ -229,7 +230,7 @@ def plot_heat_map(
 
             else:
 
-                layout_annotation_row = merge_2_dicts(
+                layout_annotation_row = merge(
                     layout_annotation_row_template, layout_annotation_row
                 )
 
@@ -277,7 +278,7 @@ def plot_heat_map(
 
             else:
 
-                layout_annotation_column = merge_2_dicts(
+                layout_annotation_column = merge(
                     layout_column_annotation_template, layout_annotation_column
                 )
 
@@ -334,7 +335,7 @@ def plot_bubble_map(
 
     else:
 
-        layout = merge_2_dicts(layout_template, layout)
+        layout = merge(layout_template, layout)
 
     if dataframe_color is None:
 
@@ -423,7 +424,7 @@ def plot_histogram(
 
     else:
 
-        layout = merge_2_dicts(layout_template, layout)
+        layout = merge(layout_template, layout)
 
     data = []
 

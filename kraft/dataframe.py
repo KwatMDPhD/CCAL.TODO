@@ -1,14 +1,23 @@
 from math import floor
 
-from numpy import apply_along_axis, asarray, full, isnan, nan, unique
+from numpy import (
+    apply_along_axis,
+    arange,
+    asarray,
+    concatenate,
+    full,
+    isnan,
+    median,
+    nan,
+    unique,
+)
 from numpy.random import choice
-from pandas import DataFrame, concat, isna
+from pandas import DataFrame, Series, isna
 
-from .array import guess_type, log, normalize as array_normalize
+from .array import normalize as array_normalize
+from .grid import make_grid_nd
+from .iterable import map_int
 from .plot import plot_heat_map, plot_histogram
-from .series import binarize
-from .string import BAD_STR
-from .support import cast_builtin, map_objects_to_ints
 
 
 def error_axes(dataframe):
@@ -76,7 +85,7 @@ def sync_axis(dataframes, axis, method):
 
         labels = labels[counts == len(dataframes)]
 
-    print("Selected {} label.".format(labels.size))
+    print(labels.size)
 
     return tuple(dataframe.reindex(labels, axis=axis) for dataframe in dataframes)
 
@@ -144,7 +153,7 @@ def drop_axes_label(
 
         axis = int(shape_before[0] < shape_before[1])
 
-    return_ = False
+    can_return = False
 
     while True:
 
@@ -157,7 +166,7 @@ def drop_axes_label(
 
         shape_after = dataframe.shape
 
-        if return_ and shape_before == shape_after:
+        if can_return and shape_before == shape_after:
 
             return dataframe
 
@@ -171,7 +180,7 @@ def drop_axes_label(
 
             axis = 0
 
-        return_ = True
+        can_return = True
 
 
 def pivot(dataframe, axis0, axis1, values, function=None):
@@ -180,9 +189,9 @@ def pivot(dataframe, axis0, axis1, values, function=None):
 
     axis1_labels = unique(dataframe[axis1].to_numpy())
 
-    axis0_label_to_i = map_objects_to_ints(axis0_labels)[0]
+    axis0_label_to_i = map_int(axis0_labels)[0]
 
-    axis1_label_to_i = map_objects_to_ints(axis1_labels)[0]
+    axis1_label_to_i = map_int(axis1_labels)[0]
 
     matrix = full((axis0_labels.size, axis1_labels.size), nan)
 
@@ -211,9 +220,7 @@ def normalize(dataframe, axis, method, **normalize_keyword_arguments):
 
     if axis is None:
 
-        matrix = array_normalize(matrix, method, **normalize_keyword_arguments).reshape(
-            matrix.shape
-        )
+        matrix = array_normalize(matrix, method, **normalize_keyword_arguments)
 
     else:
 
@@ -221,138 +228,11 @@ def normalize(dataframe, axis, method, **normalize_keyword_arguments):
             array_normalize, axis, matrix, method, **normalize_keyword_arguments
         )
 
-    return DataFrame(matrix, index=dataframe.index, columns=dataframe.columns,)
+    return DataFrame(matrix, index=dataframe.index, columns=dataframe.columns)
 
 
-def summarize(
-    dataframe,
-    plot=True,
-    plot_heat_map_max_size=int(1e6),
-    plot_histogram_max_size=int(1e3),
-):
-
-    print("Shape: {}".format(dataframe.shape))
-
-    if plot and dataframe.size <= plot_heat_map_max_size:
-
-        plot_heat_map(dataframe)
-
-    dataframe.to_numpy().flatten()
-
-    dataframe_not_na_values = dataframe.unstack().dropna()
-
-    print("Not-NA min: {:.2e}".format(dataframe_not_na_values.min()))
-
-    print("Not-NA median: {:.2e}".format(dataframe_not_na_values.median()))
-
-    print("Not-NA mean: {:.2e}".format(dataframe_not_na_values.mean()))
-
-    print("Not-NA max: {:.2e}".format(dataframe_not_na_values.max()))
-
-    if plot:
-
-        if plot_histogram_max_size < dataframe_not_na_values.size:
-
-            print("Sampling random {} for histogram...".format(plot_histogram_max_size))
-
-            dataframe_not_na_values = dataframe_not_na_values[
-                choice(
-                    dataframe_not_na_values.index,
-                    size=plot_histogram_max_size,
-                    replace=False,
-                ).tolist()
-                + [dataframe_not_na_values.idxmin(), dataframe_not_na_values.idxmax()]
-            ]
-
-        plot_histogram(
-            (dataframe_not_na_values,),
-            layout={"xaxis": {"title": {"text": "Not-NA Value"}}},
-        )
-
-    dataframe_isna = dataframe.isna()
-
-    n_na = dataframe_isna.values.sum()
-
-    if 0 < n_na:
-
-        axis0_n_na = dataframe_isna.sum(axis=1)
-
-        axis0_n_na.name = dataframe_isna.index.name
-
-        if axis0_n_na.name is None:
-
-            axis0_n_na.name = "Axis 0"
-
-        axis1_n_na = dataframe_isna.sum()
-
-        axis1_n_na.name = dataframe_isna.columns.name
-
-        if axis1_n_na.name is None:
-
-            axis1_n_na.name = "Axis 1"
-
-        if plot:
-
-            plot_histogram(
-                (axis0_n_na, axis1_n_na),
-                layout={
-                    "title": {
-                        "text": "Fraction NA: {:.2e}".format(n_na / dataframe.size)
-                    },
-                    "xaxis": {"title": {"text": "N NA"}},
-                },
-            )
-
-
-def separate_type(information_x_, bad_values=BAD_STR):
-
-    continuous_dataframe_rows = []
-
-    binary_dataframes = []
-
-    for information, series in information_x_.iterrows():
-
-        series = series.replace(bad_values, nan)
-
-        if 1 < series.dropna().unique().size:
-
-            try:
-
-                is_continuous = guess_type(series.astype(float)) == "continuous"
-
-            except ValueError:
-
-                is_continuous = False
-
-            if is_continuous:
-
-                continuous_dataframe_rows.append(series.apply(cast_builtin))
-
-            else:
-
-                binary_x_ = binarize(series)
-
-                binary_x_ = binary_x_.loc[~binary_x_.index.isna()]
-
-                binary_x_.index = (
-                    "({}) {}".format(binary_x_.index.name, str_)
-                    for str_ in binary_x_.index
-                )
-
-                binary_dataframes.append(binary_x_)
-
-    continuous_x_ = DataFrame(data=continuous_dataframe_rows)
-
-    continuous_x_.index.name = information_x_.index.name
-
-    binary_x_ = concat(binary_dataframes)
-
-    binary_x_.index.name = information_x_.index.name
-
-    return continuous_x_, binary_x_
-
-
-def sample_dataframe(dataframe, axis0_size, axis1_size):
+#
+def sample(dataframe, axis0_size, axis1_size):
 
     assert axis0_size is not None or axis1_size is not None
 
@@ -392,127 +272,93 @@ def sample_dataframe(dataframe, axis0_size, axis1_size):
         ]
 
 
-def process_feature_x_sample(
-    feature_x_sample,
-    features_to_drop=(),
-    samples_to_drop=(),
-    nanize=None,
-    drop_axis=None,
-    max_na=None,
-    min_n_not_na_value=None,
-    min_n_not_na_unique_value=None,
-    shift_as_necessary_to_achieve_min_before_logging=None,
-    log_base=None,
-    normalization_axis=None,
-    normalization_method=None,
-    clip_min=None,
-    clip_max=None,
-    **summarize_keyword_arguments,
+def summarize(
+    dataframe,
+    plot=True,
+    plot_heat_map_max_size=int(1e6),
+    plot_histogram_max_size=int(1e3),
 ):
 
-    assert not feature_x_sample.index.has_duplicates
+    if dataframe.index.name is None:
 
-    assert not feature_x_sample.columns.has_duplicates
+        dataframe.index.name = "Axis 0"
 
-    summarize(feature_x_sample, **summarize_keyword_arguments)
+    if dataframe.columns.name is None:
 
-    if 0 < len(features_to_drop):
+        dataframe.columns.name = "Axis 1"
 
-        print(
-            "Dropping {}: {}...".format(feature_x_sample.index.name, features_to_drop)
-        )
+    print(dataframe.shape)
 
-        feature_x_sample.drop(features_to_drop, errors="ignore", iace=True)
+    size = dataframe.size
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+    if plot and size <= plot_heat_map_max_size:
 
-    if 0 < len(samples_to_drop):
+        plot_heat_map(dataframe)
 
-        print(
-            "Dropping {}: {}...".format(feature_x_sample.columns.name, samples_to_drop)
-        )
+    values = dataframe.to_numpy().flatten()
 
-        feature_x_sample.drop(samples_to_drop, axis=1, errors="ignore", iace=True)
-
-        summarize(feature_x_sample, **summarize_keyword_arguments)
-
-    if nanize is not None:
-
-        print("NaNizing <= {}...".format(nanize))
-
-        feature_x_sample[feature_x_sample <= nanize] = nan
-
-        summarize(feature_x_sample, **summarize_keyword_arguments)
-
-    if (
-        max_na is not None
-        or min_n_not_na_value is not None
-        or min_n_not_na_unique_value is not None
-    ):
-
-        print("Dropping slice...")
-
-        if drop_axis is None:
-
-            drop_function = drop_axis_label_greedily
-
-        else:
-
-            drop_function = drop_axis_label
-
-        feature_x_sample_shape = feature_x_sample.shape
-
-        feature_x_sample = drop_function(
-            feature_x_sample,
-            drop_axis,
-            min_good=max_na,
-            min_n_good_value=min_n_not_na_value,
-            min_n_good_unique_value=min_n_not_na_unique_value,
-        )
-
-        if feature_x_sample_shape != feature_x_sample.shape:
-
-            summarize(feature_x_sample, **summarize_keyword_arguments)
-
-    if log_base is not None:
-
-        print(
-            "Logging (shift_as_necessary_to_achieve_min_before_logging={}, log_base={})...".format(
-                shift_as_necessary_to_achieve_min_before_logging, log_base
+    labels = asarray(
+        tuple(
+            "{}_{}".format(axis0_label, axis1_label)
+            for axis0_label, axis1_label in make_grid_nd(
+                (dataframe.index.to_numpy(), dataframe.columns.to_numpy())
             )
         )
+    )
 
-        feature_x_sample = DataFrame(
-            log(
-                feature_x_sample.values,
-                raise_for_bad=False,
-                shift_as_necessary_to_achieve_min_before_logging=shift_as_necessary_to_achieve_min_before_logging,
-                log_base=log_base,
-            ),
-            index=feature_x_sample.index,
-            columns=feature_x_sample.columns,
+    is_good = ~isnan(values)
+
+    values = values[is_good]
+
+    labels = labels[is_good]
+
+    print("Not-NaN min: {:.2e}".format(values.min()))
+
+    print("Not-NaN median: {:.2e}".format(median(values)))
+
+    print("Not-NaN mean: {:.2e}".format(values.mean()))
+
+    print("Not-NaN max: {:.2e}".format(values.max()))
+
+    if plot:
+
+        if plot_histogram_max_size < values.size:
+
+            print("Choosing {} for histogram...".format(plot_histogram_max_size))
+
+            is_chosen = concatenate(
+                (
+                    choice(
+                        arange(values.size), size=plot_histogram_max_size, replace=False
+                    ),
+                    (values.argmin(), values.argmax()),
+                )
+            )
+
+            values = values[is_chosen]
+
+            labels = labels[is_chosen]
+
+        plot_histogram(
+            (Series(values, index=labels),),
+            layout={"xaxis": {"title": {"text": "Not-NaN Value"}}},
         )
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+    is_na = dataframe.isna().to_numpy()
 
-    if normalization_method is not None:
+    n_na = is_na.sum()
 
-        print(
-            "Axis-{} {} normalizing...".format(normalization_axis, normalization_method)
-        )
+    if 0 < n_na:
 
-        feature_x_sample = normalize(
-            feature_x_sample, normalization_axis, normalization_method
-        )
+        if plot:
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
-
-    if clip_min is not None or clip_max is not None:
-
-        print("Clipping |{} - {}|...".format(clip_min, clip_max))
-
-        feature_x_sample.clip(lower=clip_min, upper=clip_max, iace=True)
-
-        summarize(feature_x_sample, **summarize_keyword_arguments)
-
-    return feature_x_sample
+            plot_histogram(
+                (
+                    Series(is_na.sum(axis=1), name=dataframe.index.name),
+                    Series(is_na.sum(axis=0), name=dataframe.columns.name),
+                ),
+                layout={
+                    "title": {"text": "Fraction NA: {:.2e}".format(n_na / size)},
+                    "xaxis": {"title": {"text": "N NA"}},
+                },
+            )
