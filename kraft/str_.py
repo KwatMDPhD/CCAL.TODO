@@ -1,99 +1,43 @@
-BAD_STR = (
-    "",
-    "--",
-    "?",
-    "Missing",
-    "N/A",
-    "N/A",
-    "NA",
-    "NA",
-    "NAN",
-    "NaN",
-    "None",
-    "missing",
-    "n/a",
-    "n/a",
-    "na",
-    "na",
-    "nan",
-    "none",
-    "unknown",
-)
+# TODO: use regular expression
 
 
 def title(str_):
 
-    original_uppers = []
+    title = ""
 
-    on_upper = False
-
-    upper_start = None
-
-    upper_end = None
-
-    for i, character in enumerate(str_):
-
-        if character.isupper():
-
-            if on_upper:
-
-                upper_end += 1
-
-            else:
-
-                on_upper = True
-
-                upper_start = i
-
-                upper_end = upper_start + 1
-
-        else:
-
-            if on_upper:
-
-                on_upper = False
-
-                original_uppers.append((upper_start, upper_end))
-
-                upper_start = None
-
-                upper_end = None
-
-    if upper_start:
-
-        original_uppers.append((upper_start, upper_end))
-
-    str_ = str_.title().replace("_", " ")
-
-    for upper_start, upper_end in original_uppers:
-
-        str_ = (
-            str_[:upper_start] + str_[upper_start:upper_end].upper() + str_[upper_end:]
-        )
-
-    for lowercase_character in (
-        "a",
-        "an",
-        "the",
-        "and",
-        "but",
-        "or",
-        "for",
-        "nor",
-        "on",
-        "at",
-        "to",
-        "from",
-        "of",
-        "vs",
+    for character, is_upper in zip(
+        str_.title().replace("_", " "), (character.isupper() for character in str_)
     ):
 
-        str_ = str_.replace(
-            " {} ".format(lowercase_character.title()),
-            " {} ".format(lowercase_character),
-        )
+        if is_upper:
 
-    return " ".join(sub_str.strip() for sub_str in str_.split())
+            character = character.upper()
+
+        title += character
+
+    for word in (
+        " a ",
+        " an ",
+        " the ",
+        " and ",
+        " but ",
+        " or ",
+        " for ",
+        " nor ",
+        " on ",
+        " at ",
+        " to ",
+        " from ",
+        " of ",
+        " vs ",
+        "'m",
+        "'s",
+        "'re",
+    ):
+
+        title = title.replace(word.title(), word)
+
+    return title
 
 
 def untitle(str_):
@@ -103,9 +47,9 @@ def untitle(str_):
 
 def check_is_version(str_):
 
-    str_split = str_.split(sep=".")
+    split = str_.split(sep=".")
 
-    return "." in str_ and len(str_split) == 3 and all(i.isnumeric() for i in str_split)
+    return len(split) == 3 and all(str_.isnumeric() for str_ in split)
 
 
 def skip_quote_and_split(str_, separator):
@@ -114,17 +58,17 @@ def skip_quote_and_split(str_, separator):
 
     part = ""
 
-    for str_split in str_.split(sep=separator):
+    for split in str_.split(sep=separator):
 
-        if '"' in str_split:
+        if '"' in split:
 
             if part == "":
 
-                part = str_split
+                part = split
 
             else:
 
-                part += str_split
+                part += separator + split
 
                 splits.append(part)
 
@@ -134,11 +78,11 @@ def skip_quote_and_split(str_, separator):
 
             if part == "":
 
-                splits.append(str_split)
+                splits.append(split)
 
             else:
 
-                part += str_split
+                part += split
 
     if part != "":
 
