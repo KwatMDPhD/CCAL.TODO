@@ -28,19 +28,19 @@ def cast_builtin(object_):
 
 def print_function_information():
 
-    frame_info = stack()[1]
+    stack_1 = stack()[1]
 
     try:
 
         arguments = (
             "{} = {}".format(key, value)
-            for key, value in sorted(frame_info[0].f_locals.items())
+            for key, value in sorted(stack_1[0].f_locals.items())
         )
 
         separater = "\n    "
 
-        print("@ {}{}{}".format(frame_info[3], separater, separater.join(arguments)))
+        print("@ {}{}{}".format(stack_1[3], separater, separater.join(arguments)))
 
     finally:
 
-        del frame_info
+        del stack_1
