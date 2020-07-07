@@ -1,5 +1,3 @@
-from math import floor
-
 from numpy import (
     apply_along_axis,
     arange,
@@ -7,6 +5,7 @@ from numpy import (
     concatenate,
     full,
     isnan,
+    ix_,
     median,
     nan,
     unique,
@@ -231,45 +230,53 @@ def normalize(dataframe, axis, method, **normalize_keyword_arguments):
     return DataFrame(matrix, index=dataframe.index, columns=dataframe.columns)
 
 
-#
-def sample(dataframe, axis0_size, axis1_size):
+def sample(dataframe, n_axis0, n_axis1):
 
-    assert axis0_size is not None or axis1_size is not None
+    assert n_axis0 is not None or n_axis1 is not None
 
-    if axis0_size is not None and axis1_size is not None:
+    matrix = dataframe.to_numpy()
 
-        return dataframe.loc[
-            choice(
-                dataframe.index,
-                size=int(floor(dataframe.shape[0] * axis0_size)),
-                replace=False,
-            ),
-            choice(
-                dataframe.columns,
-                size=int(floor(dataframe.shape[1] * axis1_size)),
-                replace=False,
-            ),
-        ]
+    axis0_size, axis1_size = matrix.shape
 
-    elif axis0_size is not None:
+    if n_axis0 is not None:
 
-        return dataframe.loc[
-            choice(
-                dataframe.index,
-                size=int(floor(dataframe.shape[0] * axis0_size)),
-                replace=False,
-            ),
-        ]
+        if n_axis0 < 1:
 
-    else:
+            n_axis0 = int(n_axis0 * axis0_size)
 
-        return dataframe[
-            choice(
-                dataframe.columns,
-                size=int(floor(dataframe.shape[1] * axis1_size)),
-                replace=False,
-            )
-        ]
+        axis0_is = choice(arange(axis0_size), size=n_axis0, replace=False)
+
+    if n_axis1 is not None:
+
+        if n_axis1 < 1:
+
+            n_axis1 = int(n_axis1 * axis1_size)
+
+        axis1_is = choice(arange(axis1_size), size=n_axis1, replace=False)
+
+    if n_axis0 is not None and n_axis1 is not None:
+
+        return DataFrame(
+            matrix[ix_(axis0_is, axis1_is)],
+            index=dataframe.index[axis0_is],
+            columns=dataframe.columns[axis1_is],
+        )
+
+    elif n_axis0 is not None:
+
+        return DataFrame(
+            matrix[axis0_is, :],
+            index=dataframe.index[axis0_is],
+            columns=dataframe.columns,
+        )
+
+    elif n_axis1 is not None:
+
+        return DataFrame(
+            matrix[:, axis1_is],
+            index=dataframe.index,
+            columns=dataframe.columns[axis1_is],
+        )
 
 
 def summarize(
