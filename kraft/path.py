@@ -15,14 +15,15 @@ def path(path):
 
         directory_path = dirname(directory_path)
 
+    # TODO: use [::-1]
     for directory_path in reversed(missing_directory_paths):
 
         mkdir(directory_path)
 
-        print("Made {}/.".format(directory_path))
+        print(directory_path)
 
 
-def get_child_paths(parent_directory_path, relative=True):
+def get_child_paths(parent_directory_path, absolute=True):
 
     child_paths = []
 
@@ -36,19 +37,20 @@ def get_child_paths(parent_directory_path, relative=True):
 
             child_paths.append("{}/{}".format(directory_path, file_name))
 
-    if relative:
+    if absolute:
+
+        return tuple(child_paths)
+
+    else:
 
         n = len(parent_directory_path) + 1
 
         return tuple(child_path[n:] for child_path in child_paths)
 
-    else:
-
-        return tuple(child_paths)
-
 
 def clean(file_name):
 
+    # TODO: use regular expression
     file_name_clean = sub(
         r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_")
     )

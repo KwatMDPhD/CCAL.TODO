@@ -8,7 +8,7 @@ from .plot import plot_plotly
 def select_extreme(
     series,
     direction,
-    thresholds=None,
+    low_and_high=None,
     n=None,
     fraction=None,
     standard_deviation=None,
@@ -23,21 +23,21 @@ def select_extreme(
 
     labels = series.index.to_numpy()
 
-    if thresholds is None:
+    if low_and_high is None:
 
         if n is not None:
 
             n = min(vector.size, n)
 
-            threshold_low = vector[n - 1]
+            low = vector[n - 1]
 
-            threshold_high = vector[-n]
+            high = vector[-n]
 
         elif fraction is not None:
 
-            threshold_low = quantile(vector, fraction)
+            low = quantile(vector, fraction)
 
-            threshold_high = quantile(vector, 1 - fraction)
+            high = quantile(vector, 1 - fraction)
 
         elif standard_deviation is not None:
 
@@ -45,42 +45,42 @@ def select_extreme(
 
             margin = vector.std() * standard_deviation
 
-            threshold_low = mean - margin
+            low = mean - margin
 
-            threshold_high = mean + margin
+            high = mean + margin
 
     else:
 
-        threshold_low, threshold_high = thresholds
+        low, high = low_and_high
 
     if direction == "<>":
 
-        is_selected = (vector <= threshold_low) | (threshold_high <= vector)
+        is_extreme = (vector <= low) | (high <= vector)
 
     elif direction == "<":
 
-        is_selected = vector <= threshold_low
+        is_extreme = vector <= low
 
     elif direction == ">":
 
-        is_selected = threshold_high <= vector
+        is_extreme = high <= vector
 
-    labels_selected = labels[is_selected]
+    labels_extreme = labels[is_extreme]
 
     if plot:
 
-        layout_template = {
+        layout_base = {
             "xaxis": {"title": {"text": "Rank"}},
             "yaxis": {"title": {"text": series.name}},
         }
 
         if layout is None:
 
-            layout = layout_template
+            layout = layout_base
 
         else:
 
-            layout = merge(layout_template, layout)
+            layout = merge(layout_base, layout)
 
         plot_plotly(
             {
@@ -94,10 +94,10 @@ def select_extreme(
                         "marker": {"color": "#d0d0d0"},
                     },
                     {
-                        "name": "Selected ({})".format(is_selected.sum()),
-                        "x": labels_selected,
-                        "y": vector[is_selected],
-                        "text": labels_selected,
+                        "name": "Selected ({})".format(labels_extreme.size),
+                        "x": labels_extreme,
+                        "y": vector[is_extreme],
+                        "text": labels_extreme,
                         "mode": "markers",
                     },
                 ],
@@ -105,7 +105,7 @@ def select_extreme(
             html_file_path=html_file_path,
         )
 
-    return labels_selected
+    return labels_extreme
 
 
 def binarize(series):
@@ -124,11 +124,11 @@ def binarize(series):
 
     object_x_label = full((len(object_to_i), series.size), 0)
 
-    for i, object_ in enumerate(series):
+    for label_i, object_ in enumerate(series):
 
         if not isna(object_):
 
-            object_x_label[object_to_i[object_], i] = 1
+            object_x_label[object_to_i[object_], label_i] = 1
 
     dataframe = DataFrame(
         object_x_label, index=list(object_to_i), columns=series.index,

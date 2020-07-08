@@ -1,10 +1,8 @@
-# TODO: use regular expression
-
-
 def title(str_):
 
     title = ""
 
+    # TODO: use regular expression
     for character, is_upper in zip(
         str_.title().replace("_", " "), (character.isupper() for character in str_)
     ):
@@ -15,6 +13,7 @@ def title(str_):
 
         title += character
 
+    # TODO: use regular expression
     for word in (
         " a ",
         " an ",
@@ -42,6 +41,7 @@ def title(str_):
 
 def untitle(str_):
 
+    # TODO: use regular expression
     return str_.lower().replace(" ", "_").replace("-", "_")
 
 
@@ -49,6 +49,7 @@ def check_is_version(str_):
 
     split = str_.split(sep=".")
 
+    # TODO: use regular expression
     return len(split) == 3 and all(str_.isnumeric() for str_ in split)
 
 
@@ -56,44 +57,44 @@ def skip_quote_and_split(str_, separator=" "):
 
     splits = []
 
-    part = ""
+    quote = ""
 
     for split in str_.split(sep=separator):
 
         if '"' in split:
 
-            if part == "":
+            if quote == "":
 
-                part = split
+                quote = split
 
             else:
 
-                part += separator + split
+                quote += separator + split
 
-                splits.append(part)
+                splits.append(quote)
 
-                part = ""
+                quote = ""
 
         else:
 
-            if part == "":
+            if quote == "":
 
                 splits.append(split)
 
             else:
 
-                part += split
+                quote += split
 
-    if part != "":
+    if quote != "":
 
-        splits.append(part)
+        splits.append(quote)
 
     return splits
 
 
 def make_unique(strs):
 
-    strs_unique = []
+    uniques = []
 
     for str_ in strs:
 
@@ -101,12 +102,12 @@ def make_unique(strs):
 
         i = 2
 
-        while str_ in strs_unique:
+        while str_ in uniques:
 
             str_ = "{}{}".format(original, i)
 
             i += 1
 
-        strs_unique.append(str_)
+        uniques.append(str_)
 
-    return strs_unique
+    return uniques
