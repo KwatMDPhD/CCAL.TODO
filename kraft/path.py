@@ -1,21 +1,21 @@
 from os import mkdir, walk
-from os.path import isdir, split
+from os.path import dirname, isdir
 from re import sub
 
 
 def path(path):
 
-    directory_path = split(path)[0]
+    directory_path = dirname(path)
 
-    directory_paths_missing = []
+    missing_directory_paths = []
 
     while directory_path != "" and not isdir(directory_path):
 
-        directory_paths_missing.append(directory_path)
+        missing_directory_paths.append(directory_path)
 
-        directory_path = split(directory_path)[0]
+        directory_path = dirname(directory_path)
 
-    for directory_path in reversed(directory_paths_missing):
+    for directory_path in reversed(missing_directory_paths):
 
         mkdir(directory_path)
 
