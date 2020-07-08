@@ -1,5 +1,4 @@
-from numpy import arange, argsort, asarray, meshgrid, nonzero, unique
-from pandas import DataFrame, Series
+from numpy import arange, argsort, meshgrid, nonzero, unique
 from plotly.colors import (
     convert_colors_to_same_type,
     find_intermediate_color,
@@ -12,6 +11,8 @@ from .array import normalize
 from .dict_ import merge
 from .support import cast_builtin
 
+templates["kraft"] = {"layout": {"autosize": False}}
+
 COLORBAR = {
     "thicknessmode": "fraction",
     "thickness": 0.024,
@@ -20,13 +21,11 @@ COLORBAR = {
     "tickfont": {"size": 10},
 }
 
-DATA_TYPE_COLORSCALE = {
+DATA_TYPE_TO_COLORSCALE = {
     "continuous": make_colorscale(("#0000ff", "#ffffff", "#ff0000")),
     "categorical": make_colorscale(qualitative.Plotly),
     "binary": make_colorscale(("#ffddca", "#006442")),
 }
-
-templates["kraft"] = {"layout": {"autosize": False}}
 
 
 def plot_plotly(figure, html_file_path=None):
@@ -46,6 +45,8 @@ def plot_plotly(figure, html_file_path=None):
     show(figure, config=config)
 
     if html_file_path is not None:
+
+        assert html_file_path.endswith(".html")
 
         write_html(figure, html_file_path, config=config)
 
@@ -94,64 +95,66 @@ def get_color(colorscale, value, n=None):
 
 
 def plot_heat_map(
-    matrix,
+    dataframe,
     colorscale=None,
-    ordered_annotation=False,
-    row_annotations=None,
-    row_annotation_colorscale=None,
-    row_annotation_str=None,
-    column_annotations=None,
-    column_annotation_colorscale=None,
-    column_annotation_str=None,
+    sort_groups=True,
+    axis_0_groups=None,
+    axis_0_group_colorscale=None,
+    axis_0_group_to_name=None,
+    axis_1_groups=None,
+    axis_1_group_colorscale=None,
+    axis_1_group_to_name=None,
     layout=None,
-    layout_annotation_row=None,
-    layout_annotation_column=None,
+    layout_annotation_axis_0=None,
+    layout_annotation_axis_1=None,
     html_file_path=None,
 ):
 
-    if not isinstance(matrix, DataFrame):
+    if axis_0_groups is not None:
 
-        matrix = DataFrame(matrix)
+        if sort_groups:
 
-    if row_annotations is not None:
+            is_ = argsort(axis_0_groups)
 
-        row_annotations = asarray(row_annotations)
+            axis_0_groups = axis_0_groups[is_]
 
-        if not ordered_annotation:
+            dataframe = dataframe.iloc[is_, :]
 
-            sorting_index = argsort(row_annotations)
+    if axis_1_groups is not None:
 
-            row_annotations = row_annotations[sorting_index]
+        if sort_groups:
 
-            matrix = matrix.iloc[sorting_index]
+            is_ = argsort(axis_1_groups)
 
-    if column_annotations is not None:
+            axis_1_groups = axis_1_groups[is_]
 
-        column_annotations = asarray(column_annotations)
-
-        if not ordered_annotation:
-
-            sorting_index = argsort(column_annotations)
-
-            column_annotations = column_annotations[sorting_index]
-
-            matrix = matrix.iloc[:, sorting_index]
+            dataframe = dataframe.iloc[:, is_]
 
     heat_map_axis_template = {"domain": (0, 0.95)}
 
-    annotation_axis_template = {"domain": (0.96, 1), "showticklabels": False}
+    group_axis = {"domain": (0.96, 1), "showticklabels": False}
+
+    axis_0_is_str = any(
+        isinstance(cast_builtin(label), str) for label in dataframe.index
+    )
+
+    axis_1_is_str = any(
+        isinstance(cast_builtin(label), str) for label in dataframe.columns
+    )
 
     layout_template = {
         "xaxis": {
-            "title": "{} (n={})".format(matrix.columns.name, matrix.columns.size),
+            "showticklabels": axis_1_is_str,
+            "title": "{} (n={})".format(dataframe.columns.name, dataframe.columns.size),
             **heat_map_axis_template,
         },
         "yaxis": {
-            "title": "{} (n={})".format(matrix.index.name, matrix.index.size),
+            "showticklabels": axis_0_is_str,
+            "title": "{} (n={})".format(dataframe.index.name, dataframe.index.size),
             **heat_map_axis_template,
         },
-        "xaxis2": annotation_axis_template,
-        "yaxis2": annotation_axis_template,
+        "xaxis2": group_axis,
+        "yaxis2": group_axis,
         "annotations": [],
     }
 
@@ -163,17 +166,17 @@ def plot_heat_map(
 
         layout = merge(layout_template, layout)
 
-    if any(isinstance(cast_builtin(x), str) for x in matrix.columns):
+    if axis_1_is_str:
 
-        x = matrix.columns
+        x = dataframe.columns.to_numpy()
 
     else:
 
         x = None
 
-    if any(isinstance(cast_builtin(x), str) for x in matrix.index):
+    if axis_0_is_str:
 
-        y = matrix.index[::-1]
+        y = dataframe.index.to_numpy()[::-1]
 
     else:
 
@@ -181,7 +184,7 @@ def plot_heat_map(
 
     if colorscale is None:
 
-        colorscale = DATA_TYPE_COLORSCALE["continuous"]
+        colorscale = DATA_TYPE_TO_COLORSCALE["continuous"]
 
     colorbar_x = 1.05
 
@@ -190,7 +193,7 @@ def plot_heat_map(
             "type": "heatmap",
             "x": x,
             "y": y,
-            "z": matrix.values[::-1],
+            "z": dataframe.to_numpy()[::-1],
             "colorscale": colorscale,
             "colorbar": {**COLORBAR, "x": colorbar_x},
         }
@@ -198,9 +201,9 @@ def plot_heat_map(
 
     annotation_template = {"showarrow": False}
 
-    if row_annotations is not None:
+    if axis_0_groups is not None:
 
-        row_annotations = row_annotations[::-1]
+        axis_0_groups = axis_0_groups[::-1]
 
         colorbar_x += 0.1
 
@@ -208,45 +211,45 @@ def plot_heat_map(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
-                "z": row_annotations.reshape(row_annotations.size, 1),
-                "colorscale": row_annotation_colorscale,
+                "z": axis_0_groups.reshape(axis_0_groups.size, 1),
+                "colorscale": axis_0_group_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+y",
             }
         )
 
-        if row_annotation_str is not None:
+        if axis_0_group_to_name is not None:
 
-            layout_annotation_row_template = {
+            layout_annotation_axis_0_template = {
                 "xref": "x2",
                 "x": 0,
                 "xanchor": "left",
                 **annotation_template,
             }
 
-            if layout_annotation_row is None:
+            if layout_annotation_axis_0 is None:
 
-                layout_annotation_row = layout_annotation_row_template
+                layout_annotation_axis_0 = layout_annotation_axis_0_template
 
             else:
 
-                layout_annotation_row = merge(
-                    layout_annotation_row_template, layout_annotation_row
+                layout_annotation_axis_0 = merge(
+                    layout_annotation_axis_0_template, layout_annotation_axis_0
                 )
 
-            for i in unique(row_annotations):
+            for i in unique(axis_0_groups):
 
-                index_0, index_1 = nonzero(row_annotations == i)[0][[0, -1]]
+                i_0, i_1 = nonzero(axis_0_groups == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
-                        "y": index_0 + (index_1 - index_0) / 2,
-                        "text": row_annotation_str[i],
-                        **layout_annotation_row,
+                        "y": i_0 + (i_1 - i_0) / 2,
+                        "text": axis_0_group_to_name[i],
+                        **layout_annotation_axis_0,
                     }
                 )
 
-    if column_annotations is not None:
+    if axis_1_groups is not None:
 
         colorbar_x += 0.1
 
@@ -254,17 +257,17 @@ def plot_heat_map(
             {
                 "yaxis": "y2",
                 "type": "heatmap",
-                "z": column_annotations.reshape(column_annotations.size, 1),
+                "z": axis_1_groups.reshape(axis_1_groups.size, 1),
                 "transpose": True,
-                "colorscale": column_annotation_colorscale,
+                "colorscale": axis_1_group_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+x",
             }
         )
 
-        if column_annotation_str is not None:
+        if axis_1_group_to_name is not None:
 
-            layout_column_annotation_template = {
+            layout_annotation_axis_1_template = {
                 "yref": "y2",
                 "y": 0,
                 "yanchor": "bottom",
@@ -272,25 +275,25 @@ def plot_heat_map(
                 **annotation_template,
             }
 
-            if layout_annotation_column is None:
+            if layout_annotation_axis_1 is None:
 
-                layout_annotation_column = layout_column_annotation_template
+                layout_annotation_axis_1 = layout_annotation_axis_1_template
 
             else:
 
-                layout_annotation_column = merge(
-                    layout_column_annotation_template, layout_annotation_column
+                layout_annotation_axis_1 = merge(
+                    layout_annotation_axis_1_template, layout_annotation_axis_1
                 )
 
-            for i in unique(column_annotations):
+            for i in unique(axis_1_groups):
 
-                index_0, index_1 = nonzero(column_annotations == i)[0][[0, -1]]
+                i_0, i_1 = nonzero(axis_1_groups == i)[0][[0, -1]]
 
                 layout["annotations"].append(
                     {
-                        "x": index_0 + (index_1 - index_0) / 2,
-                        "text": column_annotation_str[i],
-                        **layout_annotation_column,
+                        "x": i_0 + (i_1 - i_0) / 2,
+                        "text": axis_1_group_to_name[i],
+                        **layout_annotation_axis_1,
                     }
                 )
 
@@ -300,7 +303,7 @@ def plot_heat_map(
 def plot_bubble_map(
     dataframe_size,
     dataframe_color=None,
-    max_size=20,
+    max_size=32,
     colorscale=None,
     layout=None,
     html_file_path=None,
@@ -318,14 +321,14 @@ def plot_bubble_map(
                 dataframe_size.columns.name, dataframe_size.columns.size
             ),
             "tickvals": x_grid,
-            "ticktext": dataframe_size.columns,
+            "ticktext": dataframe_size.columns.to_numpy(),
         },
         "yaxis": {
             "title": "{} (n={})".format(
                 dataframe_size.index.name, dataframe_size.index.size
             ),
             "tickvals": y_grid,
-            "ticktext": dataframe_size.index,
+            "ticktext": dataframe_size.index.to_numpy(),
         },
     }
 
@@ -341,25 +344,26 @@ def plot_bubble_map(
 
         dataframe_color = dataframe_size
 
-    mesh_grid_x, mesh_grid_y = meshgrid(x_grid, y_grid)
+    x, y = meshgrid(x_grid, y_grid)
 
     if colorscale is None:
 
-        colorscale = DATA_TYPE_COLORSCALE["continuous"]
+        colorscale = DATA_TYPE_TO_COLORSCALE["continuous"]
+
+    matrix_size = dataframe_size.to_numpy()
 
     plot_plotly(
         {
             "layout": layout,
             "data": [
                 {
-                    "x": mesh_grid_x.ravel(),
-                    "y": mesh_grid_y.ravel(),
-                    "text": dataframe_size.values.ravel(),
+                    "x": x.ravel(),
+                    "y": y.ravel(),
+                    "text": matrix_size.ravel(),
                     "mode": "markers",
                     "marker": {
-                        "size": normalize(dataframe_size.values, "0-1").ravel()
-                        * max_size,
-                        "color": dataframe_color.values.ravel(),
+                        "size": normalize(matrix_size, "0-1").ravel() * max_size,
+                        "color": dataframe_color.to_numpy().ravel(),
                         "colorscale": colorscale,
                         "colorbar": COLORBAR,
                     },
@@ -384,7 +388,7 @@ def plot_histogram(
 
     if plot_rug is None:
 
-        plot_rug = all(len(x) < 1e3 for x in xs)
+        plot_rug = all(x.size < 1e3 for x in xs)
 
     n_x = len(xs)
 
@@ -428,33 +432,26 @@ def plot_histogram(
 
     data = []
 
-    for x_index, x in enumerate(xs):
+    for i, x in enumerate(xs):
 
-        if isinstance(x, Series):
+        color = get_color(DATA_TYPE_TO_COLORSCALE["categorical"], i, n_x)
 
-            name = x.name
+        name = x.name
 
-            text = x.index
-
-        else:
-
-            name = x_index
-
-            text = None
-
-        color = get_color(DATA_TYPE_COLORSCALE["categorical"], x_index, n_x)
+        trace_template = {
+            "legendgroup": i,
+            "name": name,
+            "x": x,
+        }
 
         data.append(
             {
                 "yaxis": "y2",
                 "type": "histogram",
-                "legendgroup": x_index,
-                "name": name,
-                "showlegend": 1 < len(xs),
-                "x": x,
                 "histnorm": histnorm,
                 "xbins": {"size": bin_size},
                 "marker": {"color": color},
+                **trace_template,
             }
         )
 
@@ -462,15 +459,13 @@ def plot_histogram(
 
             data.append(
                 {
-                    "legendgroup": x_index,
-                    "name": name,
                     "showlegend": False,
-                    "x": x,
-                    "y": (x_index,) * len(x),
-                    "text": text,
+                    "y": (i,) * len(x),
+                    "text": x.index.to_numpy(),
                     "mode": "markers",
                     "marker": {"symbol": "line-ns-open", "color": color},
                     "hoverinfo": "x+text",
+                    **trace_template,
                 }
             )
 
