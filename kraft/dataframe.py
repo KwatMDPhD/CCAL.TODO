@@ -10,10 +10,11 @@ from numpy import (
     nan,
     unique,
 )
-from numpy.random import choice
+from numpy.random import choice, seed
 from pandas import DataFrame, Series, isna
 
 from .array import map_int, normalize as array_normalize
+from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_nd
 from .plot import plot_heat_map, plot_histogram
 
@@ -35,15 +36,15 @@ def sync_axis(dataframes, axis, method):
 
     if method == "union":
 
-        dataframe0 = dataframes[0]
+        dataframe_0 = dataframes[0]
 
         if axis == 0:
 
-            labels = set(dataframe0.index)
+            labels = set(dataframe_0.index)
 
         else:
 
-            labels = set(dataframe0.columns)
+            labels = set(dataframe_0.columns)
 
         for dataframe in dataframes[1:]:
 
@@ -59,15 +60,15 @@ def sync_axis(dataframes, axis, method):
 
     elif method == "intersection":
 
-        dataframe0 = dataframes[0]
+        dataframe_0 = dataframes[0]
 
         if axis == 0:
 
-            labels = dataframe0.index.to_list()
+            labels = dataframe_0.index.to_list()
 
         else:
 
-            labels = dataframe0.columns.to_list()
+            labels = dataframe_0.columns.to_list()
 
         for dataframe in dataframes[1:]:
 
@@ -181,35 +182,37 @@ def drop_axes_label(
         can_return = True
 
 
-def pivot(dataframe, axis0, axis1, values, function=None):
+def pivot(dataframe, axis_0, axis_1, values, function=None):
 
-    axis0_labels = unique(dataframe[axis0].to_numpy())
+    axis_0_labels = unique(dataframe.loc[:, axis_0].to_numpy())
 
-    axis1_labels = unique(dataframe[axis1].to_numpy())
+    axis_1_labels = unique(dataframe.loc[:, axis_1].to_numpy())
 
-    axis0_label_to_i = map_int(axis0_labels)[0]
+    axis_0_label_to_i = map_int(axis_0_labels)[0]
 
-    axis1_label_to_i = map_int(axis1_labels)[0]
+    axis_1_label_to_i = map_int(axis_1_labels)[0]
 
-    matrix = full((axis0_labels.size, axis1_labels.size), nan)
+    matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
 
-    for axis0_label, axis1_label, value in dataframe[[axis0, axis1, values]].to_numpy():
+    for axis_0_label, axis_1_label, value in dataframe.loc[
+        :, [axis_0, axis_1, values]
+    ].to_numpy():
 
-        axis0_i = axis0_label_to_i[axis0_label]
+        axis_0_i = axis_0_label_to_i[axis_0_label]
 
-        axis1_i = axis1_label_to_i[axis1_label]
+        axis_1_i = axis_1_label_to_i[axis_1_label]
 
-        value_now = matrix[axis0_i, axis1_i]
+        value_now = matrix[axis_0_i, axis_1_i]
 
         if isnan(value_now):
 
-            matrix[axis0_i, axis1_i] = value
+            matrix[axis_0_i, axis_1_i] = value
 
         else:
 
-            matrix[axis0_i, axis1_i] = function(value_now, value)
+            matrix[axis_0_i, axis_1_i] = function(value_now, value)
 
-    return DataFrame(matrix, index=axis0_labels, columns=axis1_labels)
+    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
 
 
 def normalize(dataframe, axis, method, **normalize_keyword_arguments):
@@ -229,52 +232,71 @@ def normalize(dataframe, axis, method, **normalize_keyword_arguments):
     return DataFrame(matrix, index=dataframe.index, columns=dataframe.columns)
 
 
-def sample(dataframe, n_axis0, n_axis1):
-
-    assert n_axis0 is not None or n_axis1 is not None
+def sample(
+    dataframe,
+    axis_0_n,
+    axis_1_n,
+    random_seed=RANDOM_SEED,
+    axis_0_choice_keyword_arguments=None,
+    axis_1_choice_keyword_arguments=None,
+):
 
     matrix = dataframe.to_numpy()
 
-    axis0_size, axis1_size = matrix.shape
+    axis_0_size, axis_1_size = matrix.shape
 
-    if n_axis0 is not None:
+    seed(seed=random_seed)
 
-        if n_axis0 < 1:
+    if axis_0_n is not None:
 
-            n_axis0 = int(n_axis0 * axis0_size)
+        if axis_0_n < 1:
 
-        axis0_is = choice(arange(axis0_size), size=n_axis0, replace=False)
+            axis_0_n = int(axis_0_n * axis_0_size)
 
-    if n_axis1 is not None:
+        if axis_0_choice_keyword_arguments is None:
 
-        if n_axis1 < 1:
+            axis_0_choice_keyword_arguments = {}
 
-            n_axis1 = int(n_axis1 * axis1_size)
-
-        axis1_is = choice(arange(axis1_size), size=n_axis1, replace=False)
-
-    if n_axis0 is not None and n_axis1 is not None:
-
-        return DataFrame(
-            matrix[ix_(axis0_is, axis1_is)],
-            index=dataframe.index[axis0_is],
-            columns=dataframe.columns[axis1_is],
+        axis_0_is = choice(
+            arange(axis_0_size), size=axis_0_n, **axis_0_choice_keyword_arguments
         )
 
-    elif n_axis0 is not None:
+    if axis_1_n is not None:
+
+        if axis_1_n < 1:
+
+            axis_1_n = int(axis_1_n * axis_1_size)
+
+        if axis_1_choice_keyword_arguments is None:
+
+            axis_1_choice_keyword_arguments = {}
+
+        axis_1_is = choice(
+            arange(axis_1_size), size=axis_1_n, **axis_1_choice_keyword_arguments
+        )
+
+    if axis_0_n is not None and axis_1_n is not None:
 
         return DataFrame(
-            matrix[axis0_is, :],
-            index=dataframe.index[axis0_is],
+            matrix[ix_(axis_0_is, axis_1_is)],
+            index=dataframe.index[axis_0_is],
+            columns=dataframe.columns[axis_1_is],
+        )
+
+    elif axis_0_n is not None:
+
+        return DataFrame(
+            matrix[axis_0_is, :],
+            index=dataframe.index[axis_0_is],
             columns=dataframe.columns,
         )
 
-    elif n_axis1 is not None:
+    elif axis_1_n is not None:
 
         return DataFrame(
-            matrix[:, axis1_is],
+            matrix[:, axis_1_is],
             index=dataframe.index,
-            columns=dataframe.columns[axis1_is],
+            columns=dataframe.columns[axis_1_is],
         )
 
 
@@ -305,8 +327,8 @@ def summarize(
 
     labels = asarray(
         tuple(
-            "{}_{}".format(axis0_label, axis1_label)
-            for axis0_label, axis1_label in make_grid_nd(
+            "{}_{}".format(axis_0_label, axis_1_label)
+            for axis_0_label, axis_1_label in make_grid_nd(
                 (dataframe.index.to_numpy(), dataframe.columns.to_numpy())
             )
         )
@@ -364,7 +386,7 @@ def summarize(
                     Series(is_na.sum(axis=0), name=dataframe.columns.name),
                 ),
                 layout={
-                    "title": {"text": "Fraction NA: {:.2e}".format(n_na / size)},
-                    "xaxis": {"title": {"text": "N NA"}},
+                    "title": {"text": "Fraction Na: {:.2e}".format(n_na / size)},
+                    "xaxis": {"title": {"text": "N Na"}},
                 },
             )
