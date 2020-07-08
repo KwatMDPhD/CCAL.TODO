@@ -48,6 +48,7 @@ setup(
         "click",
     ),
     packages=(name,),
+    include_package_data=True,
     package_data={
         name: tuple(
             "{}/{}".format(data_directory_name, path)
