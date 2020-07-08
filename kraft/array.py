@@ -1,22 +1,22 @@
 from numpy import diff, isnan, log as loge, log2, log10, nan, nanmin, unique
-from numpy.random import seed, shuffle as numpy_shuffle
+from numpy.random import seed, shuffle as shuffle_
 from scipy.stats import rankdata
 
 from .CONSTANT import RANDOM_SEED
 
 
-def error_nan(array):
+def error_nan(numbers):
 
-    assert not isnan(array).any()
+    assert not isnan(numbers).any()
 
 
-def guess_type(array):
+def guess_type(numbers):
 
-    error_nan(array)
+    error_nan(numbers)
 
-    if all(float(number).is_integer() for number in array.flatten()):
+    if all(float(number).is_integer() for number in numbers.flatten()):
 
-        n_unique = unique(array).size
+        n_unique = unique(numbers).size
 
         if n_unique <= 2:
 
@@ -29,109 +29,109 @@ def guess_type(array):
     return "continuous"
 
 
-def clip(array, standard_deviation):
+def clip(numbers, standard_deviation):
 
-    error_nan(array)
+    error_nan(numbers)
 
     assert 0 <= standard_deviation
 
-    mean = array.mean()
+    mean = numbers.mean()
 
-    margin = array.std() * standard_deviation
+    margin = numbers.std() * standard_deviation
 
-    return array.clip(min=mean - margin, max=mean + margin)
+    return numbers.clip(min=mean - margin, max=mean + margin)
 
 
-def shift_minimum(array, minimum):
+def shift_minimum(numbers, minimum):
 
-    error_nan(array)
+    error_nan(numbers)
 
     if minimum == "0<":
 
-        minimum = array[0 < array].min()
+        minimum = numbers[0 < numbers].min()
 
-    return array + minimum - nanmin(array)
+    return numbers + minimum - nanmin(numbers)
 
 
-def log(array, log_base=2):
+def log(numbers, log_base=2):
 
-    error_nan(array)
+    error_nan(numbers)
 
-    assert (0 < array).all()
+    assert (0 < numbers).all()
 
     if log_base in (2, "2"):
 
-        log_function = log2
+        log_ = log2
 
     elif log_base == "e":
 
-        log_function = loge
+        log_ = loge
 
     elif log_base in (10, "10"):
 
-        log_function = log10
+        log_ = log10
 
-    return log_function(array)
+    return log_(numbers)
 
 
-def normalize(array, method, rank_method="average"):
+def normalize(numbers, method, rank_method="average"):
 
-    error_nan(array)
+    error_nan(numbers)
 
     if method == "-0-":
 
-        standard_deviation = array.std()
+        standard_deviation = numbers.std()
 
         assert standard_deviation != 0
 
-        return (array - array.mean()) / standard_deviation
+        return (numbers - numbers.mean()) / standard_deviation
 
     elif method == "0-1":
 
-        min_ = array.min()
+        min_ = numbers.min()
 
-        range_ = array.max() - min_
+        range_ = numbers.max() - min_
 
         assert range_ != 0
 
-        return (array - min_) / range_
+        return (numbers - min_) / range_
 
     elif method == "sum":
 
-        assert (0 <= array).all()
+        assert (0 <= numbers).all()
 
-        sum_ = array.sum()
+        sum_ = numbers.sum()
 
         assert sum_ != 0
 
-        return array / sum_
+        return numbers / sum_
 
     elif method == "rank":
 
-        return rankdata(array, method=rank_method).reshape(array.shape)
+        return rankdata(numbers, method=rank_method).reshape(numbers.shape)
 
 
 def ignore_nan_and_function_1(
-    array, function, *function_arguments, update=False, **function_keyword_arguments
+    numbers, function, *function_arguments, update=False, **function_keyword_arguments
 ):
 
-    is_good = ~isnan(array)
+    is_good = ~isnan(numbers)
 
     if not is_good.any():
 
         return nan
 
     returned = function(
-        array[is_good], *function_arguments, **function_keyword_arguments
+        numbers[is_good], *function_arguments, **function_keyword_arguments
     )
 
     if update:
 
-        array = array.copy()
+        numbers = numbers.copy()
 
-        array[is_good] = returned
+        numbers[is_good] = returned
 
-        return array
+        return numbers
 
     else:
 
@@ -139,18 +139,18 @@ def ignore_nan_and_function_1(
 
 
 def ignore_nan_and_function_2(
-    array0, array1, function, *function_arguments, **function_keyword_arguments,
+    numbers_0, numbers_1, function, *function_arguments, **function_keyword_arguments,
 ):
 
-    is_good = ~isnan(array0) & ~isnan(array1)
+    is_good = ~isnan(numbers_0) & ~isnan(numbers_1)
 
     if not is_good.any():
 
         return nan
 
     return function(
-        array0[is_good],
-        array1[is_good],
+        numbers_0[is_good],
+        numbers_1[is_good],
         *function_arguments,
         **function_keyword_arguments,
     )
@@ -169,8 +169,6 @@ def check_is_sorted(vector):
 
 def shuffle(matrix, axis, random_seed=RANDOM_SEED):
 
-    assert matrix.ndim == 2
-
     error_nan(matrix)
 
     matrix = matrix.copy()
@@ -181,18 +179,18 @@ def shuffle(matrix, axis, random_seed=RANDOM_SEED):
 
         for i in range(matrix.shape[1]):
 
-            numpy_shuffle(matrix[:, i])
+            shuffle_(matrix[:, i])
 
     elif axis == 1:
 
         for i in range(matrix.shape[0]):
 
-            numpy_shuffle(matrix[i, :])
+            shuffle_(matrix[i, :])
 
     return matrix
 
 
-def map_int(array_1d):
+def map_int(objects):
 
     object_to_i = {}
 
@@ -200,7 +198,7 @@ def map_int(array_1d):
 
     i = 0
 
-    for object_ in array_1d:
+    for object_ in objects:
 
         if object_ not in object_to_i:
 
