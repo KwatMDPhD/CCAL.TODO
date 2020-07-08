@@ -1,50 +1,50 @@
-def merge(dict0, dict1):
+def merge(dict_0, dict_1):
 
-    dict01 = {}
+    dict_01 = {}
 
-    for key in dict0.keys() | dict1.keys():
+    for key in dict_0.keys() | dict_1.keys():
 
-        if key in dict0 and key in dict1:
+        if key in dict_0 and key in dict_1:
 
-            value0 = dict0[key]
+            value_0 = dict_0[key]
 
-            value1 = dict1[key]
+            value_1 = dict_1[key]
 
-            if isinstance(value0, dict) and isinstance(value1, dict):
+            if isinstance(value_0, dict) and isinstance(value_1, dict):
 
-                dict01[key] = merge(value0, value1)
+                dict_01[key] = merge(value_0, value_1)
 
             else:
 
-                dict01[key] = value1
+                dict_01[key] = value_1
 
-        elif key in dict0:
+        elif key in dict_0:
 
-            dict01[key] = dict0[key]
+            dict_01[key] = dict_0[key]
 
-        elif key in dict1:
+        elif key in dict_1:
 
-            dict01[key] = dict1[key]
+            dict_01[key] = dict_1[key]
 
-    return dict01
+    return dict_01
 
 
-def merge_with_function(dict0, dict1, function):
+def merge_with_function(dict_0, dict_1, function):
 
-    dict01 = {}
+    dict_01 = {}
 
-    for key in dict0.keys() | dict1.keys():
+    for key in dict_0.keys() | dict_1.keys():
 
-        if key in dict0 and key in dict1:
+        if key in dict_0 and key in dict_1:
 
-            dict01[key] = function(dict0[key], dict1[key])
+            dict_01[key] = function(dict_0[key], dict_1[key])
 
-        elif key in dict0:
+        elif key in dict_0:
 
-            dict01[key] = dict0[key]
+            dict_01[key] = dict_0[key]
 
-        elif key in dict1:
+        elif key in dict_1:
 
-            dict01[key] = dict1[key]
+            dict_01[key] = dict_1[key]
 
-    return dict01
+    return dict_01

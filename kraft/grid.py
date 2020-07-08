@@ -4,7 +4,7 @@ from pandas import DataFrame, Index
 from .plot import plot_heat_map, plot_plotly
 
 
-def make_grid_1d(min_, max_, fraction_extension, n):
+def make_grid_1d(min_, max_, fraction_extension, size):
 
     assert 0 <= fraction_extension
 
@@ -14,22 +14,22 @@ def make_grid_1d(min_, max_, fraction_extension, n):
 
     max_ += extension
 
-    return linspace(min_, max_, num=n)
+    return linspace(min_, max_, num=size)
 
 
 def make_grid_1d_for_reflecting(grid_1d, grid_number_for_reflecting):
 
     grid_1d_for_reflection = grid_1d.copy()
 
-    for i, grid_number in enumerate(grid_1d):
+    for i, number in enumerate(grid_1d):
 
-        if grid_number < grid_number_for_reflecting:
+        if number < grid_number_for_reflecting:
 
-            grid_1d_for_reflection[i] += (grid_number_for_reflecting - grid_number) * 2
+            grid_1d_for_reflection[i] += (grid_number_for_reflecting - number) * 2
 
         else:
 
-            grid_1d_for_reflection[i] -= (grid_number - grid_number_for_reflecting) * 2
+            grid_1d_for_reflection[i] -= (number - grid_number_for_reflecting) * 2
 
     return grid_1d_for_reflection
 
@@ -38,8 +38,8 @@ def make_grid_nd(grid_1ds):
 
     return asarray(
         tuple(
-            meshgrid_dimension.ravel()
-            for meshgrid_dimension in meshgrid(*grid_1ds, indexing="ij")
+            dimension_meshgrid.ravel()
+            for dimension_meshgrid in meshgrid(*grid_1ds, indexing="ij")
         )
     ).T
 
@@ -72,11 +72,11 @@ def plot_grid_nd(
 
     grid_nd_numbers_shape = shape(grid_nd_numbers, grid_1ds)
 
-    for grid_1d_i, grid_1d in enumerate(grid_1ds):
+    for i, grid_1d in enumerate(grid_1ds):
 
         print(
             "Grid {}: size={} min={:.2e} max={:.2e}".format(
-                grid_1d_i, grid_1d.size, grid_1d.min(), grid_1d.max()
+                i, grid_1d.size, grid_1d.min(), grid_1d.max()
             )
         )
 
@@ -105,10 +105,12 @@ def plot_grid_nd(
             DataFrame(
                 grid_nd_numbers_shape,
                 index=Index(
-                    ("{:.2e} *".format(n) for n in grid_1ds[0]), name=dimension_names[0]
+                    ("{:.2e} *".format(number) for number in grid_1ds[0]),
+                    name=dimension_names[0],
                 ),
                 columns=Index(
-                    ("* {:.2e}".format(n) for n in grid_1ds[1]), name=dimension_names[1]
+                    ("* {:.2e}".format(number) for number in grid_1ds[1]),
+                    name=dimension_names[1],
                 ),
             ),
             layout={"title": {"text": number_name}},
