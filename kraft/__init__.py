@@ -4,6 +4,7 @@ from . import (
     dataframe,
     dict_,
     grid,
+    iterable,
     path,
     plot,
     series,

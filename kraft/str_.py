@@ -89,3 +89,24 @@ def skip_quote_and_split(str_, separator=" "):
         splits.append(part)
 
     return splits
+
+
+def make_unique(strs):
+
+    strs_unique = []
+
+    for str_ in strs:
+
+        original = str_
+
+        i = 2
+
+        while str_ in strs_unique:
+
+            str_ = "{}{}".format(original, i)
+
+            i += 1
+
+        strs_unique.append(str_)
+
+    return strs_unique

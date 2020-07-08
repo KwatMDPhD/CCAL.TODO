@@ -190,3 +190,24 @@ def shuffle(matrix, axis, random_seed=RANDOM_SEED):
             numpy_shuffle(matrix[i, :])
 
     return matrix
+
+
+def map_int(array_1d):
+
+    object_to_i = {}
+
+    i_to_object = {}
+
+    i = 0
+
+    for object_ in array_1d:
+
+        if object_ not in object_to_i:
+
+            object_to_i[object_] = i
+
+            i_to_object[i] = object_
+
+            i += 1
+
+    return object_to_i, i_to_object

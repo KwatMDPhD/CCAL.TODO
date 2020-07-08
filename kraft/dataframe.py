@@ -13,9 +13,8 @@ from numpy import (
 from numpy.random import choice
 from pandas import DataFrame, Series, isna
 
-from .array import normalize as array_normalize
+from .array import map_int, normalize as array_normalize
 from .grid import make_grid_nd
-from .iterable import map_int
 from .plot import plot_heat_map, plot_histogram
 
 
