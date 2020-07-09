@@ -2,7 +2,7 @@ def merge(dict_0, dict_1, function=None):
 
     dict_01 = {}
 
-    for key in dict_0.keys() | dict_1.keys():
+    for key in sorted(dict_0.keys() | dict_1.keys()):
 
         if key in dict_0 and key in dict_1:
 
