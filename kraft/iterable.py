@@ -1,4 +1,4 @@
-def flatten(iterable, types=(tuple, list, set)):
+def ravel(iterable, types=(tuple, list, set)):
 
     list_ = list(iterable)
 

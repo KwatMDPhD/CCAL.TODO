@@ -5,7 +5,7 @@ from .dict_ import merge
 from .plot import plot_plotly
 
 
-def select_extreme_labels(
+def get_extreme_labels(
     series,
     direction,
     low_and_high=None,
@@ -94,7 +94,7 @@ def select_extreme_labels(
                         "marker": {"color": "#d0d0d0"},
                     },
                     {
-                        "name": "Selected ({})".format(labels_extreme.size),
+                        "name": "Extreme ({})".format(labels_extreme.size),
                         "x": labels_extreme,
                         "y": vector[is_extreme],
                         "text": labels_extreme,
