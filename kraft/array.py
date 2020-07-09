@@ -144,17 +144,6 @@ def ignore_nan_and_function_2(
     )
 
 
-def check_is_sorted(vector):
-
-    error_nan(vector)
-
-    assert vector.ndim == 1
-
-    differences = diff(vector)
-
-    return (differences <= 0).all() or (0 <= differences).all()
-
-
 def shuffle(matrix, axis, random_seed=RANDOM_SEED):
 
     error_nan(matrix)
@@ -176,6 +165,17 @@ def shuffle(matrix, axis, random_seed=RANDOM_SEED):
             shuffle_(matrix[i, :])
 
     return matrix
+
+
+def check_is_sorted(vector):
+
+    error_nan(vector)
+
+    assert vector.ndim == 1
+
+    differences = diff(vector)
+
+    return (differences <= 0).all() or (0 <= differences).all()
 
 
 # TODO: check Na

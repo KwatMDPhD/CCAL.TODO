@@ -5,7 +5,7 @@ from .dict_ import merge
 from .plot import plot_plotly
 
 
-def select_extreme(
+def select_extreme_labels(
     series,
     direction,
     low_and_high=None,

@@ -2,20 +2,6 @@ from platform import uname
 from subprocess import PIPE, CalledProcessError, run
 
 
-def command(command):
-
-    print(command)
-
-    return run(
-        command,
-        shell=True,
-        stdout=PIPE,
-        stderr=PIPE,
-        check=True,
-        universal_newlines=True,
-    )
-
-
 def get_machine():
 
     uname_ = uname()
@@ -36,6 +22,20 @@ def get_environment():
             environemnt[key.strip()] = value.strip()
 
     return environemnt
+
+
+def command(command):
+
+    print(command)
+
+    return run(
+        command,
+        shell=True,
+        stdout=PIPE,
+        stderr=PIPE,
+        check=True,
+        universal_newlines=True,
+    )
 
 
 def check_is_installed(program):

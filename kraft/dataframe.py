@@ -32,63 +32,6 @@ def error_axes(dataframe):
         assert (counts == 1).all()
 
 
-def sync_axis(dataframes, axis, method):
-
-    if method == "union":
-
-        dataframe_0 = dataframes[0]
-
-        if axis == 0:
-
-            labels = set(dataframe_0.index)
-
-        else:
-
-            labels = set(dataframe_0.columns)
-
-        for dataframe in dataframes[1:]:
-
-            if axis == 0:
-
-                labels = labels.union(set(dataframe.index))
-
-            else:
-
-                labels = labels.union(set(dataframe.columns))
-
-        labels = asarray(sorted(labels))
-
-    elif method == "intersection":
-
-        dataframe_0 = dataframes[0]
-
-        if axis == 0:
-
-            labels = dataframe_0.index.to_list()
-
-        else:
-
-            labels = dataframe_0.columns.to_list()
-
-        for dataframe in dataframes[1:]:
-
-            if axis == 0:
-
-                labels += dataframe.index.to_list()
-
-            else:
-
-                labels += dataframe.columns.to_list()
-
-        labels, counts = unique(labels, return_counts=True)
-
-        labels = labels[counts == len(dataframes)]
-
-    print(labels.size)
-
-    return tuple(dataframe.reindex(labels, axis=axis) for dataframe in dataframes)
-
-
 def drop_axis_label(dataframe, axis, min_good_value=None, min_good_unique_value=None):
 
     assert min_good_value is not None or min_good_unique_value is not None
@@ -250,43 +193,61 @@ def sample(
         )
 
 
-# TODO: take 3 arrays
-def pivot(dataframe, axis_0, axis_1, value, function=None):
+def sync_axis(dataframes, axis, method):
 
-    # dataframe.columns
-    # axis_0_i =
-    # axis_1_i =
-    # value_i =
+    if method == "union":
 
-    axis_0_labels = unique(dataframe.loc[:, axis_0].to_numpy())
+        dataframe_0 = dataframes[0]
 
-    axis_1_labels = unique(dataframe.loc[:, axis_1].to_numpy())
+        if axis == 0:
 
-    axis_0_label_to_i = map_int(axis_0_labels)[0]
-
-    axis_1_label_to_i = map_int(axis_1_labels)[0]
-
-    matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
-
-    for axis_0_label, axis_1_label, value in dataframe.loc[
-        :, [axis_0, axis_1, value]
-    ].to_numpy():
-
-        axis_0_i = axis_0_label_to_i[axis_0_label]
-
-        axis_1_i = axis_1_label_to_i[axis_1_label]
-
-        value_now = matrix[axis_0_i, axis_1_i]
-
-        if isnan(value_now):
-
-            matrix[axis_0_i, axis_1_i] = value
+            labels = set(dataframe_0.index)
 
         else:
 
-            matrix[axis_0_i, axis_1_i] = function(value_now, value)
+            labels = set(dataframe_0.columns)
 
-    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
+        for dataframe in dataframes[1:]:
+
+            if axis == 0:
+
+                labels = labels.union(set(dataframe.index))
+
+            else:
+
+                labels = labels.union(set(dataframe.columns))
+
+        labels = asarray(sorted(labels))
+
+    elif method == "intersection":
+
+        dataframe_0 = dataframes[0]
+
+        if axis == 0:
+
+            labels = dataframe_0.index.to_list()
+
+        else:
+
+            labels = dataframe_0.columns.to_list()
+
+        for dataframe in dataframes[1:]:
+
+            if axis == 0:
+
+                labels += dataframe.index.to_list()
+
+            else:
+
+                labels += dataframe.columns.to_list()
+
+        labels, counts = unique(labels, return_counts=True)
+
+        labels = labels[counts == len(dataframes)]
+
+    print(labels.size)
+
+    return tuple(dataframe.reindex(labels, axis=axis) for dataframe in dataframes)
 
 
 def normalize(matrix, axis, method, **normalize_keyword_arguments):
@@ -397,3 +358,42 @@ def summarize(
             (Series(numbers, index=labels),),
             layout={"xaxis": {"title": {"text": "Good Number"}}},
         )
+
+
+# TODO: take 3 arrays
+def pivot(dataframe, axis_0, axis_1, value, function=None):
+
+    # dataframe.columns
+    # axis_0_i =
+    # axis_1_i =
+    # value_i =
+
+    axis_0_labels = unique(dataframe.loc[:, axis_0].to_numpy())
+
+    axis_1_labels = unique(dataframe.loc[:, axis_1].to_numpy())
+
+    axis_0_label_to_i = map_int(axis_0_labels)[0]
+
+    axis_1_label_to_i = map_int(axis_1_labels)[0]
+
+    matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
+
+    for axis_0_label, axis_1_label, value in dataframe.loc[
+        :, [axis_0, axis_1, value]
+    ].to_numpy():
+
+        axis_0_i = axis_0_label_to_i[axis_0_label]
+
+        axis_1_i = axis_1_label_to_i[axis_1_label]
+
+        value_now = matrix[axis_0_i, axis_1_i]
+
+        if isnan(value_now):
+
+            matrix[axis_0_i, axis_1_i] = value
+
+        else:
+
+            matrix[axis_0_i, axis_1_i] = function(value_now, value)
+
+    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
