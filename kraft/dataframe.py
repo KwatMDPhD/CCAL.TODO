@@ -21,9 +21,9 @@ from .plot import plot_heat_map, plot_histogram
 
 def error_axes(dataframe):
 
-    for axis_labels in (dataframe.index, dataframe.columns):
+    for labels in (dataframe.index.to_numpy(), dataframe.columns.to_numpy()):
 
-        labels, counts = unique(axis_labels, return_counts=True)
+        labels, counts = unique(labels, return_counts=True)
 
         is_na = isna(labels)
 
