@@ -1,10 +1,12 @@
+from re import match, sub
+
+
 def title(str_):
 
     title = ""
 
-    # TODO: use regular expression
     for character, is_upper in zip(
-        str_.title().replace("_", " "), (character.isupper() for character in str_)
+        sub(r"_", " ", str_.title()), (character.isupper() for character in str_)
     ):
 
         if is_upper:
@@ -13,44 +15,39 @@ def title(str_):
 
         title += character
 
-    # TODO: use regular expression
     for word in (
-        " a ",
-        " an ",
-        " the ",
-        " and ",
-        " but ",
-        " or ",
-        " for ",
-        " nor ",
-        " on ",
-        " at ",
-        " to ",
-        " from ",
-        " of ",
-        " vs ",
-        "'m",
-        "'s",
-        "'re",
+        r" a ",
+        r" an ",
+        r" the ",
+        r" and ",
+        r" but ",
+        r" or ",
+        r" for ",
+        r" nor ",
+        r" on ",
+        r" at ",
+        r" to ",
+        r" from ",
+        r" of ",
+        r" vs ",
+        r"'m",
+        r"'s",
+        r"'re",
     ):
 
-        title = title.replace(word.title(), word)
+        title = sub(word.title(), word, title)
 
     return title
 
 
 def untitle(str_):
 
-    # TODO: use regular expression
-    return str_.lower().replace(" ", "_").replace("-", "_")
+    return sub(r"[ -]", "_", str_.lower())
 
 
 def check_is_version(str_):
 
-    split = str_.split(sep=".")
-
-    # TODO: use regular expression
-    return len(split) == 3 and all(str_.isnumeric() for str_ in split)
+    return bool(match(r"^(0\.|[1-9]+\.){2}(0\.|[1-9]+)$", str_))
 
 
 def skip_quote_and_split(str_, separator=" "):

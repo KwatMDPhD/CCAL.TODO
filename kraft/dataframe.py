@@ -252,6 +252,10 @@ def sync_axis(dataframes, axis, method):
 
 def normalize(matrix, axis, method, **normalize_keyword_arguments):
 
+    axis_0_labels = matrix.index
+
+    axis_1_labels = matrix.columns
+
     matrix = matrix.to_numpy()
 
     if axis is None:
@@ -264,7 +268,7 @@ def normalize(matrix, axis, method, **normalize_keyword_arguments):
             array_normalize, axis, matrix, method, **normalize_keyword_arguments
         )
 
-    return DataFrame(matrix, index=matrix.index, columns=matrix.columns)
+    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
 
 
 def summarize(
@@ -290,6 +294,16 @@ def summarize(
 
         plot_heat_map(matrix)
 
+    axis_0_name = matrix.index.name
+
+    axis_1_name = matrix.columns.name
+
+    axis_0_labels = matrix.index.to_numpy()
+
+    axis_1_labels = matrix.columns.to_numpy()
+
+    matrix = matrix.to_numpy()
+
     is_nan = isnan(matrix)
 
     n_nan = is_nan.sum()
@@ -300,8 +314,8 @@ def summarize(
 
             plot_histogram(
                 (
-                    Series(is_nan.sum(axis=1), name=matrix.index.name),
-                    Series(is_nan.sum(axis=0), name=matrix.columns.name),
+                    Series(is_nan.sum(axis=1), name=axis_0_name),
+                    Series(is_nan.sum(axis=0), name=axis_1_name),
                 ),
                 layout={
                     "title": {
@@ -313,13 +327,13 @@ def summarize(
 
     is_good = ~is_nan
 
-    numbers = matrix.to_numpy()[is_good].ravel()
+    numbers = matrix[is_good].ravel()
 
     labels = asarray(
         tuple(
             "{}_{}".format(axis_0_label, axis_1_label)
             for axis_0_label, axis_1_label in make_grid_nd(
-                (matrix.index.to_numpy(), matrix.columns.to_numpy())
+                (axis_0_labels, axis_1_labels)
             )[is_good.ravel()]
         )
     )
