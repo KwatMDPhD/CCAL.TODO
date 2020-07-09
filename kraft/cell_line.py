@@ -3,11 +3,10 @@ from pandas import read_csv
 from .CONSTANT import DATA_DIRECTORY_PATH
 
 
-# TODO: use lowercase
 def rename(names):
 
-    name_to_aht = read_csv(
-        "{}/cell_line_name_aht.tsv.gz".format(DATA_DIRECTORY_PATH),
+    name_to_rename = read_csv(
+        "{}/cell_line_name_to_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         index_col=0,
         squeeze=True,
@@ -19,9 +18,11 @@ def rename(names):
 
     for name in names:
 
-        if name in name_to_aht:
+        name_lower = name.lower()
 
-            renames.append(name_to_aht[name])
+        if name_lower in name_to_rename:
+
+            renames.append(name_to_rename[name_lower])
 
         else:
 
