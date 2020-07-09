@@ -108,7 +108,6 @@ def select_extreme_labels(
     return labels_extreme
 
 
-# TODO: check Na
 def binarize(series):
 
     object_to_i = {}

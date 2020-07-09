@@ -255,9 +255,7 @@ def plot_heat_map(
             {
                 "yaxis": "y2",
                 "type": "heatmap",
-                "z": axis_1_groups.reshape(axis_1_groups.size, 1),
-                # TODO: try [::-1]
-                "transpose": True,
+                "z": axis_1_groups.reshape((1, axis_1_groups.size)),
                 "colorscale": axis_1_group_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+x",

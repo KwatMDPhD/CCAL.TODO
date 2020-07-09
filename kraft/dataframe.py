@@ -313,8 +313,7 @@ def summarize(
 
     is_good = ~is_nan
 
-    # TODO: check speed (flatten vs ravel, etc)
-    numbers = matrix.to_numpy()[is_good].flatten()
+    numbers = matrix.to_numpy()[is_good].ravel()
 
     labels = asarray(
         tuple(
@@ -360,40 +359,45 @@ def summarize(
         )
 
 
-# TODO: take 3 arrays
-def pivot(dataframe, axis_0, axis_1, value, function=None):
+def pivot(
+    axis_0_labels,
+    axis_1_labels,
+    objects_,
+    function=None,
+    axis_0_name="Axis 0",
+    axis_1_name="Axis 1",
+):
 
-    # dataframe.columns
-    # axis_0_i =
-    # axis_1_i =
-    # value_i =
+    axis_0_label_to_i = map_int(unique(axis_0_labels))[0]
 
-    axis_0_labels = unique(dataframe.loc[:, axis_0].to_numpy())
+    axis_1_label_to_i = map_int(unique(axis_1_labels))[0]
 
-    axis_1_labels = unique(dataframe.loc[:, axis_1].to_numpy())
+    matrix = full((len(axis_0_label_to_i), len(axis_1_label_to_i)), nan)
 
-    axis_0_label_to_i = map_int(axis_0_labels)[0]
-
-    axis_1_label_to_i = map_int(axis_1_labels)[0]
-
-    matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
-
-    for axis_0_label, axis_1_label, value in dataframe.loc[
-        :, [axis_0, axis_1, value]
-    ].to_numpy():
+    for axis_0_label, axis_1_label, object_ in zip(
+        axis_0_labels, axis_1_labels, objects_
+    ):
 
         axis_0_i = axis_0_label_to_i[axis_0_label]
 
         axis_1_i = axis_1_label_to_i[axis_1_label]
 
-        value_now = matrix[axis_0_i, axis_1_i]
+        object_now = matrix[axis_0_i, axis_1_i]
 
-        if isnan(value_now):
+        if isnan(object_now) or function is None:
 
-            matrix[axis_0_i, axis_1_i] = value
+            matrix[axis_0_i, axis_1_i] = object_
 
         else:
 
-            matrix[axis_0_i, axis_1_i] = function(value_now, value)
+            matrix[axis_0_i, axis_1_i] = function(object_now, object_)
 
-    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
+    dataframe = DataFrame(
+        matrix, index=list(axis_0_label_to_i), columns=list(axis_1_label_to_i)
+    )
+
+    dataframe.index.name = axis_0_name
+
+    dataframe.columns.name = axis_1_name
+
+    return dataframe

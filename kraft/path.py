@@ -15,7 +15,6 @@ def path(path):
 
         directory_path = dirname(directory_path)
 
-    # TODO: use [::-1]
     for directory_path in reversed(missing_directory_paths):
 
         mkdir(directory_path)
@@ -48,13 +47,10 @@ def get_child_paths(parent_directory_path, absolute=True):
         return tuple(child_path[n:] for child_path in child_paths)
 
 
-def clean(file_name):
+def clean(name):
 
-    # TODO: use regular expression
-    file_name_clean = sub(
-        r"(?u)[^-\w.]", "_", file_name.strip().lower().replace(" ", "_")
-    )
+    name_clean = sub(r"(?u)[^-\w.]", "_", name.strip().lower().replace(" ", "_"))
 
-    print("{} ==> {}".format(file_name, file_name_clean))
+    print("{} ==> {}".format(name, name_clean))
 
-    return file_name_clean
+    return name_clean
