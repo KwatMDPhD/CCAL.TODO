@@ -6,7 +6,7 @@ from .CONSTANT import DATA_DIRECTORY_PATH
 def rename(names):
 
     name_to_rename = read_csv(
-        "{}/cell_line_name_to_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
+        "{}/cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         index_col=0,
         squeeze=True,
