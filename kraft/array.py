@@ -178,7 +178,6 @@ def check_is_sorted(vector):
     return (differences <= 0).all() or (0 <= differences).all()
 
 
-# TODO: check Na
 def map_int(objects):
 
     object_to_i = {}
