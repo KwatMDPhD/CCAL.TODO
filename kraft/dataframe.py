@@ -182,56 +182,6 @@ def drop_axes_label(
         can_return = True
 
 
-def pivot(dataframe, axis_0, axis_1, values, function=None):
-
-    axis_0_labels = unique(dataframe.loc[:, axis_0].to_numpy())
-
-    axis_1_labels = unique(dataframe.loc[:, axis_1].to_numpy())
-
-    axis_0_label_to_i = map_int(axis_0_labels)[0]
-
-    axis_1_label_to_i = map_int(axis_1_labels)[0]
-
-    matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
-
-    for axis_0_label, axis_1_label, value in dataframe.loc[
-        :, [axis_0, axis_1, values]
-    ].to_numpy():
-
-        axis_0_i = axis_0_label_to_i[axis_0_label]
-
-        axis_1_i = axis_1_label_to_i[axis_1_label]
-
-        value_now = matrix[axis_0_i, axis_1_i]
-
-        if isnan(value_now):
-
-            matrix[axis_0_i, axis_1_i] = value
-
-        else:
-
-            matrix[axis_0_i, axis_1_i] = function(value_now, value)
-
-    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
-
-
-def normalize(dataframe, axis, method, **normalize_keyword_arguments):
-
-    matrix = dataframe.to_numpy()
-
-    if axis is None:
-
-        matrix = array_normalize(matrix, method, **normalize_keyword_arguments)
-
-    else:
-
-        matrix = apply_along_axis(
-            array_normalize, axis, matrix, method, **normalize_keyword_arguments
-        )
-
-    return DataFrame(matrix, index=dataframe.index, columns=dataframe.columns)
-
-
 def sample(
     dataframe,
     axis_0_n,
@@ -300,93 +250,150 @@ def sample(
         )
 
 
+# TODO: take 3 arrays
+def pivot(dataframe, axis_0, axis_1, value, function=None):
+
+    # dataframe.columns
+    # axis_0_i =
+    # axis_1_i =
+    # value_i =
+
+    axis_0_labels = unique(dataframe.loc[:, axis_0].to_numpy())
+
+    axis_1_labels = unique(dataframe.loc[:, axis_1].to_numpy())
+
+    axis_0_label_to_i = map_int(axis_0_labels)[0]
+
+    axis_1_label_to_i = map_int(axis_1_labels)[0]
+
+    matrix = full((axis_0_labels.size, axis_1_labels.size), nan)
+
+    for axis_0_label, axis_1_label, value in dataframe.loc[
+        :, [axis_0, axis_1, value]
+    ].to_numpy():
+
+        axis_0_i = axis_0_label_to_i[axis_0_label]
+
+        axis_1_i = axis_1_label_to_i[axis_1_label]
+
+        value_now = matrix[axis_0_i, axis_1_i]
+
+        if isnan(value_now):
+
+            matrix[axis_0_i, axis_1_i] = value
+
+        else:
+
+            matrix[axis_0_i, axis_1_i] = function(value_now, value)
+
+    return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
+
+
+def normalize(matrix, axis, method, **normalize_keyword_arguments):
+
+    matrix = matrix.to_numpy()
+
+    if axis is None:
+
+        matrix = array_normalize(matrix, method, **normalize_keyword_arguments)
+
+    else:
+
+        matrix = apply_along_axis(
+            array_normalize, axis, matrix, method, **normalize_keyword_arguments
+        )
+
+    return DataFrame(matrix, index=matrix.index, columns=matrix.columns)
+
+
 def summarize(
-    dataframe,
+    matrix,
     plot=True,
     plot_heat_map_max_size=int(1e6),
     plot_histogram_max_size=int(1e3),
 ):
 
-    if dataframe.index.name is None:
+    if matrix.index.name is None:
 
-        dataframe.index.name = "Axis 0"
+        matrix.index.name = "Axis 0"
 
-    if dataframe.columns.name is None:
+    if matrix.columns.name is None:
 
-        dataframe.columns.name = "Axis 1"
+        matrix.columns.name = "Axis 1"
 
-    print(dataframe.shape)
+    print(matrix.shape)
 
-    size = dataframe.size
+    matrix_size = matrix.size
 
-    if plot and size <= plot_heat_map_max_size:
+    if plot and matrix_size <= plot_heat_map_max_size:
 
-        plot_heat_map(dataframe)
+        plot_heat_map(matrix)
 
-    values = dataframe.to_numpy().flatten()
+    is_nan = isnan(matrix)
+
+    n_nan = is_nan.sum()
+
+    if 0 < n_nan:
+
+        if plot:
+
+            plot_histogram(
+                (
+                    Series(is_nan.sum(axis=1), name=matrix.index.name),
+                    Series(is_nan.sum(axis=0), name=matrix.columns.name),
+                ),
+                layout={
+                    "title": {
+                        "text": "Fraction NaN: {:.2e}".format(n_nan / matrix_size)
+                    },
+                    "xaxis": {"title": {"text": "N NaN"}},
+                },
+            )
+
+    is_good = ~is_nan
+
+    # TODO: check speed (flatten vs ravel, etc)
+    numbers = matrix.to_numpy()[is_good].flatten()
 
     labels = asarray(
         tuple(
             "{}_{}".format(axis_0_label, axis_1_label)
             for axis_0_label, axis_1_label in make_grid_nd(
-                (dataframe.index.to_numpy(), dataframe.columns.to_numpy())
-            )
+                (matrix.index.to_numpy(), matrix.columns.to_numpy())
+            )[is_good.ravel()]
         )
     )
 
-    is_good = ~isnan(values)
+    print("Good min: {:.2e}".format(numbers.min()))
 
-    values = values[is_good]
+    print("Good median: {:.2e}".format(median(numbers)))
 
-    labels = labels[is_good]
+    print("Good mean: {:.2e}".format(numbers.mean()))
 
-    print("Not-NaN min: {:.2e}".format(values.min()))
-
-    print("Not-NaN median: {:.2e}".format(median(values)))
-
-    print("Not-NaN mean: {:.2e}".format(values.mean()))
-
-    print("Not-NaN max: {:.2e}".format(values.max()))
+    print("Good max: {:.2e}".format(numbers.max()))
 
     if plot:
 
-        if plot_histogram_max_size < values.size:
+        if plot_histogram_max_size < numbers.size:
 
             print("Choosing {} for histogram...".format(plot_histogram_max_size))
 
             is_chosen = concatenate(
                 (
                     choice(
-                        arange(values.size), size=plot_histogram_max_size, replace=False
+                        arange(numbers.size),
+                        size=plot_histogram_max_size,
+                        replace=False,
                     ),
-                    (values.argmin(), values.argmax()),
+                    (numbers.argmin(), numbers.argmax()),
                 )
             )
 
-            values = values[is_chosen]
+            numbers = numbers[is_chosen]
 
             labels = labels[is_chosen]
 
         plot_histogram(
-            (Series(values, index=labels),),
-            layout={"xaxis": {"title": {"text": "Not-NaN Value"}}},
+            (Series(numbers, index=labels),),
+            layout={"xaxis": {"title": {"text": "Good Number"}}},
         )
-
-    is_na = dataframe.isna().to_numpy()
-
-    n_na = is_na.sum()
-
-    if 0 < n_na:
-
-        if plot:
-
-            plot_histogram(
-                (
-                    Series(is_na.sum(axis=1), name=dataframe.index.name),
-                    Series(is_na.sum(axis=0), name=dataframe.columns.name),
-                ),
-                layout={
-                    "title": {"text": "Fraction Na: {:.2e}".format(n_na / size)},
-                    "xaxis": {"title": {"text": "N Na"}},
-                },
-            )

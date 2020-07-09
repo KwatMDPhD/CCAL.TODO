@@ -13,24 +13,24 @@ def rename(names):
         squeeze=True,
     ).to_dict()
 
-    ahts = []
+    renames = []
 
-    names_failed = []
+    fails = []
 
     for name in names:
 
         if name in name_to_aht:
 
-            ahts.append(name_to_aht[name])
+            renames.append(name_to_aht[name])
 
         else:
 
-            ahts.append(name)
+            renames.append(name)
 
-            names_failed.append(name)
+            fails.append(name)
 
-    if 0 < len(names_failed):
+    if 0 < len(fails):
 
-        print("Failed {}.".format(sorted(set(names_failed))))
+        print("Failed {}.".format(sorted(set(fails))))
 
-    return ahts
+    return renames

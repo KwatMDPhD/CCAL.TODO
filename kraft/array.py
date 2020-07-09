@@ -10,7 +10,7 @@ def error_nan(numbers):
     assert not isnan(numbers).any()
 
 
-def guess_type(numbers):
+def guess_type(numbers, n_max_category=16):
 
     error_nan(numbers)
 
@@ -22,7 +22,7 @@ def guess_type(numbers):
 
             return "binary"
 
-        elif n_unique <= 16:
+        elif n_unique <= n_max_category:
 
             return "categorical"
 
@@ -53,25 +53,13 @@ def shift_minimum(numbers, minimum):
     return numbers + minimum - nanmin(numbers)
 
 
-def log(numbers, log_base=2):
+def log(numbers, log_base="2"):
 
     error_nan(numbers)
 
     assert (0 < numbers).all()
 
-    if log_base in (2, "2"):
-
-        log_ = log2
-
-    elif log_base == "e":
-
-        log_ = loge
-
-    elif log_base in (10, "10"):
-
-        log_ = log10
-
-    return log_(numbers)
+    return {"2": log2, "e": loge, "10": log10}[log_base](numbers)
 
 
 def normalize(numbers, method, rank_method="average"):
@@ -158,9 +146,9 @@ def ignore_nan_and_function_2(
 
 def check_is_sorted(vector):
 
-    assert vector.ndim == 1
-
     error_nan(vector)
+
+    assert vector.ndim == 1
 
     differences = diff(vector)
 
@@ -190,6 +178,7 @@ def shuffle(matrix, axis, random_seed=RANDOM_SEED):
     return matrix
 
 
+# TODO: check Na
 def map_int(objects):
 
     object_to_i = {}

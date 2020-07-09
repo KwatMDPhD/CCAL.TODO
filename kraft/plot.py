@@ -132,23 +132,23 @@ def plot_heat_map(
 
     group_axis = {"domain": (0.96, 1), "showticklabels": False}
 
-    axis_0 = matrix.index.to_numpy()
+    axis_0_labels = matrix.index.to_numpy()
 
-    axis_1 = matrix.columns.to_numpy()
+    axis_1_labels = matrix.columns.to_numpy()
 
-    axis_0_is_str = any(isinstance(cast_builtin(label), str) for label in axis_0)
+    axis_0_is_str = any(isinstance(cast_builtin(label), str) for label in axis_0_labels)
 
-    axis_1_is_str = any(isinstance(cast_builtin(label), str) for label in axis_1)
+    axis_1_is_str = any(isinstance(cast_builtin(label), str) for label in axis_1_labels)
 
     layout_base = {
         "xaxis": {
             "showticklabels": axis_1_is_str,
-            "title": "{} (n={})".format(matrix.columns.name, axis_1.size),
+            "title": "{} (n={})".format(matrix.columns.name, axis_1_labels.size),
             **heat_map_axis_base,
         },
         "yaxis": {
             "showticklabels": axis_0_is_str,
-            "title": "{} (n={})".format(matrix.index.name, axis_0.size),
+            "title": "{} (n={})".format(matrix.index.name, axis_0_labels.size),
             **heat_map_axis_base,
         },
         "xaxis2": group_axis,
@@ -166,7 +166,7 @@ def plot_heat_map(
 
     if axis_1_is_str:
 
-        x = axis_1
+        x = axis_1_labels
 
     else:
 
@@ -174,7 +174,7 @@ def plot_heat_map(
 
     if axis_0_is_str:
 
-        y = axis_0[::-1]
+        y = axis_0_labels[::-1]
 
     else:
 
