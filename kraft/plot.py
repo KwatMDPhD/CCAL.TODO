@@ -5,13 +5,13 @@ from plotly.colors import (
     make_colorscale,
     qualitative,
 )
-from plotly.io import bases, show, write_html
+from plotly.io import show, templates, write_html
 
 from .array import normalize
 from .dict_ import merge
 from .support import cast_builtin
 
-bases["kraft"] = {"layout": {"autosize": False}}
+templates["kraft"] = {"layout": {"autosize": False}}
 
 COLORBAR = {
     "thicknessmode": "fraction",
@@ -30,15 +30,15 @@ DATA_TYPE_TO_COLORSCALE = {
 
 def plot_plotly(figure, html_file_path=None):
 
-    base = "plotly_white+kraft"
+    template = "plotly_white+kraft"
 
     if "layout" in figure:
 
-        figure["layout"]["base"] = base
+        figure["layout"]["template"] = template
 
     else:
 
-        figure["layout"] = {"base": base}
+        figure["layout"] = {"template": template}
 
     config = {"editable": True}
 
