@@ -382,9 +382,9 @@ def pivot(
     axis_1_name="Axis 1",
 ):
 
-    axis_0_label_to_i = map_int(unique(axis_0_labels))[0]
+    axis_0_label_to_i = map_int(axis_0_labels)[0]
 
-    axis_1_label_to_i = map_int(unique(axis_1_labels))[0]
+    axis_1_label_to_i = map_int(axis_1_labels)[0]
 
     matrix = full((len(axis_0_label_to_i), len(axis_1_label_to_i)), nan)
 
@@ -406,9 +406,7 @@ def pivot(
 
             matrix[axis_0_i, axis_1_i] = function(object_now, object_)
 
-    dataframe = DataFrame(
-        matrix, index=list(axis_0_label_to_i), columns=list(axis_1_label_to_i)
-    )
+    dataframe = DataFrame(matrix, index=axis_0_label_to_i, columns=axis_1_label_to_i)
 
     dataframe.index.name = axis_0_name
 

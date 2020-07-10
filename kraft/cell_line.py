@@ -18,20 +18,26 @@ def rename(names):
 
     for name in names:
 
-        name_lower = name.lower()
+        if isinstance(name, str):
 
-        if name_lower in name_to_rename:
+            name_lower = name.lower()
 
-            renames.append(name_to_rename[name_lower])
+            if name_lower in name_to_rename:
+
+                renames.append(name_to_rename[name_lower])
+
+            else:
+
+                renames.append(name)
+
+                fails.append(name)
 
         else:
 
-            renames.append(name)
-
-            fails.append(name)
+            renames.append(None)
 
     if 0 < len(fails):
 
         print("Failed {}.".format(sorted(set(fails))))
 
-    return renames
+    return tuple(renames)
