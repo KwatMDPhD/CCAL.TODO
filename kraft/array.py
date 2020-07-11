@@ -10,6 +10,11 @@ def error_nan(numbers):
     assert not isnan(numbers).any()
 
 
+def check_has_duplicate(array):
+
+    return (unique(array, return_counts=True)[1] != 1).any()
+
+
 def guess_type(numbers, n_max_category=16):
 
     error_nan(numbers)
