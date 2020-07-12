@@ -1,6 +1,6 @@
-from numpy import absolute, apply_along_axis, diff, log2, product, unique
+from numpy import absolute, apply_along_axis, log2, product, s_, unique
 
-from .grid import get_grid_1ds, plot_grid_nd, shape
+from .grid import get_d, get_grid_1ds, plot_grid_nd, shape
 from .kernel_density import get_density
 from .plot import plot_plotly
 
@@ -18,7 +18,7 @@ def get_probability(
 
     grid_nd_probabilities = grid_nd_densities / (
         grid_nd_densities.sum()
-        * product(tuple(diff(unique(dimension)).min() for dimension in grid_nd.T))
+        * product(tuple(get_d(dimension) for dimension in grid_nd.T))
     )
 
     if plot:
@@ -34,7 +34,11 @@ def get_probability(
 
 
 def get_posterior_probability(
-    point_x_dimension, plot=True, dimension_names=None, **get_density_keyword_arguments,
+    point_x_dimension,
+    target_dimension_number=None,
+    plot=True,
+    dimension_names=None,
+    **get_density_keyword_arguments,
 ):
 
     grid_nd, grid_nd_joint_probabilities = get_probability(
@@ -44,7 +48,7 @@ def get_posterior_probability(
         **get_density_keyword_arguments,
     )
 
-    d_target_dimension = diff(unique(grid_nd[:, -1])).min()
+    d_target_dimension = get_d(grid_nd[:, -1])
 
     def get_probability_(array):
 
@@ -59,6 +63,12 @@ def get_posterior_probability(
         * d_target_dimension
     ).reshape(grid_nd_joint_probabilities.shape)
 
+    if dimension_names is None:
+
+        dimension_names = tuple(
+            "Dimension {}".format(i) for i in range(grid_nd.shape[1])
+        )
+
     if plot:
 
         plot_grid_nd(
@@ -68,52 +78,42 @@ def get_posterior_probability(
             number_name="Posterior Probability",
         )
 
-    return grid_nd, grid_nd_posterior_probabilities
+    if target_dimension_number is None:
+
+        return grid_nd, grid_nd_posterior_probabilities
+
+    else:
+
+        target_dimension_grid = unique(grid_nd[:, -1])
+
+        target_dimension_i = absolute(
+            target_dimension_grid - target_dimension_number
+        ).argmin()
+
+        is_ = s_[target_dimension_i :: target_dimension_grid.size]
+
+        grid_nd_ = grid_nd[is_, :-1]
+
+        grid_nd_posterior_probabilities_ = grid_nd_posterior_probabilities[is_]
+
+        if plot:
+
+            plot_grid_nd(
+                grid_nd_,
+                grid_nd_posterior_probabilities_,
+                dimension_names=dimension_names,
+                number_name="P({} = {:.2e} (~{}) | {})".format(
+                    dimension_names[-1],
+                    target_dimension_grid[target_dimension_i],
+                    target_dimension_number,
+                    *dimension_names[:-1],
+                ),
+            )
+
+        return grid_nd_, grid_nd_posterior_probabilities_
 
 
-def target_posterior_probability(
-    grid_nd,
-    grid_nd_posterior_probabilities,
-    target_dimension_number,
-    plot=True,
-    dimension_names=None,
-):
-
-    if dimension_names is None:
-
-        dimension_names = tuple(
-            "Dimension {}".format(i) for i in range(grid_nd.shape[1])
-        )
-
-    target_dimension_grid = unique(grid_nd[:, -1])
-
-    target_dimension_i = absolute(
-        target_dimension_grid - target_dimension_number
-    ).argmin()
-
-    grid_nd_ = grid_nd[target_dimension_i :: target_dimension_grid.size, :-1]
-
-    grid_nd_posterior_probabilities_ = grid_nd_posterior_probabilities[
-        target_dimension_i :: target_dimension_grid.size
-    ]
-
-    if plot:
-
-        plot_grid_nd(
-            grid_nd_,
-            grid_nd_posterior_probabilities_,
-            dimension_names=dimension_names,
-            number_name="P({} = {:.2e} (~{}) | {})".format(
-                dimension_names[-1],
-                target_dimension_grid[target_dimension_i],
-                target_dimension_number,
-                *dimension_names[:-1],
-            ),
-        )
-
-    return grid_nd_, grid_nd_posterior_probabilities_
-
-
+# TODO
 def plot_nomogram(p_t0, p_t1, dimension_names, p_t0__s, p_t1__s, html_file_path=None):
 
     layout = {

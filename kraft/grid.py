@@ -1,4 +1,4 @@
-from numpy import asarray, linspace, meshgrid, unique
+from numpy import asarray, diff, linspace, meshgrid, unique
 from pandas import DataFrame, Index
 
 from .plot import plot_heat_map, plot_plotly
@@ -32,6 +32,11 @@ def make_grid_1d_for_reflecting(grid_1d, grid_number_for_reflecting):
             grid_1d_for_reflection[i] -= (number - grid_number_for_reflecting) * 2
 
     return grid_1d_for_reflection
+
+
+def get_d(grid_1d):
+
+    return diff(unique(grid_1d)).min()
 
 
 def make_grid_nd(grid_1ds):
