@@ -11,6 +11,7 @@ from . import (
     path,
     plot,
     probability,
+    sea,
     series,
     shell,
     str_,

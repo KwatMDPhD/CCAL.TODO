@@ -26,7 +26,8 @@ def score_set(
     elements = {element: None for element in elements}
 
     h_1 = asarray(
-        tuple(element in elements for element in element_score.index), dtype=float
+        tuple(element in elements for element in element_score.index.to_numpy()),
+        dtype=float,
     )
 
     if h_1.sum() == 0:
@@ -49,7 +50,7 @@ def score_set(
 
             plot_plotly(
                 {
-                    "layout": {"title": {"text": "PDF"}},
+                    "layout": {"title": {"text": "Probability"}},
                     "data": [
                         {"name": "Hit", "y": h_1_p, "mode": "lines"},
                         {"name": "Miss", "y": m_1_p, "mode": "lines"},
@@ -65,7 +66,7 @@ def score_set(
 
             plot_plotly(
                 {
-                    "layout": {"title": {"text": "< CDF"}},
+                    "layout": {"title": {"text": "< Cumulative Probability"}},
                     "data": [
                         {"name": "Hit", "y": h_1_p_rc, "mode": "lines"},
                         {"name": "Miss", "y": m_1_p_rc, "mode": "lines"},
@@ -124,7 +125,7 @@ def score_set(
 
             plot_plotly(
                 {
-                    "layout": {"title": {"text": "CDF >"}},
+                    "layout": {"title": {"text": "Cumulative Probability >"}},
                     "data": [
                         {"name": "Hit", "y": h_a_p_lc, "mode": "lines"},
                         {"name": "Miss", "y": m_a_p_lc, "mode": "lines"},
@@ -135,7 +136,7 @@ def score_set(
 
             plot_plotly(
                 {
-                    "layout": {"title": {"text": "< CDF"}},
+                    "layout": {"title": {"text": "< Cumulative Probability"}},
                     "data": [
                         {"name": "Hit", "y": h_a_p_rc, "mode": "lines"},
                         {"name": "Miss", "y": m_a_p_rc, "mode": "lines"},
@@ -207,8 +208,8 @@ def score_set(
         data = [
             {
                 "name": "Element Score ({})".format(element_score.size),
-                "y": element_score.values,
-                "text": element_score.index,
+                "y": element_score.to_numpy(),
+                "text": element_score.index.to_numpy(),
                 "mode": "lines",
                 "line": {"width": 0, "color": "#20d8ba"},
                 "fill": "tozeroy",
@@ -218,7 +219,7 @@ def score_set(
                 "yaxis": "y2",
                 "x": h_i,
                 "y": (0,) * h_i.size,
-                "text": element_score.index[h_i],
+                "text": element_score.index.to_numpy()[h_i],
                 "mode": "markers",
                 "marker": {
                     "symbol": "line-ns-open",
