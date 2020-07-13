@@ -153,6 +153,8 @@ def shuffle(matrix, axis, random_seed=RANDOM_SEED):
 
     error_nan(matrix)
 
+    assert matrix.ndim == 2
+
     matrix = matrix.copy()
 
     seed(seed=random_seed)

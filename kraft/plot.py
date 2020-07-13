@@ -469,3 +469,17 @@ def plot_histogram(
             )
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+
+
+def plot_x_y(xs, ys, xaxis_title_text, yaxis_title_text, title_text=None):
+
+    plot_plotly(
+        {
+            "layout": {
+                "title": {"text": title_text},
+                "xaxis": {"title": {"text": xaxis_title_text}},
+                "yaxis": {"title": {"text": yaxis_title_text}},
+            },
+            "data": [{"x": xs, "y": ys}],
+        }
+    )
