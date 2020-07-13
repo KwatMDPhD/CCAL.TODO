@@ -8,6 +8,7 @@ from . import (
     gmt,
     grid,
     information,
+    internet,
     iterable,
     json,
     kernel_density,

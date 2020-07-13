@@ -1,29 +1,44 @@
+from cgi import parse_header
 from os import remove
-from os.path import basename, exists, splitext
+from re import sub
 from shutil import unpack_archive
-from urllib.parse import urlsplit
-from urllib.request import urlretrieve
+from urllib.request import urlopen, urlretrieve
 
 from requests import get
 
 
-def download(url, directory_path, overwrite=True):
+def get_file_name(url):
 
-    file_path = "{}/{}".format(directory_path, basename(urlsplit(url).path))
+    remote_file_info = urlopen(url).info()
 
-    if not exists(file_path) or overwrite:
+    if "Content-Disposition" in remote_file_info:
 
-        print("{} ==> {}...".format(url, file_path))
+        file_name = parse_header(remote_file_info["Content-Disposition"])[1]["filename"]
 
-        if url.startswith("ftp"):
+    else:
 
-            urlretrieve(url, file_path)
+        file_name = sub("%2F", "/", url).split(sep="/")[-1]
 
-        else:
+    return file_name
 
-            with open(file_path, mode="wb") as io:
 
-                io.write(get(url, allow_redirects=True).content)
+def download(url, directory_path):
+
+    file_name = get_file_name(url)
+
+    file_path = "{}/{}".format(directory_path, file_name)
+
+    print("{} ==> {}...".format(url, file_path))
+
+    if url.startswith("ftp"):
+
+        urlretrieve(url, file_path)
+
+    else:
+
+        with open(file_path, mode="wb") as io:
+
+            io.write(get(url, allow_redirects=True).content)
 
     return file_path
 
@@ -32,6 +47,6 @@ def download_and_extract(url, directory_path):
 
     compressed_file_path = download(url, directory_path)
 
-    unpack_archive(compressed_file_path, extract_dir=splitext(compressed_file_path)[0])
+    unpack_archive(compressed_file_path, extract_dir=directory_path)
 
     remove(compressed_file_path)
