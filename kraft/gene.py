@@ -1,35 +1,38 @@
-from numpy import asarray, full
+from numpy import asarray, full, unique
 from pandas import isna, read_csv
 
 from .CONSTANT import DATA_DIRECTORY_PATH
 
 
-# TODO: refactor
-def get_gene_symbol(hgnc_column_to_values=None):
+def get_gene_symbol(column_to_selections=None):
 
-    if hgnc_column_to_values is None:
+    if column_to_selections is None:
 
-        hgnc_column_to_values = {"Locus type": ("gene with protein product",)}
+        column_to_selections = {"Locus group": ("protein-coding gene",)}
 
     table = read_csv("{}/hgnc_gene_group.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t")
 
     is_selected = full(table.shape[0], True)
 
-    for column, values in hgnc_column_to_values.items():
+    for label, selections in column_to_selections.items():
+
+        print(label)
 
         is_selected &= asarray(
-            tuple(not isna(value) and value in values for value in table.loc[:, column].to_numpy())
-        )
-
-        print(
-            "Selected {}/{} gene by {}.".format(
-                is_selected.sum(), is_selected.size, column
+            tuple(
+                not isna(object_) and object_ in selections
+                for object_ in table.loc[:, label].to_numpy()
             )
         )
 
-    return tuple(
-        table.loc[is_selected, table.columns.str.contains("symbol")]
-        .unstack()
-        .dropna()
-        .unique()
+        print("{}/{}".format(is_selected.sum(), is_selected.size))
+
+    genes = (
+        table.loc[
+            is_selected, ["symbol" in label for label in table.columns.to_numpy()],
+        ]
+        .to_numpy()
+        .ravel()
     )
+
+    return unique(genes[~isna(genes)])
