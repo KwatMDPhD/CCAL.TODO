@@ -5,6 +5,7 @@ from . import (
     dataframe,
     dict_,
     gct,
+    gene,
     gmt,
     grid,
     information,
