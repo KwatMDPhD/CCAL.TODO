@@ -11,14 +11,14 @@ def get_gene_symbol(hgnc_column_to_values=None):
 
         hgnc_column_to_values = {"Locus type": ("gene with protein product",)}
 
-    hgnc = read_csv("{}/hgnc_gene_group.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t")
+    table = read_csv("{}/hgnc_gene_group.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t")
 
-    is_selected = full(hgnc.shape[0], True)
+    is_selected = full(table.shape[0], True)
 
     for column, values in hgnc_column_to_values.items():
 
         is_selected &= asarray(
-            tuple(not isna(value) and value in values for value in hgnc.loc[:, column])
+            tuple(not isna(value) and value in values for value in table.loc[:, column].to_numpy())
         )
 
         print(
@@ -28,7 +28,7 @@ def get_gene_symbol(hgnc_column_to_values=None):
         )
 
     return tuple(
-        hgnc.loc[is_selected, hgnc.columns.str.contains("symbol")]
+        table.loc[is_selected, table.columns.str.contains("symbol")]
         .unstack()
         .dropna()
         .unique()
