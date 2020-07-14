@@ -22,9 +22,11 @@ def get_file_name(url):
     return file_name
 
 
-def download(url, directory_path):
+def download(url, directory_path, file_name=None):
 
-    file_name = get_file_name(url)
+    if file_name is None:
+
+        file_name = get_file_name(url)
 
     file_path = "{}/{}".format(directory_path, file_name)
 
