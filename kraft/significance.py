@@ -1,38 +1,36 @@
-from numpy import asarray, isnan, nan, sqrt, where
+from numpy import asarray, isnan, sqrt, where
 from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
 
-def get_moe(array, confidence=0.95):
+def get_moe(numbers, confidence=0.95):
 
-    return norm.ppf(q=confidence) * array.std() / sqrt(array.size)
+    return norm.ppf(q=confidence) * numbers.std() / sqrt(numbers.size)
 
 
-def get_p_value(value, random_values, direction):
+def get_p_value(number, random_numbers, direction):
 
-    if isnan(value):
-
-        return nan
+    assert not isnan(number)
 
     if direction == "<":
 
-        n_significant = (random_values <= value).sum()
+        n_significant = (random_numbers <= number).sum()
 
     elif direction == ">":
 
-        n_significant = (value <= random_values).sum()
+        n_significant = (number <= random_numbers).sum()
 
-    return max(1, n_significant) / random_values.size
+    return max(1, n_significant) / random_numbers.size
 
 
 def get_p_values_and_q_values(
-    values, random_values, direction, multipletests_method="fdr_bh"
+    numbers, random_numbers, direction, multipletests_method="fdr_bh"
 ):
 
     if "<" in direction:
 
         p_values_less = asarray(
-            tuple(get_p_value(value, random_values, "<") for value in values)
+            tuple(get_p_value(number, random_numbers, "<") for number in numbers)
         )
 
         q_values_less = multipletests(p_values_less, method=multipletests_method)[1]
@@ -40,7 +38,7 @@ def get_p_values_and_q_values(
     if ">" in direction:
 
         p_values_great = asarray(
-            tuple(get_p_value(value, random_values, ">") for value in values)
+            tuple(get_p_value(number, random_numbers, ">") for number in numbers)
         )
 
         q_values_great = multipletests(p_values_great, method=multipletests_method)[1]

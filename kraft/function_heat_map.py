@@ -8,10 +8,10 @@ from pandas import DataFrame, Series, unique
 from .array import ignore_nan_and_function_1, ignore_nan_and_function_2, normalize
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
-from .plot import DATA_TYPE_COLORSCALE, plot_plotly
-from .series import select_extreme
+from .dict_ import merge
+from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
+from .series import get_extreme_labels
 from .significance import get_moe, get_p_values_and_q_values
-from .support import merge
 
 
 def _get_x(score_index):
@@ -171,7 +171,7 @@ def function_heat_map(
         if n_extreme is not None or fraction_extreme is not None:
 
             scores_plot = scores_plot.loc[
-                select_extreme(
+                get_extreme_labels(
                     scores_plot["Score"],
                     "<>",
                     n=n_extreme,
@@ -342,7 +342,7 @@ def function_heat_map(
                         "yaxis": "y2",
                         "x": series_plot.index,
                         "z": series_plot.to_frame().T,
-                        "colorscale": DATA_TYPE_COLORSCALE[series_data_type],
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[series_data_type],
                         **heatmap_trace_template,
                     },
                     {
@@ -350,7 +350,7 @@ def function_heat_map(
                         "x": dataframe_plot.columns,
                         "y": dataframe_plot.index[::-1],
                         "z": dataframe_plot.iloc[::-1],
-                        "colorscale": DATA_TYPE_COLORSCALE[dataframe_data_type],
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[dataframe_data_type],
                         **heatmap_trace_template,
                     },
                 ],
@@ -432,7 +432,7 @@ def function_heat_map_summary(
             "yaxis": yaxis.replace("axis", ""),
             "x": series_plot.index,
             "z": series_plot.to_frame().T,
-            "colorscale": DATA_TYPE_COLORSCALE[series_data_type],
+            "colorscale": DATA_TYPE_TO_COLORSCALE[series_data_type],
             **heatmap_trace_template,
         }
     ]
@@ -505,7 +505,7 @@ def function_heat_map_summary(
                 "x": dataframe_plot.columns,
                 "y": dataframe_plot.index[::-1],
                 "z": dataframe_plot.values[::-1],
-                "colorscale": DATA_TYPE_COLORSCALE[dataframe_dict["data_type"]],
+                "colorscale": DATA_TYPE_TO_COLORSCALE[dataframe_dict["data_type"]],
                 **heatmap_trace_template,
             }
         )

@@ -5,7 +5,7 @@ from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
 from scipy.spatial.distance import squareform
 
 from .CONSTANT import RANDOM_SEED
-from .plot import DATA_TYPE_COLORSCALE, plot_heat_map
+from .plot import DATA_TYPE_TO_COLORSCALE, plot_heat_map
 
 
 def cluster(
@@ -122,7 +122,7 @@ def cluster_hierarchical_clusterings(
             layout={"title": {"text": "Clustering ({} cluster)".format(n_cluster)}},
             **{
                 "{}_annotations".format(str_): clusters[leave_index],
-                "{}_annotation_colorscale".format(str_): DATA_TYPE_COLORSCALE[
+                "{}_annotation_colorscale".format(str_): DATA_TYPE_TO_COLORSCALE[
                     "categorical"
                 ],
             },

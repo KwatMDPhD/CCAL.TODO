@@ -2,8 +2,10 @@ from . import (
     CONSTANT,
     array,
     cell_line,
+    clustering,
     dataframe,
     dict_,
+    function_heat_map,
     gct,
     gene,
     gmt,
@@ -19,6 +21,7 @@ from . import (
     sea,
     series,
     shell,
+    significance,
     str_,
     support,
 )
