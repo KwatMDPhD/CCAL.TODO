@@ -17,115 +17,102 @@ def cluster(
     criterion="maxclust",
 ):
 
-    z = linkage(
+    link = linkage(
         point_x_dimension,
         metric=distance_function,
         method=linkage_method,
         optimal_ordering=optimal_ordering,
     )
 
-    leave_index = leaves_list(z)
+    leaf_is = leaves_list(link)
 
     if n_cluster is None:
 
-        clusters = None
+        groups = None
 
     else:
 
-        clusters = fcluster(z, n_cluster, criterion=criterion) - 1
+        groups = fcluster(link, n_cluster, criterion=criterion) - 1
 
-    return leave_index, clusters
+    return leaf_is, groups
 
 
-def get_coclustering_distance(clustering_x_point):
+def get_coclustering_distance(point_x_clustering, min_n_clustered):
 
-    point_pair_indexs = tuple(zip(*triu_indices(clustering_x_point.shape[1], k=1)))
+    point_i_pairs = tuple(zip(*triu_indices(point_x_clustering.shape[0], k=1)))
 
-    def is_coclustered(clusters):
-
-        return tuple(
-            clusters[point_0_index] == clusters[point_1_index]
-            for point_0_index, point_1_index in point_pair_indexs
-        )
-
-    n_coclustered = apply_along_axis(is_coclustered, 1, clustering_x_point).sum(axis=0)
-
-    n = asarray(
+    n_clustered = asarray(
         tuple(
-            (~isnan(clustering_x_point[:, point_pair_index])).all(axis=1).sum()
-            for point_pair_index in point_pair_indexs
+            (~isnan(point_x_clustering[is_, :])).all(axis=0).sum()
+            for is_ in point_i_pairs
         )
     )
 
-    assert 0 < n.min()
+    assert (min_n_clustered < n_clustered).all()
 
-    return squareform(1 - n_coclustered / n)
+    def check_is_coclustered(clusters, point_i_pairs):
+
+        return tuple(clusters[i_0] == clusters[i_1] for i_0, i_1 in point_i_pairs)
+
+    n_coclustered = apply_along_axis(
+        check_is_coclustered, 0, point_x_clustering, point_i_pairs
+    ).sum(axis=1)
+
+    return squareform(1 - n_coclustered / n_clustered)
 
 
 def cluster_hierarchical_clusterings(
-    dataframe, axis, n_cluster, n_clustering=100, random_seed=RANDOM_SEED, plot=True,
+    point_x_dimension,
+    n_cluster,
+    n_clustering=100,
+    random_seed=RANDOM_SEED,
+    min_n_clustered=0,
+    plot=True,
+    **cluster_keyword_arguments,
 ):
 
-    if axis == 1:
+    matrix = point_x_dimension.to_numpy()
 
-        dataframe = dataframe.T
+    n_point = matrix.shape[0]
 
-    n_point = dataframe.shape[0]
+    point_x_clustering = full((n_point, n_clustering), nan)
 
-    clustering_x_point = full((n_clustering, n_point), nan)
-
-    n_per_print = max(1, n_clustering // 10)
-
-    point_x_dimension = dataframe.values
-
-    point_index = arange(n_point)
+    point_is_ = arange(n_point)
 
     n_choice = int(n_point * 0.632)
 
     seed(seed=random_seed)
 
-    for clustering_index in range(n_clustering):
+    n_per_print = max(1, n_clustering // 10)
 
-        if clustering_index % n_per_print == 0:
+    for i in range(n_clustering):
 
-            print("{}/{}...".format(clustering_index + 1, n_clustering))
+        if i % n_per_print == 0:
 
-        point_index_choice = choice(point_index, size=n_choice, replace=False)
+            print("{}/{}...".format(i + 1, n_clustering))
 
-        clustering_x_point[clustering_index, point_index_choice] = cluster(
-            point_x_dimension[point_index_choice], n_cluster=n_cluster,
+        is_ = choice(point_is_, size=n_choice, replace=False)
+
+        point_x_clustering[is_, i] = cluster(
+            matrix[is_], n_cluster=n_cluster, **cluster_keyword_arguments
         )[1]
 
-    leave_index, clusters = cluster(
-        get_coclustering_distance(clustering_x_point), n_cluster=n_cluster
+    leaf_is, clusters = cluster(
+        get_coclustering_distance(point_x_clustering, min_n_clustered),
+        n_cluster=n_cluster,
+        **cluster_keyword_arguments,
     )
 
     if plot:
 
-        dataframe = dataframe.iloc[leave_index]
-
-        if axis == 1:
-
-            dataframe = dataframe.T
-
-        if axis == 0:
-
-            str_ = "row"
-
-        elif axis == 1:
-
-            str_ = "column"
-
         plot_heat_map(
-            dataframe,
-            ordered_annotation=True,
-            layout={"title": {"text": "Clustering ({} cluster)".format(n_cluster)}},
+            point_x_dimension.iloc[leaf_is, :],
+            sort_groups=False,
+            layout={"title": {"text": "Clustering {}".format(n_cluster)}},
             **{
-                "{}_annotations".format(str_): clusters[leave_index],
-                "{}_annotation_colorscale".format(str_): DATA_TYPE_TO_COLORSCALE[
-                    "categorical"
-                ],
+                "axis_0_groups": clusters[leaf_is],
+                "axis_0_group_colorscale": DATA_TYPE_TO_COLORSCALE["categorical"],
             },
         )
 
-    return Series(clusters, name="Cluster", index=dataframe.index)
+    return Series(clusters, index=point_x_dimension.index, name="Group")
