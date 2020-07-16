@@ -10,7 +10,6 @@ def get_extreme_labels(
     direction,
     low_and_high=None,
     n=None,
-    fraction=None,
     standard_deviation=None,
     plot=True,
     layout=None,
@@ -27,17 +26,19 @@ def get_extreme_labels(
 
         if n is not None:
 
-            n = min(vector.size, n)
+            if n < 1:
 
-            low = vector[n - 1]
+                low = quantile(vector, n)
 
-            high = vector[-n]
+                high = quantile(vector, 1 - n)
 
-        elif fraction is not None:
+            else:
 
-            low = quantile(vector, fraction)
+                n = min(vector.size, n)
 
-            high = quantile(vector, 1 - fraction)
+                low = vector[n - 1]
+
+                high = vector[-n]
 
         elif standard_deviation is not None:
 

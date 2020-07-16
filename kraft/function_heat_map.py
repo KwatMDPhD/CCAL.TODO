@@ -1,11 +1,25 @@
 from math import ceil
 from multiprocessing import Pool
 
-from numpy import apply_along_axis, asarray, concatenate, full, isnan, nan, where
+from numpy import (
+    apply_along_axis,
+    asarray,
+    concatenate,
+    full,
+    isnan,
+    nan,
+    unique,
+    where,
+)
 from numpy.random import choice, seed, shuffle
-from pandas import DataFrame, Series, unique
+from pandas import DataFrame, Series
 
-from .array import ignore_nan_and_function_1, ignore_nan_and_function_2, normalize
+from .array import (
+    check_is_sorted,
+    ignore_nan_and_function_1,
+    ignore_nan_and_function_2,
+    normalize,
+)
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
 from .dict_ import merge
@@ -14,12 +28,12 @@ from .series import get_extreme_labels
 from .significance import get_moe, get_p_values_and_q_values
 
 
-def _get_x(score_index):
+def get_x(score_index):
 
     return 1.1 + score_index / 6.4
 
 
-def function_heat_map(
+def make(
     series,
     dataframe,
     function,
@@ -32,7 +46,6 @@ def function_heat_map(
     score_ascending=False,
     plot=True,
     n_extreme=8,
-    fraction_extreme=None,
     series_data_type="continuous",
     dataframe_data_type="continuous",
     plot_std=nan,
@@ -40,21 +53,21 @@ def function_heat_map(
     directory_path=None,
 ):
 
-    common_pandas_index = series.index & dataframe.columns
+    common_labels = series.index & dataframe.columns
 
     print(
         "series.index ({}) and dataframe.columns ({}) have {} in common.".format(
-            series.index.size, dataframe.columns.size, common_pandas_index.size
+            series.index.size, dataframe.columns.size, common_labels.size
         )
     )
 
-    series = series[common_pandas_index]
+    series = series.loc[common_labels]
 
     if series_ascending is not None:
 
         series.sort_values(ascending=series_ascending, inplace=True)
 
-    dataframe = dataframe[series.index]
+    dataframe = dataframe.loc[:, series.index]
 
     if scores is None:
 
@@ -64,7 +77,7 @@ def function_heat_map(
 
         n_row, n_column = dataframe.shape
 
-        n_job = min(n_job, n_row)
+        n_job = min(n_row, n_job)
 
         print("Computing scores (n_job={})...".format(n_job))
 
@@ -74,12 +87,12 @@ def function_heat_map(
 
         seed(seed=random_seed)
 
-        vector = series.values
+        vector = series.to_numpy()
 
         scores["Score"] = asarray(
             pool.starmap(
                 ignore_nan_and_function_2,
-                ((vector, matrix_row, function) for matrix_row in dataframe.values),
+                ((vector, matrix_row, function) for matrix_row in dataframe.to_numpy()),
             )
         )
 
@@ -91,18 +104,17 @@ def function_heat_map(
 
             n_column_to_sample = ceil(n_column * 0.632)
 
-            for sampling_index in range(n_sampling):
+            for i in range(n_sampling):
 
-                row_name = choice(n_column, size=n_column_to_sample)
+                is_ = choice(n_column, size=n_column_to_sample)
 
-                # TODO: confirm that initializing outside tuple comprehension is faster
-                vector = series.values[row_name]
+                vector = series.to_numpy()[is_]
 
-                row_x_sampling[:, sampling_index] = pool.starmap(
+                row_x_sampling[:, i] = pool.starmap(
                     ignore_nan_and_function_2,
                     (
                         (vector, matrix_row, function)
-                        for matrix_row in dataframe.values[:, row_name]
+                        for matrix_row in dataframe.to_numpy()[:, is_]
                     ),
                 )
 
@@ -116,34 +128,37 @@ def function_heat_map(
 
             row_x_permutation = full((n_row, n_permutation), nan)
 
-            vector = series.values.copy()
+            vector = series.to_numpy().copy()
 
-            for permuting_index in range(n_permutation):
+            for i in range(n_permutation):
 
                 shuffle(vector)
 
-                row_x_permutation[:, permuting_index] = pool.starmap(
+                row_x_permutation[:, i] = pool.starmap(
                     ignore_nan_and_function_2,
-                    ((vector, matrix_row, function) for matrix_row in dataframe.values),
+                    (
+                        (vector, matrix_row, function)
+                        for matrix_row in dataframe.to_numpy()
+                    ),
                 )
 
             scores["P-Value"], scores["Q-Value"] = get_p_values_and_q_values(
-                scores["Score"].values, row_x_permutation.flatten(), "<>"
+                scores["Score"].to_numpy(), row_x_permutation.flatten(), "<>"
             )
 
         pool.terminate()
 
     else:
 
-        scores = scores.reindex(row_name=dataframe.index)
+        scores = scores.reindex(index=dataframe.index)
 
     scores.sort_values("Score", ascending=score_ascending, inplace=True)
 
     if directory_path is not None:
 
-        tsv_file_path = "{}/scores.tsv".format(directory_path)
+        file_path = "{}/scores.tsv".format(directory_path)
 
-        scores.to_csv(tsv_file_path, sep="\t")
+        scores.to_csv(file_path, sep="\t")
 
     if plot:
 
@@ -155,11 +170,11 @@ def function_heat_map(
                 },
                 "data": [
                     {
-                        "name": score_name,
-                        "x": score_values.index,
-                        "y": score_values.values,
+                        "name": name,
+                        "x": numbers.index.to_numpy(),
+                        "y": numbers.to_numpy(),
                     }
-                    for score_name, score_values in scores.items()
+                    for name, numbers in scores.items()
                 ],
             },
         )
@@ -168,29 +183,23 @@ def function_heat_map(
 
         scores_plot = scores.copy()
 
-        if n_extreme is not None or fraction_extreme is not None:
+        if n_extreme is not None:
 
             scores_plot = scores_plot.loc[
-                get_extreme_labels(
-                    scores_plot["Score"],
-                    "<>",
-                    n=n_extreme,
-                    fraction=fraction_extreme,
-                    plot=False,
-                )
+                get_extreme_labels(scores_plot["Score"], "<>", n=n_extreme, plot=False)
             ].sort_values("Score", ascending=score_ascending)
 
-        dataframe_plot = dataframe.loc[scores_plot.index]
+        dataframe_plot = dataframe.loc[scores_plot.index, :]
 
         if series_data_type == "continuous":
 
             series_plot = Series(
                 ignore_nan_and_function_1(
-                    series_plot.values, normalize, "-0-", update=True
-                ),
-                name=series_plot.name,
+                    series_plot.to_numpy(), normalize, "-0-", update=True
+                ).clip(min=-plot_std, max=plot_std),
                 index=series_plot.index,
-            ).clip(lower=-plot_std, upper=plot_std)
+                name=series_plot.name,
+            )
 
         if dataframe_data_type == "continuous":
 
@@ -198,44 +207,44 @@ def function_heat_map(
                 apply_along_axis(
                     ignore_nan_and_function_1,
                     1,
-                    dataframe_plot.values,
+                    dataframe_plot.to_numpy(),
                     normalize,
                     "-0-",
                     update=True,
-                ),
+                ).clip(min=-plot_std, max=plot_std),
                 index=dataframe_plot.index,
                 columns=dataframe_plot.columns,
-            ).clip(lower=-plot_std, upper=plot_std)
+            )
 
         if (
-            not series_plot.isna().any()
-            and isinstance(series_ascending, bool)
-            and 1 < series_plot.value_counts().min()
+            not isnan(series_plot.to_numpy()).any()
+            and check_is_sorted(series_plot.to_numpy())
+            and (1 < unique(series_plot.to_numpy(), return_counts=True)[1]).all()
         ):
 
             print("Clustering within category...")
 
-            vector = series_plot.values
+            vector = series_plot.to_numpy()
 
-            matrix = dataframe_plot.values
+            matrix = dataframe_plot.to_numpy()
 
-            leave_index = []
+            leaf_is = []
 
-            for n in unique(vector):
+            for number in unique(vector):
 
-                row_name = where(vector == n)[0]
+                is_ = where(vector == number)[0]
 
-                leave_index.append(row_name[cluster(matrix.T[row_name])[0]])
+                leaf_is.append(is_[cluster(matrix.T[is_])[0]])
 
-            dataframe_plot = dataframe_plot.iloc[:, concatenate(leave_index)]
+            dataframe_plot = dataframe_plot.iloc[:, concatenate(leaf_is)]
 
-            series_plot = series_plot[dataframe_plot.columns]
+            series_plot = series_plot.loc[dataframe_plot.columns]
 
         n_row_plot = 1 + 1 + dataframe_plot.shape[0]
 
         fraction_row = 1 / n_row_plot
 
-        layout_template = {
+        layout_base = {
             "height": max(480, 24 * n_row_plot),
             "width": 800,
             "margin": {"l": 200, "r": 200},
@@ -245,11 +254,15 @@ def function_heat_map(
             "annotations": [],
         }
 
-        if layout is not None:
+        if layout is None:
 
-            layout = merge(layout_template, layout)
+            layout = layout_base
 
-        annotation_template = {
+        else:
+
+            layout = merge(layout_base, layout)
+
+        annotation_base = {
             "xref": "paper",
             "yref": "paper",
             "yanchor": "middle",
@@ -265,23 +278,21 @@ def function_heat_map(
                 "y": y,
                 "xanchor": "right",
                 "text": "<b>{}</b>".format(series_plot.name),
-                **annotation_template,
+                **annotation_base,
             }
         )
 
         y -= fraction_row
 
-        for score_index, score_name in enumerate(
-            ("Score (\u0394)", "P-Value", "Q-Value")
-        ):
+        for i, name in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
 
             layout["annotations"].append(
                 {
-                    "x": _get_x(score_index),
+                    "x": get_x(i),
                     "y": y,
                     "xanchor": "center",
-                    "text": "<b>{}</b>".format(score_name),
-                    **annotation_template,
+                    "text": "<b>{}</b>".format(name),
+                    **annotation_base,
                 }
             )
 
@@ -295,11 +306,11 @@ def function_heat_map(
                     "y": y,
                     "xanchor": "right",
                     "text": row_name,
-                    **annotation_template,
+                    **annotation_base,
                 }
             )
 
-            for score_index, score_str in enumerate(
+            for i, score_str in enumerate(
                 (
                     "{:.2f} ({:.2f})".format(score, moe),
                     "{:.2e}".format(p_value),
@@ -309,11 +320,11 @@ def function_heat_map(
 
                 layout["annotations"].append(
                     {
-                        "x": _get_x(score_index),
+                        "x": get_x(i),
                         "y": y,
                         "xanchor": "center",
                         "text": score_str,
-                        **annotation_template,
+                        **annotation_base,
                     }
                 )
 
@@ -325,9 +336,9 @@ def function_heat_map(
 
         else:
 
-            html_file_path = tsv_file_path.replace(".tsv", ".html")
+            html_file_path = file_path.replace(".tsv", ".html")
 
-        heatmap_trace_template = {
+        heatmap_trace_base = {
             "type": "heatmap",
             "zmin": -plot_std,
             "zmax": plot_std,
@@ -340,18 +351,18 @@ def function_heat_map(
                 "data": [
                     {
                         "yaxis": "y2",
-                        "x": series_plot.index,
-                        "z": series_plot.to_frame().T,
+                        "x": series_plot.index.to_numpy(),
+                        "z": series_plot.to_numpy().reshape((1, -1)),
                         "colorscale": DATA_TYPE_TO_COLORSCALE[series_data_type],
-                        **heatmap_trace_template,
+                        **heatmap_trace_base,
                     },
                     {
                         "yaxis": "y",
-                        "x": dataframe_plot.columns,
-                        "y": dataframe_plot.index[::-1],
-                        "z": dataframe_plot.iloc[::-1],
+                        "x": dataframe_plot.columns.to_numpy(),
+                        "y": dataframe_plot.index.to_numpy()[::-1],
+                        "z": dataframe_plot.to_numpy()[::-1],
                         "colorscale": DATA_TYPE_TO_COLORSCALE[dataframe_data_type],
-                        **heatmap_trace_template,
+                        **heatmap_trace_base,
                     },
                 ],
             },
@@ -361,7 +372,7 @@ def function_heat_map(
     return scores
 
 
-def function_heat_map_summary(
+def summarize(
     series,
     dataframe_dicts,
     scores,
@@ -530,7 +541,7 @@ def function_heat_map_summary(
 
                 layout["annotations"].append(
                     {
-                        "x": _get_x(score_index),
+                        "x": get_x(score_index),
                         "y": y,
                         "xanchor": "center",
                         "text": "<b>{}</b>".format(score_str),
@@ -562,7 +573,7 @@ def function_heat_map_summary(
 
                 layout["annotations"].append(
                     {
-                        "x": _get_x(score_index),
+                        "x": get_x(score_index),
                         "y": y,
                         "xanchor": "center",
                         "text": score_str,
