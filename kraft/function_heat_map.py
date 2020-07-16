@@ -85,11 +85,11 @@ def make(
 
         print("\tScore (function={})...".format(function.__name__))
 
-        seed(seed=random_seed)
-
         vector = se.to_numpy()
 
         matrix = df.to_numpy()
+
+        seed(seed=random_seed)
 
         scores_ = asarray(
             pool.starmap(
@@ -97,7 +97,7 @@ def make(
             )
         )
 
-        scores["Score"] = scores_
+        scores.loc[:, "Score"] = scores_
 
         if 0 < n_sampling:
 
@@ -118,7 +118,7 @@ def make(
                     ((vector_, row, function) for row in matrix[:, is_]),
                 )
 
-            scores["0.95 MoE"] = apply_along_axis(
+            scores.loc[:, "0.95 MoE"] = apply_along_axis(
                 lambda numbers: get_moe(numbers[~isnan(numbers)]), 1, row_x_sampling,
             )
 
@@ -139,9 +139,9 @@ def make(
                     ((vector_, row, function) for row in matrix),
                 )
 
-            scores["P-Value"], scores["Q-Value"] = get_p_values_and_q_values(
-                scores_, row_x_permutation.ravel(), "<>"
-            )
+            scores.loc[:, ("P-Value", "Q-Value")] = asarray(
+                get_p_values_and_q_values(scores_, row_x_permutation.ravel(), "<>")
+            ).T
 
         pool.terminate()
 
@@ -172,56 +172,52 @@ def make(
             },
         )
 
-        se_plot = se.copy()
-
-        scores_plot = scores.copy()
-
         if n_extreme is not None:
 
-            scores_plot = scores_plot.loc[
+            scores = scores.loc[
                 get_extreme_labels(
-                    scores_plot.loc[:, "Score"], "<>", n=n_extreme, plot=False
+                    scores.loc[:, "Score"], "<>", n=n_extreme, plot=False
                 )
             ].sort_values("Score", ascending=score_ascending)
 
-        df_plot = df.loc[scores_plot.index, :]
+        df = df.loc[scores.index, :]
 
         if se_data_type == "continuous":
 
-            se_plot = Series(
+            se = Series(
                 ignore_nan_and_function_1(
-                    se_plot.to_numpy(), normalize, "-0-", update=True
+                    se.to_numpy(), normalize, "-0-", update=True
                 ).clip(min=-plot_std, max=plot_std),
-                index=se_plot.index,
-                name=se_plot.name,
+                index=se.index,
+                name=se.name,
             )
 
         if df_data_type == "continuous":
 
-            df_plot = DataFrame(
+            df = DataFrame(
                 apply_along_axis(
                     ignore_nan_and_function_1,
                     1,
-                    df_plot.to_numpy(),
+                    df.to_numpy(),
                     normalize,
                     "-0-",
                     update=True,
                 ).clip(min=-plot_std, max=plot_std),
-                index=df_plot.index,
-                columns=df_plot.columns,
+                index=df.index,
+                columns=df.columns,
             )
 
+        vector = se.to_numpy()
+
+        matrix = df.to_numpy()
+
         if (
-            not isnan(se_plot.to_numpy()).any()
-            and check_is_sorted(se_plot.to_numpy())
-            and (1 < unique(se_plot.to_numpy(), return_counts=True)[1]).all()
+            not isnan(vector).any()
+            and check_is_sorted(vector)
+            and (1 < unique(vector, return_counts=True)[1]).all()
         ):
 
             print("Clustering within category...")
-
-            vector = se_plot.to_numpy()
-
-            matrix = df_plot.to_numpy()
 
             leaf_is = []
 
@@ -231,16 +227,16 @@ def make(
 
                 leaf_is.append(is_[cluster(matrix.T[is_])[0]])
 
-            df_plot = df_plot.iloc[:, concatenate(leaf_is)]
+            df = df.iloc[:, concatenate(leaf_is)]
 
-            se_plot = se_plot.loc[df_plot.columns]
+            se = se.loc[df.columns]
 
-        n_row_plot = 1 + 1 + df_plot.shape[0]
+        n_row = 1 + 1 + df.shape[0]
 
-        fraction_row = 1 / n_row_plot
+        fraction_row = 1 / n_row
 
         layout_base = {
-            "height": max(480, 24 * n_row_plot),
+            "height": max(480, 24 * n_row),
             "width": 800,
             "margin": {"l": 200, "r": 200},
             "title": {"x": 0.5},
@@ -272,34 +268,34 @@ def make(
                 "x": 0,
                 "y": y,
                 "xanchor": "right",
-                "text": "<b>{}</b>".format(se_plot.name),
+                "text": "<b>{}</b>".format(se.name),
                 **annotation_base,
             }
         )
 
         y -= fraction_row
 
-        for i, name in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+        for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
 
             layout["annotations"].append(
                 {
                     "x": get_x(i),
                     "y": y,
                     "xanchor": "center",
-                    "text": "<b>{}</b>".format(name),
+                    "text": "<b>{}</b>".format(text),
                     **annotation_base,
                 }
             )
 
         y -= fraction_row
 
-        for label, (score, moe, p_value, q_value) in scores_plot.iterrows():
+        for text, (score, moe, p_value, q_value) in scores.iterrows():
 
             layout["annotations"].append(
-                {"x": 0, "y": y, "xanchor": "right", "text": label, **annotation_base}
+                {"x": 0, "y": y, "xanchor": "right", "text": text, **annotation_base}
             )
 
-            for i, score_str in enumerate(
+            for i, text in enumerate(
                 (
                     "{:.2f} ({:.2f})".format(score, moe),
                     "{:.2e}".format(p_value),
@@ -312,7 +308,7 @@ def make(
                         "x": get_x(i),
                         "y": y,
                         "xanchor": "center",
-                        "text": score_str,
+                        "text": text,
                         **annotation_base,
                     }
                 )
@@ -340,16 +336,16 @@ def make(
                 "data": [
                     {
                         "yaxis": "y2",
-                        "x": se_plot.index.to_numpy(),
-                        "z": se_plot.to_numpy().reshape((1, -1)),
+                        "x": se.index.to_numpy(),
+                        "z": vector.reshape((1, -1)),
                         "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
                         **heatmap_base,
                     },
                     {
                         "yaxis": "y",
-                        "x": df_plot.columns.to_numpy(),
-                        "y": df_plot.index.to_numpy()[::-1],
-                        "z": df_plot.to_numpy()[::-1],
+                        "x": df.columns.to_numpy(),
+                        "y": df.index.to_numpy()[::-1],
+                        "z": matrix[::-1],
                         "colorscale": DATA_TYPE_TO_COLORSCALE[df_data_type],
                         **heatmap_base,
                     },
@@ -382,37 +378,37 @@ def summarize(
 
         se.sort_values(ascending=se_ascending, inplace=True)
 
-    se_plot = se.copy()
-
     if se_data_type == "continuous":
 
-        se_plot = Series(
+        se = Series(
             ignore_nan_and_function_1(
-                se_plot.to_numpy(), normalize, "-0-", update=True
+                se.to_numpy(), normalize, "-0-", update=True
             ).clip(min=-plot_std, max=plot_std),
-            index=se_plot.index,
-            name=se_plot.name,
+            index=se.index,
+            name=se.name,
         )
+
+    vector = se.to_numpy()
 
     n_space = 2
 
-    n_row_plot = 1
+    n_row = 1
 
     for df_dict in df_dicts.values():
 
-        n_row_plot += n_space
+        n_row += n_space
 
-        n_row_plot += df_dict["df"].shape[0]
+        n_row += df_dict["df"].shape[0]
 
     layout = {
-        "height": max(480, 24 * n_row_plot),
+        "height": max(480, 24 * n_row),
         "width": 800,
         "margin": {"l": 200, "r": 200},
         "title": {"x": 0.5},
         "annotations": [],
     }
 
-    fraction_row = 1 / n_row_plot
+    fraction_row = 1 / n_row
 
     yaxis = "yaxis{}".format(len(df_dicts) + 1)
 
@@ -420,7 +416,7 @@ def summarize(
 
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
-    heatmap_trace_base = {
+    heatmap_base = {
         "type": "heatmap",
         "zmin": -plot_std,
         "zmax": plot_std,
@@ -430,10 +426,10 @@ def summarize(
     data = [
         {
             "yaxis": yaxis.replace("axis", ""),
-            "x": se_plot.index.to_numpy(),
-            "z": se_plot.to_numpy().reshape((1, -1)),
+            "x": se.index.to_numpy(),
+            "z": vector.reshape((1, -1)),
             "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
-            **heatmap_trace_base,
+            **heatmap_base,
         }
     ]
 
@@ -455,11 +451,11 @@ def summarize(
         }
     )
 
-    for df_i, (df_name, df_dict) in enumerate(df_dicts.items()):
+    for i, (df_name, df_dict) in enumerate(df_dicts.items()):
 
-        df_plot = df_dict["df"].reindex(columns=se_plot.index)
+        df = df_dict["df"].reindex(columns=se.index)
 
-        scores_plot = scores[df_name].reindex(index=df_plot.index)
+        scores_ = scores[df_name].reindex(index=df.index)
 
         if "emphasis" in df_dict:
 
@@ -469,29 +465,29 @@ def summarize(
 
             score_ascending = False
 
-        scores_plot.sort_values("Score", ascending=score_ascending, inplace=True)
+        scores_.sort_values("Score", ascending=score_ascending, inplace=True)
 
-        df_plot = df_plot.loc[scores_plot.index, :]
+        df = df.loc[scores_.index, :]
 
         if df_dict["data_type"] == "continuous":
 
-            df_plot = DataFrame(
+            df = DataFrame(
                 apply_along_axis(
                     ignore_nan_and_function_1,
                     1,
-                    df_plot.to_numpy(),
+                    df.to_numpy(),
                     normalize,
                     "-0-",
                     update=True,
                 ).clip(min=-plot_std, max=plot_std),
-                index=df_plot.index,
-                columns=df_plot.columns,
+                index=df.index,
+                columns=df.columns,
             )
 
-        yaxis = "yaxis{}".format(len(df_dicts) - df_i)
+        yaxis = "yaxis{}".format(len(df_dicts) - i)
 
         domain = (
-            max(0, domain[0] - fraction_row * (n_space + df_plot.shape[0])),
+            max(0, domain[0] - fraction_row * (n_space + df.shape[0])),
             domain[0] - fraction_row * n_space,
         )
 
@@ -500,11 +496,11 @@ def summarize(
         data.append(
             {
                 "yaxis": yaxis.replace("axis", ""),
-                "x": df_plot.columns.to_numpy(),
-                "y": df_plot.index.to_numpy()[::-1],
-                "z": df_plot.to_numpy()[::-1],
+                "x": df.columns.to_numpy(),
+                "y": df.index.to_numpy()[::-1],
+                "z": df.to_numpy()[::-1],
                 "colorscale": DATA_TYPE_TO_COLORSCALE[df_dict["data_type"]],
-                **heatmap_trace_base,
+                **heatmap_base,
             }
         )
 
@@ -520,31 +516,29 @@ def summarize(
             }
         )
 
-        if df_i == 0:
+        if i == 0:
 
-            for score_i, score_str in enumerate(
-                ("Score (\u0394)", "P-Value", "Q-Value")
-            ):
+            for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(score_i),
+                        "x": get_x(i),
                         "y": y,
                         "xanchor": "center",
-                        "text": "<b>{}</b>".format(score_str),
+                        "text": "<b>{}</b>".format(text),
                         **annotation_base,
                     }
                 )
 
         y -= fraction_row
 
-        for label, (score, moe, p_value, q_value) in scores_plot.iterrows():
+        for text, (score, moe, p_value, q_value) in scores_.iterrows():
 
             layout["annotations"].append(
-                {"x": 0, "y": y, "xanchor": "right", "text": label, **annotation_base}
+                {"x": 0, "y": y, "xanchor": "right", "text": text, **annotation_base}
             )
 
-            for score_i, score_str in enumerate(
+            for i, text in enumerate(
                 (
                     "{:.2f} ({:.2f})".format(score, moe),
                     "{:.2e}".format(p_value),
@@ -554,10 +548,10 @@ def summarize(
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(score_i),
+                        "x": get_x(i),
                         "y": y,
                         "xanchor": "center",
-                        "text": score_str,
+                        "text": text,
                         **annotation_base,
                     }
                 )
