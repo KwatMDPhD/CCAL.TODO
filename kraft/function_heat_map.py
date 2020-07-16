@@ -28,9 +28,9 @@ from .series import get_extreme_labels
 from .significance import get_moe, get_p_values_and_q_values
 
 
-def get_x(score_index):
+def get_x(score_i):
 
-    return 1.1 + score_index / 6.4
+    return 1.1 + score_i / 6.4
 
 
 def make(
@@ -89,12 +89,15 @@ def make(
 
         vector = se.to_numpy()
 
-        scores["Score"] = asarray(
+        matrix = df.to_numpy()
+
+        scores_ = asarray(
             pool.starmap(
-                ignore_nan_and_function_2,
-                ((vector, matrix_row, function) for matrix_row in df.to_numpy()),
+                ignore_nan_and_function_2, ((vector, row, function) for row in matrix),
             )
         )
+
+        scores["Score"] = scores_
 
         if 0 < n_sampling:
 
@@ -102,24 +105,21 @@ def make(
 
             row_x_sampling = full((n_row, n_sampling), nan)
 
-            n_column_to_sample = ceil(n_column * 0.632)
+            n_sample = ceil(n_column * 0.632)
 
             for i in range(n_sampling):
 
-                is_ = choice(n_column, size=n_column_to_sample)
+                is_ = choice(n_column, size=n_sample)
 
-                vector = se.to_numpy()[is_]
+                vector_ = vector[is_]
 
                 row_x_sampling[:, i] = pool.starmap(
                     ignore_nan_and_function_2,
-                    (
-                        (vector, matrix_row, function)
-                        for matrix_row in df.to_numpy()[:, is_]
-                    ),
+                    ((vector_, row, function) for row in matrix[:, is_]),
                 )
 
             scores["0.95 MoE"] = apply_along_axis(
-                lambda scores: get_moe(scores[~isnan(scores)]), 1, row_x_sampling,
+                lambda numbers: get_moe(numbers[~isnan(numbers)]), 1, row_x_sampling,
             )
 
         if 0 < n_permutation:
@@ -128,19 +128,19 @@ def make(
 
             row_x_permutation = full((n_row, n_permutation), nan)
 
-            vector = se.to_numpy().copy()
+            vector_ = vector.copy()
 
             for i in range(n_permutation):
 
-                shuffle(vector)
+                shuffle(vector_)
 
                 row_x_permutation[:, i] = pool.starmap(
                     ignore_nan_and_function_2,
-                    ((vector, matrix_row, function) for matrix_row in df.to_numpy()),
+                    ((vector_, row, function) for row in matrix),
                 )
 
             scores["P-Value"], scores["Q-Value"] = get_p_values_and_q_values(
-                scores["Score"].to_numpy(), row_x_permutation.flatten(), "<>"
+                scores_, row_x_permutation.ravel(), "<>"
             )
 
         pool.terminate()
@@ -166,11 +166,7 @@ def make(
                     "xaxis": {"title": {"text": "Rank"}},
                 },
                 "data": [
-                    {
-                        "name": name,
-                        "x": numbers.index.to_numpy(),
-                        "y": numbers.to_numpy(),
-                    }
+                    {"name": name, "x": numbers.index, "y": numbers}
                     for name, numbers in scores.items()
                 ],
             },
@@ -183,7 +179,9 @@ def make(
         if n_extreme is not None:
 
             scores_plot = scores_plot.loc[
-                get_extreme_labels(scores_plot["Score"], "<>", n=n_extreme, plot=False)
+                get_extreme_labels(
+                    scores_plot.loc[:, "Score"], "<>", n=n_extreme, plot=False
+                )
             ].sort_values("Score", ascending=score_ascending)
 
         df_plot = df.loc[scores_plot.index, :]
@@ -329,7 +327,7 @@ def make(
 
             html_file_path = file_path.replace(".tsv", ".html")
 
-        heatmap_trace_base = {
+        heatmap_base = {
             "type": "heatmap",
             "zmin": -plot_std,
             "zmax": plot_std,
@@ -345,7 +343,7 @@ def make(
                         "x": se_plot.index.to_numpy(),
                         "z": se_plot.to_numpy().reshape((1, -1)),
                         "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
-                        **heatmap_trace_base,
+                        **heatmap_base,
                     },
                     {
                         "yaxis": "y",
@@ -353,7 +351,7 @@ def make(
                         "y": df_plot.index.to_numpy()[::-1],
                         "z": df_plot.to_numpy()[::-1],
                         "colorscale": DATA_TYPE_TO_COLORSCALE[df_data_type],
-                        **heatmap_trace_base,
+                        **heatmap_base,
                     },
                 ],
             },
