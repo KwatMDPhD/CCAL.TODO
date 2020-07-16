@@ -34,10 +34,10 @@ def get_x(score_index):
 
 
 def make(
-    series,
-    dataframe,
+    se,
+    df,
     function,
-    series_ascending=True,
+    se_ascending=True,
     scores=None,
     n_job=1,
     random_seed=RANDOM_SEED,
@@ -46,36 +46,36 @@ def make(
     score_ascending=False,
     plot=True,
     n_extreme=8,
-    series_data_type="continuous",
-    dataframe_data_type="continuous",
+    se_data_type="continuous",
+    df_data_type="continuous",
     plot_std=nan,
     layout=None,
     directory_path=None,
 ):
 
-    common_labels = series.index & dataframe.columns
+    common_labels = se.index & df.columns
 
     print(
-        "series.index ({}) and dataframe.columns ({}) have {} in common.".format(
-            series.index.size, dataframe.columns.size, common_labels.size
+        "se.index ({}) and df.columns ({}) have {} in common.".format(
+            se.index.size, df.columns.size, common_labels.size
         )
     )
 
-    series = series.loc[common_labels]
+    se = se.loc[common_labels]
 
-    if series_ascending is not None:
+    if se_ascending is not None:
 
-        series.sort_values(ascending=series_ascending, inplace=True)
+        se.sort_values(ascending=se_ascending, inplace=True)
 
-    dataframe = dataframe.loc[:, series.index]
+    df = df.loc[:, se.index]
 
     if scores is None:
 
         scores = DataFrame(
-            index=dataframe.index, columns=("Score", "0.95 MoE", "P-Value", "Q-Value")
+            index=df.index, columns=("Score", "0.95 MoE", "P-Value", "Q-Value")
         )
 
-        n_row, n_column = dataframe.shape
+        n_row, n_column = df.shape
 
         n_job = min(n_row, n_job)
 
@@ -87,12 +87,12 @@ def make(
 
         seed(seed=random_seed)
 
-        vector = series.to_numpy()
+        vector = se.to_numpy()
 
         scores["Score"] = asarray(
             pool.starmap(
                 ignore_nan_and_function_2,
-                ((vector, matrix_row, function) for matrix_row in dataframe.to_numpy()),
+                ((vector, matrix_row, function) for matrix_row in df.to_numpy()),
             )
         )
 
@@ -108,13 +108,13 @@ def make(
 
                 is_ = choice(n_column, size=n_column_to_sample)
 
-                vector = series.to_numpy()[is_]
+                vector = se.to_numpy()[is_]
 
                 row_x_sampling[:, i] = pool.starmap(
                     ignore_nan_and_function_2,
                     (
                         (vector, matrix_row, function)
-                        for matrix_row in dataframe.to_numpy()[:, is_]
+                        for matrix_row in df.to_numpy()[:, is_]
                     ),
                 )
 
@@ -128,7 +128,7 @@ def make(
 
             row_x_permutation = full((n_row, n_permutation), nan)
 
-            vector = series.to_numpy().copy()
+            vector = se.to_numpy().copy()
 
             for i in range(n_permutation):
 
@@ -136,10 +136,7 @@ def make(
 
                 row_x_permutation[:, i] = pool.starmap(
                     ignore_nan_and_function_2,
-                    (
-                        (vector, matrix_row, function)
-                        for matrix_row in dataframe.to_numpy()
-                    ),
+                    ((vector, matrix_row, function) for matrix_row in df.to_numpy()),
                 )
 
             scores["P-Value"], scores["Q-Value"] = get_p_values_and_q_values(
@@ -150,7 +147,7 @@ def make(
 
     else:
 
-        scores = scores.reindex(index=dataframe.index)
+        scores = scores.reindex(index=df.index)
 
     scores.sort_values("Score", ascending=score_ascending, inplace=True)
 
@@ -179,7 +176,7 @@ def make(
             },
         )
 
-        series_plot = series.copy()
+        se_plot = se.copy()
 
         scores_plot = scores.copy()
 
@@ -189,44 +186,44 @@ def make(
                 get_extreme_labels(scores_plot["Score"], "<>", n=n_extreme, plot=False)
             ].sort_values("Score", ascending=score_ascending)
 
-        dataframe_plot = dataframe.loc[scores_plot.index, :]
+        df_plot = df.loc[scores_plot.index, :]
 
-        if series_data_type == "continuous":
+        if se_data_type == "continuous":
 
-            series_plot = Series(
+            se_plot = Series(
                 ignore_nan_and_function_1(
-                    series_plot.to_numpy(), normalize, "-0-", update=True
+                    se_plot.to_numpy(), normalize, "-0-", update=True
                 ).clip(min=-plot_std, max=plot_std),
-                index=series_plot.index,
-                name=series_plot.name,
+                index=se_plot.index,
+                name=se_plot.name,
             )
 
-        if dataframe_data_type == "continuous":
+        if df_data_type == "continuous":
 
-            dataframe_plot = DataFrame(
+            df_plot = DataFrame(
                 apply_along_axis(
                     ignore_nan_and_function_1,
                     1,
-                    dataframe_plot.to_numpy(),
+                    df_plot.to_numpy(),
                     normalize,
                     "-0-",
                     update=True,
                 ).clip(min=-plot_std, max=plot_std),
-                index=dataframe_plot.index,
-                columns=dataframe_plot.columns,
+                index=df_plot.index,
+                columns=df_plot.columns,
             )
 
         if (
-            not isnan(series_plot.to_numpy()).any()
-            and check_is_sorted(series_plot.to_numpy())
-            and (1 < unique(series_plot.to_numpy(), return_counts=True)[1]).all()
+            not isnan(se_plot.to_numpy()).any()
+            and check_is_sorted(se_plot.to_numpy())
+            and (1 < unique(se_plot.to_numpy(), return_counts=True)[1]).all()
         ):
 
             print("Clustering within category...")
 
-            vector = series_plot.to_numpy()
+            vector = se_plot.to_numpy()
 
-            matrix = dataframe_plot.to_numpy()
+            matrix = df_plot.to_numpy()
 
             leaf_is = []
 
@@ -236,11 +233,11 @@ def make(
 
                 leaf_is.append(is_[cluster(matrix.T[is_])[0]])
 
-            dataframe_plot = dataframe_plot.iloc[:, concatenate(leaf_is)]
+            df_plot = df_plot.iloc[:, concatenate(leaf_is)]
 
-            series_plot = series_plot.loc[dataframe_plot.columns]
+            se_plot = se_plot.loc[df_plot.columns]
 
-        n_row_plot = 1 + 1 + dataframe_plot.shape[0]
+        n_row_plot = 1 + 1 + df_plot.shape[0]
 
         fraction_row = 1 / n_row_plot
 
@@ -277,7 +274,7 @@ def make(
                 "x": 0,
                 "y": y,
                 "xanchor": "right",
-                "text": "<b>{}</b>".format(series_plot.name),
+                "text": "<b>{}</b>".format(se_plot.name),
                 **annotation_base,
             }
         )
@@ -298,16 +295,10 @@ def make(
 
         y -= fraction_row
 
-        for row_name, (score, moe, p_value, q_value) in scores_plot.iterrows():
+        for label, (score, moe, p_value, q_value) in scores_plot.iterrows():
 
             layout["annotations"].append(
-                {
-                    "x": 0,
-                    "y": y,
-                    "xanchor": "right",
-                    "text": row_name,
-                    **annotation_base,
-                }
+                {"x": 0, "y": y, "xanchor": "right", "text": label, **annotation_base}
             )
 
             for i, score_str in enumerate(
@@ -351,17 +342,17 @@ def make(
                 "data": [
                     {
                         "yaxis": "y2",
-                        "x": series_plot.index.to_numpy(),
-                        "z": series_plot.to_numpy().reshape((1, -1)),
-                        "colorscale": DATA_TYPE_TO_COLORSCALE[series_data_type],
+                        "x": se_plot.index.to_numpy(),
+                        "z": se_plot.to_numpy().reshape((1, -1)),
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
                         **heatmap_trace_base,
                     },
                     {
                         "yaxis": "y",
-                        "x": dataframe_plot.columns.to_numpy(),
-                        "y": dataframe_plot.index.to_numpy()[::-1],
-                        "z": dataframe_plot.to_numpy()[::-1],
-                        "colorscale": DATA_TYPE_TO_COLORSCALE[dataframe_data_type],
+                        "x": df_plot.columns.to_numpy(),
+                        "y": df_plot.index.to_numpy()[::-1],
+                        "z": df_plot.to_numpy()[::-1],
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[df_data_type],
                         **heatmap_trace_base,
                     },
                 ],
@@ -373,47 +364,47 @@ def make(
 
 
 def summarize(
-    series,
-    dataframe_dicts,
+    se,
+    df_dicts,
     scores,
     plot_only_shared=False,
-    series_ascending=True,
-    series_data_type="continuous",
+    se_ascending=True,
+    se_data_type="continuous",
     plot_std=nan,
     html_file_path=None,
 ):
 
     if plot_only_shared:
 
-        for dataframe_dict in dataframe_dicts.values():
+        for df_dict in df_dicts.values():
 
-            series = series.loc[series.index & dataframe_dict["dataframe"].columns]
+            se = se.loc[se.index & df_dict["df"].columns]
 
-    if series_ascending is not None:
+    if se_ascending is not None:
 
-        series.sort_values(ascending=series_ascending, inplace=True)
+        se.sort_values(ascending=se_ascending, inplace=True)
 
-    series_plot = series.copy()
+    se_plot = se.copy()
 
-    if series_data_type == "continuous":
+    if se_data_type == "continuous":
 
-        series_plot = Series(
+        se_plot = Series(
             ignore_nan_and_function_1(
-                series_plot.values, normalize, "-0-", update=True
-            ),
-            name=series_plot.name,
-            index=series_plot.index,
-        ).clip(lower=-plot_std, upper=plot_std)
+                se_plot.to_numpy(), normalize, "-0-", update=True
+            ).clip(min=-plot_std, max=plot_std),
+            index=se_plot.index,
+            name=se_plot.name,
+        )
 
     n_space = 2
 
     n_row_plot = 1
 
-    for dataframe_dict in dataframe_dicts.values():
+    for df_dict in df_dicts.values():
 
         n_row_plot += n_space
 
-        n_row_plot += dataframe_dict["dataframe"].shape[0]
+        n_row_plot += df_dict["df"].shape[0]
 
     layout = {
         "height": max(480, 24 * n_row_plot),
@@ -425,13 +416,13 @@ def summarize(
 
     fraction_row = 1 / n_row_plot
 
-    yaxis = "yaxis{}".format(len(dataframe_dicts) + 1)
+    yaxis = "yaxis{}".format(len(df_dicts) + 1)
 
     domain = 1 - fraction_row, 1
 
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
-    heatmap_trace_template = {
+    heatmap_trace_base = {
         "type": "heatmap",
         "zmin": -plot_std,
         "zmax": plot_std,
@@ -441,14 +432,14 @@ def summarize(
     data = [
         {
             "yaxis": yaxis.replace("axis", ""),
-            "x": series_plot.index,
-            "z": series_plot.to_frame().T,
-            "colorscale": DATA_TYPE_TO_COLORSCALE[series_data_type],
-            **heatmap_trace_template,
+            "x": se_plot.index.to_numpy(),
+            "z": se_plot.to_numpy().reshape((1, -1)),
+            "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
+            **heatmap_trace_base,
         }
     ]
 
-    annotation_template = {
+    annotation_base = {
         "xref": "paper",
         "yref": "paper",
         "yanchor": "middle",
@@ -461,22 +452,20 @@ def summarize(
             "x": 0,
             "y": 1 - fraction_row / 2,
             "xanchor": "right",
-            "text": "<b>{}</b>".format(series.name),
-            **annotation_template,
+            "text": "<b>{}</b>".format(se.name),
+            **annotation_base,
         }
     )
 
-    for dataframe_index, (dataframe_name, dataframe_dict) in enumerate(
-        dataframe_dicts.items()
-    ):
+    for df_i, (df_name, df_dict) in enumerate(df_dicts.items()):
 
-        dataframe_plot = dataframe_dict["dataframe"].reindex(columns=series_plot.index)
+        df_plot = df_dict["df"].reindex(columns=se_plot.index)
 
-        scores_plot = scores[dataframe_name].reindex(index=dataframe_plot.index)
+        scores_plot = scores[df_name].reindex(index=df_plot.index)
 
-        if "emphasis" in dataframe_dict:
+        if "emphasis" in df_dict:
 
-            score_ascending = dataframe_dict["emphasis"] == "-"
+            score_ascending = df_dict["emphasis"] == "-"
 
         else:
 
@@ -484,27 +473,27 @@ def summarize(
 
         scores_plot.sort_values("Score", ascending=score_ascending, inplace=True)
 
-        dataframe_plot = dataframe_plot.loc[scores_plot.index]
+        df_plot = df_plot.loc[scores_plot.index, :]
 
-        if dataframe_dict["data_type"] == "continuous":
+        if df_dict["data_type"] == "continuous":
 
-            dataframe_plot = DataFrame(
+            df_plot = DataFrame(
                 apply_along_axis(
                     ignore_nan_and_function_1,
                     1,
-                    dataframe_plot.values,
+                    df_plot.to_numpy(),
                     normalize,
                     "-0-",
                     update=True,
-                ),
-                index=dataframe_plot.index,
-                columns=dataframe_plot.columns,
-            ).clip(lower=-plot_std, upper=plot_std)
+                ).clip(min=-plot_std, max=plot_std),
+                index=df_plot.index,
+                columns=df_plot.columns,
+            )
 
-        yaxis = "yaxis{}".format(len(dataframe_dicts) - dataframe_index)
+        yaxis = "yaxis{}".format(len(df_dicts) - df_i)
 
         domain = (
-            max(0, domain[0] - fraction_row * (n_space + dataframe_plot.shape[0])),
+            max(0, domain[0] - fraction_row * (n_space + df_plot.shape[0])),
             domain[0] - fraction_row * n_space,
         )
 
@@ -513,11 +502,11 @@ def summarize(
         data.append(
             {
                 "yaxis": yaxis.replace("axis", ""),
-                "x": dataframe_plot.columns,
-                "y": dataframe_plot.index[::-1],
-                "z": dataframe_plot.values[::-1],
-                "colorscale": DATA_TYPE_TO_COLORSCALE[dataframe_dict["data_type"]],
-                **heatmap_trace_template,
+                "x": df_plot.columns.to_numpy(),
+                "y": df_plot.index.to_numpy()[::-1],
+                "z": df_plot.to_numpy()[::-1],
+                "colorscale": DATA_TYPE_TO_COLORSCALE[df_dict["data_type"]],
+                **heatmap_trace_base,
             }
         )
 
@@ -528,42 +517,36 @@ def summarize(
                 "x": 0.5,
                 "y": y,
                 "xanchor": "center",
-                "text": "<b>{}</b>".format(dataframe_name),
-                **annotation_template,
+                "text": "<b>{}</b>".format(df_name),
+                **annotation_base,
             }
         )
 
-        if dataframe_index == 0:
+        if df_i == 0:
 
-            for score_index, score_str in enumerate(
+            for score_i, score_str in enumerate(
                 ("Score (\u0394)", "P-Value", "Q-Value")
             ):
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(score_index),
+                        "x": get_x(score_i),
                         "y": y,
                         "xanchor": "center",
                         "text": "<b>{}</b>".format(score_str),
-                        **annotation_template,
+                        **annotation_base,
                     }
                 )
 
         y -= fraction_row
 
-        for row_name, (score, moe, p_value, q_value) in scores_plot.iterrows():
+        for label, (score, moe, p_value, q_value) in scores_plot.iterrows():
 
             layout["annotations"].append(
-                {
-                    "x": 0,
-                    "y": y,
-                    "xanchor": "right",
-                    "text": row_name,
-                    **annotation_template,
-                }
+                {"x": 0, "y": y, "xanchor": "right", "text": label, **annotation_base}
             )
 
-            for score_index, score_str in enumerate(
+            for score_i, score_str in enumerate(
                 (
                     "{:.2f} ({:.2f})".format(score, moe),
                     "{:.2e}".format(p_value),
@@ -573,11 +556,11 @@ def summarize(
 
                 layout["annotations"].append(
                     {
-                        "x": get_x(score_index),
+                        "x": get_x(score_i),
                         "y": y,
                         "xanchor": "center",
                         "text": score_str,
-                        **annotation_template,
+                        **annotation_base,
                     }
                 )
 
