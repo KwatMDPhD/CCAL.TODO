@@ -79,8 +79,7 @@ def get_ic(vector_0, vector_1):
 
     assert vector_1.ndim == 1
 
-    # TODO: consider error
-    if unique(vector_0).size == 1 or unique(vector_1).size == 1:
+    if unique(vector_0).size < 2 or unique(vector_1).size < 2:
 
         return nan
 
