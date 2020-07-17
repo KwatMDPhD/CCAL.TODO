@@ -1,4 +1,4 @@
-from numpy import diff, isnan, log as loge, log2, log10, nan, nanmin, unique
+from numpy import diff, full, isnan, log as loge, log2, log10, nan, nanmin, unique
 from numpy.random import seed, shuffle as shuffle_
 from scipy.stats import rankdata
 
@@ -110,25 +110,21 @@ def ignore_nan_and_function_1(
 
     is_good = ~isnan(numbers)
 
-    if not is_good.any():
-
-        return nan
-
-    returned = function(
+    return_ = function(
         numbers[is_good], *function_arguments, **function_keyword_arguments
     )
 
     if update:
 
-        numbers = numbers.copy()
+        numbers_ = full(numbers.shape, nan)
 
-        numbers[is_good] = returned
+        numbers_[is_good] = return_
 
-        return numbers
+        return numbers_
 
     else:
 
-        return returned
+        return return_
 
 
 def ignore_nan_and_function_2(
@@ -136,10 +132,6 @@ def ignore_nan_and_function_2(
 ):
 
     is_good = ~isnan(numbers_0) & ~isnan(numbers_1)
-
-    if not is_good.any():
-
-        return nan
 
     return function(
         numbers_0[is_good],

@@ -1,6 +1,7 @@
 from numpy import full, quantile
-from pandas import DataFrame, isna
+from pandas import DataFrame, Series, isna
 
+from .array import ignore_nan_and_function_1, normalize as array_normalize
 from .dict_ import merge
 from .plot import plot_plotly
 
@@ -107,6 +108,21 @@ def get_extreme_labels(
         )
 
     return labels_extreme
+
+
+def normalize(vector, method, **normalize_keyword_arguments):
+
+    return Series(
+        ignore_nan_and_function_1(
+            vector.to_numpy(),
+            array_normalize,
+            method,
+            update=True,
+            **normalize_keyword_arguments
+        ),
+        index=vector.index,
+        name=vector.name,
+    )
 
 
 def binarize(series):

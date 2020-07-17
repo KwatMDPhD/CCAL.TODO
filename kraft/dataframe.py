@@ -13,7 +13,7 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Series, isna
 
-from .array import map_int, normalize as array_normalize
+from .array import ignore_nan_and_function_1, map_int, normalize as array_normalize
 from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_nd
 from .plot import plot_heat_map, plot_histogram
@@ -260,12 +260,24 @@ def normalize(matrix, axis, method, **normalize_keyword_arguments):
 
     if axis is None:
 
-        matrix = array_normalize(matrix, method, **normalize_keyword_arguments)
+        matrix = ignore_nan_and_function_1(
+            matrix.ravel(),
+            array_normalize,
+            method,
+            update=True,
+            **normalize_keyword_arguments
+        ).reshape(matrix.shape)
 
     else:
 
         matrix = apply_along_axis(
-            array_normalize, axis, matrix, method, **normalize_keyword_arguments
+            ignore_nan_and_function_1,
+            axis,
+            matrix,
+            array_normalize,
+            method,
+            update=True,
+            **normalize_keyword_arguments
         )
 
     return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
