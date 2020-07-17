@@ -1,4 +1,4 @@
-def read_gmt(gmt_file_path):
+def read(gmt_file_path):
 
     gene_set_genes = {}
 
@@ -13,12 +13,12 @@ def read_gmt(gmt_file_path):
     return gene_set_genes
 
 
-def read_gmts(gmt_file_paths):
+def read_many(gmt_file_paths):
 
     gene_set_genes = {}
 
     for file_path in gmt_file_paths:
 
-        gene_set_genes.update(read_gmt(file_path))
+        gene_set_genes.update(read(file_path))
 
     return gene_set_genes
