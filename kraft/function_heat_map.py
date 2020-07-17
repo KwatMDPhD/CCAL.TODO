@@ -230,23 +230,13 @@ def make(
             "height": max(480, 24 * n_row),
             "yaxis": {"domain": (0, 1 - fraction_row * 2), "showticklabels": False},
             "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
-            "annotations": [],
+            "annotations": [annotate_se(se, 1 - fraction_row / 2)],
             **LAYOUT_BASE,
         }
 
-        y = 1 - fraction_row / 2
-
-        layout["annotations"].append(
-            {
-                "x": 0,
-                "y": y,
-                "xanchor": "right",
-                "text": "<b>{}</b>".format(se.name),
-                **ANNOTATION_BASE,
-            }
+        layout["annotations"] += annotate_scores(
+            scores, 1 - fraction_row / 2 * 3, fraction_row, True
         )
-
-        layout["annotations"] += annotate(scores, y - fraction_row, fraction_row, True)
 
         if directory_path is None:
 
@@ -314,8 +304,6 @@ def summarize(
 
         se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
-    vector = se.to_numpy()
-
     n_space = 2
 
     n_row = 1
@@ -328,7 +316,11 @@ def summarize(
 
     fraction_row = 1 / n_row
 
-    layout = {"height": max(480, 24 * n_row), "annotations": [], **LAYOUT_BASE}
+    layout = {
+        "height": max(480, 24 * n_row),
+        "annotations": [annotate_se(se, 1 - fraction_row / 2)],
+        **LAYOUT_BASE,
+    }
 
     yaxis = "yaxis{}".format(len(df_dicts) + 1)
 
@@ -346,21 +338,11 @@ def summarize(
         {
             "yaxis": yaxis.replace("axis", ""),
             "x": se.index.to_numpy(),
-            "z": vector.reshape((1, -1)),
+            "z": se.to_numpy().reshape((1, -1)),
             "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
             **heatmap_base,
         }
     ]
-
-    layout["annotations"].append(
-        {
-            "x": 0,
-            "y": 1 - fraction_row / 2,
-            "xanchor": "right",
-            "text": "<b>{}</b>".format(se.name),
-            **ANNOTATION_BASE,
-        }
-    )
 
     for i, (name, dict_) in enumerate(df_dicts.items()):
 
@@ -416,12 +398,23 @@ def summarize(
             }
         )
 
-        layout["annotations"] += annotate(scores_, y, fraction_row, i == 0)
+        layout["annotations"] += annotate_scores(scores_, y, fraction_row, i == 0)
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
 
 
-def annotate(scores, y, fraction_row, add_header):
+def annotate_se(se, y):
+
+    return {
+        "x": 0,
+        "y": y,
+        "xanchor": "right",
+        "text": "<b>{}</b>".format(se.name),
+        **ANNOTATION_BASE,
+    }
+
+
+def annotate_scores(scores, y, fraction_row, add_header):
 
     annotations = []
 
