@@ -12,19 +12,15 @@ from numpy import (
     where,
 )
 from numpy.random import choice, seed, shuffle
-from pandas import DataFrame, Series
+from pandas import DataFrame
 
-from .array import (
-    check_is_sorted,
-    ignore_nan_and_function_1,
-    ignore_nan_and_function_2,
-    normalize,
-)
+from .array import check_is_sorted, ignore_nan_and_function_2
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
+from .dataframe import normalize as dataframe_normalize
 from .dict_ import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
-from .series import get_extreme_labels
+from .series import get_extreme_labels, normalize as series_normalize
 from .significance import get_moe, get_p_values_and_q_values
 
 
@@ -184,28 +180,11 @@ def make(
 
         if se_data_type == "continuous":
 
-            se = Series(
-                ignore_nan_and_function_1(
-                    se.to_numpy(), normalize, "-0-", update=True
-                ).clip(min=-plot_std, max=plot_std),
-                index=se.index,
-                name=se.name,
-            )
+            se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
         if df_data_type == "continuous":
 
-            df = DataFrame(
-                apply_along_axis(
-                    ignore_nan_and_function_1,
-                    1,
-                    df.to_numpy(),
-                    normalize,
-                    "-0-",
-                    update=True,
-                ).clip(min=-plot_std, max=plot_std),
-                index=df.index,
-                columns=df.columns,
-            )
+            df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
         vector = se.to_numpy()
 
@@ -380,13 +359,7 @@ def summarize(
 
     if se_data_type == "continuous":
 
-        se = Series(
-            ignore_nan_and_function_1(
-                se.to_numpy(), normalize, "-0-", update=True
-            ).clip(min=-plot_std, max=plot_std),
-            index=se.index,
-            name=se.name,
-        )
+        se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
     vector = se.to_numpy()
 
@@ -471,18 +444,7 @@ def summarize(
 
         if df_dict["data_type"] == "continuous":
 
-            df = DataFrame(
-                apply_along_axis(
-                    ignore_nan_and_function_1,
-                    1,
-                    df.to_numpy(),
-                    normalize,
-                    "-0-",
-                    update=True,
-                ).clip(min=-plot_std, max=plot_std),
-                index=df.index,
-                columns=df.columns,
-            )
+            df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
         yaxis = "yaxis{}".format(len(df_dicts) - i)
 
