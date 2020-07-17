@@ -18,15 +18,28 @@ from .array import check_is_sorted, ignore_nan_and_function_2
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
 from .dataframe import normalize as dataframe_normalize
-from .dict_ import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
 from .series import get_extreme_labels, normalize as series_normalize
 from .significance import get_moe, get_p_values_and_q_values
 
+HEATMAP_BASE = {
+    "type": "heatmap",
+    "showscale": False,
+}
 
-def get_x(score_i):
+LAYOUT_BASE = {
+    "width": 800,
+    "margin": {"l": 200, "r": 200},
+    "title": {"x": 0.5},
+}
 
-    return 1.1 + score_i / 6.4
+ANNOTATION_BASE = {
+    "xref": "paper",
+    "yref": "paper",
+    "yanchor": "middle",
+    "font": {"size": 10},
+    "showarrow": False,
+}
 
 
 def make(
@@ -45,7 +58,6 @@ def make(
     se_data_type="continuous",
     df_data_type="continuous",
     plot_std=nan,
-    layout=None,
     directory_path=None,
 ):
 
@@ -214,30 +226,12 @@ def make(
 
         fraction_row = 1 / n_row
 
-        layout_base = {
+        layout = {
             "height": max(480, 24 * n_row),
-            "width": 800,
-            "margin": {"l": 200, "r": 200},
-            "title": {"x": 0.5},
-            "yaxis": {"domain": (0, 1 - 2 * fraction_row), "showticklabels": False},
+            "yaxis": {"domain": (0, 1 - fraction_row * 2), "showticklabels": False},
             "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
             "annotations": [],
-        }
-
-        if layout is None:
-
-            layout = layout_base
-
-        else:
-
-            layout = merge(layout_base, layout)
-
-        annotation_base = {
-            "xref": "paper",
-            "yref": "paper",
-            "yanchor": "middle",
-            "font": {"size": 10},
-            "showarrow": False,
+            **LAYOUT_BASE,
         }
 
         y = 1 - fraction_row / 2
@@ -248,51 +242,11 @@ def make(
                 "y": y,
                 "xanchor": "right",
                 "text": "<b>{}</b>".format(se.name),
-                **annotation_base,
+                **ANNOTATION_BASE,
             }
         )
 
-        y -= fraction_row
-
-        for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
-
-            layout["annotations"].append(
-                {
-                    "x": get_x(i),
-                    "y": y,
-                    "xanchor": "center",
-                    "text": "<b>{}</b>".format(text),
-                    **annotation_base,
-                }
-            )
-
-        y -= fraction_row
-
-        for text, (score, moe, p_value, q_value) in scores.iterrows():
-
-            layout["annotations"].append(
-                {"x": 0, "y": y, "xanchor": "right", "text": text, **annotation_base}
-            )
-
-            for i, text in enumerate(
-                (
-                    "{:.2f} ({:.2f})".format(score, moe),
-                    "{:.2e}".format(p_value),
-                    "{:.2e}".format(q_value),
-                )
-            ):
-
-                layout["annotations"].append(
-                    {
-                        "x": get_x(i),
-                        "y": y,
-                        "xanchor": "center",
-                        "text": text,
-                        **annotation_base,
-                    }
-                )
-
-            y -= fraction_row
+        layout["annotations"] += annotate(scores, y - fraction_row, fraction_row, True)
 
         if directory_path is None:
 
@@ -303,10 +257,9 @@ def make(
             html_file_path = file_path.replace(".tsv", ".html")
 
         heatmap_base = {
-            "type": "heatmap",
             "zmin": -plot_std,
             "zmax": plot_std,
-            "showscale": False,
+            **HEATMAP_BASE,
         }
 
         plot_plotly(
@@ -349,9 +302,9 @@ def summarize(
 
     if plot_only_shared:
 
-        for df_dict in df_dicts.values():
+        for dict_ in df_dicts.values():
 
-            se = se.loc[se.index & df_dict["df"].columns]
+            se = se.loc[se.index & dict_["df"].columns]
 
     if se_ascending is not None:
 
@@ -367,21 +320,15 @@ def summarize(
 
     n_row = 1
 
-    for df_dict in df_dicts.values():
+    for dict_ in df_dicts.values():
 
         n_row += n_space
 
-        n_row += df_dict["df"].shape[0]
-
-    layout = {
-        "height": max(480, 24 * n_row),
-        "width": 800,
-        "margin": {"l": 200, "r": 200},
-        "title": {"x": 0.5},
-        "annotations": [],
-    }
+        n_row += dict_["df"].shape[0]
 
     fraction_row = 1 / n_row
+
+    layout = {"height": max(480, 24 * n_row), "annotations": [], **LAYOUT_BASE}
 
     yaxis = "yaxis{}".format(len(df_dicts) + 1)
 
@@ -390,10 +337,9 @@ def summarize(
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
     heatmap_base = {
-        "type": "heatmap",
         "zmin": -plot_std,
         "zmax": plot_std,
-        "showscale": False,
+        **HEATMAP_BASE,
     }
 
     data = [
@@ -406,33 +352,25 @@ def summarize(
         }
     ]
 
-    annotation_base = {
-        "xref": "paper",
-        "yref": "paper",
-        "yanchor": "middle",
-        "font": {"size": 10},
-        "showarrow": False,
-    }
-
     layout["annotations"].append(
         {
             "x": 0,
             "y": 1 - fraction_row / 2,
             "xanchor": "right",
             "text": "<b>{}</b>".format(se.name),
-            **annotation_base,
+            **ANNOTATION_BASE,
         }
     )
 
-    for i, (df_name, df_dict) in enumerate(df_dicts.items()):
+    for i, (name, dict_) in enumerate(df_dicts.items()):
 
-        df = df_dict["df"].reindex(columns=se.index)
+        df = dict_["df"].reindex(columns=se.index)
 
-        scores_ = scores[df_name].reindex(index=df.index)
+        scores_ = scores[name].reindex(index=df.index)
 
-        if "emphasis" in df_dict:
+        if "emphasis" in dict_:
 
-            score_ascending = df_dict["emphasis"] == "-"
+            score_ascending = dict_["emphasis"] == "-"
 
         else:
 
@@ -442,7 +380,7 @@ def summarize(
 
         df = df.loc[scores_.index, :]
 
-        if df_dict["data_type"] == "continuous":
+        if dict_["data_type"] == "continuous":
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
@@ -461,7 +399,7 @@ def summarize(
                 "x": df.columns.to_numpy(),
                 "y": df.index.to_numpy()[::-1],
                 "z": df.to_numpy()[::-1],
-                "colorscale": DATA_TYPE_TO_COLORSCALE[df_dict["data_type"]],
+                "colorscale": DATA_TYPE_TO_COLORSCALE[dict_["data_type"]],
                 **heatmap_base,
             }
         )
@@ -473,51 +411,64 @@ def summarize(
                 "x": 0.5,
                 "y": y,
                 "xanchor": "center",
-                "text": "<b>{}</b>".format(df_name),
-                **annotation_base,
+                "text": "<b>{}</b>".format(name),
+                **ANNOTATION_BASE,
             }
         )
 
-        if i == 0:
+        layout["annotations"] += annotate(scores_, y, fraction_row, i == 0)
 
-            for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
 
-                layout["annotations"].append(
-                    {
-                        "x": get_x(i),
-                        "y": y,
-                        "xanchor": "center",
-                        "text": "<b>{}</b>".format(text),
-                        **annotation_base,
-                    }
-                )
+
+def annotate(scores, y, fraction_row, add_header):
+
+    annotations = []
+
+    def get_x(score_i):
+
+        return 1.1 + score_i / 6.4
+
+    if add_header:
+
+        for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+
+            annotations.append(
+                {
+                    "x": get_x(i),
+                    "y": y,
+                    "xanchor": "center",
+                    "text": "<b>{}</b>".format(text),
+                    **ANNOTATION_BASE,
+                }
+            )
+
+    y -= fraction_row
+
+    for text, (score, moe, p_value, q_value) in scores.iterrows():
+
+        annotations.append(
+            {"x": 0, "y": y, "xanchor": "right", "text": text, **ANNOTATION_BASE}
+        )
+
+        for i, text in enumerate(
+            (
+                "{:.2f} ({:.2f})".format(score, moe),
+                "{:.2e}".format(p_value),
+                "{:.2e}".format(q_value),
+            )
+        ):
+
+            annotations.append(
+                {
+                    "x": get_x(i),
+                    "y": y,
+                    "xanchor": "center",
+                    "text": text,
+                    **ANNOTATION_BASE,
+                }
+            )
 
         y -= fraction_row
 
-        for text, (score, moe, p_value, q_value) in scores_.iterrows():
-
-            layout["annotations"].append(
-                {"x": 0, "y": y, "xanchor": "right", "text": text, **annotation_base}
-            )
-
-            for i, text in enumerate(
-                (
-                    "{:.2f} ({:.2f})".format(score, moe),
-                    "{:.2e}".format(p_value),
-                    "{:.2e}".format(q_value),
-                )
-            ):
-
-                layout["annotations"].append(
-                    {
-                        "x": get_x(i),
-                        "y": y,
-                        "xanchor": "center",
-                        "text": text,
-                        **annotation_base,
-                    }
-                )
-
-            y -= fraction_row
-
-    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+    return annotations
