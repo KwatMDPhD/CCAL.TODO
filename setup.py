@@ -2,13 +2,13 @@ from os import listdir
 
 from setuptools import setup
 
-from kraft.CONSTANT import DATA_DIRECTORY_PATH
-
 name = "kraft"
+
+data_directory_path = "{}/data/".format(name)
 
 setup(
     name=name,
-    version="0.2.0",
+    version="0.1.0",
     python_requires=">=3.6",
     install_requires=(
         "numpy",
@@ -20,12 +20,13 @@ setup(
         "KDEpy",
         "plotly",
         "click",
+        "requests",
     ),
     packages=(name,),
     package_data={
         name: tuple(
-            "{}/{}".format(DATA_DIRECTORY_PATH, file_name)
-            for file_name in listdir(path=DATA_DIRECTORY_PATH)
+            "{}/{}".format(data_directory_path, file_name)
+            for file_name in listdir(path=data_directory_path)
         )
     },
 )
