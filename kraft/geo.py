@@ -4,6 +4,7 @@ from pandas import DataFrame
 
 from .dataframe import error_axes
 from .internet import download
+from .name_biology import name_genes
 from .support import cast_builtin
 
 
@@ -140,8 +141,6 @@ def get_gse(gse_id, directory_path):
 
     feature_x_sample.index.name = "Feature"
 
-    feature_x_sample.columns.name = "Sample"
-
     _x_samples = [feature_x_sample]
 
     for platform, dict_ in platforms.items():
@@ -183,7 +182,7 @@ def get_gse(gse_id, directory_path):
 
                     break
 
-            genes = map_genes(_x_sample.index.to_numpy())
+            genes = name_genes(_x_sample.index.to_numpy())
 
             if genes is not None:
 
@@ -196,7 +195,7 @@ def get_gse(gse_id, directory_path):
             )
 
             _x_samples.append(
-                _x_sample.loc[~_x_sample.index.isna(), :].gropby(level=0).median()
+                _x_sample.loc[~_x_sample.index.isna(), :].groupby(level=0).median()
             )
 
     for _x_sample in _x_samples:

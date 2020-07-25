@@ -16,7 +16,7 @@ def select_genes(selection=None):
 
     for label, selection in selection.items():
 
-        print(label)
+        print("Selecting by {}...".format(label))
 
         is_selected &= asarray(
             tuple(
@@ -38,75 +38,72 @@ def select_genes(selection=None):
     return unique(genes[~isna(genes)])
 
 
-enst_ensg_gene = read_csv(
-    "{}/enst_ensg_gene.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"
-)
-
-ens_to_gene = {}
-
-for column in ("Transcript stable ID version", "Gene stable ID version"):
-
-    ens_gene = enst_ensg_gene[[column, "Gene name"]].dropna()
-
-    ens_to_gene.update(dict(zip(ens_gene.iloc[:, 0], ens_gene.iloc[:, 1])))
-
-for ens, gene in tuple(ens_to_gene.items()):
-
-    ens = ens.split(sep=".")[0]
-
-    ens_to_gene[ens] = gene
-
-    ens_to_gene["{}_at".format(ens)] = gene
-
-
-refseq_nm_nc_gene = read_csv(
-    "{}/refseq_nm_nc_gene.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"
-)
-
-refseq_to_gene = {}
-
-for column in ("RefSeq mRNA ID", "RefSeq ncRNA ID"):
-
-    refseq_gene = refseq_nm_nc_gene[[column, "Gene name"]].dropna()
-
-    refseq_to_gene.update(dict(zip(refseq_gene.iloc[:, 0], refseq_gene.iloc[:, 1])))
-
-
-ilmnid_to_gene = (
-    read_csv(
-        "{}/HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
-        skiprows=7,
-        usecols=(0, 21,),
-        index_col=0,
-        squeeze=True,
-    )
-    .dropna()
-    .apply(lambda str_: str_.split(";")[0])
-    .to_dict()
-)
-
-
 def name_genes(ids):
 
-    n_gene_genes = {}
+    enst_ensg_gene = read_csv(
+        "{}/enst_ensg_gene.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"
+    )
 
-    for dict_ in (ens_to_gene, ilmnid_to_gene, refseq_to_gene):
+    ens_to_gene = {}
 
-        genes = tuple(map(dict_.get, ids))
+    for column in ("Transcript stable ID version", "Gene stable ID version"):
 
-        genes_is_None = tuple(gene is None for gene in genes)
+        ens_gene = enst_ensg_gene.loc[:, [column, "Gene name"]].dropna()
 
-        if not all(genes_is_None):
+        ens_to_gene.update(dict(zip(*ens_gene.to_numpy().T)))
 
-            n_gene = len(genes_is_None) - sum(genes_is_None)
+    for ens, gene in tuple(ens_to_gene.items()):
 
-            print("Mapped {} genes.".format(n_gene))
+        ens = ens.split(sep=".")[0]
 
-            n_gene_genes[n_gene] = genes
+        ens_to_gene[ens] = gene
 
-    if 0 < len(n_gene_genes):
+        ens_to_gene["{}_at".format(ens)] = gene
 
-        return n_gene_genes[max(n_gene_genes.keys())]
+    refseq_nm_nc_gene = read_csv(
+        "{}/refseq_nm_nc_gene.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"
+    )
+
+    refseq_to_gene = {}
+
+    for column in ("RefSeq mRNA ID", "RefSeq ncRNA ID"):
+
+        refseq_gene = refseq_nm_nc_gene.loc[:, [column, "Gene name"]].dropna()
+
+        refseq_to_gene.update(dict(zip(*refseq_gene.to_numpy().T)))
+
+    ilmnid_to_gene = (
+        read_csv(
+            "{}/HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
+            skiprows=7,
+            usecols=(0, 21),
+            index_col=0,
+            squeeze=True,
+        )
+        .dropna()
+        .apply(lambda str_: str_.split(sep=";")[0])
+        .to_dict()
+    )
+
+    n_to_genes = {}
+
+    for _to_gene in (ens_to_gene, ilmnid_to_gene, refseq_to_gene):
+
+        genes = tuple(_to_gene.get(id_) for id_ in ids)
+
+        is_none = tuple(gene is None for gene in genes)
+
+        if not all(is_none):
+
+            n_gene = len(is_none) - sum(is_none)
+
+            print("Named {} genes.".format(n_gene))
+
+            n_to_genes[n_gene] = genes
+
+    assert 0 < len(n_to_genes)
+
+    return n_to_genes[max(n_to_genes.keys())]
 
 
 def name_cell_lines(names):
