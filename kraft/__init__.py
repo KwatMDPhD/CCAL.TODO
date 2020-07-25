@@ -8,6 +8,7 @@ from . import (
     function_heat_map,
     gct,
     gene,
+    geo,
     gmt,
     grid,
     information,
