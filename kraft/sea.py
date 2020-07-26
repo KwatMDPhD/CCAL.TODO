@@ -1,13 +1,17 @@
-from numpy import asarray, nan, where
+from multiprocessing import Pool
 
+from numpy import asarray, nan, where
+from pandas import DataFrame, Series
+
+from .array import normalize
 from .information import get_jsd
 from .plot import plot_plotly
 
 
-def score_set(
-    element_score,
+def score_sample_and_set(
+    element_scores,
     elements,
-    sort_element_score=True,
+    sort_element_scores=True,
     method="classic",
     plot_process=False,
     plot=True,
@@ -19,14 +23,14 @@ def score_set(
     html_file_path=None,
 ):
 
-    if sort_element_score:
+    if sort_element_scores:
 
-        element_score = element_score.sort_values()
+        element_scores = element_scores.sort_values()
 
     elements = {element: None for element in elements}
 
     h_1 = asarray(
-        tuple(element in elements for element in element_score.index.to_numpy()),
+        tuple(element in elements for element in element_scores.index.to_numpy()),
         dtype=float,
     )
 
@@ -36,7 +40,7 @@ def score_set(
 
     m_1 = 1 - h_1
 
-    a = element_score.abs().values
+    a = element_scores.abs().values
 
     if method == "classic":
 
@@ -207,9 +211,9 @@ def score_set(
 
         data = [
             {
-                "name": "Element Score ({})".format(element_score.size),
-                "y": element_score.to_numpy(),
-                "text": element_score.index.to_numpy(),
+                "name": "Element Score ({})".format(element_scores.size),
+                "y": element_scores.to_numpy(),
+                "text": element_scores.index.to_numpy(),
                 "mode": "lines",
                 "line": {"width": 0, "color": "#20d8ba"},
                 "fill": "tozeroy",
@@ -219,7 +223,7 @@ def score_set(
                 "yaxis": "y2",
                 "x": h_i,
                 "y": (0,) * h_i.size,
-                "text": element_score.index.to_numpy()[h_i],
+                "text": element_scores.index.to_numpy()[h_i],
                 "mode": "markers",
                 "marker": {
                     "symbol": "line-ns-open",
@@ -250,3 +254,52 @@ def score_set(
         plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
 
     return score
+
+
+def _score_sample_and_sets(element_scores, set_to_elements, method):
+
+    element_scores = Series(
+        data=normalize(element_scores.to_numpy(), "-0-"),
+        index=element_scores.index,
+        name=element_scores.name,
+    ).sort_values()
+
+    return tuple(
+        score_sample_and_set(
+            element_scores,
+            elements,
+            sort_element_scores=False,
+            method=method,
+            plot=False,
+        )
+        for elements in set_to_elements.values()
+    )
+
+
+def score_samples_and_sets(
+    element_x_sample, set_to_elements, method="classic", n_job=1, directory_path=None
+):
+
+    pool = Pool(processes=n_job)
+
+    gene_set_x_sample = DataFrame(
+        data=asarray(
+            pool.starmap(
+                _score_sample_and_sets,
+                (
+                    (scores, set_to_elements, method)
+                    for _, scores in element_x_sample.items()
+                ),
+            )
+        ).T,
+        index=set_to_elements.keys(),
+        columns=element_x_sample.columns,
+    )
+
+    if directory_path is not None:
+
+        gene_set_x_sample.to_csv(
+            "{}/gene_set_x_sample.tsv".format(directory_path), sep="\t"
+        )
+
+    return gene_set_x_sample
