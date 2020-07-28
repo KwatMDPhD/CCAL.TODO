@@ -31,7 +31,11 @@ def download(url, directory_path, file_name=None, overwrite=True):
 
     file_path = "{}/{}".format(directory_path, file_name)
 
-    if overwrite or not exists(file_path):
+    if exists(file_path):
+
+        print("{} exists.".format(file_path))
+
+    if not exists(file_path) or overwrite:
 
         print("{} ==> {}...".format(url, file_path))
 
