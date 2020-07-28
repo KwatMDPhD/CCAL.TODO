@@ -1,7 +1,7 @@
 from gzip import open
-from os.path import isfile
 
 from pandas import DataFrame
+from pandas.api.types import is_number
 
 from .internet import download
 from .name_biology import name_genes
@@ -70,18 +70,15 @@ def parse_block(io, block_type):
     return dict_
 
 
-def get_gse(gse_id, directory_path):
+def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
-    file_path = "{}/{}_family.soft.gz".format(directory_path, gse_id)
-
-    if not isfile(file_path):
-
-        assert file_path == download(
-            "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
-                gse_id[:-3], gse_id
-            ),
-            directory_path,
-        )
+    file_path = download(
+        "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
+            gse_id[:-3], gse_id
+        ),
+        directory_path,
+        **download_keyword_arguments
+    )
 
     with open(file_path, mode="rt", errors="replace") as io:
 
@@ -127,11 +124,13 @@ def get_gse(gse_id, directory_path):
 
         if not sample_table.empty:
 
-            values = sample_table.loc[:, "VALUE"]
+            numbers = sample_table.loc[:, "VALUE"]
 
-            values.name = sample
+            if all(is_number(number) for number in numbers.to_numpy()):
 
-            platforms[dict_["Sample_platform_id"]]["sample_values"].append(values)
+                numbers.name = sample
+
+                platforms[dict_["Sample_platform_id"]]["sample_values"].append(numbers)
 
     feature_x_sample = DataFrame(data=samples)
 

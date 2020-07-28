@@ -147,6 +147,6 @@ def name_cell_lines(names):
 
     if 0 < len(fails):
 
-        print("Failed {}.".format(sorted(set(fails))))
+        print("Failed to name cell lines: {}.".format(sorted(set(fails))))
 
     return tuple(renames)

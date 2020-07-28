@@ -1,5 +1,6 @@
 from cgi import parse_header
 from os import remove
+from os.path import exists
 from re import sub
 from shutil import unpack_archive
 from urllib.request import urlopen, urlretrieve
@@ -22,7 +23,7 @@ def get_file_name(url):
     return file_name
 
 
-def download(url, directory_path, file_name=None):
+def download(url, directory_path, file_name=None, overwrite=True):
 
     if file_name is None:
 
@@ -30,17 +31,19 @@ def download(url, directory_path, file_name=None):
 
     file_path = "{}/{}".format(directory_path, file_name)
 
-    print("{} ==> {}...".format(url, file_path))
+    if overwrite or not exists(file_path):
 
-    if url.startswith("ftp"):
+        print("{} ==> {}...".format(url, file_path))
 
-        urlretrieve(url, file_path)
+        if url.startswith("ftp"):
 
-    else:
+            urlretrieve(url, file_path)
 
-        with open(file_path, mode="wb") as io:
+        else:
 
-            io.write(get(url, allow_redirects=True).content)
+            with open(file_path, mode="wb") as io:
+
+                io.write(get(url, allow_redirects=True).content)
 
     return file_path
 
