@@ -1,8 +1,8 @@
 from gzip import open
+from os.path import isfile
 
 from pandas import DataFrame
 
-from .dataframe import error_axes
 from .internet import download
 from .name_biology import name_genes
 from .support import cast_builtin
@@ -72,12 +72,16 @@ def parse_block(io, block_type):
 
 def get_gse(gse_id, directory_path):
 
-    file_path = download(
-        "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
-            gse_id[:-3], gse_id
-        ),
-        directory_path,
-    )
+    file_path = "{}/{}_family.soft.gz".format(directory_path, gse_id)
+
+    if not isfile(file_path):
+
+        assert file_path == download(
+            "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
+                gse_id[:-3], gse_id
+            ),
+            directory_path,
+        )
 
     with open(file_path, mode="rt", errors="replace") as io:
 
@@ -133,11 +137,9 @@ def get_gse(gse_id, directory_path):
 
     sample_id_to_name = feature_x_sample.loc["Sample_title", :].to_dict()
 
-    feature_x_sample.columns = (
-        sample_id_to_name[id_] for id_ in feature_x_sample.columns.to_numpy()
-    )
+    feature_x_sample.columns = feature_x_sample.loc["Sample_title", :]
 
-    error_axes(feature_x_sample)
+    feature_x_sample.drop("Sample_title", inplace=True)
 
     feature_x_sample.index.name = "Feature"
 
@@ -168,13 +170,13 @@ def get_gse(gse_id, directory_path):
 
                 if label in table:
 
-                    strs = table[label]
+                    genes = table.loc[:, label]
 
                     if function is not None:
 
-                        strs = strs.apply(function)
+                        genes = genes.apply(function)
 
-                    id_to_gene = strs.to_dict()
+                    id_to_gene = genes.to_dict()
 
                     _x_sample.index = (
                         id_to_gene[id_] for id_ in _x_sample.index.to_numpy()

@@ -101,9 +101,15 @@ def name_genes(ids):
 
             n_to_genes[n_gene] = genes
 
-    assert 0 < len(n_to_genes)
+    if 0 < len(n_to_genes):
 
-    return n_to_genes[max(n_to_genes.keys())]
+        return n_to_genes[max(n_to_genes.keys())]
+
+    else:
+
+        print("Failed to name genes; returning IDs...")
+
+        return ids
 
 
 def name_cell_lines(names):
