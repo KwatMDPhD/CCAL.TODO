@@ -70,6 +70,7 @@ def parse_block(io, block_type):
     return dict_
 
 
+# TODO: consider using Sample_data_row_count
 def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
     file_path = download(
