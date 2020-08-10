@@ -1,7 +1,7 @@
 from KDEpy import FFTKDE
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
-from .CONSTANT import FLOAT_RESOLUTION
+from . import FLOAT_RESOLUTION
 from .grid import make_grid_1d, make_grid_nd, plot_grid_nd
 
 

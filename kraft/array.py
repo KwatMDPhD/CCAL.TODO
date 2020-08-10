@@ -2,7 +2,7 @@ from numpy import diff, full, isnan, log as loge, log2, log10, nan, nanmin, uniq
 from numpy.random import seed, shuffle as shuffle_
 from scipy.stats import rankdata
 
-from .CONSTANT import RANDOM_SEED
+from . import RANDOM_SEED
 
 
 def error_nan(numbers):

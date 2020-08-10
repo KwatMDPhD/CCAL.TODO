@@ -2,7 +2,7 @@ from numpy import full, nan
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
-from .CONSTANT import FLOAT_RESOLUTION
+from . import FLOAT_RESOLUTION
 
 
 def fit_each_dataframe_row_to_skew_t_pdf(dataframe, n_job=1, tsv_file_path=None):

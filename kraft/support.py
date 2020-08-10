@@ -33,7 +33,7 @@ def cast_builtin(object_):
 
             return builtin_object
 
-    for type_ in (int, float):
+    for type_ in (float, int):
 
         try:
 

@@ -13,8 +13,8 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Series, isna
 
+from . import RANDOM_SEED
 from .array import ignore_nan_and_function_1, map_int, normalize as array_normalize
-from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_nd
 from .plot import plot_heat_map, plot_histogram
 

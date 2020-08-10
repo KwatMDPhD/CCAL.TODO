@@ -4,7 +4,7 @@ from pandas import Series
 from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
 from scipy.spatial.distance import squareform
 
-from .CONSTANT import RANDOM_SEED
+from . import RANDOM_SEED
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_heat_map
 
 
