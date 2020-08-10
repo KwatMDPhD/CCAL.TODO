@@ -2,7 +2,7 @@ from numpy import full, isnan, nan
 from numpy.random import seed, shuffle
 from sklearn.linear_model import LinearRegression
 
-from . import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED
 from .plot import plot_plotly
 from .significance import get_p_value
 from .support import merge

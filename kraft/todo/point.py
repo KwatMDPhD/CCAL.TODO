@@ -2,7 +2,7 @@ from numpy import apply_along_axis, full, isnan, nan, unique, where
 from pandas import DataFrame
 from sklearn.manifold import MDS
 
-from . import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED
 from .array import normalize
 from .geometry import get_convex_hull, get_triangulation
 from .plot import COLORBAR, get_color, make_colorscale, plot_plotly

@@ -5,7 +5,7 @@ from pandas import DataFrame
 from scipy.optimize import nnls
 from sklearn.decomposition import NMF
 
-from . import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED
 from .array import normalize
 from .clustering import cluster
 from .plot import plot_heat_map, plot_plotly

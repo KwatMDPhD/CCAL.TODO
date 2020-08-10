@@ -1,7 +1,7 @@
 from numpy import asarray, full, unique
 from pandas import isna, read_csv
 
-from . import DATA_DIRECTORY_PATH
+from .CONSTANT import DATA_DIRECTORY_PATH
 
 
 def select_genes(selection=None):
