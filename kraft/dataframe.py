@@ -13,8 +13,8 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Series, isna
 
-from .CONSTANT import RANDOM_SEED
 from .array import ignore_nan_and_function_1, map_int, normalize as array_normalize
+from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_nd
 from .plot import plot_heat_map, plot_histogram
 
@@ -30,6 +30,27 @@ def error_axes(dataframe):
         assert not is_na.any()
 
         assert (counts == 1).all()
+
+
+def print_value_n(dataframe, axis):
+
+    assert axis in (0, 1)
+
+    if axis == 0:
+
+        generator = dataframe.iterrows()
+
+    else:
+
+        generator = dataframe.items()
+
+    for _, values in generator:
+
+        value_n = values.value_counts()
+
+        print("=" * 80)
+
+        print(value_n)
 
 
 def drop_axis_label(dataframe, axis, min_good_value=None, min_good_unique_value=None):

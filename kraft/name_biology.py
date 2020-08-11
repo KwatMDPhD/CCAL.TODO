@@ -1,5 +1,5 @@
-from numpy import asarray, full, unique
-from pandas import isna, read_csv
+from numpy import asarray, full
+from pandas import read_csv
 
 from .CONSTANT import DATA_DIRECTORY_PATH
 
@@ -8,11 +8,15 @@ def select_genes(selection=None):
 
     if selection is None:
 
-        selection = {"Locus group": ("protein-coding gene",)}
+        selection = {"locus_group": ("protein-coding gene",)}
 
-    table = read_csv("{}/hgnc_gene_group.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t")
+    table = read_csv(
+        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
+    )
 
-    is_selected = full(table.shape[0], True)
+    genes = table.index.to_numpy()
+
+    is_selected = full(genes.size, True)
 
     for label, selection in selection.items():
 
@@ -20,96 +24,71 @@ def select_genes(selection=None):
 
         is_selected &= asarray(
             tuple(
-                not isna(object_) and object_ in selection
-                for object_ in table.loc[:, label].to_numpy()
+                isinstance(value, str) and value in selection
+                for value in table.loc[:, label].to_numpy()
             )
         )
 
         print("{}/{}".format(is_selected.sum(), is_selected.size))
 
-    genes = (
-        table.loc[
-            is_selected, ["symbol" in label for label in table.columns.to_numpy()],
-        ]
-        .to_numpy()
-        .ravel()
-    )
-
-    return unique(genes[~isna(genes)])
+    return genes[is_selected]
 
 
 def name_genes(ids):
 
-    enst_ensg_gene = read_csv(
-        "{}/enst_ensg_gene.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"
+    hgnc = read_csv(
+        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
     )
 
-    ens_to_gene = {}
+    _to_gene = {}
 
-    for column in ("Transcript stable ID version", "Gene stable ID version"):
+    for gene, row in zip(
+        hgnc.index.to_numpy(),
+        hgnc.drop(
+            labels=[
+                "locus_group",
+                "locus_type",
+                "status",
+                "location",
+                "location_sortable",
+                "gene_family",
+                "gene_family_id",
+                "date_approved_reserved",
+                "date_symbol_changed",
+                "date_name_changed",
+                "date_modified",
+                "pubmed_id",
+                "lsdb",
+            ],
+            axis=1,
+        ).to_numpy(),
+    ):
 
-        ens_gene = enst_ensg_gene.loc[:, [column, "Gene name"]].dropna()
+        for str_ in row:
 
-        ens_to_gene.update(dict(zip(*ens_gene.to_numpy().T)))
+            if isinstance(str_, str):
 
-    for ens, gene in tuple(ens_to_gene.items()):
+                for split in str_.split(sep="|"):
 
-        ens = ens.split(sep=".")[0]
+                    _to_gene[split] = gene
 
-        ens_to_gene[ens] = gene
+    genes = tuple(_to_gene.get(id_) for id_ in ids)
 
-        ens_to_gene["{}_at".format(ens)] = gene
+    is_none = tuple(gene is None for gene in genes)
 
-    refseq_nm_nc_gene = read_csv(
-        "{}/refseq_nm_nc_gene.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"
-    )
-
-    refseq_to_gene = {}
-
-    for column in ("RefSeq mRNA ID", "RefSeq ncRNA ID"):
-
-        refseq_gene = refseq_nm_nc_gene.loc[:, [column, "Gene name"]].dropna()
-
-        refseq_to_gene.update(dict(zip(*refseq_gene.to_numpy().T)))
-
-    ilmnid_to_gene = (
-        read_csv(
-            "{}/HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
-            skiprows=7,
-            usecols=(0, 21),
-            index_col=0,
-            squeeze=True,
-        )
-        .dropna()
-        .apply(lambda str_: str_.split(sep=";")[0])
-        .to_dict()
-    )
-
-    n_to_genes = {}
-
-    for _to_gene in (ens_to_gene, ilmnid_to_gene, refseq_to_gene):
-
-        genes = tuple(_to_gene.get(id_) for id_ in ids)
-
-        is_none = tuple(gene is None for gene in genes)
-
-        if not all(is_none):
-
-            n_gene = len(is_none) - sum(is_none)
-
-            print("Named {} genes.".format(n_gene))
-
-            n_to_genes[n_gene] = genes
-
-    if 0 < len(n_to_genes):
-
-        return n_to_genes[max(n_to_genes.keys())]
-
-    else:
+    if all(is_none):
 
         print("Failed to name genes; returning IDs...")
 
         return ids
+
+    else:
+
+        n_gene = len(is_none) - sum(is_none)
+
+        print("Named {} genes.".format(n_gene))
+
+        return genes
 
 
 def name_cell_lines(names):

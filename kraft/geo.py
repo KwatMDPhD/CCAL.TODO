@@ -70,6 +70,19 @@ def parse_block(io, block_type):
     return dict_
 
 
+def print__x_sample(_x_sample):
+
+    print("=" * 80)
+
+    print(_x_sample.iloc[:8, :2])
+
+    print(_x_sample.shape)
+
+    print("-" * 80)
+
+    print()
+
+
 def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
     file_path = download(
@@ -118,95 +131,118 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
         platforms[platform]["sample_values"] = []
 
-    for sample, dict_ in samples.items():
+    for sample, sample_dict in samples.items():
 
-        sample_table = dict_.pop("table")
+        sample_table = sample_dict.pop("table")
 
         if not sample_table.empty:
 
-            numbers = sample_table.loc[:, "VALUE"]
+            values = sample_table.loc[:, "VALUE"]
 
-            if all(is_number(number) for number in numbers.to_numpy()):
+            if all(is_number(value) for value in values.to_numpy()):
 
-                numbers.name = sample
+                values.name = sample
 
-                platforms[dict_["Sample_platform_id"]]["sample_values"].append(numbers)
+                platforms[sample_dict["Sample_platform_id"]]["sample_values"].append(
+                    values
+                )
 
     feature_x_sample = DataFrame(data=samples)
 
+    feature_x_sample.index.name = "Feature"
+
     sample_id_to_name = feature_x_sample.loc["Sample_title", :].to_dict()
 
-    feature_x_sample.columns = feature_x_sample.loc["Sample_title", :]
+    feature_x_sample.drop(labels=["Sample_title"], inplace=True)
 
-    feature_x_sample.drop("Sample_title", inplace=True)
+    feature_x_sample.columns = (
+        sample_id_to_name[id_] for id_ in feature_x_sample.columns.to_numpy()
+    )
 
-    feature_x_sample.index.name = "Feature"
+    print__x_sample(feature_x_sample)
 
     _x_samples = [feature_x_sample]
 
-    for platform, dict_ in platforms.items():
+    for platform, platform_dict in platforms.items():
 
-        _x_sample = DataFrame(data=dict_.pop("sample_values")).T
+        _x_sample = DataFrame(data=platform_dict.pop("sample_values")).T
 
         if not _x_sample.empty:
 
-            table = dict_["table"]
+            print(platform)
+
+            id_to_gene = {}
+
+            platform_table = platform_dict["table"]
+
+            print(platform_table.columns)
+
+            def gene_symbol(str_):
+
+                separator = "///"
+
+                if separator in str_:
+
+                    return str_.split(sep=separator)[0].strip()
+
+                return str_
 
             def gene_assignment(str_):
 
-                if "//" in str_:
+                separator = "//"
 
-                    return str_.split(sep="//")[1].strip()
+                if separator in str_:
+
+                    return str_.split(sep=separator)[1].strip()
+
+                return str_
 
             for label, function in (
-                ("GB_ACC", None),
+                ("Gene Symbol", gene_symbol),
                 ("gene", None),
                 ("gene_assignment", gene_assignment),
                 ("gene_symbol", None),
                 ("ilmn_gene", None),
                 ("oligoset_genesymbol", None),
+                ("GB_ACC", None),
             ):
 
-                if label in table:
+                if label in platform_table:
 
-                    genes = table.loc[:, label]
+                    print(label)
+
+                    genes = platform_table.loc[:, label]
 
                     if function is not None:
 
                         genes = genes.apply(function)
 
-                    id_to_gene = genes.to_dict()
+                    id_to_gene.update(genes.to_dict())
 
-                    _x_sample.index = (
-                        id_to_gene[id_] for id_ in _x_sample.index.to_numpy()
+                    print(
+                        "{} IDs ==> {} genes".format(
+                            len(id_to_gene), len(set(id_to_gene.values()))
+                        )
                     )
 
                     break
 
-            genes = name_genes(_x_sample.index.to_numpy())
+            _x_sample.index = name_genes(
+                tuple(id_to_gene[id_] for id_ in _x_sample.index.to_numpy())
+            )
 
-            if genes is not None:
+            _x_sample = (
+                _x_sample.loc[~_x_sample.index.isna(), :].groupby(level=0).median()
+            )
 
-                _x_sample.index = genes
-
-            _x_sample.index.name = platform
+            _x_sample.index.name = "Gene"
 
             _x_sample.columns = (
                 sample_id_to_name[id_] for id_ in _x_sample.columns.to_numpy()
             )
 
-            _x_samples.append(
-                _x_sample.loc[~_x_sample.index.isna(), :].groupby(level=0).median()
-            )
+            print__x_sample(_x_sample)
 
-    for _x_sample in _x_samples:
-
-        print("=" * 80)
-
-        print(_x_sample.shape)
-
-        print("-" * 80)
-
-        print(_x_sample.iloc[:2, :2])
+            _x_samples.append(_x_sample)
 
     return tuple(_x_samples)

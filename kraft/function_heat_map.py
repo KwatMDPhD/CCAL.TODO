@@ -14,9 +14,9 @@ from numpy import (
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .CONSTANT import RANDOM_SEED
 from .array import check_is_sorted, ignore_nan_and_function_2
 from .clustering import cluster
+from .CONSTANT import RANDOM_SEED
 from .dataframe import normalize as dataframe_normalize
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
 from .series import get_extreme_labels, normalize as series_normalize

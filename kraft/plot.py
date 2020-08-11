@@ -55,9 +55,9 @@ def get_color(colorscale, number, n=None):
 
     if n is not None:
 
-        assert isinstance(cast_builtin(n), int)
+        assert float(n).is_integer()
 
-        assert isinstance(cast_builtin(number), int)
+        assert float(number).is_integer()
 
         if 1 <= number < n:
 

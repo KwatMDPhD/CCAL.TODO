@@ -5,8 +5,8 @@ from numpy import apply_along_axis, full, nan
 from pandas import DataFrame
 from scipy.spatial import Delaunay
 
-from .CONSTANT import RANDOM_SEED
 from .array import normalize
+from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_1d, shape
 from .kernel_density import get_bandwidth
 from .plot import plot_heat_map
