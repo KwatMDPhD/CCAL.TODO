@@ -1,4 +1,6 @@
 from gzip import open
+from .dict_ import summarize
+from .dataframe import peak
 
 from pandas import DataFrame
 from pandas.api.types import is_number
@@ -68,19 +70,6 @@ def parse_block(io, block_type):
     dict_["table"] = table
 
     return dict_
-
-
-def print__x_sample(_x_sample):
-
-    print("=" * 80)
-
-    print(_x_sample.iloc[:8, :2])
-
-    print(_x_sample.shape)
-
-    print("-" * 80)
-
-    print()
 
 
 def get_gse(gse_id, directory_path, **download_keyword_arguments):
@@ -159,7 +148,7 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
         sample_id_to_name[id_] for id_ in feature_x_sample.columns.to_numpy()
     )
 
-    print__x_sample(feature_x_sample)
+    peak(feature_x_sample)
 
     _x_samples = [feature_x_sample]
 
@@ -175,7 +164,11 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
             platform_table = platform_dict["table"]
 
-            print(platform_table.columns)
+            print("Platform table columns:")
+
+            for label in platform_table.columns.to_numpy():
+
+                print("\t{}".format(label))
 
             def gene_symbol(str_):
 
@@ -183,7 +176,7 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
                 if separator in str_:
 
-                    return str_.split(sep=separator)[0].strip()
+                    return str_.split(sep=separator, maxsplit=1)[0].strip()
 
                 return str_
 
@@ -197,14 +190,36 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
                 return str_
 
+            def associated_gene(str_):
+
+                separator = "//"
+
+                if separator in str_:
+
+                    return str_.split(sep=separator)[0].strip()
+
+                return str_
+
+            def ucsc_refgene_name(str_):
+
+                separator = ";"
+
+                if separator in str_:
+
+                    return str_.split(sep=separator, maxsplit=1)[0].strip()
+
+                return str_
+
             for label, function in (
                 ("Gene Symbol", gene_symbol),
+                ("Associated Gene", associated_gene),
+                ("Symbol", None),
+                ("UCSC_RefGene_Name", ucsc_refgene_name),
                 ("gene", None),
                 ("gene_assignment", gene_assignment),
                 ("gene_symbol", None),
                 ("ilmn_gene", None),
                 ("oligoset_genesymbol", None),
-                ("GB_ACC", None),
             ):
 
                 if label in platform_table:
@@ -219,11 +234,7 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
                     id_to_gene.update(genes.to_dict())
 
-                    print(
-                        "{} IDs ==> {} genes".format(
-                            len(id_to_gene), len(set(id_to_gene.values()))
-                        )
-                    )
+                    summarize(id_to_gene)
 
                     break
 
@@ -241,7 +252,7 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
                 sample_id_to_name[id_] for id_ in _x_sample.columns.to_numpy()
             )
 
-            print__x_sample(_x_sample)
+            peak(_x_sample)
 
             _x_samples.append(_x_sample)
 

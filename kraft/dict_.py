@@ -1,3 +1,9 @@
+#TODO: add to notebook
+def summarize(dict_):
+
+    print("{} keys ==> {} unique values".format(len(dict_), len(set(dict_.values()))))
+
+
 def merge(dict_0, dict_1, function=None):
 
     dict_01 = {}

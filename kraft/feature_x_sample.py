@@ -1,4 +1,6 @@
 from pandas import DataFrame, concat
+from pandas import read_excel, read_csv
+from .CONSTANT import DATA_DIRECTORY_PATH
 
 from .array import guess_type
 from .series import binarize
@@ -50,6 +52,63 @@ def separate_type(feature_x_):
     binary_x_.index.name = index_name
 
     return continuous_x_, binary_x_
+
+
+# TODO: add to notebook
+def group_cg(cg_x_):
+
+    cg_to_gene = {}
+
+    for cg_to_genes in (
+        read_excel(
+            "{}/illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
+            usecols=(0, 10),
+            index_col=0,
+            squeeze=True,
+        ),
+        read_csv(
+            "{}/HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
+            skiprows=7,
+            usecols=(0, 21),
+            index_col=0,
+            squeeze=True,
+        ),
+        read_csv(
+            "{}/infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip".format(
+                DATA_DIRECTORY_PATH
+            ),
+            skiprows=7,
+            usecols=(0, 15),
+            index_col=0,
+            squeeze=True,
+        ),
+    ):
+
+        for cg, genes in cg_to_genes.dropna().items():
+
+            cg_to_gene[cg] = genes.split(sep=";", maxsplit=1)[0]
+
+    gene_x_ = DataFrame(data=cg_x_.to_numpy(), columns=cg_x_.columns)
+
+    gene_x_.index = (cg_to_gene.get(cg) for cg in cg_x_.index.to_numpy())
+
+    gene_x_.index.name = "Gene"
+
+    print(gene_x_.shape)
+
+    print("Dropping no gene...")
+
+    gene_x_ = gene_x_.loc[~gene_x_.index.isna(), :]
+
+    print(gene_x_.shape)
+
+    print("Grouping by gene...")
+
+    gene_x_ = gene_x_.groupby(level=0).median()
+
+    print(gene_x_.shape)
+
+    return gene_x_
 
 
 # def process_feature_x_sample(
