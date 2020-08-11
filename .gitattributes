@@ -1,5 +1,1 @@
-kraft/data/cell_line_name_rename.tsv.gz filter=lfs diff=lfs merge=lfs -text
-kraft/data/hgnc_complete_set.txt.gz filter=lfs diff=lfs merge=lfs -text
-kraft/data/HumanMethylation450_15017482_v1-2.csv.gz filter=lfs diff=lfs merge=lfs -text
-kraft/data/illumina_humanmethylation27_content.xlsx filter=lfs diff=lfs merge=lfs -text
 kraft/data/infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip filter=lfs diff=lfs merge=lfs -text
