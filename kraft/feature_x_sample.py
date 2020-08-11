@@ -1,8 +1,7 @@
-from pandas import DataFrame, concat
-from pandas import read_excel, read_csv
-from .CONSTANT import DATA_DIRECTORY_PATH
+from pandas import DataFrame, concat, read_csv, read_excel
 
 from .array import guess_type
+from .CONSTANT import DATA_DIRECTORY_PATH
 from .series import binarize
 from .support import cast_builtin
 

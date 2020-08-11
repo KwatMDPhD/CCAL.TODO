@@ -1,10 +1,10 @@
 from gzip import open
-from .dict_ import summarize
-from .dataframe import peak
 
 from pandas import DataFrame
 from pandas.api.types import is_number
 
+from .dataframe import peak
+from .dict_ import summarize
 from .internet import download
 from .name_biology import name_genes
 from .support import cast_builtin

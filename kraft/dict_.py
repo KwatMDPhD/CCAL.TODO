@@ -1,4 +1,4 @@
-#TODO: add to notebook
+# TODO: add to notebook
 def summarize(dict_):
 
     print("{} keys ==> {} unique values".format(len(dict_), len(set(dict_.values()))))
