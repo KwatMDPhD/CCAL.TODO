@@ -5,6 +5,22 @@ from .series import binarize
 from .support import cast_builtin
 
 
+# TODO: add to notebook
+# TODO: check bad index
+# TODO: check index.name
+def collapse(matrix):
+
+    print(matrix.shape)
+
+    print("Collapsing...")
+
+    matrix = matrix.groupby(level=0).median()
+
+    print(matrix.shape)
+
+    return matrix
+
+
 def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
 
     continuous = []
@@ -45,13 +61,13 @@ def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
 
             binary.append(binary_x_)
 
-    index_name = feature_x_.index.name
+    format_ = "{} ({{}})".format(feature_x_.index.name)
 
     if 0 < len(continuous):
 
         continuous_x_ = DataFrame(data=continuous)
 
-        continuous_x_.index.name = index_name
+        continuous_x_.index.name = format_.format("continuous")
 
     else:
 
@@ -61,7 +77,7 @@ def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
 
         binary_x_ = concat(binary)
 
-        binary_x_.index.name = index_name
+        binary_x_.index.name = format_.format("binary")
 
     else:
 

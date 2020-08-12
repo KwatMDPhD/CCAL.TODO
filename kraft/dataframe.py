@@ -318,20 +318,6 @@ def normalize(matrix, axis, method, **normalize_keyword_arguments):
     return DataFrame(matrix, index=axis_0_labels, columns=axis_1_labels)
 
 
-# TODO: add to notebook
-def collapse(matrix):
-
-    print(matrix.shape)
-
-    print("Collapsing...")
-
-    matrix = matrix.groupby(level=0).median()
-
-    print(matrix.shape)
-
-    return matrix
-
-
 def summarize(
     matrix,
     plot=True,

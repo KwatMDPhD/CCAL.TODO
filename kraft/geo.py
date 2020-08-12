@@ -6,7 +6,7 @@ from pandas.api.types import is_number
 
 from .dataframe import peak
 from .dict_ import summarize
-from .feature_x_sample import separate_type
+from .feature_x_sample import collapse, separate_type
 from .internet import download
 from .support import cast_builtin
 
@@ -83,35 +83,29 @@ def name_ids(ids, platform, platform_table):
 
         label = "Gene Symbol"
 
-        def function(str_):
+        def function(name):
 
-            if str_ != "":
+            if name != "":
 
-                return str_.split(sep=" /// ", maxsplit=1)[0]
+                return name.split(sep=" /// ", maxsplit=1)[0]
 
     elif platform in (13534,):
 
         label = "UCSC_RefGene_Name"
 
-        def function(str_):
+        def function(name):
 
-            return str_.split(sep=";", maxsplit=1)[0]
+            return name.split(sep=";", maxsplit=1)[0]
 
     elif platform in (11532,):
 
         label = "gene_assignment"
 
-        def function(str_):
+        def function(name):
 
-            if str_ != "---":
+            if name != "---":
 
-                return str_.split(sep=" // ", maxsplit=2)[1]
-
-    # elif platform in (21145,):
-
-    #     label = None
-
-    #     function = make_cg_to_gene.get
+                return name.split(sep=" // ", maxsplit=2)[1]
 
     else:
 
@@ -139,7 +133,7 @@ def name_ids(ids, platform, platform_table):
 
     if callable(function):
 
-        names = asarray(tuple(function(str_) for str_ in names))
+        names = asarray(tuple(function(name) for name in names))
 
     id_to_name = dict(zip(ids, names))
 
@@ -261,11 +255,9 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
             # _x_sample.index = name_genes(_x_sample.index.to_numpy())
 
-            _x_sample = (
-                _x_sample.loc[~_x_sample.index.isna(), :].groupby(level=0).median()
-            )
-
             _x_sample.index.name = "Gene"
+
+            _x_sample = collapse(_x_sample)
 
             _x_sample.columns = (
                 sample_id_to_name[id_] for id_ in _x_sample.columns.to_numpy()
