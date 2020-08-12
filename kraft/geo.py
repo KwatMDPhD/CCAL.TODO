@@ -232,7 +232,6 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
             ),
             :,
         ],
-        drop_constant=True,
         prefix_feature=False,
     )
 

@@ -5,7 +5,7 @@ from .series import binarize
 from .support import cast_builtin
 
 
-def separate_type(feature_x_, drop_constant=False, prefix_feature=True):
+def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
 
     continuous = []
 
