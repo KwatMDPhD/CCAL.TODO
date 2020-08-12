@@ -307,7 +307,7 @@ def normalize(matrix, axis, method, **normalize_keyword_arguments):
 # TODO: add to notebook
 def peak(dataframe):
 
-    print("=" * 80)
+    print("-" * 80)
 
     print(dataframe.iloc[:8, :2])
 
@@ -315,7 +315,7 @@ def peak(dataframe):
 
     print("-" * 80)
 
-    print()
+    print("\n")
 
 
 def summarize(

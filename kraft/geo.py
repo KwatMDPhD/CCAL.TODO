@@ -1,18 +1,19 @@
 from gzip import open
 
+from numpy import asarray
 from pandas import DataFrame
 from pandas.api.types import is_number
 
 from .dataframe import peak
 from .dict_ import summarize
+from .feature_x_sample import separate_type
 from .internet import download
-from .name_biology import name_genes
 from .support import cast_builtin
 
 
 def get_key_value(line):
 
-    return line.rstrip("\n").lstrip("!").split(sep=" = ", maxsplit=1)
+    return line[1:-1].split(sep=" = ", maxsplit=1)
 
 
 def parse_block(io, block_type):
@@ -49,7 +50,7 @@ def parse_block(io, block_type):
 
                     break
 
-                table.append(line.rstrip("\n").split(sep="\t"))
+                table.append(line[:-1].split(sep="\t"))
 
             break
 
@@ -59,17 +60,92 @@ def parse_block(io, block_type):
 
         table.columns = table.iloc[0, :]
 
-        table = table.drop(index=table.index.to_numpy()[0])
+        table.drop(labels=table.index.to_numpy()[0], inplace=True)
 
         table.index = table.iloc[:, 0]
 
-        table = table.drop(columns=table.columns.to_numpy()[0])
+        table.drop(labels=table.columns.to_numpy()[0], axis=1, inplace=True)
 
         table = table.applymap(cast_builtin)
 
     dict_["table"] = table
 
     return dict_
+
+
+def name_ids(ids, platform, platform_table):
+
+    print(platform)
+
+    platform = int(platform[3:])
+
+    if platform in (96, 97, 570):
+
+        label = "Gene Symbol"
+
+        def function(str_):
+
+            if str_ != "":
+
+                return str_.split(sep=" /// ", maxsplit=1)[0]
+
+    elif platform in (13534,):
+
+        label = "UCSC_RefGene_Name"
+
+        def function(str_):
+
+            return str_.split(sep=";", maxsplit=1)[0]
+
+    elif platform in (11532,):
+
+        label = "gene_assignment"
+
+        def function(str_):
+
+            if str_ != "---":
+
+                return str_.split(sep=" // ", maxsplit=2)[1]
+
+    # elif platform in (21145,):
+
+    #     label = None
+
+    #     function = make_cg_to_gene.get
+
+    else:
+
+        label = None
+
+        function = None
+
+    for label_ in platform_table.columns.to_numpy():
+
+        if label_ == label:
+
+            print("> {} <".format(label_))
+
+        else:
+
+            print(label_)
+
+    if label is None:
+
+        names = ids
+
+    else:
+
+        names = platform_table.loc[:, label].to_numpy()
+
+    if callable(function):
+
+        names = asarray(tuple(function(str_) for str_ in names))
+
+    id_to_name = dict(zip(ids, names))
+
+    summarize(id_to_name)
+
+    return asarray(tuple(id_to_name.get(id_) for id_ in ids))
 
 
 def get_gse(gse_id, directory_path, **download_keyword_arguments):
@@ -148,99 +224,40 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
         sample_id_to_name[id_] for id_ in feature_x_sample.columns.to_numpy()
     )
 
-    peak(feature_x_sample)
+    continuous_feature_x_sample, binary_feature_x_sample = separate_type(
+        feature_x_sample.loc[
+            (
+                "Sample_characteristics_" in label
+                for label in feature_x_sample.index.to_numpy()
+            ),
+            :,
+        ],
+        prefix_feature=False,
+    )
 
-    _x_samples = [feature_x_sample]
+    _x_samples = (
+        feature_x_sample,
+        continuous_feature_x_sample,
+        binary_feature_x_sample,
+    )
+
+    for _x_sample in _x_samples:
+
+        peak(_x_sample)
 
     for platform, platform_dict in platforms.items():
 
-        _x_sample = DataFrame(data=platform_dict.pop("sample_values")).T
+        sample_values = platform_dict.pop("sample_values")
 
-        if not _x_sample.empty:
+        if 0 < len(sample_values):
 
-            print(platform)
+            _x_sample = DataFrame(data=sample_values).T
 
-            id_to_gene = {}
-
-            platform_table = platform_dict["table"]
-
-            print("Platform table columns:")
-
-            for label in platform_table.columns.to_numpy():
-
-                print("\t{}".format(label))
-
-            def gene_symbol(str_):
-
-                separator = "///"
-
-                if separator in str_:
-
-                    return str_.split(sep=separator, maxsplit=1)[0].strip()
-
-                return str_
-
-            def gene_assignment(str_):
-
-                separator = "//"
-
-                if separator in str_:
-
-                    return str_.split(sep=separator)[1].strip()
-
-                return str_
-
-            def associated_gene(str_):
-
-                separator = "//"
-
-                if separator in str_:
-
-                    return str_.split(sep=separator)[0].strip()
-
-                return str_
-
-            def ucsc_refgene_name(str_):
-
-                separator = ";"
-
-                if separator in str_:
-
-                    return str_.split(sep=separator, maxsplit=1)[0].strip()
-
-                return str_
-
-            for label, function in (
-                ("Gene Symbol", gene_symbol),
-                ("Associated Gene", associated_gene),
-                ("Symbol", None),
-                ("UCSC_RefGene_Name", ucsc_refgene_name),
-                ("gene", None),
-                ("gene_assignment", gene_assignment),
-                ("gene_symbol", None),
-                ("ilmn_gene", None),
-                ("oligoset_genesymbol", None),
-            ):
-
-                if label in platform_table:
-
-                    print(label)
-
-                    genes = platform_table.loc[:, label]
-
-                    if function is not None:
-
-                        genes = genes.apply(function)
-
-                    id_to_gene.update(genes.to_dict())
-
-                    summarize(id_to_gene)
-
-                    break
-
-            _x_sample.index = name_genes(
-                tuple(id_to_gene[id_] for id_ in _x_sample.index.to_numpy())
+            _x_sample.index = name_ids(
+                _x_sample.index.to_numpy(), platform, platform_dict["table"]
             )
+
+            # _x_sample.index = name_genes(_x_sample.index.to_numpy())
 
             _x_sample = (
                 _x_sample.loc[~_x_sample.index.isna(), :].groupby(level=0).median()
@@ -254,6 +271,6 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
             peak(_x_sample)
 
-            _x_samples.append(_x_sample)
+            _x_samples += (_x_sample,)
 
-    return tuple(_x_samples)
+    return _x_samples

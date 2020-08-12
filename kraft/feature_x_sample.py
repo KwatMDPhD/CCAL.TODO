@@ -6,7 +6,7 @@ from .series import binarize
 from .support import cast_builtin
 
 
-def separate_type(feature_x_):
+def separate_type(feature_x_, prefix_feature=True):
 
     continuous_rows = []
 
@@ -32,10 +32,16 @@ def separate_type(feature_x_):
 
             binary_x_ = binarize(row)
 
-            feature = binary_x_.index.name
+            if prefix_feature:
+
+                format_ = "({}) {{}}".format(binary_x_.index.name)
+
+            else:
+
+                format_ = "{}"
 
             binary_x_.index = (
-                "({}) {}".format(feature, value) for value in binary_x_.index.to_numpy()
+                format_.format(value) for value in binary_x_.index.to_numpy()
             )
 
             binary_dfs.append(binary_x_)
