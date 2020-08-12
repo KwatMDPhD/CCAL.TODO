@@ -32,6 +32,20 @@ def error_axes(dataframe):
         assert (counts == 1).all()
 
 
+# TODO: add to notebook
+def peak(dataframe):
+
+    print("-" * 80)
+
+    print(dataframe.iloc[:8, :2])
+
+    print(dataframe.shape)
+
+    print("-" * 80)
+
+    print("\n")
+
+
 def print_value_n(dataframe, axis):
 
     assert axis in (0, 1)
@@ -51,6 +65,74 @@ def print_value_n(dataframe, axis):
         print("=" * 80)
 
         print(value_n)
+
+
+def sample(
+    dataframe,
+    axis_0_n,
+    axis_1_n,
+    random_seed=RANDOM_SEED,
+    axis_0_choice_keyword_arguments=None,
+    axis_1_choice_keyword_arguments=None,
+):
+
+    matrix = dataframe.to_numpy()
+
+    axis_0_size, axis_1_size = matrix.shape
+
+    seed(seed=random_seed)
+
+    if axis_0_n is not None:
+
+        if axis_0_n < 1:
+
+            axis_0_n = int(axis_0_n * axis_0_size)
+
+        if axis_0_choice_keyword_arguments is None:
+
+            axis_0_choice_keyword_arguments = {}
+
+        axis_0_is = choice(
+            arange(axis_0_size), size=axis_0_n, **axis_0_choice_keyword_arguments
+        )
+
+    if axis_1_n is not None:
+
+        if axis_1_n < 1:
+
+            axis_1_n = int(axis_1_n * axis_1_size)
+
+        if axis_1_choice_keyword_arguments is None:
+
+            axis_1_choice_keyword_arguments = {}
+
+        axis_1_is = choice(
+            arange(axis_1_size), size=axis_1_n, **axis_1_choice_keyword_arguments
+        )
+
+    if axis_0_n is not None and axis_1_n is not None:
+
+        return DataFrame(
+            matrix[ix_(axis_0_is, axis_1_is)],
+            index=dataframe.index[axis_0_is],
+            columns=dataframe.columns[axis_1_is],
+        )
+
+    elif axis_0_n is not None:
+
+        return DataFrame(
+            matrix[axis_0_is, :],
+            index=dataframe.index[axis_0_is],
+            columns=dataframe.columns,
+        )
+
+    elif axis_1_n is not None:
+
+        return DataFrame(
+            matrix[:, axis_1_is],
+            index=dataframe.index,
+            columns=dataframe.columns[axis_1_is],
+        )
 
 
 def drop_axis_label(dataframe, axis, min_good_value=None, min_good_unique_value=None):
@@ -146,74 +228,6 @@ def drop_axes_label(
         can_return = True
 
 
-def sample(
-    dataframe,
-    axis_0_n,
-    axis_1_n,
-    random_seed=RANDOM_SEED,
-    axis_0_choice_keyword_arguments=None,
-    axis_1_choice_keyword_arguments=None,
-):
-
-    matrix = dataframe.to_numpy()
-
-    axis_0_size, axis_1_size = matrix.shape
-
-    seed(seed=random_seed)
-
-    if axis_0_n is not None:
-
-        if axis_0_n < 1:
-
-            axis_0_n = int(axis_0_n * axis_0_size)
-
-        if axis_0_choice_keyword_arguments is None:
-
-            axis_0_choice_keyword_arguments = {}
-
-        axis_0_is = choice(
-            arange(axis_0_size), size=axis_0_n, **axis_0_choice_keyword_arguments
-        )
-
-    if axis_1_n is not None:
-
-        if axis_1_n < 1:
-
-            axis_1_n = int(axis_1_n * axis_1_size)
-
-        if axis_1_choice_keyword_arguments is None:
-
-            axis_1_choice_keyword_arguments = {}
-
-        axis_1_is = choice(
-            arange(axis_1_size), size=axis_1_n, **axis_1_choice_keyword_arguments
-        )
-
-    if axis_0_n is not None and axis_1_n is not None:
-
-        return DataFrame(
-            matrix[ix_(axis_0_is, axis_1_is)],
-            index=dataframe.index[axis_0_is],
-            columns=dataframe.columns[axis_1_is],
-        )
-
-    elif axis_0_n is not None:
-
-        return DataFrame(
-            matrix[axis_0_is, :],
-            index=dataframe.index[axis_0_is],
-            columns=dataframe.columns,
-        )
-
-    elif axis_1_n is not None:
-
-        return DataFrame(
-            matrix[:, axis_1_is],
-            index=dataframe.index,
-            columns=dataframe.columns[axis_1_is],
-        )
-
-
 def sync_axis(dataframes, axis, method):
 
     if method == "union":
@@ -305,17 +319,17 @@ def normalize(matrix, axis, method, **normalize_keyword_arguments):
 
 
 # TODO: add to notebook
-def peak(dataframe):
+def collapse(matrix):
 
-    print("-" * 80)
+    print(matrix.shape)
 
-    print(dataframe.iloc[:8, :2])
+    print("Collapsing...")
 
-    print(dataframe.shape)
+    matrix = matrix.groupby(level=0).median()
 
-    print("-" * 80)
+    print(matrix.shape)
 
-    print("\n")
+    return matrix
 
 
 def summarize(

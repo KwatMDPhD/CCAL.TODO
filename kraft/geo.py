@@ -232,6 +232,7 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
             ),
             :,
         ],
+        drop_constant=True,
         prefix_feature=False,
     )
 
@@ -243,7 +244,9 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
     for _x_sample in _x_samples:
 
-        peak(_x_sample)
+        if _x_sample is not None:
+
+            peak(_x_sample)
 
     for platform, platform_dict in platforms.items():
 

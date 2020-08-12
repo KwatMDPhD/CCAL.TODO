@@ -1,16 +1,15 @@
-from pandas import DataFrame, concat, read_csv, read_excel
+from pandas import DataFrame, concat
 
 from .array import guess_type
-from .CONSTANT import DATA_DIRECTORY_PATH
 from .series import binarize
 from .support import cast_builtin
 
 
-def separate_type(feature_x_, prefix_feature=True):
+def separate_type(feature_x_, drop_constant=False, prefix_feature=True):
 
-    continuous_rows = []
+    continuous = []
 
-    binary_dfs = []
+    binary = []
 
     for _, row in feature_x_.iterrows():
 
@@ -26,9 +25,9 @@ def separate_type(feature_x_, prefix_feature=True):
 
         if is_continuous:
 
-            continuous_rows.append(row.apply(cast_builtin))
+            continuous.append(row.apply(cast_builtin))
 
-        else:
+        elif not (drop_constant and row.unique().size == 1):
 
             binary_x_ = binarize(row)
 
@@ -44,76 +43,31 @@ def separate_type(feature_x_, prefix_feature=True):
                 format_.format(value) for value in binary_x_.index.to_numpy()
             )
 
-            binary_dfs.append(binary_x_)
-
-    continuous_x_ = DataFrame(data=continuous_rows)
-
-    binary_x_ = concat(binary_dfs)
+            binary.append(binary_x_)
 
     index_name = feature_x_.index.name
 
-    continuous_x_.index.name = index_name
+    if 0 < len(continuous):
 
-    binary_x_.index.name = index_name
+        continuous_x_ = DataFrame(data=continuous)
+
+        continuous_x_.index.name = index_name
+
+    else:
+
+        continuous_x_ = None
+
+    if 0 < len(binary):
+
+        binary_x_ = concat(binary)
+
+        binary_x_.index.name = index_name
+
+    else:
+
+        binary_x_ = None
 
     return continuous_x_, binary_x_
-
-
-# TODO: add to notebook
-def group_cg(cg_x_):
-
-    cg_to_gene = {}
-
-    for cg_to_genes in (
-        read_excel(
-            "{}/illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
-            usecols=(0, 10),
-            index_col=0,
-            squeeze=True,
-        ),
-        read_csv(
-            "{}/HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
-            skiprows=7,
-            usecols=(0, 21),
-            index_col=0,
-            squeeze=True,
-        ),
-        read_csv(
-            "{}/infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip".format(
-                DATA_DIRECTORY_PATH
-            ),
-            skiprows=7,
-            usecols=(0, 15),
-            index_col=0,
-            squeeze=True,
-        ),
-    ):
-
-        for cg, genes in cg_to_genes.dropna().items():
-
-            cg_to_gene[cg] = genes.split(sep=";", maxsplit=1)[0]
-
-    gene_x_ = DataFrame(data=cg_x_.to_numpy(), columns=cg_x_.columns)
-
-    gene_x_.index = (cg_to_gene.get(cg) for cg in cg_x_.index.to_numpy())
-
-    gene_x_.index.name = "Gene"
-
-    print(gene_x_.shape)
-
-    print("Dropping no gene...")
-
-    gene_x_ = gene_x_.loc[~gene_x_.index.isna(), :]
-
-    print(gene_x_.shape)
-
-    print("Grouping by gene...")
-
-    gene_x_ = gene_x_.groupby(level=0).median()
-
-    print(gene_x_.shape)
-
-    return gene_x_
 
 
 # def process_feature_x_sample(

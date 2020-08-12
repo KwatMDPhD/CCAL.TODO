@@ -1,46 +1,16 @@
 from numpy import asarray, full
-from pandas import read_csv
+from pandas import read_csv, read_excel
 
 from .CONSTANT import DATA_DIRECTORY_PATH
 
 
-def select_genes(selection=None):
+def map_str_to_gene():
 
-    if selection is None:
-
-        selection = {"locus_group": ("protein-coding gene",)}
-
-    table = read_csv(
-        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
-    )
-
-    genes = table.index.to_numpy()
-
-    is_selected = full(genes.size, True)
-
-    for label, selection in selection.items():
-
-        print("Selecting by {}...".format(label))
-
-        is_selected &= asarray(
-            tuple(
-                isinstance(value, str) and value in selection
-                for value in table.loc[:, label].to_numpy()
-            )
-        )
-
-        print("{}/{}".format(is_selected.sum(), is_selected.size))
-
-    return genes[is_selected]
-
-
-def name_genes(ids):
+    str_to_gene = {}
 
     hgnc = read_csv(
         "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
     )
-
-    _to_gene = {}
 
     for gene, row in zip(
         hgnc.index.to_numpy(),
@@ -70,7 +40,50 @@ def name_genes(ids):
 
                 for split in str_.split(sep="|"):
 
-                    _to_gene[split] = gene
+                    str_to_gene[split] = gene
+
+    return str_to_gene
+
+
+def map_cg_to_gene():
+
+    cg_to_gene = {}
+
+    for cg_to_genes in (
+        read_excel(
+            "{}/illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
+            usecols=(0, 10),
+            index_col=0,
+            squeeze=True,
+        ),
+        read_csv(
+            "{}/HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
+            skiprows=7,
+            usecols=(0, 21),
+            index_col=0,
+            squeeze=True,
+        ),
+        read_csv(
+            "{}/infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip".format(
+                DATA_DIRECTORY_PATH
+            ),
+            skiprows=7,
+            usecols=(0, 15),
+            index_col=0,
+            squeeze=True,
+        ),
+    ):
+
+        for cg, genes in cg_to_genes.dropna().items():
+
+            cg_to_gene[cg] = genes.split(sep=";", maxsplit=1)[0]
+
+    return cg_to_gene
+
+
+def name_genes(ids):
+
+    _to_gene = {**map_str_to_gene(), **map_cg_to_gene()}
 
     genes = tuple(_to_gene.get(id_) for id_ in ids)
 
@@ -91,14 +104,19 @@ def name_genes(ids):
         return genes
 
 
-def name_cell_lines(names):
+def map_cell_line_name_to_rename():
 
-    name_to_rename = read_csv(
+    return read_csv(
         "{}/cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         index_col=0,
         squeeze=True,
     ).to_dict()
+
+
+def name_cell_lines(names):
+
+    name_to_rename = map_cell_line_name_to_rename()
 
     renames = []
 
@@ -126,6 +144,36 @@ def name_cell_lines(names):
 
     if 0 < len(fails):
 
-        print("Failed to name cell lines: {}.".format(sorted(set(fails))))
+        print("Failed to name: {}.".format(sorted(set(fails))))
 
     return tuple(renames)
+
+
+def select_genes(selection=None):
+
+    if selection is None:
+
+        selection = {"locus_group": ("protein-coding gene",)}
+
+    hgnc = read_csv(
+        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
+    )
+
+    genes = hgnc.index.to_numpy()
+
+    is_selected = full(genes.size, True)
+
+    for label, selection in selection.items():
+
+        print("Selecting by {}...".format(label))
+
+        is_selected &= asarray(
+            tuple(
+                isinstance(value, str) and value in selection
+                for value in hgnc.loc[:, label].to_numpy()
+            )
+        )
+
+        print("{}/{}".format(is_selected.sum(), is_selected.size))
+
+    return genes[is_selected]
