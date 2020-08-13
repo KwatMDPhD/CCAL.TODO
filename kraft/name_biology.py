@@ -85,21 +85,21 @@ def name_genes(ids):
 
     _to_gene = {**map_str_to_gene(), **map_cg_to_gene()}
 
-    genes = tuple(_to_gene.get(id_) for id_ in ids)
+    genes = asarray(tuple(_to_gene.get(id_) for id_ in ids))
 
-    is_none = tuple(gene is None for gene in genes)
+    is_named = asarray(tuple(gene is not None for gene in genes))
 
-    if all(is_none):
+    n = is_named.size
 
-        print("Failed to name genes; returning IDs...")
+    n_named = is_named.sum()
+
+    print("Named {}/{} ({:.2%})".format(n_named, n, n_named / n))
+
+    if n_named == 0:
 
         return ids
 
     else:
-
-        n_gene = len(is_none) - sum(is_none)
-
-        print("Named {} genes.".format(n_gene))
 
         return genes
 
@@ -146,7 +146,7 @@ def name_cell_lines(names):
 
         print("Failed to name: {}.".format(sorted(set(fails))))
 
-    return tuple(renames)
+    return asarray(renames)
 
 
 def select_genes(selection=None):

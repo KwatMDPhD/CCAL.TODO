@@ -1,26 +1,15 @@
-from cgi import parse_header
 from os import remove
 from os.path import exists
-from re import sub
 from shutil import unpack_archive
-from urllib.request import urlopen, urlretrieve
+from urllib.parse import unquote
+from urllib.request import urlretrieve
 
 from requests import get
 
 
 def get_file_name(url):
 
-    remote_file_info = urlopen(url).info()
-
-    if "Content-Disposition" in remote_file_info:
-
-        file_name = parse_header(remote_file_info["Content-Disposition"])[1]["filename"]
-
-    else:
-
-        file_name = sub("%2F", "/", url).split(sep="/")[-1]
-
-    return file_name
+    return unquote(url).split(sep="/")[-1]
 
 
 def download(url, directory_path, file_name=None, overwrite=True):

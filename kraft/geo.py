@@ -8,6 +8,7 @@ from .dataframe import peak
 from .dict_ import summarize
 from .feature_x_sample import collapse, separate_type
 from .internet import download
+from .name_biology import name_genes
 from .support import cast_builtin
 
 
@@ -97,15 +98,29 @@ def name_ids(ids, platform, platform_table):
 
             return name.split(sep=";", maxsplit=1)[0]
 
-    elif platform in (11532,):
+    elif platform in (5175, 11532):
 
         label = "gene_assignment"
 
         def function(name):
 
-            if name != "---":
+            if isinstance(name, str) and name != "---":
 
                 return name.split(sep=" // ", maxsplit=2)[1]
+
+    elif platform in (10558,):
+
+        label = "Symbol"
+
+        function = None
+
+    elif platform in (2004, 3718, 3720):
+
+        label = "Associated Gene"
+
+        def function(name):
+
+            return name.split(sep=" // ", maxsplit=1)[0]
 
     else:
 
@@ -125,21 +140,21 @@ def name_ids(ids, platform, platform_table):
 
     if label is None:
 
-        names = ids
+        return ids
 
     else:
 
         names = platform_table.loc[:, label].to_numpy()
 
-    if callable(function):
+        if callable(function):
 
-        names = asarray(tuple(function(name) for name in names))
+            names = asarray(tuple(function(name) for name in names))
 
-    id_to_name = dict(zip(ids, names))
+        id_to_name = dict(zip(ids, names))
 
-    summarize(id_to_name)
+        summarize(id_to_name)
 
-    return asarray(tuple(id_to_name.get(id_) for id_ in ids))
+        return asarray(tuple(id_to_name.get(id_) for id_ in ids))
 
 
 def get_gse(gse_id, directory_path, **download_keyword_arguments):
@@ -253,7 +268,7 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
                 _x_sample.index.to_numpy(), platform, platform_dict["table"]
             )
 
-            # _x_sample.index = name_genes(_x_sample.index.to_numpy())
+            _x_sample.index = name_genes(_x_sample.index.to_numpy())
 
             _x_sample.index.name = "Gene"
 
