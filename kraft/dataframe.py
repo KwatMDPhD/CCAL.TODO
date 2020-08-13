@@ -37,13 +37,13 @@ def peak(dataframe):
 
     print("-" * 80)
 
-    print(dataframe.iloc[:8, :2])
+    print(dataframe.iloc[:4, :2])
 
     print(dataframe.shape)
 
     print("-" * 80)
 
-    print("\n")
+    print()
 
 
 def print_value_n(dataframe, axis):

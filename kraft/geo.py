@@ -9,19 +9,13 @@ from .dict_ import summarize
 from .feature_x_sample import collapse, separate_type
 from .internet import download
 from .name_biology import name_genes
-from .support import cast_builtin
-
-
-def get_key_value(line):
-
-    return line[1:-1].split(sep=" = ", maxsplit=1)
 
 
 def parse_block(io, block_type):
 
     dict_ = {}
 
-    table = []
+    rows = []
 
     table_begin = "!{}_table_begin\n".format(block_type)
 
@@ -31,13 +25,13 @@ def parse_block(io, block_type):
 
         line = io.readline()
 
-        if line == "" or line.startswith("^"):
+        if line == "" or line[0] == "^":
 
             break
 
         elif line[0] == "!" and " = " in line:
 
-            key, value = get_key_value(line)
+            key, value = line[1:-1].split(sep=" = ", maxsplit=1)
 
             dict_[key] = value
 
@@ -51,23 +45,23 @@ def parse_block(io, block_type):
 
                     break
 
-                table.append(line[:-1].split(sep="\t"))
+                rows.append(line[: -len("\n")].split(sep="\t"))
 
-            break
+    if 0 < len(rows):
 
-    table = DataFrame(data=table)
-
-    if not table.empty:
+        table = DataFrame(data=rows)
 
         table.columns = table.iloc[0, :]
 
-        table.drop(labels=table.index.to_numpy()[0], inplace=True)
+        table.drop(labels=[0], inplace=True)
 
         table.index = table.iloc[:, 0]
 
         table.drop(labels=table.columns.to_numpy()[0], axis=1, inplace=True)
 
-        table = table.applymap(cast_builtin)
+    else:
+
+        table = None
 
     dict_["table"] = table
 
@@ -78,7 +72,7 @@ def name_ids(ids, platform, platform_table):
 
     print(platform)
 
-    platform = int(platform[3:])
+    platform = int(platform[len("GSE") :])
 
     if platform in (96, 97, 570):
 
@@ -114,7 +108,7 @@ def name_ids(ids, platform, platform_table):
 
         function = None
 
-    elif platform in (2004, 3718, 3720):
+    elif platform in (2004, 2005, 3718, 3720):
 
         label = "Associated Gene"
 
@@ -132,7 +126,7 @@ def name_ids(ids, platform, platform_table):
 
         if label_ == label:
 
-            print("> {} <".format(label_))
+            print(">> {} <<".format(label_))
 
         else:
 
@@ -171,19 +165,27 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
         platforms = {}
 
+        platform_str = "^PLATFORM"
+
+        platform_str_size = len(platform_str)
+
         samples = {}
 
-        line = io.readline()
+        sample_str = "^SAMPLE"
+
+        sample_str_size = len("^SAMPLE")
+
+        line = None
 
         while line != "":
 
             line = io.readline()
 
-            if line.startswith("^PLATFORM"):
+            if line[:platform_str_size] == platform_str:
 
                 dict_ = platforms
 
-            elif line.startswith("^SAMPLE"):
+            elif line[:sample_str_size] == sample_str:
 
                 dict_ = samples
 
@@ -191,25 +193,27 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
                 continue
 
-            dict_[get_key_value(line)[1]] = io.tell()
+            dict_[line.split(sep=" = ", maxsplit=1)[1]] = io.tell()
 
         for dict_, block_type in ((platforms, "platform"), (samples, "sample")):
 
             for key in dict_:
 
+                print(key)
+
                 io.seek(dict_[key])
 
                 dict_[key] = parse_block(io, block_type)
 
-    for platform in platforms:
+            if block_type == "platform":
 
-        platforms[platform]["sample_values"] = []
+                dict_["sample_values"] = []
 
     for sample, sample_dict in samples.items():
 
         sample_table = sample_dict.pop("table")
 
-        if not sample_table.empty:
+        if sample_table is not None:
 
             values = sample_table.loc[:, "VALUE"]
 
@@ -225,20 +229,21 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
     feature_x_sample.index.name = "Feature"
 
-    sample_id_to_name = feature_x_sample.loc["Sample_title", :].to_dict()
+    label = "Sample_title"
 
-    feature_x_sample.drop(labels=["Sample_title"], inplace=True)
+    sample_id_to_name = feature_x_sample.loc[label, :].to_dict()
+
+    feature_x_sample.drop(labels=[label], inplace=True)
 
     feature_x_sample.columns = (
         sample_id_to_name[id_] for id_ in feature_x_sample.columns.to_numpy()
     )
 
+    str_ = "Sample_characteristics_"
+
     continuous_feature_x_sample, binary_feature_x_sample = separate_type(
         feature_x_sample.loc[
-            (
-                "Sample_characteristics_" in label
-                for label in feature_x_sample.index.to_numpy()
-            ),
+            (label[: len(str_)] == str_ for label in feature_x_sample.index.to_numpy()),
             :,
         ],
         prefix_feature=False,
