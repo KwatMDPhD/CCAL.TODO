@@ -43,8 +43,6 @@ def peak(dataframe):
 
     print("-" * 80)
 
-    print()
-
 
 def print_value_n(dataframe, axis):
 
