@@ -69,7 +69,7 @@ def _name_features(features, platform, platform_table):
 
         def function(name):
 
-            if isinstance(name, str) and name != "---":
+            if isinstance(name, str) and name not in ("", "---"):
 
                 return name.split(sep=" // ", maxsplit=2)[1]
 
