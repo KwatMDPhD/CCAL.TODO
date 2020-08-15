@@ -9,7 +9,10 @@ def map_str_to_gene():
     str_to_gene = {}
 
     hgnc = read_csv(
-        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
+        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
+        sep="\t",
+        index_col=1,
+        low_memory=False,
     )
 
     for gene, row in zip(
