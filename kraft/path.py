@@ -22,19 +22,19 @@ def path(path):
         print(directory_path)
 
 
-def get_child_paths(parent_directory_path, absolute=True):
+def get_child_paths(directory_path, absolute=True):
 
     child_paths = []
 
-    for directory_path, directory_names, file_names in walk(parent_directory_path):
+    for directory_path_, directory_names, file_names in walk(directory_path):
 
-        for directory_name in directory_names:
+        for name in directory_names:
 
-            child_paths.append("{}/{}/".format(directory_path, directory_name))
+            child_paths.append("{}/{}/".format(directory_path_, name))
 
-        for file_name in file_names:
+        for name in file_names:
 
-            child_paths.append("{}/{}".format(directory_path, file_name))
+            child_paths.append("{}/{}".format(directory_path_, name))
 
     if absolute:
 
@@ -42,15 +42,15 @@ def get_child_paths(parent_directory_path, absolute=True):
 
     else:
 
-        n = len(parent_directory_path) + 1
+        n = len(directory_path) + 1
 
         return tuple(child_path[n:] for child_path in child_paths)
 
 
 def clean(name):
 
-    name_clean = sub(r"(?u)[^-\w.]", "_", name.strip().lower().replace(" ", "_"))
+    name_ = sub(r"(?u)[^-\w.]", "_", name.strip().lower())
 
-    print("{} ==> {}".format(name, name_clean))
+    print("{} ==> {}".format(name, name_))
 
-    return name_clean
+    return name_
