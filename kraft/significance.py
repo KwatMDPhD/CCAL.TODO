@@ -1,4 +1,4 @@
-from numpy import asarray, isnan, sqrt, where
+from numpy import asarray, sqrt, where
 from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
@@ -9,8 +9,6 @@ def get_moe(numbers, confidence=0.95):
 
 
 def get_p_value(number, random_numbers, direction):
-
-    assert not isnan(number)
 
     if direction == "<":
 
