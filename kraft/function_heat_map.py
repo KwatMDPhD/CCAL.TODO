@@ -42,6 +42,71 @@ ANNOTATION_BASE = {
 }
 
 
+def _annotate_se(se, y):
+
+    return {
+        "x": 0,
+        "y": y,
+        "xanchor": "right",
+        "text": "<b>{}</b>".format(se.name),
+        **ANNOTATION_BASE,
+    }
+
+
+def _get_x(score_i):
+
+    return 1.1 + score_i / 6.4
+
+
+def _annotate_scores(scores, y, fraction_row, add_header):
+
+    annotations = []
+
+    if add_header:
+
+        for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+
+            annotations.append(
+                {
+                    "x": _get_x(i),
+                    "y": y,
+                    "xanchor": "center",
+                    "text": "<b>{}</b>".format(text),
+                    **ANNOTATION_BASE,
+                }
+            )
+
+    y -= fraction_row
+
+    for text, (score, moe, p_value, q_value) in scores.iterrows():
+
+        annotations.append(
+            {"x": 0, "y": y, "xanchor": "right", "text": text, **ANNOTATION_BASE}
+        )
+
+        for i, text in enumerate(
+            (
+                "{:.2f} ({:.2f})".format(score, moe),
+                "{:.2e}".format(p_value),
+                "{:.2e}".format(q_value),
+            )
+        ):
+
+            annotations.append(
+                {
+                    "x": _get_x(i),
+                    "y": y,
+                    "xanchor": "center",
+                    "text": text,
+                    **ANNOTATION_BASE,
+                }
+            )
+
+        y -= fraction_row
+
+    return annotations
+
+
 def make(
     se,
     df,
@@ -58,6 +123,7 @@ def make(
     se_data_type="continuous",
     df_data_type="continuous",
     plot_std=nan,
+    title="Function Heat Map",
     directory_path=None,
 ):
 
@@ -180,15 +246,17 @@ def make(
             },
         )
 
+        scores_plot = scores.copy()
+
         if n_extreme is not None:
 
-            scores = scores.loc[
+            scores_plot = scores_plot.loc[
                 get_extreme_labels(
-                    scores.loc[:, "Score"], "<>", n=n_extreme, plot=False
+                    scores_plot.loc[:, "Score"], "<>", n=n_extreme, plot=False
                 )
             ].sort_values("Score", ascending=score_ascending)
 
-        df = df.loc[scores.index, :]
+        df = df.loc[scores_plot.index, :]
 
         if se_data_type == "continuous":
 
@@ -230,12 +298,13 @@ def make(
             "height": max(480, 24 * n_row),
             "yaxis": {"domain": (0, 1 - fraction_row * 2), "showticklabels": False},
             "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
-            "annotations": [annotate_se(se, 1 - fraction_row / 2)],
+            "title": {"text": title},
+            "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
             **LAYOUT_BASE,
         }
 
-        layout["annotations"] += annotate_scores(
-            scores, 1 - fraction_row / 2 * 3, fraction_row, True
+        layout["annotations"] += _annotate_scores(
+            scores_plot, 1 - fraction_row / 2 * 3, fraction_row, True
         )
 
         if directory_path is None:
@@ -287,6 +356,7 @@ def summarize(
     se_ascending=True,
     se_data_type="continuous",
     plot_std=nan,
+    title="Function Heat Map Summary",
     html_file_path=None,
 ):
 
@@ -318,7 +388,8 @@ def summarize(
 
     layout = {
         "height": max(480, 24 * n_row),
-        "annotations": [annotate_se(se, 1 - fraction_row / 2)],
+        "title": {"text": title},
+        "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
         **LAYOUT_BASE,
     }
 
@@ -398,70 +469,6 @@ def summarize(
             }
         )
 
-        layout["annotations"] += annotate_scores(scores_, y, fraction_row, i == 0)
+        layout["annotations"] += _annotate_scores(scores_, y, fraction_row, i == 0)
 
     plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
-
-
-def annotate_se(se, y):
-
-    return {
-        "x": 0,
-        "y": y,
-        "xanchor": "right",
-        "text": "<b>{}</b>".format(se.name),
-        **ANNOTATION_BASE,
-    }
-
-
-def annotate_scores(scores, y, fraction_row, add_header):
-
-    annotations = []
-
-    def get_x(score_i):
-
-        return 1.1 + score_i / 6.4
-
-    if add_header:
-
-        for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
-
-            annotations.append(
-                {
-                    "x": get_x(i),
-                    "y": y,
-                    "xanchor": "center",
-                    "text": "<b>{}</b>".format(text),
-                    **ANNOTATION_BASE,
-                }
-            )
-
-    y -= fraction_row
-
-    for text, (score, moe, p_value, q_value) in scores.iterrows():
-
-        annotations.append(
-            {"x": 0, "y": y, "xanchor": "right", "text": text, **ANNOTATION_BASE}
-        )
-
-        for i, text in enumerate(
-            (
-                "{:.2f} ({:.2f})".format(score, moe),
-                "{:.2e}".format(p_value),
-                "{:.2e}".format(q_value),
-            )
-        ):
-
-            annotations.append(
-                {
-                    "x": get_x(i),
-                    "y": y,
-                    "xanchor": "center",
-                    "text": text,
-                    **ANNOTATION_BASE,
-                }
-            )
-
-        y -= fraction_row
-
-    return annotations
