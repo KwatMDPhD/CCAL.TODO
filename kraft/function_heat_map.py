@@ -262,18 +262,41 @@ def make(
 
             se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
+            se_min = -plot_std
+
+            se_max = plot_std
+
+        else:
+
+            se_min = None
+
+            se_max = None
+
         if df_data_type == "continuous":
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
+
+            df_min = -plot_std
+
+            df_max = plot_std
+
+        else:
+
+            df_min = None
+
+            df_max = None
 
         vector = se.to_numpy()
 
         matrix = df.to_numpy()
 
-        if (
-            not isnan(vector).any()
-            and check_is_sorted(vector)
-            and (1 < unique(vector, return_counts=True)[1]).all()
+        if all(
+            (
+                not isnan(vector).any(),
+                not isnan(matrix).all(axis=1).any(),
+                check_is_sorted(vector),
+                (1 < unique(vector, return_counts=True)[1]).all(),
+            )
         ):
 
             print("Clustering within category...")
@@ -315,12 +338,6 @@ def make(
 
             html_file_path = file_path.replace(".tsv", ".html")
 
-        heatmap_base = {
-            "zmin": -plot_std,
-            "zmax": plot_std,
-            **HEATMAP_BASE,
-        }
-
         plot_plotly(
             {
                 "layout": layout,
@@ -329,16 +346,20 @@ def make(
                         "yaxis": "y2",
                         "x": se.index.to_numpy(),
                         "z": vector.reshape((1, -1)),
+                        "zmin": se_min,
+                        "zmax": se_max,
                         "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
-                        **heatmap_base,
+                        **HEATMAP_BASE,
                     },
                     {
                         "yaxis": "y",
                         "x": df.columns.to_numpy(),
                         "y": df.index.to_numpy()[::-1],
                         "z": matrix[::-1],
+                        "zmin": df_min,
+                        "zmax": df_max,
                         "colorscale": DATA_TYPE_TO_COLORSCALE[df_data_type],
-                        **heatmap_base,
+                        **HEATMAP_BASE,
                     },
                 ],
             },
@@ -374,6 +395,16 @@ def summarize(
 
         se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
+        se_min = -plot_std
+
+        se_max = plot_std
+
+    else:
+
+        se_min = None
+
+        se_max = None
+
     n_space = 2
 
     n_row = 1
@@ -399,19 +430,15 @@ def summarize(
 
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
-    heatmap_base = {
-        "zmin": -plot_std,
-        "zmax": plot_std,
-        **HEATMAP_BASE,
-    }
-
     data = [
         {
             "yaxis": yaxis.replace("axis", ""),
             "x": se.index.to_numpy(),
             "z": se.to_numpy().reshape((1, -1)),
+            "zmin": se_min,
+            "zmax": se_max,
             "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
-            **heatmap_base,
+            **HEATMAP_BASE,
         }
     ]
 
@@ -437,6 +464,16 @@ def summarize(
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
+            df_min = -plot_std
+
+            df_max = plot_std
+
+        else:
+
+            df_min = None
+
+            df_max = None
+
         yaxis = "yaxis{}".format(len(df_dicts) - i)
 
         domain = (
@@ -452,8 +489,10 @@ def summarize(
                 "x": df.columns.to_numpy(),
                 "y": df.index.to_numpy()[::-1],
                 "z": df.to_numpy()[::-1],
+                "zmin": df_min,
+                "zmax": df_max,
                 "colorscale": DATA_TYPE_TO_COLORSCALE[dict_["data_type"]],
-                **heatmap_base,
+                **HEATMAP_BASE,
             }
         )
 
