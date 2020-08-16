@@ -1,6 +1,6 @@
 def read(gmt_file_path):
 
-    gene_set_genes = {}
+    set_to_genes = {}
 
     with open(gmt_file_path) as io:
 
@@ -8,9 +8,9 @@ def read(gmt_file_path):
 
             splits = line.split(sep="\t")
 
-            gene_set_genes[splits[0]] = tuple(gene for gene in splits[2:] if gene != "")
+            set_to_genes[splits[0]] = tuple(gene for gene in splits[2:-1] if gene != "")
 
-    return gene_set_genes
+    return set_to_genes
 
 
 def read_many(gmt_file_paths):

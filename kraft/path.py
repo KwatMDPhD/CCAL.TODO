@@ -1,4 +1,4 @@
-from os import mkdir, walk
+from os import listdir, mkdir, walk
 from os.path import dirname, isdir
 from re import sub
 
@@ -54,3 +54,11 @@ def clean(name):
     print("{} ==> {}".format(name, name_))
 
     return name_
+
+
+# TODO: add to notebook
+def list_(directory_path):
+
+    return tuple(
+        "{}/{}".format(directory_path, name) for name in listdir(directory_path)
+    )

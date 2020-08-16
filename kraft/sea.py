@@ -282,7 +282,7 @@ def score_samples_and_sets(
 
     pool = Pool(processes=n_job)
 
-    gene_set_x_sample = DataFrame(
+    set_x_sample = DataFrame(
         data=asarray(
             pool.starmap(
                 _score_sample_and_sets,
@@ -298,8 +298,6 @@ def score_samples_and_sets(
 
     if directory_path is not None:
 
-        gene_set_x_sample.to_csv(
-            "{}/gene_set_x_sample.tsv".format(directory_path), sep="\t"
-        )
+        set_x_sample.to_csv("{}/set_x_sample.tsv".format(directory_path), sep="\t")
 
-    return gene_set_x_sample
+    return set_x_sample
