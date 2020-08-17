@@ -18,6 +18,7 @@ from .array import check_is_sorted, ignore_nan_and_function_2
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
 from .dataframe import normalize as dataframe_normalize
+from .dict_ import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
 from .series import get_extreme_labels, normalize as series_normalize
 from .significance import get_moe, get_p_values_and_q_values
@@ -317,14 +318,16 @@ def make(
 
         fraction_row = 1 / n_row
 
-        layout = {
-            "height": max(480, 24 * n_row),
-            "yaxis": {"domain": (0, 1 - fraction_row * 2), "showticklabels": False},
-            "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
-            "title": {"text": title},
-            "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
-            **LAYOUT_BASE,
-        }
+        layout = merge(
+            {
+                "height": max(480, 24 * n_row),
+                "yaxis": {"domain": (0, 1 - fraction_row * 2), "showticklabels": False},
+                "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
+                "title": {"text": title},
+                "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
+            },
+            LAYOUT_BASE,
+        )
 
         layout["annotations"] += _annotate_scores(
             scores_plot, 1 - fraction_row / 2 * 3, fraction_row, True
@@ -417,12 +420,14 @@ def summarize(
 
     fraction_row = 1 / n_row
 
-    layout = {
-        "height": max(480, 24 * n_row),
-        "title": {"text": title},
-        "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
-        **LAYOUT_BASE,
-    }
+    layout = merge(
+        {
+            "height": max(480, 24 * n_row),
+            "title": {"text": title},
+            "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
+        },
+        LAYOUT_BASE,
+    )
 
     yaxis = "yaxis{}".format(len(df_dicts) + 1)
 
