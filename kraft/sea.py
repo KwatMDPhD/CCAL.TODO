@@ -258,6 +258,8 @@ def score_sample_and_set(
 
 def _score_sample_and_sets(element_scores, set_to_elements, method):
 
+    print(element_scores.name)
+
     element_scores = Series(
         data=normalize(element_scores.to_numpy(), "-0-"),
         index=element_scores.index,

@@ -14,7 +14,7 @@ from numpy import (
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .array import check_is_sorted, ignore_nan_and_function_2
+from .array import check_is_sorted, get_not_nan_unique, ignore_nan_and_function_2
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
 from .dataframe import normalize as dataframe_normalize
@@ -237,8 +237,9 @@ def make(
         plot_plotly(
             {
                 "layout": {
-                    "title": {"text": "Scores"},
+                    "title": {"text": title},
                     "xaxis": {"title": {"text": "Rank"}},
+                    "yaxis": {"title": {"text": "Score"}},
                 },
                 "data": [
                     {"name": name, "x": numbers.index, "y": numbers}
@@ -259,7 +260,9 @@ def make(
 
         df = df.loc[scores_plot.index, :]
 
-        if se_data_type == "continuous":
+        if se_data_type == "continuous" and 1 < get_not_nan_unique(se.to_numpy()).size:
+
+            print("Normalizing plot...")
 
             se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
@@ -273,7 +276,11 @@ def make(
 
             se_max = None
 
-        if df_data_type == "continuous":
+        if df_data_type == "continuous" and all(
+            1 < get_not_nan_unique(row).size for row in df.to_numpy()
+        ):
+
+            print("Normalizing plot...")
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
@@ -394,7 +401,9 @@ def summarize(
 
         se.sort_values(ascending=se_ascending, inplace=True)
 
-    if se_data_type == "continuous":
+    if se_data_type == "continuous" and 1 < get_not_nan_unique(se.to_numpy()).size:
+
+        print("Normalizing plot...")
 
         se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
@@ -465,7 +474,11 @@ def summarize(
 
         df = df.loc[scores_.index, :]
 
-        if dict_["data_type"] == "continuous":
+        if dict_["data_type"] == "continuous" and all(
+            1 < get_not_nan_unique(row).size for row in df.to_numpy()
+        ):
+
+            print("Normalizing plot...")
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 

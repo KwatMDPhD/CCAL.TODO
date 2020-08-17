@@ -24,7 +24,7 @@ COLORBAR = {
 DATA_TYPE_TO_COLORSCALE = {
     "continuous": make_colorscale(("#0000ff", "#ffffff", "#ff0000")),
     "categorical": make_colorscale(qualitative.Plotly),
-    "binary": make_colorscale(("#c6c2b6", "#006442")),
+    "binary": make_colorscale(("#006442", "#ffffff", "#ffa400")),
 }
 
 
