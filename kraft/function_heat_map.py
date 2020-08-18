@@ -111,9 +111,8 @@ def _annotate_scores(scores, y, fraction_row, add_header):
 def make(
     se,
     df,
-    function,
+    function_or_scores,
     se_ascending=True,
-    scores=None,
     n_job=1,
     random_seed=RANDOM_SEED,
     n_sampling=10,
@@ -144,7 +143,9 @@ def make(
 
     df = df.loc[:, se.index]
 
-    if scores is None:
+    if callable(function_or_scores):
+
+        function = function_or_scores
 
         scores = DataFrame(
             index=df.index, columns=("Score", "0.95 MoE", "P-Value", "Q-Value")
@@ -158,7 +159,7 @@ def make(
 
         pool = Pool(n_job)
 
-        print("\tScore (function={})...".format(function.__name__))
+        print("Score (function={})...".format(function.__name__))
 
         vector = se.to_numpy()
 
@@ -176,7 +177,7 @@ def make(
 
         if 0 < n_sampling:
 
-            print("\t0.95 MoE (n_sampling={})...".format(n_sampling))
+            print("0.95 MoE (n_sampling={})...".format(n_sampling))
 
             row_x_sampling = full((n_row, n_sampling), nan)
 
@@ -199,7 +200,7 @@ def make(
 
         if 0 < n_permutation:
 
-            print("\tP-Value and Q-Value (n_permutation={})...".format(n_permutation))
+            print("P-Value and Q-Value (n_permutation={})...".format(n_permutation))
 
             row_x_permutation = full((n_row, n_permutation), nan)
 
@@ -222,7 +223,7 @@ def make(
 
     else:
 
-        scores = scores.reindex(index=df.index)
+        scores = function_or_scores.reindex(index=df.index)
 
     scores.sort_values("Score", ascending=score_ascending, inplace=True)
 
@@ -262,7 +263,7 @@ def make(
 
         if se_data_type == "continuous" and 1 < get_not_nan_unique(se.to_numpy()).size:
 
-            print("Normalizing plot...")
+            print("Normalizing heat...")
 
             se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
@@ -277,10 +278,10 @@ def make(
             se_max = None
 
         if df_data_type == "continuous" and all(
-            1 < get_not_nan_unique(row).size for row in df.to_numpy()
+            1 < get_not_nan_unique(row).size for row in df.dropna(how="all").to_numpy()
         ):
 
-            print("Normalizing plot...")
+            print("Normalizing heat...")
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
@@ -403,7 +404,7 @@ def summarize(
 
     if se_data_type == "continuous" and 1 < get_not_nan_unique(se.to_numpy()).size:
 
-        print("Normalizing plot...")
+        print("Normalizing heat...")
 
         se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
 
@@ -475,10 +476,10 @@ def summarize(
         df = df.loc[scores_.index, :]
 
         if dict_["data_type"] == "continuous" and all(
-            1 < get_not_nan_unique(row).size for row in df.to_numpy()
+            1 < get_not_nan_unique(row).size for row in df.dropna(how="all").to_numpy()
         ):
 
-            print("Normalizing plot...")
+            print("Normalizing heat...")
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
