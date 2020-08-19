@@ -439,7 +439,6 @@ def plot_histogram(
         trace_base = {
             "legendgroup": i,
             "name": series.name,
-            "showlegend": 1 < n_series,
             "x": series,
         }
 

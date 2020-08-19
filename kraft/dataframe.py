@@ -252,7 +252,7 @@ def sync_axis(dataframes, axis, method):
 
         labels = asarray(sorted(labels))
 
-    elif method == "intersection":
+    elif method == "symmetric_difference":
 
         dataframe_0 = dataframes[0]
 
