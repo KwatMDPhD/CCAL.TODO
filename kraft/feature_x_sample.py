@@ -51,7 +51,7 @@ def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
 
             if prefix_feature:
 
-                format_ = "({}) {{}}".format(binary_x_.index.name)
+                format_ = "{}.{{}}".format(binary_x_.index.name)
 
             else:
 

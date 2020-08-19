@@ -1,7 +1,7 @@
 from gzip import open
 
 from numpy import asarray
-from pandas import DataFrame
+from pandas import DataFrame, Index
 from pandas.api.types import is_numeric_dtype
 
 from .dataframe import peak
@@ -14,21 +14,31 @@ from .support import cast_builtin
 
 def _make_platform_or_sample_dict(block):
 
-    parts = block.split(sep="_table_begin\n", maxsplit=1)
+    a_b = block.split(sep="_table_begin\n", maxsplit=1)
 
     dict_ = {}
 
-    for line in parts[0].split(sep="\n"):
+    for line in a_b[0].splitlines()[:-1]:
 
-        if " = " in line:
+        key, value = line[1:].split(sep=" = ", maxsplit=1)
 
-            key, value = line[1:].split(sep=" = ", maxsplit=1)
+        if key in dict_:
 
-            dict_[key] = value
+            key_ = key
 
-    if len(parts) == 2:
+            i = 2
 
-        rows = tuple(line.split(sep="\t") for line in parts[1].split(sep="\n")[:-1])
+            while key in dict_:
+
+                key = "{}_{}".format(key_, i)
+
+                i += 1
+
+        dict_[key] = value
+
+    if len(a_b) == 2:
+
+        rows = tuple(line.split(sep="\t") for line in a_b[1].splitlines()[:-1])
 
         dict_["table"] = DataFrame(
             data=(row[1:] for row in rows[1:]),
@@ -128,6 +138,55 @@ def _name_features(features, platform, platform_table):
         return asarray(tuple(id_to_name.get(id_) for id_ in features))
 
 
+def _get_keys(row):
+
+    return tuple(
+        set(
+            value.split(sep=": ", maxsplit=1)[0]
+            for value in row
+            if isinstance(value, str)
+        )
+    )
+
+
+def _update(array_2d):
+
+    n_0, n_1 = array_2d.shape
+
+    for i_0 in range(n_0):
+
+        for i_1 in range(n_1):
+
+            str_ = array_2d[i_0, i_1]
+
+            if isinstance(str_, str):
+
+                array_2d[i_0, i_1] = cast_builtin(str_.split(sep=": ", maxsplit=1)[1])
+
+
+def _improve(feature_x_sample):
+
+    feature_x_sample = feature_x_sample.loc[
+        (
+            label[:22] == "Sample_characteristics"
+            for label in feature_x_sample.index.to_numpy()
+        ),
+        :,
+    ]
+
+    keys = tuple(_get_keys(row) for row in feature_x_sample.to_numpy())
+
+    if all(len(keys_) == 1 for keys_ in keys):
+
+        _update(feature_x_sample.to_numpy())
+
+        feature_x_sample.index = Index(
+            (keys_[0] for keys_ in keys), name=feature_x_sample.index.name
+        )
+
+    return feature_x_sample
+
+
 def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
     file_path = download(
@@ -146,27 +205,25 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
         header, block = block.split(sep="\n", maxsplit=1)
 
-        type_ = header.split(sep=" = ", maxsplit=1)[0]
+        block_type = header.split(sep=" = ", maxsplit=1)[0]
 
-        if type_ in ("PLATFORM", "SAMPLE"):
+        if block_type in ("PLATFORM", "SAMPLE"):
+
+            print(header)
 
             dict_ = _make_platform_or_sample_dict(block)
 
-            if type_ == "PLATFORM":
+            if block_type == "PLATFORM":
 
                 name = dict_["Platform_geo_accession"]
-
-                print(name)
 
                 dict_["data"] = []
 
                 platforms[name] = dict_
 
-            elif type_ == "SAMPLE":
+            elif block_type == "SAMPLE":
 
                 name = dict_["Sample_title"]
-
-                print(name)
 
                 if "table" in dict_:
 
@@ -197,16 +254,7 @@ def get_gse(gse_id, directory_path, **download_keyword_arguments):
 
     _x_samples = (
         feature_x_sample,
-        *separate_type(
-            feature_x_sample.loc[
-                (
-                    label[:22] == "Sample_characteristics"
-                    for label in feature_x_sample.index.to_numpy()
-                ),
-                :,
-            ],
-            prefix_feature=False,
-        ),
+        *separate_type(_improve(feature_x_sample)),
     )
 
     for _x_sample in _x_samples:
