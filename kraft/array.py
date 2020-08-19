@@ -202,3 +202,28 @@ def map_int(objects):
             i += 1
 
     return object_to_i, i_to_object
+
+
+def apply_function_on_slices_from_2_matrices(matrix_0, matrix_1, axis, function):
+
+    error_nan(matrix_0)
+
+    error_nan(matrix_1)
+
+    if axis == 1:
+
+        matrix_0 = matrix_0.T
+
+        matrix_1 = matrix_1.T
+
+    matrix = full((matrix_0.shape[0], matrix_1.shape[0]), nan)
+
+    for i_0 in range(matrix_0.shape[0]):
+
+        array_0 = matrix_0[i_0]
+
+        for i_1 in range(matrix_1.shape[0]):
+
+            matrix[i_0, i_1] = function(array_0, matrix_1[i_1])
+
+    return matrix

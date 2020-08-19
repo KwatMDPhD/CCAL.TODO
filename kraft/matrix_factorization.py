@@ -26,10 +26,27 @@ def factorize_matrix_by_nmf(
     return model.fit_transform(v), model.components_, model.reconstruction_err_
 
 
+def _update_matrix_factorization_w(v, w, h):
+
+    return w * (v @ h.T) / (w @ h @ h.T)
+
+
+def _update_matrix_factorization_h(v, w, h):
+
+    return h * (w.T @ v) / (w.T @ w @ h)
+
+
+def _is_tolerable(errors, tolerance):
+
+    e_, e = asarray(errors)[-2:]
+
+    return ((e_ - e) / e_ < tolerance).all()
+
+
 def factorize_matrix(
     vs,
-    r,
     mode,
+    r,
     weights=None,
     tolerance=1e-6,
     n_iteration=int(1e3),
@@ -37,20 +54,6 @@ def factorize_matrix(
 ):
 
     n_v = len(vs)
-
-    def update_matrix_factorization_w(v, w, h):
-
-        return w * (v @ h.T) / (w @ h @ h.T)
-
-    def update_matrix_factorization_h(v, w, h):
-
-        return h * (w.T @ v) / (w.T @ w @ h)
-
-    def is_tolerable(errors, tolerance):
-
-        e_, e = asarray(errors)[-2:]
-
-        return ((e_ - e) / e_ < tolerance).all()
 
     seed(seed=random_seed)
 
@@ -70,11 +73,11 @@ def factorize_matrix(
 
         errors = [tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v))]
 
-        for iteration_index in range(n_iteration):
+        for iteration_i in range(n_iteration):
 
-            if iteration_index % n_per_print == 0:
+            if iteration_i % n_per_print == 0:
 
-                print("{}/{}...".format(iteration_index + 1, n_iteration))
+                print("{}/{}...".format(iteration_i + 1, n_iteration))
 
             t = sum(tuple(weights[i] * ws[i].T @ vs[i] for i in range(n_v)), axis=0)
 
@@ -83,12 +86,12 @@ def factorize_matrix(
             h *= t / b
 
             ws = tuple(
-                update_matrix_factorization_w(vs[i], ws[i], h) for i in range(n_v)
+                _update_matrix_factorization_w(vs[i], ws[i], h) for i in range(n_v)
             )
 
             errors.append(tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v)))
 
-            if is_tolerable(errors, tolerance):
+            if _is_tolerable(errors, tolerance):
 
                 break
 
@@ -102,11 +105,11 @@ def factorize_matrix(
 
         errors = [tuple(norm(vs[i] - w @ hs[i]) for i in range(n_v))]
 
-        for iteration_index in range(n_iteration):
+        for iteration_i in range(n_iteration):
 
-            if iteration_index % n_per_print == 0:
+            if iteration_i % n_per_print == 0:
 
-                print("{}/{}...".format(iteration_index + 1, n_iteration))
+                print("{}/{}...".format(iteration_i + 1, n_iteration))
 
             t = sum(tuple(weights[i] * vs[i] @ hs[i].T for i in range(n_v)), axis=0)
 
@@ -115,12 +118,12 @@ def factorize_matrix(
             w *= t / b
 
             hs = tuple(
-                update_matrix_factorization_h(vs[i], w, hs[i]) for i in range(n_v)
+                _update_matrix_factorization_h(vs[i], w, hs[i]) for i in range(n_v)
             )
 
             errors.append(tuple(norm(vs[i] - w @ hs[i]) for i in range(n_v)))
 
-            if is_tolerable(errors, tolerance):
+            if _is_tolerable(errors, tolerance):
 
                 break
 
@@ -129,11 +132,21 @@ def factorize_matrix(
     return ws, hs, asarray(errors).T
 
 
-def plot_matrix_factorization(ws, hs, errors=None, axis_size=320, directory_path=None):
+def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None):
 
     axis_size_ = axis_size * 1.618
 
-    for w_index, w in enumerate(ws):
+    for w_i, w in enumerate(ws):
+
+        if isinstance(w, DataFrame):
+
+            index, columns = w.axes
+
+            w = w.to_numpy()
+
+        else:
+
+            index = columns = None
 
         w = apply_along_axis(normalize, 1, w[cluster(w)[0], :], "-0-")
 
@@ -145,20 +158,30 @@ def plot_matrix_factorization(ws, hs, errors=None, axis_size=320, directory_path
 
         else:
 
-            html_file_path = "{}/w{}.html".format(directory_path, w_index)
+            html_file_path = "{}/w_{}.html".format(directory_path, w_i)
 
         plot_heat_map(
-            w,
+            DataFrame(data=w, index=index, columns=columns),
             layout={
                 "height": axis_size_,
                 "width": axis_size,
-                "title": {"text": "W{}".format(w_index)},
+                "title": {"text": "W {}".format(w_i)},
                 "xaxis": layout_factor_axis,
             },
             html_file_path=html_file_path,
         )
 
-    for h_index, h in enumerate(hs):
+    for h_i, h in enumerate(hs):
+
+        if isinstance(h, DataFrame):
+
+            index, columns = h.axes
+
+            h = h.to_numpy()
+
+        else:
+
+            index = columns = None
 
         h = apply_along_axis(normalize, 0, h[:, cluster(h.T)[0]], "-0-")
 
@@ -168,14 +191,14 @@ def plot_matrix_factorization(ws, hs, errors=None, axis_size=320, directory_path
 
         else:
 
-            html_file_path = "{}/h{}.html".format(directory_path, w_index)
+            html_file_path = "{}/h_{}.html".format(directory_path, w_i)
 
         plot_heat_map(
-            h,
+            DataFrame(data=h, index=index, columns=columns),
             layout={
                 "height": axis_size,
                 "width": axis_size_,
-                "title": {"text": "H{}".format(h_index)},
+                "title": {"text": "H {}".format(h_i)},
                 "yaxis": layout_factor_axis,
             },
             html_file_path=html_file_path,
