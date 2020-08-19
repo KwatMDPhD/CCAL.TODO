@@ -15,6 +15,7 @@ from . import (
     iterable,
     json,
     kernel_density,
+    matrix_factorization,
     name_biology,
     path,
     plot,
