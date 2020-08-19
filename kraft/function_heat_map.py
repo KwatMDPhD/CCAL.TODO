@@ -129,6 +129,8 @@ def make(
 
     common_labels = se.index & df.columns
 
+    assert 0 < common_labels.size
+
     print(
         "se.index ({}) and df.columns ({}) have {} in common.".format(
             se.index.size, df.columns.size, common_labels.size
