@@ -4,13 +4,12 @@ from numpy import (
     concatenate,
     full,
     isnan,
-    ix_,
     median,
     nan,
     unique,
 )
 from numpy.random import choice, seed
-from pandas import DataFrame, Index, Series, isna
+from pandas import DataFrame, Index, isna
 
 from .array import ignore_nan_and_function_1, map_int, normalize as array_normalize
 from .CONSTANT import RANDOM_SEED
@@ -20,11 +19,11 @@ from .plot import plot_heat_map, plot_histogram
 
 def error_axes(dataframe):
 
-    for labels in dataframe.axes:
+    for axis in dataframe.axes:
 
-        labels, counts = unique(labels.to_numpy(), return_counts=True)
+        axis, counts = unique(axis.to_numpy(), return_counts=True)
 
-        is_na = isna(labels)
+        is_na = isna(axis)
 
         assert not is_na.any()
 
@@ -54,13 +53,24 @@ def print_value_n(dataframe, axis):
 
         generator = dataframe.items()
 
-    for label, values in generator:
+    for _, values in generator:
 
         value_n = values.value_counts()
 
-        print("=" * 80)
+        print("-" * 80)
 
         print(value_n)
+
+
+def untangle(dataframe):
+
+    return (
+        dataframe.to_numpy(),
+        dataframe.index.to_numpy(),
+        dataframe.columns.to_numpy(),
+        dataframe.index.name,
+        dataframe.columns.name,
+    )
 
 
 def sample(
@@ -72,9 +82,11 @@ def sample(
     axis_1_keyword_arguments=None,
 ):
 
-    matrix = dataframe.to_numpy()
+    matrix, axis_0, axis_1, axis_0_name, axis_1_name = untangle(dataframe)
 
-    axis_0_size, axis_1_size = matrix.shape
+    axis_0_size = axis_0.size
+
+    axis_1_size = axis_1.size
 
     seed(seed=random_seed)
 
@@ -105,28 +117,29 @@ def sample(
     if axis_0_n is not None and axis_1_n is not None:
 
         return DataFrame(
-            data=matrix[ix_(axis_0_is, axis_1_is)],
-            index=dataframe.index[axis_0_is],
-            columns=dataframe.columns[axis_1_is],
+            data=matrix[axis_0_is, axis_1_is],
+            index=Index(data=axis_0[axis_0_is], name=axis_0_name),
+            columns=Index(data=axis_1[axis_1_is], name=axis_1_name),
         )
 
     elif axis_0_n is not None:
 
         return DataFrame(
-            data=matrix[axis_0_is, :],
-            index=dataframe.index[axis_0_is],
-            columns=dataframe.columns,
+            data=matrix[axis_0_is],
+            index=Index(data=axis_0[axis_0_is], name=axis_0_name),
+            columns=Index(data=axis_1, name=axis_1_name),
         )
 
     elif axis_1_n is not None:
 
         return DataFrame(
             data=matrix[:, axis_1_is],
-            index=dataframe.index,
-            columns=dataframe.columns[axis_1_is],
+            index=Index(data=axis_0, name=axis_0_name),
+            columns=Index(data=axis_1[axis_1_is], name=axis_1_name),
         )
 
 
+#
 def drop_axis_label(
     dataframe, axis, min_n_not_na_value=None, min_n_not_na_unique_value=None
 ):
@@ -234,19 +247,18 @@ def sync_axis(dataframes, axis):
 
     for dataframe in dataframes[1:]:
 
-        labels = labels.union(set(dataframe.axes[axis]))
+        labels = labels.union(dataframe.axes[axis])
+
+    labels = asarray(sorted(labels))
 
     return tuple(
-        dataframe.reindex(labels=asarray(sorted(labels)), axis=axis)
-        for dataframe in dataframes
+        dataframe.reindex(labels=labels, axis=axis) for dataframe in dataframes
     )
 
 
-def normalize(matrix, axis, method, **keyword_arguments):
+def normalize(dataframe_number, axis, method, **keyword_arguments):
 
-    axis_0, axis_1 = matrix.axes
-
-    matrix = matrix.to_numpy()
+    matrix, axis_0, axis_1, axis_0_name, axis_1_name = untangle(dataframe_number)
 
     if axis is None:
 
@@ -266,23 +278,21 @@ def normalize(matrix, axis, method, **keyword_arguments):
             **keyword_arguments
         )
 
-    return DataFrame(data=matrix, index=axis_0, columns=axis_1)
+    return DataFrame(
+        data=matrix,
+        index=Index(data=axis_0, name=axis_0_name),
+        columns=Index(data=axis_1, name=axis_1_name),
+    )
 
 
 def summarize(
-    matrix,
+    dataframe_number,
     plot=True,
     plot_heat_map_max_size=int(1e6),
     plot_histogram_max_size=int(1e3),
 ):
 
-    if matrix.index.name is None:
-
-        matrix.index.name = "Axis 0"
-
-    if matrix.columns.name is None:
-
-        matrix.columns.name = "Axis 1"
+    matrix, axis_0, axis_1, axis_0_name, axis_1_name = untangle(dataframe_number)
 
     print(matrix.shape)
 
@@ -290,11 +300,9 @@ def summarize(
 
     if plot and matrix_size <= plot_heat_map_max_size:
 
-        plot_heat_map(matrix)
-
-    axis_0, axis_1 = matrix.axes
-
-    matrix = matrix.to_numpy()
+        plot_heat_map(
+            matrix, axis_0, axis_1, axis_0_name, axis_1_name,
+        )
 
     is_nan = isnan(matrix)
 
@@ -302,16 +310,15 @@ def summarize(
 
     if 0 < n_nan:
 
+        print("% NaN: {:.2%}".format(n_nan / matrix_size))
+
         if plot:
 
             plot_histogram(
-                (
-                    Series(data=is_nan.sum(axis=1), index=axis_0, name="N NaN"),
-                    Series(data=is_nan.sum(axis=0), index=axis_1),
-                ),
-                layout={
-                    "title": {"text": "% NaN: {:.2%}".format(n_nan / matrix_size)},
-                },
+                (is_nan.sum(axis=1), is_nan.sum(axis=0)),
+                (axis_0, axis_1),
+                (axis_0_name, axis_1_name),
+                layout={"xaxis": {"title": {"text": "N NaN"}}},
             )
 
     not_nan_numbers = matrix[~is_nan].ravel()
@@ -337,7 +344,7 @@ def summarize(
 
             print("Choosing {} for histogram...".format(plot_histogram_max_size))
 
-            is_chosen = concatenate(
+            is_ = concatenate(
                 (
                     choice(
                         not_nan_numbers.size,
@@ -348,52 +355,53 @@ def summarize(
                 )
             )
 
-            not_nan_numbers = not_nan_numbers[is_chosen]
+            not_nan_numbers = not_nan_numbers[is_]
 
-            labels = labels[is_chosen]
+            labels = labels[is_]
 
         plot_histogram(
-            (Series(data=not_nan_numbers, index=labels, name="(Not-NaN) Number"),),
+            (not_nan_numbers,),
+            (labels,),
+            ("All",),
+            layout={"xaxis": {"title": {"text": "(Not-NaN) Number"}}},
         )
 
         plot_histogram(
-            (
-                Series(
-                    data=median(matrix, axis=1), index=axis_0, name="(Not-NaN) Median"
-                ),
-                Series(data=median(matrix, axis=0), index=axis_1),
-            ),
+            (median(matrix, axis=1), median(matrix, axis=0)),
+            (axis_0, axis_1),
+            (axis_0_name, axis_1_name),
+            layout={"xaxis": {"title": {"text": "(Not-NaN) Median"}}},
         )
 
 
 def pivot(
-    axis_0, axis_1, values, function=None, axis_0_name="Axis 0", axis_1_name="Axis 1",
+    axis_0, axis_1, numbers, axis_0_name, axis_1_name, function=None,
 ):
 
-    axis_0_label_to_i = map_int(axis_0)[0]
+    label_0_to_i = map_int(axis_0)[0]
 
-    axis_1_label_to_i = map_int(axis_1)[0]
+    label_1_to_i = map_int(axis_1)[0]
 
-    matrix = full((len(axis_0_label_to_i), len(axis_1_label_to_i)), nan)
+    matrix = full((len(label_0_to_i), len(label_1_to_i)), nan)
 
-    for axis_0_label, axis_1_label, value in zip(axis_0, axis_1, values):
+    for label_0, label_1, number in zip(axis_0, axis_1, numbers):
 
-        axis_0_i = axis_0_label_to_i[axis_0_label]
+        i_0 = label_0_to_i[label_0]
 
-        axis_1_i = axis_1_label_to_i[axis_1_label]
+        i_1 = label_1_to_i[label_1]
 
-        value_now = matrix[axis_0_i, axis_1_i]
+        number_now = matrix[i_0, i_1]
 
-        if isnan(value_now) or function is None:
+        if isnan(number_now) or function is None:
 
-            matrix[axis_0_i, axis_1_i] = value
+            matrix[i_0, i_1] = number
 
         else:
 
-            matrix[axis_0_i, axis_1_i] = function(value_now, value)
+            matrix[i_0, i_1] = function(number_now, number)
 
     return DataFrame(
         data=matrix,
-        index=Index(axis_0_label_to_i, name=axis_0_name),
-        columns=Index(axis_1_label_to_i, name=axis_1_name),
+        index=Index(data=label_0_to_i, name=axis_0_name),
+        columns=Index(data=label_1_to_i, name=axis_1_name),
     )

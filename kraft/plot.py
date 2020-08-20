@@ -9,7 +9,6 @@ from plotly.io import show, templates, write_html
 
 from .array import normalize
 from .dict_ import merge
-from .support import cast_builtin
 
 templates["kraft"] = {"layout": {"autosize": False}}
 
@@ -90,8 +89,11 @@ def get_color(colorscale, number, n=None):
 
 def plot_heat_map(
     matrix,
+    axis_0,
+    axis_1,
+    axis_0_name,
+    axis_1_name,
     colorscale=None,
-    sort_groups=True,
     axis_0_groups=None,
     axis_0_group_colorscale=None,
     axis_0_group_to_name=None,
@@ -104,45 +106,37 @@ def plot_heat_map(
     file_path=None,
 ):
 
-    if sort_groups:
+    if axis_0_groups is not None:
 
-        if axis_0_groups is not None:
+        is_ = argsort(axis_0_groups)
 
-            is_ = argsort(axis_0_groups)
+        axis_0_groups = axis_0_groups[is_]
 
-            axis_0_groups = axis_0_groups[is_]
+        matrix = matrix[is_, :]
 
-            matrix = matrix.iloc[is_, :]
+        axis_0 = axis_0[is_]
 
-        if axis_1_groups is not None:
+    if axis_1_groups is not None:
 
-            is_ = argsort(axis_1_groups)
+        is_ = argsort(axis_1_groups)
 
-            axis_1_groups = axis_1_groups[is_]
+        axis_1_groups = axis_1_groups[is_]
 
-            matrix = matrix.iloc[:, is_]
+        matrix = matrix[:, is_]
+
+        axis_1 = axis_1[is_]
 
     group_axis = {"domain": (0.96, 1), "showticklabels": False}
-
-    axis_0_labels = matrix.index.to_numpy()
-
-    axis_1_labels = matrix.columns.to_numpy()
-
-    axis_0_is_str = any(isinstance(cast_builtin(label), str) for label in axis_0_labels)
-
-    axis_1_is_str = any(isinstance(cast_builtin(label), str) for label in axis_1_labels)
 
     domain = (0, 0.95)
 
     base = {
         "xaxis": {
-            "showticklabels": axis_1_is_str,
-            "title": "{} (n={})".format(matrix.columns.name, axis_1_labels.size),
+            "title": "{} (n={})".format(axis_1_name, axis_1.size),
             "domain": domain,
         },
         "yaxis": {
-            "showticklabels": axis_0_is_str,
-            "title": "{} (n={})".format(matrix.index.name, axis_0_labels.size),
+            "title": "{} (n={})".format(axis_0_name, axis_0.size),
             "domain": domain,
         },
         "xaxis2": group_axis,
@@ -158,22 +152,6 @@ def plot_heat_map(
 
         layout = merge(base, layout)
 
-    if axis_1_is_str:
-
-        x = axis_1_labels
-
-    else:
-
-        x = None
-
-    if axis_0_is_str:
-
-        y = axis_0_labels[::-1]
-
-    else:
-
-        y = None
-
     if colorscale is None:
 
         colorscale = DATA_TYPE_TO_COLORSCALE["continuous"]
@@ -183,9 +161,9 @@ def plot_heat_map(
     data = [
         {
             "type": "heatmap",
-            "x": x,
-            "y": y,
-            "z": matrix.to_numpy()[::-1],
+            "z": matrix[::-1],
+            "x": axis_1,
+            "y": axis_0[::-1],
             "colorscale": colorscale,
             "colorbar": {**COLORBAR, "x": colorbar_x},
         }
@@ -201,7 +179,7 @@ def plot_heat_map(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
-                "z": axis_0_groups.reshape((axis_0_groups.size, 1)),
+                "z": axis_0_groups.reshape((-1, 1)),
                 "colorscale": axis_0_group_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+y",
@@ -245,7 +223,7 @@ def plot_heat_map(
             {
                 "yaxis": "y2",
                 "type": "heatmap",
-                "z": axis_1_groups.reshape((1, axis_1_groups.size)),
+                "z": axis_1_groups.reshape((1, -1)),
                 "colorscale": axis_1_group_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+x",
@@ -358,9 +336,9 @@ def plot_bubble_map(
 
 
 def plot_histogram(
-    names,
     xs,
     texts,
+    names,
     histnorm=None,
     bin_size=None,
     plot_rug=None,
