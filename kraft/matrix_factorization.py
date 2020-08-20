@@ -233,9 +233,9 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
 
 def solve_ax_b(a, b, method):
 
-    a_ = a.values
+    a_ = a.to_numpy()
 
-    b_ = b.values
+    b_ = b.to_numpy()
 
     if method == "pinv":
 

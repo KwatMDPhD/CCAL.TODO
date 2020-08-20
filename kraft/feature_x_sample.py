@@ -178,7 +178,7 @@ def process(
             matrix = shift_minimum(matrix, log_shift)
 
         feature_x_sample = DataFrame(
-            log(matrix, log_base=log_base,),
+            data=log(matrix, log_base=log_base,),
             index=feature_x_sample.index,
             columns=feature_x_sample.columns,
         )

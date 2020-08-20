@@ -35,7 +35,7 @@ def fit_each_dataframe_row_to_skew_t_pdf_(dataframe):
 
     for i, (index, series) in enumerate(dataframe.iterrows()):
 
-        skew_t_pdf_fit_parameter[i] = fit_vector_to_skew_t_pdf(series.values)
+        skew_t_pdf_fit_parameter[i] = fit_vector_to_skew_t_pdf(series.to_numpy())
 
     return DataFrame(
         skew_t_pdf_fit_parameter,

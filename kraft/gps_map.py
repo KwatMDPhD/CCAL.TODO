@@ -25,7 +25,7 @@ class GPSMap:
         )
 
         self.point_x_dimension = DataFrame(
-            pull_point(self.node_x_dimension.values, self.point_x_node.values),
+            pull_point(self.node_x_dimension.to_numpy(), self.point_x_node.to_numpy()),
             index=self.point_x_node.index,
         )
 
@@ -88,7 +88,7 @@ class GPSMap:
 
             group_grid_nd_probabilities[group] = shape(
                 get_probability(
-                    self.point_x_dimension[self.point_group == group].values,
+                    self.point_x_dimension[self.point_group == group].to_numpy(),
                     plot=False,
                     bandwidths=bandwidths,
                     grid_1ds=grid_1ds,
@@ -129,7 +129,7 @@ class GPSMap:
 
         plot_heat_map(
             DataFrame(
-                apply_along_axis(normalize, 1, self.point_x_node.values, "-0-"),
+                apply_along_axis(normalize, 1, self.point_x_node.to_numpy(), "-0-"),
                 index=self.point_x_node.index,
                 columns=self.point_x_node.columns,
             ).T,
@@ -143,7 +143,9 @@ class GPSMap:
         plot_node_point(
             self.node_x_dimension,
             DataFrame(
-                pull_point(self.node_x_dimension.values, new_point_x_node.values),
+                pull_point(
+                    self.node_x_dimension.to_numpy(), new_point_x_node.to_numpy()
+                ),
                 index=new_point_x_node.index,
                 columns=self.node_x_dimension.columns,
             ),

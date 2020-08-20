@@ -235,7 +235,7 @@ def make_context_matrix_(
             ]
 
         context_matrix[i] = compute_vector_context(
-            series.values,
+            series.to_numpy(),
             n_data=n_data,
             location=location,
             scale=scale,
@@ -292,7 +292,7 @@ def plot_context(
         layout = merge(base, layout)
 
     context_dict = compute_vector_context(
-        series.values, **compute_vector_context_keyword_arguments
+        series.to_numpy(), **compute_vector_context_keyword_arguments
     )
 
     for i, (format_, fit_parameter) in enumerate(

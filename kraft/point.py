@@ -73,16 +73,16 @@ def plot_node_point(
 
     node_x_y = DataFrame(
         {
-            "x": node_x_dimension.iloc[:, 1].values,
-            "y": 1 - node_x_dimension.iloc[:, 0].values,
+            "x": node_x_dimension.iloc[:, 1].to_numpy(),
+            "y": 1 - node_x_dimension.iloc[:, 0].to_numpy(),
         },
         index=node_x_dimension.index,
     )
 
     point_x_y = DataFrame(
         {
-            "x": point_x_dimension.iloc[:, 1].values,
-            "y": 1 - point_x_dimension.iloc[:, 0].values,
+            "x": point_x_dimension.iloc[:, 1].to_numpy(),
+            "y": 1 - point_x_dimension.iloc[:, 0].to_numpy(),
         },
         index=point_x_dimension.index,
     )
@@ -267,7 +267,7 @@ def plot_node_point(
 
             tickvals = point_score.describe()[
                 ["min", "25%", "50%", "mean", "75%", "max"]
-            ].values
+            ].to_numpy()
 
             ticktext_format = "{:.2e}".format
 

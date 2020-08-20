@@ -40,7 +40,7 @@ def score_sample_and_set(
 
     m_1 = 1 - h_1
 
-    a = element_scores.abs().values
+    a = element_scores.abs().to_numpy()
 
     if method == "classic":
 
@@ -274,7 +274,7 @@ def _score_sample_and_sets(element_scores, set_to_elements, method):
             method=method,
             plot=False,
         )
-        for elements in set_to_elements.values()
+        for elements in set_to_elements.to_numpy()()
     )
 
 

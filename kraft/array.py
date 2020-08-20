@@ -15,7 +15,6 @@ def check_has_duplicate(array):
     return (unique(array, return_counts=True)[1] != 1).any()
 
 
-# TODO: add to notebook
 def get_not_nan_unique(vector):
 
     return unique(vector[~isnan(vector)])
