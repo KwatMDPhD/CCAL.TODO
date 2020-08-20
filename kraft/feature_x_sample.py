@@ -7,7 +7,6 @@ from .series import binarize
 from .support import cast_builtin
 
 
-# TODO: add to notebook
 # TODO: check bad index
 # TODO: check index.name
 def collapse(matrix):
@@ -88,7 +87,6 @@ def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
     return continuous_x_, binary_x_
 
 
-# TODO: add to notebook
 def process(
     feature_x_sample,
     features_to_drop=(),
@@ -103,7 +101,7 @@ def process(
     normalize_method=None,
     clip_min=None,
     clip_max=None,
-    **summarize_keyword_arguments,
+    **keyword_arguments,
 ):
 
     if 0 < len(features_to_drop):
@@ -114,7 +112,7 @@ def process(
 
         feature_x_sample.drop(labels=features_to_drop, errors="ignore", inplace=True)
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+        summarize(feature_x_sample, **keyword_arguments)
 
     if 0 < len(samples_to_drop):
 
@@ -126,7 +124,7 @@ def process(
             labels=samples_to_drop, axis=1, errors="ignore", inplace=True
         )
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+        summarize(feature_x_sample, **keyword_arguments)
 
     if nanize is not None:
 
@@ -140,7 +138,7 @@ def process(
             data=matrix, index=feature_x_sample.index, columns=feature_x_sample.columns
         )
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+        summarize(feature_x_sample, **keyword_arguments)
 
     if min_good_value is not None or min_good_unique_value is not None:
 
@@ -159,13 +157,13 @@ def process(
         feature_x_sample = drop_function(
             feature_x_sample,
             good_axis,
-            min_good_value=min_good_value,
-            min_good_unique_value=min_good_unique_value,
+            min_n_not_na_value=min_good_value,
+            min_n_not_na_unique_value=min_good_unique_value,
         )
 
         if shape != feature_x_sample.shape:
 
-            summarize(feature_x_sample, **summarize_keyword_arguments)
+            summarize(feature_x_sample, **keyword_arguments)
 
     if log_base is not None:
 
@@ -185,7 +183,7 @@ def process(
             columns=feature_x_sample.columns,
         )
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+        summarize(feature_x_sample, **keyword_arguments)
 
     if normalize_method is not None:
 
@@ -193,7 +191,7 @@ def process(
 
         feature_x_sample = normalize(feature_x_sample, normalize_axis, normalize_method)
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+        summarize(feature_x_sample, **keyword_arguments)
 
     if clip_min is not None or clip_max is not None:
 
@@ -201,6 +199,6 @@ def process(
 
         feature_x_sample.clip(lower=clip_min, upper=clip_max, inplace=True)
 
-        summarize(feature_x_sample, **summarize_keyword_arguments)
+        summarize(feature_x_sample, **keyword_arguments)
 
     return feature_x_sample

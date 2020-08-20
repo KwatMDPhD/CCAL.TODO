@@ -12,13 +12,13 @@ def get_file_name(url):
     return unquote(url).split(sep="/")[-1]
 
 
-def download(url, directory_path, file_name=None, overwrite=True):
+def download(url, directory_path, name=None, overwrite=True):
 
-    if file_name is None:
+    if name is None:
 
-        file_name = get_file_name(url)
+        name = get_file_name(url)
 
-    file_path = "{}/{}".format(directory_path, file_name)
+    file_path = "{}{}".format(directory_path, name)
 
     if exists(file_path):
 

@@ -4,7 +4,7 @@ from setuptools import setup
 
 name = "kraft"
 
-data_directory_path = "{}/data/".format(name)
+directory_path = "{}/data/".format(name)
 
 setup(
     name=name,
@@ -25,8 +25,7 @@ setup(
     packages=(name,),
     package_data={
         name: tuple(
-            "{}/{}".format(data_directory_path, file_name)
-            for file_name in listdir(path=data_directory_path)
+            "{}{}".format(directory_path, name) for name in listdir(path=directory_path)
         )
     },
 )

@@ -68,7 +68,7 @@ def plot_node_point(
     score_opacity=0.8,
     score_na_opacity=0.1,
     points_to_highlight=(),
-    html_file_path=None,
+    file_path=None,
 ):
 
     node_x_y = DataFrame(
@@ -224,7 +224,7 @@ def plot_node_point(
                 }
             )
 
-    point_trace_template = {
+    base = {
         "name": point_x_y.index.name,
         "mode": "markers",
         "marker": {
@@ -237,7 +237,7 @@ def plot_node_point(
 
     if point_trace is not None:
 
-        point_trace_template = merge(point_trace_template, point_trace)
+        base = merge(base, point_trace)
 
     if point_score is not None:
 
@@ -273,7 +273,7 @@ def plot_node_point(
 
         data.append(
             merge(
-                point_trace_template,
+                base,
                 {
                     "x": point_x_y["x"],
                     "y": point_x_y["y"],
@@ -308,7 +308,7 @@ def plot_node_point(
 
             data.append(
                 merge(
-                    point_trace_template,
+                    base,
                     {
                         "legendgroup": name,
                         "name": name,
@@ -322,12 +322,7 @@ def plot_node_point(
     else:
 
         data.append(
-            {
-                **point_trace_template,
-                "x": point_x_y["x"],
-                "y": point_x_y["y"],
-                "text": point_x_y.index,
-            }
+            {**base, "x": point_x_y["x"], "y": point_x_y["y"], "text": point_x_y.index,}
         )
 
     layout["annotations"] += [
@@ -344,4 +339,4 @@ def plot_node_point(
         for point in points_to_highlight
     ]
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+    plot_plotly({"layout": layout, "data": data}, file_path=file_path)

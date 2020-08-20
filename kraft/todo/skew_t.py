@@ -33,13 +33,7 @@ def fit_each_dataframe_row_to_skew_t_pdf_(dataframe):
 
     n = dataframe.shape[0]
 
-    n_per_print = max(1, n // 10)
-
     for i, (index, series) in enumerate(dataframe.iterrows()):
-
-        if i % n_per_print == 0:
-
-            print("({}/{}) {}...".format(i + 1, n, index))
 
         skew_t_pdf_fit_parameter[i] = fit_vector_to_skew_t_pdf(series.values)
 

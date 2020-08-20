@@ -1,4 +1,4 @@
-from numpy import apply_along_axis, arange, asarray, full, isnan, nan, triu_indices
+from numpy import apply_along_axis, asarray, full, isnan, nan, triu_indices
 from numpy.random import choice, seed
 from pandas import Series
 from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
@@ -77,21 +77,13 @@ def cluster_hierarchical_clusterings(
 
     point_x_clustering = full((n_point, n_clustering), nan)
 
-    point_is_ = arange(n_point)
-
     n_choice = int(n_point * 0.632)
 
     seed(seed=random_seed)
 
-    n_per_print = max(1, n_clustering // 10)
-
     for i in range(n_clustering):
 
-        if i % n_per_print == 0:
-
-            print("{}/{}...".format(i + 1, n_clustering))
-
-        is_ = choice(point_is_, size=n_choice, replace=False)
+        is_ = choice(n_point, size=n_choice, replace=False)
 
         point_x_clustering[is_, i] = cluster(
             matrix[is_], n_cluster=n_cluster, **cluster_keyword_arguments
@@ -115,4 +107,4 @@ def cluster_hierarchical_clusterings(
             },
         )
 
-    return Series(clusters, index=point_x_dimension.index, name="Group")
+    return Series(data=clusters, index=point_x_dimension.index, name="Group")

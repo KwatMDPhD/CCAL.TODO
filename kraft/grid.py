@@ -64,7 +64,7 @@ def plot_grid_nd(
     grid_nd_numbers,
     dimension_names=None,
     number_name="Number",
-    html_file_path=None,
+    file_path=None,
 ):
 
     n_dimension = grid_nd.shape[1]
@@ -101,7 +101,7 @@ def plot_grid_nd(
                 },
                 "data": [{"x": grid_1ds[0], "y": grid_nd_numbers_shape}],
             },
-            html_file_path=html_file_path,
+            file_path=file_path,
         )
 
     elif n_dimension == 2:
@@ -119,5 +119,5 @@ def plot_grid_nd(
                 ),
             ),
             layout={"title": {"text": number_name}},
-            html_file_path=html_file_path,
+            file_path=file_path,
         )

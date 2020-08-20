@@ -28,27 +28,21 @@ DATA_TYPE_TO_COLORSCALE = {
 }
 
 
-def plot_plotly(figure, html_file_path=None):
+def plot_plotly(figure, file_path=None):
 
     template = "plotly_white+kraft"
 
-    if "layout" in figure:
-
-        figure["layout"]["template"] = template
-
-    else:
-
-        figure["layout"] = {"template": template}
+    figure = merge(figure, {"layout": {"template": template}})
 
     config = {"editable": True}
 
     show(figure, config=config)
 
-    if html_file_path is not None:
+    if file_path is not None:
 
-        assert html_file_path.endswith(".html")
+        assert file_path.endswith(".html")
 
-        write_html(figure, html_file_path, config=config)
+        write_html(figure, file_path, config=config)
 
 
 def get_color(colorscale, number, n=None):
@@ -107,7 +101,7 @@ def plot_heat_map(
     layout=None,
     layout_annotation_axis_0=None,
     layout_annotation_axis_1=None,
-    html_file_path=None,
+    file_path=None,
 ):
 
     if sort_groups:
@@ -128,8 +122,6 @@ def plot_heat_map(
 
             matrix = matrix.iloc[:, is_]
 
-    heat_map_axis_base = {"domain": (0, 0.95)}
-
     group_axis = {"domain": (0.96, 1), "showticklabels": False}
 
     axis_0_labels = matrix.index.to_numpy()
@@ -140,16 +132,18 @@ def plot_heat_map(
 
     axis_1_is_str = any(isinstance(cast_builtin(label), str) for label in axis_1_labels)
 
-    layout_base = {
+    domain = (0, 0.95)
+
+    base = {
         "xaxis": {
             "showticklabels": axis_1_is_str,
             "title": "{} (n={})".format(matrix.columns.name, axis_1_labels.size),
-            **heat_map_axis_base,
+            "domain": domain,
         },
         "yaxis": {
             "showticklabels": axis_0_is_str,
             "title": "{} (n={})".format(matrix.index.name, axis_0_labels.size),
-            **heat_map_axis_base,
+            "domain": domain,
         },
         "xaxis2": group_axis,
         "yaxis2": group_axis,
@@ -158,11 +152,11 @@ def plot_heat_map(
 
     if layout is None:
 
-        layout = layout_base
+        layout = base
 
     else:
 
-        layout = merge(layout_base, layout)
+        layout = merge(base, layout)
 
     if axis_1_is_str:
 
@@ -197,8 +191,6 @@ def plot_heat_map(
         }
     ]
 
-    annotation_base = {"showarrow": False}
-
     if axis_0_groups is not None:
 
         axis_0_groups = axis_0_groups[::-1]
@@ -209,7 +201,7 @@ def plot_heat_map(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
-                "z": axis_0_groups.reshape(axis_0_groups.size, 1),
+                "z": axis_0_groups.reshape((axis_0_groups.size, 1)),
                 "colorscale": axis_0_group_colorscale,
                 "colorbar": {**COLORBAR, "x": colorbar_x, "dtick": 1},
                 "hoverinfo": "z+y",
@@ -218,22 +210,20 @@ def plot_heat_map(
 
         if axis_0_group_to_name is not None:
 
-            layout_annotation_base = {
+            base = {
                 "xref": "x2",
                 "x": 0,
                 "xanchor": "left",
-                **annotation_base,
+                "showarrow": False,
             }
 
             if layout_annotation_axis_0 is None:
 
-                layout_annotation = layout_annotation_base
+                dict_ = base
 
             else:
 
-                layout_annotation = merge(
-                    layout_annotation_base, layout_annotation_axis_0
-                )
+                dict_ = merge(base, layout_annotation_axis_0)
 
             for i in unique(axis_0_groups):
 
@@ -243,7 +233,7 @@ def plot_heat_map(
                     {
                         "y": i_0 + (i_1 - i_0) / 2,
                         "text": axis_0_group_to_name[i],
-                        **layout_annotation,
+                        **dict_,
                     }
                 )
 
@@ -264,23 +254,21 @@ def plot_heat_map(
 
         if axis_1_group_to_name is not None:
 
-            layout_annotation_base = {
+            base = {
                 "yref": "y2",
                 "y": 0,
                 "yanchor": "bottom",
                 "textangle": -90,
-                **annotation_base,
+                "showarrow": False,
             }
 
             if layout_annotation_axis_1 is None:
 
-                layout_annotation = layout_annotation_base
+                dict_ = base
 
             else:
 
-                layout_annotation = merge(
-                    layout_annotation_base, layout_annotation_axis_1
-                )
+                dict_ = merge(base, layout_annotation_axis_1)
 
             for i in unique(axis_1_groups):
 
@@ -290,11 +278,11 @@ def plot_heat_map(
                     {
                         "x": i_0 + (i_1 - i_0) / 2,
                         "text": axis_1_group_to_name[i],
-                        **layout_annotation,
+                        **dict_,
                     }
                 )
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+    plot_plotly({"layout": layout, "data": data}, file_path=file_path)
 
 
 def plot_bubble_map(
@@ -303,7 +291,7 @@ def plot_bubble_map(
     max_size=32,
     colorscale=None,
     layout=None,
-    html_file_path=None,
+    file_path=None,
 ):
 
     axis_0_size, axis_1_size = size_matrix.shape
@@ -312,7 +300,7 @@ def plot_bubble_map(
 
     y_grid = arange(axis_0_size)[::-1]
 
-    layout_base = {
+    base = {
         "height": max(480, axis_0_size * 2 * max_size),
         "width": max(480, axis_1_size * 2 * max_size),
         "xaxis": {
@@ -329,11 +317,11 @@ def plot_bubble_map(
 
     if layout is None:
 
-        layout = layout_base
+        layout = base
 
     else:
 
-        layout = merge(layout_base, layout)
+        layout = merge(base, layout)
 
     size_matrix = size_matrix.to_numpy()
 
@@ -365,42 +353,40 @@ def plot_bubble_map(
                 }
             ],
         },
-        html_file_path=html_file_path,
+        file_path=file_path,
     )
 
 
 def plot_histogram(
-    serieses,
+    names,
+    xs,
+    texts,
     histnorm=None,
     bin_size=None,
     plot_rug=None,
     layout=None,
-    html_file_path=None,
+    file_path=None,
 ):
 
     if plot_rug is None:
 
-        plot_rug = all(series.size < 1e3 for series in serieses)
+        plot_rug = all(x.size < 1e3 for x in xs)
 
-    n_series = len(serieses)
+    n = len(names)
 
     if plot_rug:
 
-        rug_height = 0.04
+        height = 0.04
 
-        yaxis_domain_max = n_series * rug_height
+        yaxis_max = n * height
 
-        yaxis2_domain_min = yaxis_domain_max + rug_height
+        yaxis2_min = yaxis_max + height
 
     else:
 
-        yaxis_domain_max = 0
+        yaxis_max = 0
 
-        yaxis2_domain_min = 0
-
-    yaxis_domain = 0, yaxis_domain_max
-
-    yaxis2_domain = yaxis2_domain_min, 1
+        yaxis2_min = 0
 
     if histnorm is None:
 
@@ -410,36 +396,35 @@ def plot_histogram(
 
         yaxis2_title_text = histnorm.title()
 
-    layout_base = {
+    base = {
         "xaxis": {"anchor": "y"},
         "yaxis": {
-            "domain": yaxis_domain,
+            "domain": (0, yaxis_max),
             "zeroline": False,
             "dtick": 1,
             "showticklabels": False,
         },
-        "yaxis2": {"domain": yaxis2_domain, "title": {"text": yaxis2_title_text}},
-        "showlegend": True,
+        "yaxis2": {"domain": (yaxis2_min, 1), "title": {"text": yaxis2_title_text}},
     }
 
     if layout is None:
 
-        layout = layout_base
+        layout = base
 
     else:
 
-        layout = merge(layout_base, layout)
+        layout = merge(base, layout)
 
     data = []
 
-    for i, series in enumerate(serieses):
+    for i, (name, x, text), in enumerate(zip(names, xs, texts)):
 
-        color = get_color(DATA_TYPE_TO_COLORSCALE["categorical"], i, n_series)
+        color = get_color(DATA_TYPE_TO_COLORSCALE["categorical"], i, n)
 
-        trace_base = {
+        base = {
             "legendgroup": i,
-            "name": series.name,
-            "x": series,
+            "name": name,
+            "x": x,
         }
 
         data.append(
@@ -449,7 +434,7 @@ def plot_histogram(
                 "histnorm": histnorm,
                 "xbins": {"size": bin_size},
                 "marker": {"color": color},
-                **trace_base,
+                **base,
             }
         )
 
@@ -458,16 +443,16 @@ def plot_histogram(
             data.append(
                 {
                     "showlegend": False,
-                    "y": (i,) * series.size,
-                    "text": series.index.to_numpy(),
+                    "y": (i,) * x.size,
+                    "text": text,
                     "mode": "markers",
                     "marker": {"symbol": "line-ns-open", "color": color},
                     "hoverinfo": "x+text",
-                    **trace_base,
+                    **base,
                 }
             )
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+    plot_plotly({"layout": layout, "data": data}, file_path=file_path)
 
 
 def plot_x_y(xs, ys, xaxis_title_text, yaxis_title_text, title_text=None):

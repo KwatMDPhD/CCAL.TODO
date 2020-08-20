@@ -56,9 +56,8 @@ def clean(name):
     return name_
 
 
-# TODO: add to notebook
 def list_(directory_path):
 
     return tuple(
-        "{}/{}".format(directory_path, name) for name in listdir(directory_path)
+        "{}{}".format(directory_path, name) for name in listdir(path=directory_path)
     )

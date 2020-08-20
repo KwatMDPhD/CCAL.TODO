@@ -113,8 +113,7 @@ def get_posterior_probability(
         return grid_nd_, grid_nd_posterior_probabilities_
 
 
-# TODO
-def plot_nomogram(p_t0, p_t1, dimension_names, p_t0__s, p_t1__s, html_file_path=None):
+def plot_nomogram(p_t0, p_t1, dimension_names, p_t0__s, p_t1__s, file_path=None):
 
     layout = {
         "title": {"text": "Nomogram"},
@@ -126,14 +125,14 @@ def plot_nomogram(p_t0, p_t1, dimension_names, p_t0__s, p_t1__s, html_file_path=
         },
     }
 
-    nomogram_trace_template = {"showlegend": False}
+    base = {"showlegend": False}
 
     data = [
         {
             "x": (0, log2(p_t1 / p_t0)),
             "y": (0,) * 2,
             "marker": {"color": "#080808"},
-            **nomogram_trace_template,
+            **base,
         }
     ]
 
@@ -158,8 +157,8 @@ def plot_nomogram(p_t0, p_t1, dimension_names, p_t0__s, p_t1__s, html_file_path=
             {
                 "x": (log_odd_ratios.min(), log_odd_ratios.max()),
                 "y": (1 + i,) * 2,
-                **nomogram_trace_template,
+                **base,
             }
         )
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+    plot_plotly({"layout": layout, "data": data}, file_path=file_path)

@@ -20,7 +20,7 @@ def score_sample_and_set(
     annotation_text_font_size=8,
     annotation_text_width=160,
     annotation_text_yshift=32,
-    html_file_path=None,
+    file_path=None,
 ):
 
     if sort_element_scores:
@@ -159,7 +159,7 @@ def score_sample_and_set(
 
         opacity = 0.32
 
-        signal_template = {
+        base = {
             "name": "Signal",
             "mode": "lines",
             "marker": {"color": "#ff1968"},
@@ -173,7 +173,7 @@ def score_sample_and_set(
                     "data": [
                         {"name": "Hit", "y": l_h, "opacity": opacity, "mode": "lines"},
                         {"name": "Miss", "y": l_m, "opacity": opacity, "mode": "lines"},
-                        {"y": l, **signal_template},
+                        {"y": l, **base},
                     ],
                 },
             )
@@ -184,7 +184,7 @@ def score_sample_and_set(
                 "data": [
                     {"name": "Hit", "y": r_h, "opacity": opacity, "mode": "lines"},
                     {"name": "Miss", "y": r_m, "opacity": opacity, "mode": "lines"},
-                    {"y": r, **signal_template},
+                    {"y": r, **base},
                 ],
             },
         )
@@ -251,7 +251,7 @@ def score_sample_and_set(
                 }
             )
 
-        plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+        plot_plotly({"layout": layout, "data": data}, file_path=file_path)
 
     return score
 
@@ -279,7 +279,7 @@ def _score_sample_and_sets(element_scores, set_to_elements, method):
 
 
 def score_samples_and_sets(
-    element_x_sample, set_to_elements, method="classic", n_job=1, directory_path=None
+    element_x_sample, set_to_elements, method="classic", n_job=1, file_path=None
 ):
 
     pool = Pool(processes=n_job)
@@ -298,8 +298,8 @@ def score_samples_and_sets(
         columns=element_x_sample.columns,
     )
 
-    if directory_path is not None:
+    if file_path is not None:
 
-        set_x_sample.to_csv("{}/set_x_sample.tsv".format(directory_path), sep="\t")
+        set_x_sample.to_csv(file_path, sep="\t")
 
     return set_x_sample

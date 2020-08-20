@@ -14,7 +14,7 @@ def get_extreme_labels(
     standard_deviation=None,
     plot=True,
     layout=None,
-    html_file_path=None,
+    file_path=None,
 ):
 
     series = series.dropna().sort_values()
@@ -71,18 +71,18 @@ def get_extreme_labels(
 
     if plot:
 
-        layout_base = {
+        base = {
             "xaxis": {"title": {"text": "Rank"}},
             "yaxis": {"title": {"text": series.name}},
         }
 
         if layout is None:
 
-            layout = layout_base
+            layout = base
 
         else:
 
-            layout = merge(layout_base, layout)
+            layout = merge(base, layout)
 
         plot_plotly(
             {
@@ -104,7 +104,7 @@ def get_extreme_labels(
                     },
                 ],
             },
-            html_file_path=html_file_path,
+            file_path=file_path,
         )
 
     return labels_extreme
@@ -113,7 +113,7 @@ def get_extreme_labels(
 def normalize(vector, method, **normalize_keyword_arguments):
 
     return Series(
-        ignore_nan_and_function_1(
+        data=ignore_nan_and_function_1(
             vector.to_numpy(),
             array_normalize,
             method,

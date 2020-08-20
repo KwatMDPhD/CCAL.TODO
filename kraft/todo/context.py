@@ -216,13 +216,7 @@ def make_context_matrix_(
 
     n = dataframe.shape[0]
 
-    n_per_print = max(1, n // 10)
-
     for i, (index, series) in enumerate(dataframe.iterrows()):
-
-        if i % n_per_print == 0:
-
-            print("({}/{}) {}...".format(i + 1, n, index))
 
         if skew_t_pdf_fit_parameter is None:
 
@@ -281,7 +275,7 @@ def plot_context(
 
         yaxis2_domain = (0, 1)
 
-    layout_template = {
+    base = {
         "title": {"x": 0.5, "text": series.name},
         "yaxis": {"domain": yaxis_domain, "dtick": 1, "showticklabels": False},
         "yaxis2": {"domain": yaxis2_domain},
@@ -291,11 +285,11 @@ def plot_context(
 
     if layout is None:
 
-        layout = layout_template
+        layout = base
 
     else:
 
-        layout = merge(layout_template, layout)
+        layout = merge(base, layout)
 
     context_dict = compute_vector_context(
         series.values, **compute_vector_context_keyword_arguments
@@ -326,7 +320,7 @@ def plot_context(
             }
         )
 
-    data_template = {
+    base = {
         "yaxis": "y2",
         "type": "scatter",
         "x": context_dict["grid"],
@@ -345,7 +339,7 @@ def plot_context(
             "hoverinfo": "x+y",
         },
         merge(
-            data_template,
+            base,
             {"name": "PDF", "y": context_dict["pdf"], "line": {"color": "#24e7c0"}},
         ),
     ]
@@ -384,7 +378,7 @@ def plot_context(
 
     data.append(
         merge(
-            data_template,
+            base,
             {
                 "name": "Shape Reference",
                 "y": shape_pdf_reference,
@@ -401,7 +395,7 @@ def plot_context(
 
         data.append(
             merge(
-                data_template,
+                base,
                 {
                     "name": "Location Reference",
                     "y": location_pdf_reference,
@@ -429,7 +423,7 @@ def plot_context(
 
         data.append(
             merge(
-                data_template,
+                base,
                 {
                     "name": name,
                     "x": context_dict["grid"][indices],

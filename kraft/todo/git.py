@@ -1,14 +1,20 @@
-from os.path import join
 from subprocess import CalledProcessError
+
+from .shell import command
+from .str_ import is_version
 
 
 def get_git_versions():
 
-    tags = run_command("git tag --list").stdout.strip().split(sep="\n")
+    tags = command("git tag --list").stdout.strip().split(sep="\n")
 
-    versions = [tag for tag in tags if is_str_version(tag)]
+    versions = [tag for tag in tags if is_version(tag)]
 
-    versions.sort(key=lambda iii: tuple(int(i) for i in iii.split(sep=".")))
+    def function(iii):
+
+        return tuple(int(i) for i in iii.split(sep="."))
+
+    versions.sort(key=function)
 
     return versions
 
@@ -17,7 +23,7 @@ def is_in_git_repository():
 
     try:
 
-        run_command("git status")
+        command("git status")
 
         return True
 
@@ -28,7 +34,7 @@ def is_in_git_repository():
 
 def make_gitkeep(directory_path):
 
-    open(join(directory_path, ".gitkeep"), mode="w").close()
+    open("{}.gitkeep".format(directory_path), mode="w").close()
 
 
 def normalize_git_url(git_url):

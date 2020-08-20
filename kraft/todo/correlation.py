@@ -63,7 +63,7 @@ def correlate_2_vectors(
 
             statistic_str = "R^2 = {:.2e}<br>P-Value = {:.2e}".format(r2, p_value)
 
-        layout_template = {
+        base = {
             "annotations": [
                 {
                     "xref": "paper",
@@ -80,11 +80,11 @@ def correlate_2_vectors(
 
         if layout is None:
 
-            layout = layout_template
+            layout = base
 
         else:
 
-            layout = merge(layout_template, layout)
+            layout = merge(base, layout)
 
         plot_plotly(
             {

@@ -63,8 +63,6 @@ def factorize_matrix(
 
         weights = tuple(v_0_norm / norm(v) for v in vs)
 
-    n_per_print = max(1, n_iteration // 10)
-
     if mode == "ws":
 
         ws = tuple(random_sample(size=(v.shape[0], r)) for v in vs)
@@ -74,10 +72,6 @@ def factorize_matrix(
         errors = [tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v))]
 
         for iteration_i in range(n_iteration):
-
-            if iteration_i % n_per_print == 0:
-
-                print("{}/{}...".format(iteration_i + 1, n_iteration))
 
             t = sum(tuple(weights[i] * ws[i].T @ vs[i] for i in range(n_v)), axis=0)
 
@@ -107,7 +101,7 @@ def factorize_matrix(
 
         for iteration_i in range(n_iteration):
 
-            if iteration_i % n_per_print == 0:
+            if iteration_i % n == 0:
 
                 print("{}/{}...".format(iteration_i + 1, n_iteration))
 
@@ -154,11 +148,11 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
 
         if directory_path is None:
 
-            html_file_path = None
+            file_path = None
 
         else:
 
-            html_file_path = "{}/w_{}.html".format(directory_path, w_i)
+            file_path = "{}w_{}.html".format(directory_path, w_i)
 
         plot_heat_map(
             DataFrame(data=w, index=index, columns=columns),
@@ -168,7 +162,7 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
                 "title": {"text": "W {}".format(w_i)},
                 "xaxis": layout_factor_axis,
             },
-            html_file_path=html_file_path,
+            file_path=file_path,
         )
 
     for h_i, h in enumerate(hs):
@@ -187,11 +181,11 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
 
         if directory_path is None:
 
-            html_file_path = None
+            file_path = None
 
         else:
 
-            html_file_path = "{}/h_{}.html".format(directory_path, w_i)
+            file_path = "{}h_{}.html".format(directory_path, w_i)
 
         plot_heat_map(
             DataFrame(data=h, index=index, columns=columns),
@@ -201,18 +195,18 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
                 "title": {"text": "H {}".format(h_i)},
                 "yaxis": layout_factor_axis,
             },
-            html_file_path=html_file_path,
+            file_path=file_path,
         )
 
     if errors is not None:
 
         if directory_path is None:
 
-            html_file_path = None
+            file_path = None
 
         else:
 
-            html_file_path = "{}/error.html".format(directory_path)
+            file_path = "{}error.html".format(directory_path)
 
         plot_plotly(
             {
@@ -233,7 +227,7 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
                     for error_axis, error in enumerate(errors)
                 ],
             },
-            html_file_path=html_file_path,
+            file_path=file_path,
         )
 
 

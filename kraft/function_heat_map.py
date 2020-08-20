@@ -185,6 +185,10 @@ def make(
 
             n_sample = ceil(n_column * 0.632)
 
+            def function_(numbers):
+
+                return get_moe(numbers[~isnan(numbers)])
+
             for i in range(n_sampling):
 
                 is_ = choice(n_column, size=n_sample)
@@ -196,9 +200,7 @@ def make(
                     ((vector_, row, function) for row in matrix[:, is_]),
                 )
 
-            scores.loc[:, "0.95 MoE"] = apply_along_axis(
-                lambda numbers: get_moe(numbers[~isnan(numbers)]), 1, row_x_sampling,
-            )
+            scores.loc[:, "0.95 MoE"] = apply_along_axis(function_, 1, row_x_sampling,)
 
         if 0 < n_permutation:
 
@@ -231,7 +233,7 @@ def make(
 
     if directory_path is not None:
 
-        file_path = "{}/scores.tsv".format(directory_path)
+        file_path = "{}scores.tsv".format(directory_path)
 
         scores.to_csv(file_path, sep="\t")
 
@@ -345,11 +347,11 @@ def make(
 
         if directory_path is None:
 
-            html_file_path = None
+            file_path = None
 
         else:
 
-            html_file_path = file_path.replace(".tsv", ".html")
+            file_path = file_path.replace(".tsv", ".html")
 
         plot_plotly(
             {
@@ -376,7 +378,7 @@ def make(
                     },
                 ],
             },
-            html_file_path=html_file_path,
+            file_path=file_path,
         )
 
     return scores
@@ -391,7 +393,7 @@ def summarize(
     se_data_type="continuous",
     plot_std=nan,
     title="Function Heat Map Summary",
-    html_file_path=None,
+    file_path=None,
 ):
 
     if plot_only_shared:
@@ -531,4 +533,4 @@ def summarize(
 
         layout["annotations"] += _annotate_scores(scores_, y, fraction_row, i == 0)
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path=html_file_path)
+    plot_plotly({"layout": layout, "data": data}, file_path=file_path)

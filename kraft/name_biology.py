@@ -9,7 +9,7 @@ def map_str_to_gene():
     str_to_gene = {}
 
     hgnc = read_csv(
-        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
+        "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         index_col=1,
         low_memory=False,
@@ -54,20 +54,20 @@ def map_cg_to_gene():
 
     for cg_to_genes in (
         read_excel(
-            "{}/illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
+            "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
             usecols=(0, 10),
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}/HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
+            "{}HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
             skiprows=7,
             usecols=(0, 21),
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}/infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip".format(
+            "{}infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip".format(
                 DATA_DIRECTORY_PATH
             ),
             skiprows=7,
@@ -110,7 +110,7 @@ def name_genes(ids):
 def map_cell_line_name_to_rename():
 
     return read_csv(
-        "{}/cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
+        "{}cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         index_col=0,
         squeeze=True,
@@ -159,7 +159,7 @@ def select_genes(selection=None):
         selection = {"locus_group": ("protein-coding gene",)}
 
     hgnc = read_csv(
-        "{}/hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
+        "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
     )
 
     genes = hgnc.index.to_numpy()
