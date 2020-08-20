@@ -413,8 +413,8 @@ def summarize(
             labels = labels[is_chosen]
 
         plot_histogram(
-            (Series(numbers, index=labels),),
-            layout={"xaxis": {"title": {"text": "Good Number"}}},
+            (Series(numbers, index=labels, name="Good"),),
+            layout={"xaxis": {"title": {"text": "Number"}}},
         )
 
 
