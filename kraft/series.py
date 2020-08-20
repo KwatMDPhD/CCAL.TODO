@@ -148,7 +148,7 @@ def binarize(series):
             object_x_label[object_to_i[object_], label_i] = 1
 
     dataframe = DataFrame(
-        object_x_label, index=list(object_to_i), columns=series.index,
+        data=object_x_label, index=list(object_to_i), columns=series.index,
     )
 
     dataframe.index.name = series.name

@@ -72,7 +72,7 @@ def plot_node_point(
 ):
 
     node_x_y = DataFrame(
-        {
+        data={
             "x": node_x_dimension.iloc[:, 1].to_numpy(),
             "y": 1 - node_x_dimension.iloc[:, 0].to_numpy(),
         },
@@ -80,7 +80,7 @@ def plot_node_point(
     )
 
     point_x_y = DataFrame(
-        {
+        data={
             "x": point_x_dimension.iloc[:, 1].to_numpy(),
             "y": 1 - point_x_dimension.iloc[:, 0].to_numpy(),
         },

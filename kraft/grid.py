@@ -108,7 +108,7 @@ def plot_grid_nd(
 
         plot_heat_map(
             DataFrame(
-                grid_nd_numbers_shape,
+                data=grid_nd_numbers_shape,
                 index=Index(
                     ("{:.2e} *".format(number) for number in grid_1ds[0]),
                     name=dimension_names[0],

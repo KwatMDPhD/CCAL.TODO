@@ -250,7 +250,9 @@ def make_context_matrix_(
             global_shape=global_shape,
         )["context_like_array"]
 
-    return DataFrame(context_matrix, index=dataframe.index, columns=dataframe.columns)
+    return DataFrame(
+        data=context_matrix, index=dataframe.index, columns=dataframe.columns
+    )
 
 
 def plot_context(

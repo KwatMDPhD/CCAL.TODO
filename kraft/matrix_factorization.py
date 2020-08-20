@@ -249,4 +249,4 @@ def solve_ax_b(a, b, method):
 
             x[:, i] = nnls(a_, b_[:, i])[0]
 
-    return DataFrame(x, index=a.columns, columns=b.columns)
+    return DataFrame(data=x, index=a.columns, columns=b.columns)
