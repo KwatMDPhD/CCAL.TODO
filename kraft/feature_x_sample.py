@@ -50,25 +50,25 @@ def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
 
             if prefix_feature:
 
-                format_ = "{}.{{}}".format(binary_x_.index.name)
+                template = "{}.{{}}".format(binary_x_.index.name)
 
             else:
 
-                format_ = "{}"
+                template = "{}"
 
             binary_x_.index = (
-                format_.format(value) for value in binary_x_.index.to_numpy()
+                template.format(value) for value in binary_x_.index.to_numpy()
             )
 
             binary.append(binary_x_)
 
-    format_ = "{} ({{}})".format(feature_x_.index.name)
+    template = "{} ({{}})".format(feature_x_.index.name)
 
     if 0 < len(continuous):
 
         continuous_x_ = DataFrame(data=continuous)
 
-        continuous_x_.index.name = format_.format("continuous")
+        continuous_x_.index.name = template.format("continuous")
 
     else:
 
@@ -78,7 +78,7 @@ def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
 
         binary_x_ = concat(binary)
 
-        binary_x_.index.name = format_.format("binary")
+        binary_x_.index.name = template.format("binary")
 
     else:
 

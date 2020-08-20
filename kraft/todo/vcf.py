@@ -2,6 +2,10 @@ from os.path import isfile
 
 from pandas import read_csv, value_counts
 
+import ravel
+
+from .shell import command
+
 
 def get_variants_from_vcf_or_vcf_gz(
     vcf_or_vcf_gz_file_path,
@@ -12,11 +16,11 @@ def get_variants_from_vcf_or_vcf_gz(
 
     if not isfile("{}.tbi".format(vcf_or_vcf_gz_file_path)):
 
-        run_command("tabix {}".format(vcf_or_vcf_gz_file_path))
+        command("tabix {}".format(vcf_or_vcf_gz_file_path))
 
     return tuple(
         tuple(vcf_row.split(sep="\t"))
-        for vcf_row in run_command(
+        for vcf_row in command(
             "tabix {} {}:{}-{}".format(
                 vcf_or_vcf_gz_file_path,
                 chromosome,
@@ -25,7 +29,7 @@ def get_variants_from_vcf_or_vcf_gz(
             )
         )
         .stdout.strip()
-        .split(sep="\n")
+        .splitlines()
         if vcf_row != ""
     )
 
@@ -45,7 +49,10 @@ def get_vcf_info_ann(info, key, n_ann=None):
 
         i = VCF_ANN_KEYS.index(key)
 
-        return tuple(ann_.split(sep="|")[i] for ann_ in ann.split(sep=",")[:n_ann])
+        return tuple(
+            ann_.split(sep="|", maxsplit=i + 1)[i]
+            for ann_ in ann.split(sep=",", maxsplit=n_ann + 1)[:n_ann]
+        )
 
 
 def get_vcf_info(info, key):
@@ -54,7 +61,7 @@ def get_vcf_info(info, key):
 
         if "=" in info_:
 
-            info_key, info_value = info_.split(sep="=")
+            info_key, info_value = info_.split(sep="=", maxsplit=1)
 
             if info_key == key:
 
@@ -63,7 +70,9 @@ def get_vcf_info(info, key):
 
 def get_vcf_sample_format(format_, key, sample):
 
-    return sample.split(sep=":")[format_.split(sep=":").index(key)]
+    i = format_.split(sep=":").index(key)
+
+    return sample.split(sep=":", maxsplit=i + 1)[i]
 
 
 def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
@@ -79,13 +88,15 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
         if "=" in info:
 
-            info_field, info_value = info.split(sep="=")
+            info_field, info_value = info.split(sep="=", maxsplit=1)
 
             if info_field == "ANN":
 
                 variant_dict["ANN"] = {}
 
-                for ann_index, ann in enumerate(info_value.split(sep=",")[:n_info_ann]):
+                for ann_index, ann in enumerate(
+                    info_value.split(sep=",", maxsplit=n_info_ann + 1)[:n_info_ann]
+                ):
 
                     ann_values = ann.split(sep="|")
 
@@ -136,9 +147,7 @@ def make_variant_n_from_vcf_file_path(vcf_file_path, use_only_pass=True):
 
         vcf = vcf[is_pass]
 
-    variant_n = value_counts(
-        flatten_nested_iterable(vcf.apply(make_variant_n_from_vcf_row, axis=1))
-    )
+    variant_n = value_counts(ravel(vcf.apply(make_variant_n_from_vcf_row, axis=1)))
 
     variant_n.index.name = "Variant"
 

@@ -241,7 +241,7 @@ def plot_node_point(
 
     if point_score is not None:
 
-        point_score = point_score.reindex(index=point_x_y.index)
+        point_score = point_score.reindex(labels=point_x_y.index)
 
         point_score = point_score[
             point_score.abs().sort_values(na_position="first").index

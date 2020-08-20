@@ -28,6 +28,7 @@ def get_sequence_from_fasta_or_fasta_gz(
 
         command("samtools faidx {}".format(fasta_or_fasta_gz_file_path))
 
+    # TODO: try [:-1] instead of strip
     return "".join(
         command(
             "samtools faidx {} {}:{}-{}".format(
@@ -38,5 +39,5 @@ def get_sequence_from_fasta_or_fasta_gz(
             )
         )
         .stdout.strip()
-        .split(sep="\n")[1:]
+        .splitlines[1:]
     )

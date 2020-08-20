@@ -84,7 +84,7 @@ def get_color(colorscale, number, n=None):
             )
 
             return "rgb{}".format(
-                tuple(int(float(i)) for i in color[4:-1].split(sep=","))
+                tuple(int(float(i)) for i in color[4:-1].split(sep=",", maxsplit=2))
             )
 
 

@@ -14,7 +14,8 @@ def get_conda_environments():
 
     environments = {}
 
-    for line in command("conda-env list").stdout.strip().split(sep="\n"):
+    # TODO: try [:-1] instead of strip
+    for line in command("conda-env list").stdout.strip().splitlines():
 
         if line[0] != "#":
 

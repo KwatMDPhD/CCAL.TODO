@@ -6,13 +6,15 @@ from .str_ import is_version
 
 def get_git_versions():
 
-    tags = command("git tag --list").stdout.strip().split(sep="\n")
+    # TODO: try [:-1] instead of strip
+
+    tags = command("git tag --list").stdout.strip().splitlines
 
     versions = [tag for tag in tags if is_version(tag)]
 
     def function(iii):
 
-        return tuple(int(i) for i in iii.split(sep="."))
+        return tuple(int(i) for i in iii.split(sep=".", maxsplit=2))
 
     versions.sort(key=function)
 

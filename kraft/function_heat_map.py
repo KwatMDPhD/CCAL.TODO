@@ -227,7 +227,7 @@ def make(
 
     else:
 
-        scores = function_or_scores.reindex(index=df.index)
+        scores = function_or_scores.reindex(labels=df.index)
 
     scores.sort_values("Score", ascending=score_ascending, inplace=True)
 
@@ -463,9 +463,9 @@ def summarize(
 
     for i, (name, dict_) in enumerate(df_dicts.items()):
 
-        df = dict_["df"].reindex(columns=se.index)
+        df = dict_["df"].reindex(labels=se.index, axis=1)
 
-        scores_ = scores[name].reindex(index=df.index)
+        scores_ = scores[name].reindex(labels=df.index)
 
         if "emphasis" in dict_:
 

@@ -13,7 +13,9 @@ def get_environment():
 
     environemnt = {}
 
-    for line in command("env").stdout.split(sep="\n"):
+    # TODO: try [:-1] instead of strip
+
+    for line in command("env").stdout.splitlines():
 
         if line != "" and not line.strip().startswith(":"):
 
@@ -42,6 +44,7 @@ def check_is_installed(program):
 
     try:
 
+        # TODO: try [:-1] instead of strip
         return bool(command("type {}".format(program)).stdout.strip())
 
     except CalledProcessError:
@@ -51,9 +54,10 @@ def check_is_installed(program):
 
 def install_python_libraries(libraries):
 
+    # TODO: try [:-1] instead of strip
     libraries_now = tuple(
-        line.split()[0].lower()
-        for line in command("pip list").stdout.strip().split(sep="\n")[2:]
+        line.split(maxsplit=1)[0].lower()
+        for line in command("pip list").stdout.strip().splitlines()[2:]
     )
 
     for library in libraries:
