@@ -46,10 +46,10 @@ class GPSMap:
         plot_node_point(
             self.node_x_dimension,
             self.point_x_dimension,
-            point_group=self.point_group,
-            group_colorscale=self.group_colorscale,
+            point_groups=self.point_group,
+            group_to_colorscale=self.group_colorscale,
             grid_1d=self.grid_1d,
-            grid_nd_probabilities=self.grid_nd_probabilities,
+            grid_nd_probability=self.grid_nd_probabilities,
             grid_nd_group=self.grid_nd_group,
             **plot_node_point_keyword_arguments,
         )
@@ -153,10 +153,10 @@ class GPSMap:
                 index=new_point_x_node.index,
                 columns=self.node_x_dimension.columns,
             ),
-            point_group=None,
-            group_colorscale=self.group_colorscale,
+            point_groups=None,
+            group_to_colorscale=self.group_colorscale,
             grid_1d=self.grid_1d,
-            grid_nd_probabilities=self.grid_nd_probabilities,
+            grid_nd_probability=self.grid_nd_probabilities,
             grid_nd_group=self.grid_nd_group,
             **plot_node_point_keyword_arguments,
         )
