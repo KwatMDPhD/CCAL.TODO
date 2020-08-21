@@ -5,6 +5,7 @@ from numpy import (
     full,
     integer,
     isnan,
+    median,
     nan,
     unique,
     where,
@@ -154,22 +155,26 @@ def plot_node_point(
         }
     )
 
-    data.append(
-        {
-            "legendgroup": "Node",
-            "name": node_name,
-            "x": node_x_dimension[:, 0],
-            "y": node_x_dimension[:, 1],
-            "text": nodes,
-            "mode": "markers",
-            "marker": {
-                "size": 20,
-                "color": "#23191e",
-                "line": {"width": 1, "color": "#ebf6f7"},
-            },
-            "hoverinfo": "text",
-        }
-    )
+    base = {
+        "legendgroup": "Node",
+        "name": node_name,
+        "x": node_x_dimension[:, 0],
+        "y": node_x_dimension[:, 1],
+        "text": nodes,
+        "mode": "markers",
+        "marker": {
+            "size": 20,
+            "color": "#23191e",
+            "line": {"width": 1, "color": "#ebf6f7"},
+        },
+        "hoverinfo": "text",
+    }
+
+    if node_trace is not None:
+
+        base = merge(base, node_trace)
+
+    data.append(base)
 
     if show_node_text:
 
@@ -276,15 +281,13 @@ def plot_node_point(
 
             tickvals = unique(scores)
 
-            template = "{:.0f}".format
+            ticktext = tickvals
 
         else:
 
-            tickvals = scores.describe()[
-                ["min", "25%", "50%", "mean", "75%", "max"]
-            ].to_numpy()
+            tickvals = (scores.min(), median(scores), scores.mean(), scores.max())
 
-            template = "{:.2e}".format
+            ticktext = tuple("{:.2e}".format(number) for number in tickvals)
 
         data.append(
             merge(
@@ -299,7 +302,7 @@ def plot_node_point(
                             **COLORBAR,
                             "tickmode": "array",
                             "tickvals": tickvals,
-                            "ticktext": tuple(template(number) for number in tickvals),
+                            "ticktext": ticktext,
                         },
                         "opacity": score_opacity,
                     },

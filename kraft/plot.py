@@ -7,7 +7,7 @@ from plotly.colors import (
 )
 from plotly.io import show, templates, write_html
 
-from .array import normalize
+from .array import check_has_duplicate, normalize
 from .dict_ import merge
 
 templates["kraft"] = {"layout": {"autosize": False}}
@@ -105,6 +105,10 @@ def plot_heat_map(
     axis_1_layout_annotation=None,
     file_path=None,
 ):
+
+    assert not any(
+        check_has_duplicate(labels) for labels in (axis_0_labels, axis_1_labels)
+    )
 
     if axis_0_groups is not None:
 
