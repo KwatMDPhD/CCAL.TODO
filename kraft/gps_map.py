@@ -162,15 +162,15 @@ class GPSMap:
         )
 
 
-def read_gps_map(pickle_gz_file_path):
+def read(file_path):
 
-    with gzip_open(pickle_gz_file_path) as io:
+    with gzip_open(file_path) as io:
 
         return load(io)
 
 
-def write_gps_map(pickle_gz_file_path, gps_map):
+def write(file_path, gps_map):
 
-    with gzip_open(pickle_gz_file_path, mode="wb") as io:
+    with gzip_open(file_path, mode="wb") as io:
 
         dump(gps_map, io)

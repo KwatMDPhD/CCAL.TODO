@@ -15,11 +15,11 @@ def path(path):
 
         directory_path = dirname(directory_path)
 
-    for directory_path in reversed(missing_directory_paths):
+    for directory_path in missing_directory_paths[::-1]:
 
         mkdir(directory_path)
 
-        print(directory_path)
+        print("{}/".format(directory_path))
 
 
 def get_child_paths(directory_path, absolute=True):

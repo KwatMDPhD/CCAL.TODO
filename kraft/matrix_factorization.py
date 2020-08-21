@@ -8,6 +8,7 @@ from sklearn.decomposition import NMF
 from .array import normalize
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
+from .dataframe import untangle
 from .plot import plot_heat_map, plot_plotly
 
 
@@ -71,7 +72,7 @@ def factorize_matrix(
 
         errors = [tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v))]
 
-        for iteration_i in range(n_iteration):
+        for _ in range(n_iteration):
 
             t = sum(tuple(weights[i] * ws[i].T @ vs[i] for i in range(n_v)), axis=0)
 
@@ -99,11 +100,7 @@ def factorize_matrix(
 
         errors = [tuple(norm(vs[i] - w @ hs[i]) for i in range(n_v))]
 
-        for iteration_i in range(n_iteration):
-
-            if iteration_i % n == 0:
-
-                print("{}/{}...".format(iteration_i + 1, n_iteration))
+        for _ in range(n_iteration):
 
             t = sum(tuple(weights[i] * vs[i] @ hs[i].T for i in range(n_v)), axis=0)
 
@@ -126,25 +123,25 @@ def factorize_matrix(
     return ws, hs, asarray(errors).T
 
 
-def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None):
+def plot_matrix_factorization(
+    ws, hs, errors, factor_axis_size=640, directory_path=None
+):
 
-    axis_size_ = axis_size * 1.618
+    axis_size = factor_axis_size * 1.618
+
+    layout_factor_axis = {"title": {"text": "Factor"}, "dtick": 1}
 
     for w_i, w in enumerate(ws):
 
         if isinstance(w, DataFrame):
 
-            index, columns = w.axes
-
-            w = w.to_numpy()
+            w, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(w)
 
         else:
 
-            index = columns = None
+            axis_0_labels = axis_1_labels = axis_0_name = axis_1_name = None
 
         w = apply_along_axis(normalize, 1, w[cluster(w)[0], :], "-0-")
-
-        layout_factor_axis = {"title": {"text": "Factor"}, "dtick": 1}
 
         if directory_path is None:
 
@@ -155,10 +152,14 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
             file_path = "{}w_{}.html".format(directory_path, w_i)
 
         plot_heat_map(
-            DataFrame(data=w, index=index, columns=columns),
+            w,
+            axis_0_labels,
+            axis_1_labels,
+            axis_0_name,
+            axis_1_name,
             layout={
-                "height": axis_size_,
-                "width": axis_size,
+                "height": axis_size,
+                "width": factor_axis_size,
                 "title": {"text": "W {}".format(w_i)},
                 "xaxis": layout_factor_axis,
             },
@@ -169,13 +170,11 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
 
         if isinstance(h, DataFrame):
 
-            index, columns = h.axes
-
-            h = h.to_numpy()
+            h, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(h)
 
         else:
 
-            index = columns = None
+            axis_0_labels = axis_1_labels = axis_0_name = axis_1_name = None
 
         h = apply_along_axis(normalize, 0, h[:, cluster(h.T)[0]], "-0-")
 
@@ -188,10 +187,14 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
             file_path = "{}h_{}.html".format(directory_path, w_i)
 
         plot_heat_map(
-            DataFrame(data=h, index=index, columns=columns),
+            h,
+            axis_0_labels,
+            axis_1_labels,
+            axis_0_name,
+            axis_1_name,
             layout={
-                "height": axis_size,
-                "width": axis_size_,
+                "height": factor_axis_size,
+                "width": axis_size,
                 "title": {"text": "H {}".format(h_i)},
                 "yaxis": layout_factor_axis,
             },
@@ -222,10 +225,7 @@ def plot_matrix_factorization(ws, hs, errors, axis_size=640, directory_path=None
                         for error in errors
                     ],
                 },
-                "data": [
-                    {"name": error_axis, "y": error}
-                    for error_axis, error in enumerate(errors)
-                ],
+                "data": [{"name": i, "y": error} for i, error in enumerate(errors)],
             },
             file_path=file_path,
         )

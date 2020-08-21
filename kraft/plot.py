@@ -89,20 +89,20 @@ def get_color(colorscale, number, n=None):
 
 def plot_heat_map(
     matrix,
-    axis_0,
-    axis_1,
+    axis_0_labels,
+    axis_1_labels,
     axis_0_name,
     axis_1_name,
     colorscale=None,
     axis_0_groups=None,
-    axis_0_group_colorscale=None,
-    axis_0_group_to_name=None,
     axis_1_groups=None,
+    axis_0_group_colorscale=None,
     axis_1_group_colorscale=None,
+    axis_0_group_to_name=None,
     axis_1_group_to_name=None,
     layout=None,
-    layout_annotation_axis_0=None,
-    layout_annotation_axis_1=None,
+    axis_0_layout_annotation=None,
+    axis_1_layout_annotation=None,
     file_path=None,
 ):
 
@@ -114,7 +114,7 @@ def plot_heat_map(
 
         matrix = matrix[is_, :]
 
-        axis_0 = axis_0[is_]
+        axis_0_labels = axis_0_labels[is_]
 
     if axis_1_groups is not None:
 
@@ -124,7 +124,7 @@ def plot_heat_map(
 
         matrix = matrix[:, is_]
 
-        axis_1 = axis_1[is_]
+        axis_1_labels = axis_1_labels[is_]
 
     group_axis = {"domain": (0.96, 1), "showticklabels": False}
 
@@ -132,11 +132,11 @@ def plot_heat_map(
 
     base = {
         "xaxis": {
-            "title": "{} (n={})".format(axis_1_name, axis_1.size),
+            "title": "{} (n={})".format(axis_1_name, axis_1_labels.size),
             "domain": domain,
         },
         "yaxis": {
-            "title": "{} (n={})".format(axis_0_name, axis_0.size),
+            "title": "{} (n={})".format(axis_0_name, axis_0_labels.size),
             "domain": domain,
         },
         "xaxis2": group_axis,
@@ -162,8 +162,8 @@ def plot_heat_map(
         {
             "type": "heatmap",
             "z": matrix[::-1],
-            "x": axis_1,
-            "y": axis_0[::-1],
+            "x": axis_1_labels,
+            "y": axis_0_labels[::-1],
             "colorscale": colorscale,
             "colorbar": {**COLORBAR, "x": colorbar_x},
         }
@@ -195,13 +195,13 @@ def plot_heat_map(
                 "showarrow": False,
             }
 
-            if layout_annotation_axis_0 is None:
+            if axis_0_layout_annotation is None:
 
                 dict_ = base
 
             else:
 
-                dict_ = merge(base, layout_annotation_axis_0)
+                dict_ = merge(base, axis_0_layout_annotation)
 
             for i in unique(axis_0_groups):
 
@@ -240,13 +240,13 @@ def plot_heat_map(
                 "showarrow": False,
             }
 
-            if layout_annotation_axis_1 is None:
+            if axis_1_layout_annotation is None:
 
                 dict_ = base
 
             else:
 
-                dict_ = merge(base, layout_annotation_axis_1)
+                dict_ = merge(base, axis_1_layout_annotation)
 
             for i in unique(axis_1_groups):
 

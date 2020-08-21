@@ -30,11 +30,11 @@ def error_axes(dataframe):
         assert (counts == 1).all()
 
 
-def peak(dataframe, n_axis_0=4, n_axis_1=2):
+def peak(dataframe, n_axis_0_label=4, n_axis_1_label=2):
 
     print("-" * 80)
 
-    print(dataframe.iloc[:n_axis_0, :n_axis_1])
+    print(dataframe.iloc[:n_axis_0_label, :n_axis_1_label])
 
     print(dataframe.shape)
 
@@ -75,80 +75,78 @@ def untangle(dataframe):
 
 def sample(
     dataframe,
-    axis_0_n,
-    axis_1_n,
+    n_axis_0_label,
+    n_axis_1_label,
     random_seed=RANDOM_SEED,
-    axis_0_keyword_arguments=None,
-    axis_1_keyword_arguments=None,
+    **keyword_arguments,
 ):
 
-    matrix, axis_0, axis_1, axis_0_name, axis_1_name = untangle(dataframe)
+    matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(dataframe)
 
-    axis_0_size = axis_0.size
+    axis_0_size = axis_0_labels.size
 
-    axis_1_size = axis_1.size
+    axis_1_size = axis_1_labels.size
 
     seed(seed=random_seed)
 
-    if axis_0_n is not None:
+    if n_axis_0_label is not None:
 
-        if axis_0_n < 1:
+        if n_axis_0_label < 1:
 
-            axis_0_n = int(axis_0_n * axis_0_size)
+            n_axis_0_label = int(n_axis_0_label * axis_0_size)
 
-        if axis_0_keyword_arguments is None:
+        if keyword_arguments is None:
 
-            axis_0_keyword_arguments = {}
+            keyword_arguments = {}
 
-        axis_0_is = choice(axis_0_size, size=axis_0_n, **axis_0_keyword_arguments)
+        axis_0_is = choice(axis_0_size, size=n_axis_0_label, **keyword_arguments)
 
-    if axis_1_n is not None:
+    if n_axis_1_label is not None:
 
-        if axis_1_n < 1:
+        if n_axis_1_label < 1:
 
-            axis_1_n = int(axis_1_n * axis_1_size)
+            n_axis_1_label = int(n_axis_1_label * axis_1_size)
 
-        if axis_1_keyword_arguments is None:
+        if keyword_arguments is None:
 
-            axis_1_keyword_arguments = {}
+            keyword_arguments = {}
 
-        axis_1_is = choice(axis_1_size, size=axis_1_n, **axis_1_keyword_arguments)
+        axis_1_is = choice(axis_1_size, size=n_axis_1_label, **keyword_arguments)
 
-    if axis_0_n is not None and axis_1_n is not None:
+    if n_axis_0_label is not None and n_axis_1_label is not None:
 
         return DataFrame(
             data=matrix[axis_0_is, axis_1_is],
-            index=Index(data=axis_0[axis_0_is], name=axis_0_name),
-            columns=Index(data=axis_1[axis_1_is], name=axis_1_name),
+            index=Index(data=axis_0_labels[axis_0_is], name=axis_0_name),
+            columns=Index(data=axis_1_labels[axis_1_is], name=axis_1_name),
         )
 
-    elif axis_0_n is not None:
+    elif n_axis_0_label is not None:
 
         return DataFrame(
             data=matrix[axis_0_is],
-            index=Index(data=axis_0[axis_0_is], name=axis_0_name),
-            columns=Index(data=axis_1, name=axis_1_name),
+            index=Index(data=axis_0_labels[axis_0_is], name=axis_0_name),
+            columns=Index(data=axis_1_labels, name=axis_1_name),
         )
 
-    elif axis_1_n is not None:
+    elif n_axis_1_label is not None:
 
         return DataFrame(
             data=matrix[:, axis_1_is],
-            index=Index(data=axis_0, name=axis_0_name),
-            columns=Index(data=axis_1[axis_1_is], name=axis_1_name),
+            index=Index(data=axis_0_labels, name=axis_0_name),
+            columns=Index(data=axis_1_labels[axis_1_is], name=axis_1_name),
         )
 
 
-#
 def drop_axis_label(
-    dataframe, axis, min_n_not_na_value=None, min_n_not_na_unique_value=None
+    dataframe, axis, min_not_na_value=None, min_not_na_unique_value=None
 ):
 
-    assert min_n_not_na_value is not None or min_n_not_na_unique_value is not None
+    assert all(min_not_na_value is not None, min_not_na_unique_value is not None)
 
     shape_before = dataframe.shape
 
-    is_kept = full(shape_before[axis], True)
+    is_keep = full(shape_before[axis], True)
 
     if axis == 0:
 
@@ -160,39 +158,37 @@ def drop_axis_label(
 
     matrix = dataframe.to_numpy()
 
-    if min_n_not_na_value is not None:
+    if min_not_na_value is not None:
 
-        if min_n_not_na_value < 1:
+        if min_not_na_value < 1:
 
-            min_n_not_na_value = min_n_not_na_value * shape_before[axis_]
+            min_not_na_value = min_not_na_value * shape_before[axis_]
 
         def function_0(vector):
 
-            return min_n_not_na_value <= (~isna(vector)).sum()
+            return min_not_na_value <= (~isna(vector)).sum()
 
-        is_kept &= apply_along_axis(function_0, axis_, matrix)
+        is_keep &= apply_along_axis(function_0, axis_, matrix)
 
-    if min_n_not_na_unique_value is not None:
+    if min_not_na_unique_value is not None:
 
-        if min_n_not_na_unique_value < 1:
+        if min_not_na_unique_value < 1:
 
-            min_n_not_na_unique_value = (
-                min_n_not_na_unique_value * dataframe.shape[axis_]
-            )
+            min_not_na_unique_value = min_not_na_unique_value * dataframe.shape[axis_]
 
         def function_1(vector):
 
-            return min_n_not_na_unique_value <= unique(vector[~isna(vector)]).size
+            return min_not_na_unique_value <= unique(vector[~isna(vector)]).size
 
-        is_kept &= apply_along_axis(function_1, axis_, matrix,)
+        is_keep &= apply_along_axis(function_1, axis_, matrix)
 
     if axis == 0:
 
-        dataframe = dataframe.loc[is_kept, :]
+        dataframe = dataframe.loc[is_keep, :]
 
     elif axis == 1:
 
-        dataframe = dataframe.loc[:, is_kept]
+        dataframe = dataframe.loc[:, is_keep]
 
     print("{} ==> {}".format(shape_before, dataframe.shape))
 
@@ -200,7 +196,7 @@ def drop_axis_label(
 
 
 def drop_axes_label(
-    dataframe, axis=None, min_n_not_na_value=None, min_n_not_na_unique_value=None
+    dataframe, axis=None, min_not_na_value=None, min_not_na_unique_value=None
 ):
 
     shape_before = dataframe.shape
@@ -216,13 +212,13 @@ def drop_axes_label(
         dataframe = drop_axis_label(
             dataframe,
             axis,
-            min_n_not_na_value=min_n_not_na_value,
-            min_n_not_na_unique_value=min_n_not_na_unique_value,
+            min_not_na_value=min_not_na_value,
+            min_not_na_unique_value=min_not_na_unique_value,
         )
 
         shape_after = dataframe.shape
 
-        if can_return and shape_before == shape_after:
+        if all(can_return, shape_before == shape_after):
 
             return dataframe
 
@@ -258,7 +254,9 @@ def sync_axis(dataframes, axis):
 
 def normalize(dataframe_number, axis, method, **keyword_arguments):
 
-    matrix, axis_0, axis_1, axis_0_name, axis_1_name = untangle(dataframe_number)
+    matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(
+        dataframe_number
+    )
 
     if axis is None:
 
@@ -275,13 +273,13 @@ def normalize(dataframe_number, axis, method, **keyword_arguments):
             array_normalize,
             method,
             update=True,
-            **keyword_arguments
+            **keyword_arguments,
         )
 
     return DataFrame(
         data=matrix,
-        index=Index(data=axis_0, name=axis_0_name),
-        columns=Index(data=axis_1, name=axis_1_name),
+        index=Index(data=axis_0_labels, name=axis_0_name),
+        columns=Index(data=axis_1_labels, name=axis_1_name),
     )
 
 
@@ -292,7 +290,9 @@ def summarize(
     plot_histogram_max_size=int(1e3),
 ):
 
-    matrix, axis_0, axis_1, axis_0_name, axis_1_name = untangle(dataframe_number)
+    matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(
+        dataframe_number
+    )
 
     print(matrix.shape)
 
@@ -301,7 +301,7 @@ def summarize(
     if plot and matrix_size <= plot_heat_map_max_size:
 
         plot_heat_map(
-            matrix, axis_0, axis_1, axis_0_name, axis_1_name,
+            matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name,
         )
 
     is_nan = isnan(matrix)
@@ -316,7 +316,7 @@ def summarize(
 
             plot_histogram(
                 (is_nan.sum(axis=1), is_nan.sum(axis=0)),
-                (axis_0, axis_1),
+                (axis_0_labels, axis_1_labels),
                 (axis_0_name, axis_1_name),
                 layout={"xaxis": {"title": {"text": "N NaN"}}},
             )
@@ -336,7 +336,9 @@ def summarize(
         labels = asarray(
             tuple(
                 "{}_{}".format(label_0, label_1)
-                for label_0, label_1 in make_grid_nd((axis_0, axis_1))[~is_nan.ravel()]
+                for label_0, label_1 in make_grid_nd((axis_0_labels, axis_1_labels))[
+                    ~is_nan.ravel()
+                ]
             )
         )
 
@@ -368,27 +370,29 @@ def summarize(
 
         plot_histogram(
             (median(matrix, axis=1), median(matrix, axis=0)),
-            (axis_0, axis_1),
+            (axis_0_labels, axis_1_labels),
             (axis_0_name, axis_1_name),
             layout={"xaxis": {"title": {"text": "(Not-NaN) Median"}}},
         )
 
 
 def pivot(
-    axis_0, axis_1, numbers, axis_0_name, axis_1_name, function=None,
+    axis_0_labels, axis_1_labels, numbers, axis_0_name, axis_1_name, function=None,
 ):
 
-    label_0_to_i = map_int(axis_0)[0]
+    axis_0_label_to_i = map_int(axis_0_labels)[0]
 
-    label_1_to_i = map_int(axis_1)[0]
+    axis_1_label_to_i = map_int(axis_1_labels)[0]
 
-    matrix = full((len(label_0_to_i), len(label_1_to_i)), nan)
+    matrix = full((len(axis_0_label_to_i), len(axis_1_label_to_i)), nan)
 
-    for label_0, label_1, number in zip(axis_0, axis_1, numbers):
+    for axis_0_label, axis_1_label, number in zip(
+        axis_0_labels, axis_1_labels, numbers
+    ):
 
-        i_0 = label_0_to_i[label_0]
+        i_0 = axis_0_label_to_i[axis_0_label]
 
-        i_1 = label_1_to_i[label_1]
+        i_1 = axis_1_label_to_i[axis_1_label]
 
         number_now = matrix[i_0, i_1]
 
@@ -402,6 +406,6 @@ def pivot(
 
     return DataFrame(
         data=matrix,
-        index=Index(data=label_0_to_i, name=axis_0_name),
-        columns=Index(data=label_1_to_i, name=axis_1_name),
+        index=Index(data=axis_0_label_to_i, name=axis_0_name),
+        columns=Index(data=axis_1_label_to_i, name=axis_1_name),
     )
