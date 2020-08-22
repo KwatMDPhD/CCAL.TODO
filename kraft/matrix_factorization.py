@@ -8,8 +8,8 @@ from sklearn.decomposition import NMF
 from .array import normalize
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
-from .dataframe import untangle
 from .plot import plot_heat_map, plot_plotly
+from .table import untangle
 
 
 def factorize_matrix_by_nmf(

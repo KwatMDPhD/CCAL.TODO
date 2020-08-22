@@ -2,9 +2,8 @@ from numpy import nan
 from pandas import DataFrame, concat
 
 from .array import guess_type, log, normalize, shift_minimum
-from .dataframe import drop_axes_label, drop_axis_label, summarize
-from .series import binarize
 from .support import cast_builtin
+from .table import binarize, drop_axes_label, drop_axis_label, summarize
 
 
 # TODO: check bad index

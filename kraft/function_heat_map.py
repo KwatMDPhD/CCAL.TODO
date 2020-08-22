@@ -17,11 +17,10 @@ from pandas import DataFrame
 from .array import check_is_sorted, get_not_nan_unique, ignore_nan_and_function_2
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
-from .dataframe import normalize as dataframe_normalize
 from .dict_ import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
-from .series import get_extreme_label_, normalize as series_normalize
 from .significance import get_moe, get_p_values_and_q_values
+from .table import get_extreme_label_, normalize as series_normalize
 
 HEATMAP_BASE = {
     "type": "heatmap",

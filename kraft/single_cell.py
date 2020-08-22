@@ -1,8 +1,8 @@
 from pandas import DataFrame, read_csv
 from scipy.io import mmread
 
-from .dataframe import error_axes
 from .feature_x_sample import collapse, process
+from .table import error_axes
 
 
 def read_process_write_gene_x_cell(
