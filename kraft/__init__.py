@@ -2,7 +2,6 @@ from . import (
     CONSTANT,
     array,
     clustering,
-    dataframe,
     dict_,
     feature_x_sample,
     function_heat_map,
@@ -24,9 +23,9 @@ from . import (
     point,
     probability,
     sea,
-    series,
     shell,
     significance,
     str_,
     support,
+    table,
 )
