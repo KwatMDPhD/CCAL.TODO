@@ -181,7 +181,7 @@ def _improve(feature_x_sample):
         _update(feature_x_sample.to_numpy())
 
         feature_x_sample.index = Index(
-            (keys_[0] for keys_ in keys), name=feature_x_sample.index.name
+            data=(keys_[0] for keys_ in keys), name=feature_x_sample.index.name
         )
 
     return feature_x_sample

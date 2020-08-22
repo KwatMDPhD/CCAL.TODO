@@ -346,7 +346,7 @@ def summarize(
 
             print("Choosing {} for histogram...".format(plot_histogram_max_size))
 
-            is_ = concatenate(
+            i_ = concatenate(
                 (
                     choice(
                         not_nan_numbers.size,
@@ -357,9 +357,9 @@ def summarize(
                 )
             )
 
-            not_nan_numbers = not_nan_numbers[is_]
+            not_nan_numbers = not_nan_numbers[i_]
 
-            labels = labels[is_]
+            labels = labels[i_]
 
         plot_histogram(
             (not_nan_numbers,),

@@ -43,8 +43,8 @@ def get_coclustering_distance(point_x_clustering, min_n_clustered):
 
     n_clustered = asarray(
         tuple(
-            (~isnan(point_x_clustering[is_, :])).all(axis=0).sum()
-            for is_ in point_i_pairs
+            (~isnan(point_x_clustering[i_, :])).all(axis=0).sum()
+            for i_ in point_i_pairs
         )
     )
 
@@ -83,10 +83,10 @@ def cluster_hierarchical_clusterings(
 
     for i in range(n_clustering):
 
-        is_ = choice(n_point, size=n_choice, replace=False)
+        i_ = choice(n_point, size=n_choice, replace=False)
 
-        point_x_clustering[is_, i] = cluster(
-            matrix[is_], n_cluster=n_cluster, **cluster_keyword_arguments
+        point_x_clustering[i_, i] = cluster(
+            matrix[i_], n_cluster=n_cluster, **cluster_keyword_arguments
         )[1]
 
     leaf_is, clusters = cluster(

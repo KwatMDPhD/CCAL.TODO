@@ -110,11 +110,11 @@ def plot_grid_nd(
             DataFrame(
                 data=grid_nd_numbers_shape,
                 index=Index(
-                    ("{:.2e} *".format(number) for number in grid_1ds[0]),
+                    data=("{:.2e} *".format(number) for number in grid_1ds[0]),
                     name=dimension_names[0],
                 ),
                 columns=Index(
-                    ("* {:.2e}".format(number) for number in grid_1ds[1]),
+                    data=("* {:.2e}".format(number) for number in grid_1ds[1]),
                     name=dimension_names[1],
                 ),
             ),

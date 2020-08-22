@@ -6,7 +6,7 @@ from .dict_ import merge
 from .plot import plot_plotly
 
 
-def get_extreme_labels(
+def get_extreme_label_(
     series,
     direction,
     low_and_high=None,

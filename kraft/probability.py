@@ -90,11 +90,11 @@ def get_posterior_probability(
             target_dimension_grid - target_dimension_number
         ).argmin()
 
-        is_ = s_[target_dimension_i :: target_dimension_grid.size]
+        i_ = s_[target_dimension_i :: target_dimension_grid.size]
 
-        grid_nd_ = grid_nd[is_, :-1]
+        grid_nd_ = grid_nd[i_, :-1]
 
-        grid_nd_posterior_probabilities_ = grid_nd_posterior_probabilities[is_]
+        grid_nd_posterior_probabilities_ = grid_nd_posterior_probabilities[i_]
 
         if plot:
 

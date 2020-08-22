@@ -20,7 +20,7 @@ from .CONSTANT import RANDOM_SEED
 from .dataframe import normalize as dataframe_normalize
 from .dict_ import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
-from .series import get_extreme_labels, normalize as series_normalize
+from .series import get_extreme_label_, normalize as series_normalize
 from .significance import get_moe, get_p_values_and_q_values
 
 HEATMAP_BASE = {
@@ -191,13 +191,13 @@ def make(
 
             for i in range(n_sampling):
 
-                is_ = choice(n_column, size=n_sample)
+                i_ = choice(n_column, size=n_sample)
 
-                vector_ = vector[is_]
+                vector_ = vector[i_]
 
                 row_x_sampling[:, i] = pool.starmap(
                     ignore_nan_and_function_2,
-                    ((vector_, row, function) for row in matrix[:, is_]),
+                    ((vector_, row, function) for row in matrix[:, i_]),
                 )
 
             scores.loc[:, "0.95 MoE"] = apply_along_axis(function_, 1, row_x_sampling,)
@@ -258,7 +258,7 @@ def make(
         if n_extreme is not None:
 
             scores_plot = scores_plot.loc[
-                get_extreme_labels(
+                get_extreme_label_(
                     scores_plot.loc[:, "Score"], "<>", n=n_extreme, plot=False
                 )
             ].sort_values("Score", ascending=score_ascending)
@@ -318,9 +318,9 @@ def make(
 
             for number in unique(vector):
 
-                is_ = where(vector == number)[0]
+                i_ = where(vector == number)[0]
 
-                leaf_is.append(is_[cluster(matrix.T[is_])[0]])
+                leaf_is.append(i_[cluster(matrix.T[i_])[0]])
 
             df = df.iloc[:, concatenate(leaf_is)]
 

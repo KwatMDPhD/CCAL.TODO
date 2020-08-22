@@ -263,11 +263,11 @@ def plot_node_point(
 
     if scores is not None:
 
-        is_ = absolute(scores).argsort()
+        i_ = absolute(scores).argsort()
 
-        scores = scores[is_]
+        scores = scores[i_]
 
-        point_x_dimension = point_x_dimension[is_]
+        point_x_dimension = point_x_dimension[i_]
 
         if score_nan_opacity == 0:
 
@@ -316,7 +316,7 @@ def plot_node_point(
 
             name = "Group {}".format(group)
 
-            is_ = groups == group
+            i_ = groups == group
 
             data.append(
                 merge(
@@ -324,9 +324,9 @@ def plot_node_point(
                     {
                         "legendgroup": name,
                         "name": name,
-                        "x": point_x_dimension[is_, 0],
-                        "y": point_x_dimension[is_, 1],
-                        "text": points[is_],
+                        "x": point_x_dimension[i_, 0],
+                        "y": point_x_dimension[i_, 1],
+                        "text": points[i_],
                         "marker": {"color": group_to_color[group]},
                     },
                 )

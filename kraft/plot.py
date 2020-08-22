@@ -112,23 +112,23 @@ def plot_heat_map(
 
     if axis_0_groups is not None:
 
-        is_ = argsort(axis_0_groups)
+        i_ = argsort(axis_0_groups)
 
-        axis_0_groups = axis_0_groups[is_]
+        axis_0_groups = axis_0_groups[i_]
 
-        matrix = matrix[is_, :]
+        matrix = matrix[i_, :]
 
-        axis_0_labels = axis_0_labels[is_]
+        axis_0_labels = axis_0_labels[i_]
 
     if axis_1_groups is not None:
 
-        is_ = argsort(axis_1_groups)
+        i_ = argsort(axis_1_groups)
 
-        axis_1_groups = axis_1_groups[is_]
+        axis_1_groups = axis_1_groups[i_]
 
-        matrix = matrix[:, is_]
+        matrix = matrix[:, i_]
 
-        axis_1_labels = axis_1_labels[is_]
+        axis_1_labels = axis_1_labels[i_]
 
     group_axis = {"domain": (0.96, 1), "showticklabels": False}
 
