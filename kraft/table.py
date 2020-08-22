@@ -214,6 +214,15 @@ def print_value_n(dataframe, axis):
         print(value_n)
 
 
+def entangle(matrix, axis_0_label_, axis_1_label_, axis_0_name, axis_1_name):
+
+    return DataFrame(
+        data=matrix,
+        index=Index(data=axis_0_name, name=axis_0_name),
+        columns=Index(data=axis_1_name, name=axis_1_name),
+    )
+
+
 def untangle(dataframe):
 
     return (
