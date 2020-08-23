@@ -120,7 +120,7 @@ def make(
     plot=True,
     n_extreme=8,
     se_data_type="continuous",
-    df_data_type="continuous",
+    table_data_type="continuous",
     plot_std=nan,
     title="Function Heat Map",
     directory_path=None,
@@ -280,7 +280,7 @@ def make(
 
             se_max = None
 
-        if df_data_type == "continuous" and all(
+        if table_data_type == "continuous" and all(
             1 < get_not_nan_unique(row).size for row in df.dropna(how="all").to_numpy()
         ):
 
@@ -288,15 +288,15 @@ def make(
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
-            df_min = -plot_std
+            table_min = -plot_std
 
-            df_max = plot_std
+            table_max = plot_std
 
         else:
 
-            df_min = None
+            table_min = None
 
-            df_max = None
+            table_max = None
 
         vector = se.to_numpy()
 
@@ -370,9 +370,9 @@ def make(
                         "x": df.columns.to_numpy(),
                         "y": df.index.to_numpy()[::-1],
                         "z": matrix[::-1],
-                        "zmin": df_min,
-                        "zmax": df_max,
-                        "colorscale": DATA_TYPE_TO_COLORSCALE[df_data_type],
+                        "zmin": table_min,
+                        "zmax": table_max,
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[table_data_type],
                         **HEATMAP_BASE,
                     },
                 ],
@@ -385,7 +385,7 @@ def make(
 
 def summarize(
     se,
-    df_dicts,
+    table_dicts,
     scores,
     plot_only_shared=False,
     se_ascending=True,
@@ -397,7 +397,7 @@ def summarize(
 
     if plot_only_shared:
 
-        for dict_ in df_dicts.values():
+        for dict_ in table_dicts.values():
 
             se = se.loc[se.index & dict_["df"].columns]
 
@@ -425,7 +425,7 @@ def summarize(
 
     n_row = 1
 
-    for dict_ in df_dicts.values():
+    for dict_ in table_dicts.values():
 
         n_row += n_space
 
@@ -442,7 +442,7 @@ def summarize(
         LAYOUT_BASE,
     )
 
-    yaxis = "yaxis{}".format(len(df_dicts) + 1)
+    yaxis = "yaxis{}".format(len(table_dicts) + 1)
 
     domain = 1 - fraction_row, 1
 
@@ -460,7 +460,7 @@ def summarize(
         }
     ]
 
-    for i, (name, dict_) in enumerate(df_dicts.items()):
+    for i, (name, dict_) in enumerate(table_dicts.items()):
 
         df = dict_["df"].reindex(labels=se.index, axis=1)
 
@@ -486,17 +486,17 @@ def summarize(
 
             df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
 
-            df_min = -plot_std
+            table_min = -plot_std
 
-            df_max = plot_std
+            table_max = plot_std
 
         else:
 
-            df_min = None
+            table_min = None
 
-            df_max = None
+            table_max = None
 
-        yaxis = "yaxis{}".format(len(df_dicts) - i)
+        yaxis = "yaxis{}".format(len(table_dicts) - i)
 
         domain = (
             max(0, domain[0] - fraction_row * (n_space + df.shape[0])),
@@ -511,8 +511,8 @@ def summarize(
                 "x": df.columns.to_numpy(),
                 "y": df.index.to_numpy()[::-1],
                 "z": df.to_numpy()[::-1],
-                "zmin": df_min,
-                "zmax": df_max,
+                "zmin": table_min,
+                "zmax": table_max,
                 "colorscale": DATA_TYPE_TO_COLORSCALE[dict_["data_type"]],
                 **HEATMAP_BASE,
             }
