@@ -239,8 +239,8 @@ def apply_function_on_slices_from_2_matrices(matrix_0, matrix_1, axis, function)
     return matrix
 
 
-def get_is_in_(array_1d_0, array_1d_1):
+def check_is_in(array_1d, value_):
 
-    dict_1 = {object_1: None for object_1 in array_1d_1}
+    value_ = {value: None for value in value_}
 
-    return asarray(tuple(object_0 in dict_1 for object_0 in array_1d_0))
+    return asarray(tuple(value in value_ for value in array_1d))
