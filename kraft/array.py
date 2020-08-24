@@ -1,4 +1,15 @@
-from numpy import diff, full, isnan, log as loge, log2, log10, nan, nanmin, unique
+from numpy import (
+    asarray,
+    diff,
+    full,
+    isnan,
+    log as loge,
+    log2,
+    log10,
+    nan,
+    nanmin,
+    unique,
+)
 from numpy.random import seed, shuffle as shuffle_
 from scipy.stats import rankdata
 
@@ -226,3 +237,10 @@ def apply_function_on_slices_from_2_matrices(matrix_0, matrix_1, axis, function)
             matrix[i_0, i_1] = function(array_0, matrix_1[i_1])
 
     return matrix
+
+
+def get_is_in_(array_1d_0, array_1d_1):
+
+    dict_1 = {object_1: None for object_1 in array_1d_1}
+
+    return asarray(tuple(object_0 in dict_1 for object_0 in array_1d_0))
