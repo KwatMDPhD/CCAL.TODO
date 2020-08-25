@@ -4,7 +4,6 @@ from . import (
     clustering,
     dict_,
     feature_x_sample,
-    function_heat_map,
     gct,
     geo,
     geometry,
@@ -28,4 +27,4 @@ from . import (
     str_,
     support,
     table,
-)
+)  # function_heat_map,

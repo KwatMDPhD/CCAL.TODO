@@ -6,7 +6,6 @@ from numpy import (
     isnan,
     median,
     nan,
-    quantile,
     unique,
 )
 from numpy.random import choice, seed
@@ -14,116 +13,42 @@ from pandas import DataFrame, Index, Series, isna
 
 from .array import ignore_nan_and_function_1, map_int, normalize as array_normalize
 from .CONSTANT import RANDOM_SEED
-from .dict_ import merge
 from .grid import make_grid_nd
-from .plot import plot_heat_map, plot_histogram, plot_plotly
+from .plot import plot_heat_map, plot_histogram
 
 
-def get_extreme_label_(
-    series,
-    direction,
-    low_and_high=None,
-    n=None,
-    standard_deviation=None,
-    plot=True,
-    layout=None,
-    file_path=None,
-):
+def normalize_d(dataframe_number, axis, method, **keyword_arguments):
 
-    series = series.dropna().sort_values()
+    matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(
+        dataframe_number
+    )
 
-    vector = series.to_numpy()
+    if axis is None:
 
-    labels = series.index.to_numpy()
-
-    if low_and_high is None:
-
-        if n is not None:
-
-            if n < 1:
-
-                low = quantile(vector, n)
-
-                high = quantile(vector, 1 - n)
-
-            else:
-
-                n = min(vector.size, n)
-
-                low = vector[n - 1]
-
-                high = vector[-n]
-
-        elif standard_deviation is not None:
-
-            mean = vector.mean()
-
-            margin = vector.std() * standard_deviation
-
-            low = mean - margin
-
-            high = mean + margin
+        matrix = ignore_nan_and_function_1(
+            matrix.ravel(), array_normalize, method, update=True, **keyword_arguments
+        ).reshape(matrix.shape)
 
     else:
 
-        low, high = low_and_high
-
-    if direction == "<>":
-
-        is_extreme = (vector <= low) | (high <= vector)
-
-    elif direction == "<":
-
-        is_extreme = vector <= low
-
-    elif direction == ">":
-
-        is_extreme = high <= vector
-
-    labels_extreme = labels[is_extreme]
-
-    if plot:
-
-        base = {
-            "xaxis": {"title": {"text": "Rank"}},
-            "yaxis": {"title": {"text": series.name}},
-        }
-
-        if layout is None:
-
-            layout = base
-
-        else:
-
-            layout = merge(base, layout)
-
-        plot_plotly(
-            {
-                "layout": layout,
-                "data": [
-                    {
-                        "name": "All ({})".format(labels.size),
-                        "x": labels,
-                        "y": vector,
-                        "text": labels,
-                        "marker": {"color": "#d0d0d0"},
-                    },
-                    {
-                        "name": "Extreme ({})".format(labels_extreme.size),
-                        "x": labels_extreme,
-                        "y": vector[is_extreme],
-                        "text": labels_extreme,
-                        "mode": "markers",
-                    },
-                ],
-            },
-            file_path=file_path,
+        matrix = apply_along_axis(
+            ignore_nan_and_function_1,
+            axis,
+            matrix,
+            array_normalize,
+            method,
+            update=True,
+            **keyword_arguments,
         )
 
-    return labels_extreme
+    return DataFrame(
+        data=matrix,
+        index=Index(data=axis_0_labels, name=axis_0_name),
+        columns=Index(data=axis_1_labels, name=axis_1_name),
+    )
 
 
-def normalize(vector, method, **normalize_keyword_arguments):
+def normalize_s(vector, method, **normalize_keyword_arguments):
 
     return Series(
         data=ignore_nan_and_function_1(
@@ -218,8 +143,8 @@ def entangle(matrix, axis_0_label_, axis_1_label_, axis_0_name, axis_1_name):
 
     return DataFrame(
         data=matrix,
-        index=Index(data=axis_0_name, name=axis_0_name),
-        columns=Index(data=axis_1_name, name=axis_1_name),
+        index=Index(data=axis_0_label_, name=axis_0_name),
+        columns=Index(data=axis_1_label_, name=axis_1_name),
     )
 
 
@@ -410,37 +335,6 @@ def sync_axis(dataframes, axis):
 
     return tuple(
         dataframe.reindex(labels=labels, axis=axis) for dataframe in dataframes
-    )
-
-
-def normalize(dataframe_number, axis, method, **keyword_arguments):
-
-    matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(
-        dataframe_number
-    )
-
-    if axis is None:
-
-        matrix = ignore_nan_and_function_1(
-            matrix.ravel(), array_normalize, method, update=True, **keyword_arguments
-        ).reshape(matrix.shape)
-
-    else:
-
-        matrix = apply_along_axis(
-            ignore_nan_and_function_1,
-            axis,
-            matrix,
-            array_normalize,
-            method,
-            update=True,
-            **keyword_arguments,
-        )
-
-    return DataFrame(
-        data=matrix,
-        index=Index(data=axis_0_labels, name=axis_0_name),
-        columns=Index(data=axis_1_labels, name=axis_1_name),
     )
 
 

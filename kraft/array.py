@@ -8,6 +8,8 @@ from numpy import (
     log10,
     nan,
     nanmin,
+    quantile,
+    sort,
     unique,
 )
 from numpy.random import seed, shuffle as shuffle_
@@ -244,3 +246,54 @@ def check_is_in(array_1d, value_):
     value_ = {value: None for value in value_}
 
     return asarray(tuple(value in value_ for value in array_1d))
+
+
+def check_is_extreme(vector, direction, low_high=None, n=None, standard_deviation=None):
+
+    if low_high is None:
+
+        if n is not None:
+
+            if n < 1:
+
+                low = quantile(vector, n)
+
+                high = quantile(vector, 1 - n)
+
+            else:
+
+                n = min(vector.size, n)
+
+                vector_sorted = sort(vector)
+
+                low = vector_sorted[n - 1]
+
+                high = vector_sorted[-n]
+
+        elif standard_deviation is not None:
+
+            mean = vector.mean()
+
+            margin = vector.std() * standard_deviation
+
+            low = mean - margin
+
+            high = mean + margin
+
+    else:
+
+        low, high = low_high
+
+    if direction == "<>":
+
+        is_extreme_ = (vector <= low) | (high <= vector)
+
+    elif direction == "<":
+
+        is_extreme_ = vector <= low
+
+    elif direction == ">":
+
+        is_extreme_ = high <= vector
+
+    return is_extreme_
