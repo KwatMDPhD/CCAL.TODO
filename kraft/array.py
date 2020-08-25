@@ -224,12 +224,12 @@ def get_not_nan_unique(number_array):
 
 
 def function_on_1_number_array_not_nan(
-    number_array, function, *arguments, update=False, **keyword_arguments
+    number_array, function, *args, update=False, **kwargs
 ):
 
     is_ = check_is_not_nan(number_array)
 
-    returned = function(number_array[is_], *arguments, **keyword_arguments)
+    returned = function(number_array[is_], *args, **kwargs)
 
     if update:
 
@@ -245,13 +245,11 @@ def function_on_1_number_array_not_nan(
 
 
 def function_on_2_number_array_not_nan(
-    number_array_0, number_array_1, function, *arguments, **keyword_arguments
+    number_array_0, number_array_1, function, *args, **kwargs
 ):
 
     is_ = logical_and(
         check_is_not_nan(number_array_0), check_is_not_nan(number_array_1)
     )
 
-    return function(
-        number_array_0[is_], number_array_1[is_], *arguments, **keyword_arguments,
-    )
+    return function(number_array_0[is_], number_array_1[is_], *args, **kwargs)
