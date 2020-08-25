@@ -65,11 +65,7 @@ def _get_coclustering_distance(point_x_clustering):
 
 
 def cluster_clusterings(
-    point_x_dimension,
-    n_cluster,
-    n_clustering=100,
-    random_seed=RANDOM_SEED,
-    **keyword_arguments,
+    point_x_dimension, n_cluster, n_clustering=100, random_seed=RANDOM_SEED, **kwarg_,
 ):
 
     n_point = point_x_dimension.shape[0]
@@ -85,11 +81,9 @@ def cluster_clusterings(
         point_index_ = choice(n_point, size=n_point_to_cluster, replace=False)
 
         point_x_clustering[point_index_, clustering_index] = cluster(
-            point_x_dimension[point_index_], n_cluster=n_cluster, **keyword_arguments
+            point_x_dimension[point_index_], n_cluster=n_cluster, **kwarg_
         )[1]
 
     return cluster(
-        _get_coclustering_distance(point_x_clustering),
-        n_cluster=n_cluster,
-        **keyword_arguments,
+        _get_coclustering_distance(point_x_clustering), n_cluster=n_cluster, **kwarg_,
     )
