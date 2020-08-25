@@ -1,15 +1,15 @@
 from numpy import (
     asarray,
-    logical_or,
-    logical_not,
-    logical_and,
-    integer,
     diff,
     full,
+    integer,
     isnan,
     log as loge,
     log2,
     log10,
+    logical_and,
+    logical_not,
+    logical_or,
     nan,
     quantile,
     sort,
@@ -19,9 +19,6 @@ from numpy.random import seed, shuffle as shuffle_
 from scipy.stats import rankdata
 
 from .CONSTANT import RANDOM_SEED
-
-
-# ==============================================================================
 
 
 def check_is_in(array_1d, lookup_array_1d):
@@ -48,9 +45,6 @@ def map_integer(array_1d):
         integer += 1
 
     return value_to_integer, integer_to_value
-
-
-# ==============================================================================
 
 
 def shuffle(array_2d, random_seed=RANDOM_SEED):
@@ -85,56 +79,6 @@ def function_on_2_array_2d(array_2d_0, array_2d_1, function):
             array_2d[index_0, index_1] = function(array_1d_0, array_1d_1)
 
     return array_2d
-
-
-# ==============================================================================
-
-
-def check_is_not_nan(number_array):
-
-    return logical_not(isnan(number_array))
-
-
-def get_not_nan_unique(number_array):
-
-    return unique(number_array[check_is_not_nan(number_array)])
-
-
-def function_on_1_number_array_not_nan(
-    number_array, function, *arguments, update=False, **keyword_arguments
-):
-
-    is_ = check_is_not_nan(number_array)
-
-    returned = function(number_array[is_], *arguments, **keyword_arguments)
-
-    if update:
-
-        number_array_copy = full(number_array.shape, nan)
-
-        number_array_copy[is_] = returned
-
-        return number_array_copy
-
-    else:
-
-        return returned
-
-
-def function_on_2_number_array_not_nan(
-    number_array_0, number_array_1, function, *arguments, **keyword_arguments
-):
-
-    is_ = logical_and(
-        check_is_not_nan(number_array_0), check_is_not_nan(number_array_1)
-    )
-
-    return function(
-        number_array_0[is_], number_array_1[is_], *arguments, **keyword_arguments,
-    )
-
-
-# ==============================================================================
 
 
 def clip(number_array, standard_deviation):
@@ -254,3 +198,47 @@ def check_is_all_sorted(vector):
     difference_ = diff(vector)
 
     return (difference_ <= 0).all() or (0 <= difference_).all()
+
+
+def check_is_not_nan(number_array):
+
+    return logical_not(isnan(number_array))
+
+
+def get_not_nan_unique(number_array):
+
+    return unique(number_array[check_is_not_nan(number_array)])
+
+
+def function_on_1_number_array_not_nan(
+    number_array, function, *arguments, update=False, **keyword_arguments
+):
+
+    is_ = check_is_not_nan(number_array)
+
+    returned = function(number_array[is_], *arguments, **keyword_arguments)
+
+    if update:
+
+        number_array_copy = full(number_array.shape, nan)
+
+        number_array_copy[is_] = returned
+
+        return number_array_copy
+
+    else:
+
+        return returned
+
+
+def function_on_2_number_array_not_nan(
+    number_array_0, number_array_1, function, *arguments, **keyword_arguments
+):
+
+    is_ = logical_and(
+        check_is_not_nan(number_array_0), check_is_not_nan(number_array_1)
+    )
+
+    return function(
+        number_array_0[is_], number_array_1[is_], *arguments, **keyword_arguments,
+    )

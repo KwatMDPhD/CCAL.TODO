@@ -11,7 +11,11 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, Series, isna
 
-from .array import function_on_1_number_array_not_nan, map_integer, normalize as array_normalize
+from .array import (
+    function_on_1_number_array_not_nan,
+    map_integer,
+    normalize as array_normalize,
+)
 from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_nd
 from .plot import plot_heat_map, plot_histogram

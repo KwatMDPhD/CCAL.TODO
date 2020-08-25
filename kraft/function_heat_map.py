@@ -14,7 +14,7 @@ from numpy import (
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .array import check_is_all_sorted, get_not_nan_unique, function_not_nan_2
+from .array import check_is_all_sorted, function_not_nan_2, get_not_nan_unique
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
 from .dict_ import merge
@@ -214,8 +214,7 @@ def make(
                 shuffle(vector_)
 
                 row_x_permutation[:, i] = pool.starmap(
-                    function_not_nan_2,
-                    ((vector_, row, function) for row in matrix),
+                    function_not_nan_2, ((vector_, row, function) for row in matrix),
                 )
 
             scores.loc[:, ("P-Value", "Q-Value")] = asarray(
