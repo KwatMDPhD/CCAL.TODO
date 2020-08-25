@@ -1,5 +1,7 @@
 from numpy import (
     asarray,
+    logical_not,
+    logical_and,
     integer,
     diff,
     full,
@@ -8,7 +10,6 @@ from numpy import (
     log2,
     log10,
     nan,
-    nanmin,
     quantile,
     sort,
     unique,
@@ -124,104 +125,106 @@ def normalize(number_array, method, rank_method="average"):
 
 
 def ignore_nan_and_function_1(
-    numbers, function, *function_arguments, update=False, **function_keyword_arguments
+    number_array, function, *arguments, update=False, **keyword_arguments
 ):
 
-    is_good = ~isnan(numbers)
+    is_not_nan = logical_not(isnan(number_array))
 
-    return_ = function(
-        numbers[is_good], *function_arguments, **function_keyword_arguments
-    )
+    retunred = function(number_array[is_not_nan], *arguments, **keyword_arguments)
 
     if update:
 
-        numbers_ = full(numbers.shape, nan)
+        number_array_copy = full(number_array.shape, nan)
 
-        numbers_[is_good] = return_
+        number_array_copy[is_not_nan] = retunred
 
-        return numbers_
+        return number_array_copy
 
     else:
 
-        return return_
+        return retunred
 
 
 def ignore_nan_and_function_2(
-    numbers_0, numbers_1, function, *function_arguments, **function_keyword_arguments,
+    number_array_0, number_array_1, function, *arguments, **keyword_arguments
 ):
 
-    is_good = ~isnan(numbers_0) & ~isnan(numbers_1)
+    is_not_nan = logical_and(
+        logical_not(isnan(number_array_0)), logical_not(isnan(number_array_1))
+    )
 
     return function(
-        numbers_0[is_good],
-        numbers_1[is_good],
-        *function_arguments,
-        **function_keyword_arguments,
+        number_array_0[is_not_nan],
+        number_array_1[is_not_nan],
+        *arguments,
+        **keyword_arguments,
     )
 
 
-def shuffle(matrix, axis, random_seed=RANDOM_SEED):
+def shuffle(array_2d, axis, random_seed=RANDOM_SEED):
 
-    error_nan(matrix)
+    assert array_2d.ndim == 2
 
-    assert matrix.ndim == 2
+    assert axis in (0, 1)
 
-    matrix = matrix.copy()
+    array_2d_copy = array_2d.copy()
 
     seed(seed=random_seed)
 
     if axis == 0:
 
-        for i in range(matrix.shape[1]):
+        for axis_1_index in range(array_2d_copy.shape[1]):
 
-            shuffle_(matrix[:, i])
+            shuffle_(array_2d_copy[:, axis_1_index])
 
-    elif axis == 1:
+    else:
 
-        for i in range(matrix.shape[0]):
+        for axis_0_index in range(array_2d_copy.shape[0]):
 
-            shuffle_(matrix[i, :])
+            shuffle_(array_2d_copy[axis_0_index, :])
 
-    return matrix
+    return array_2d_copy
 
 
 def check_is_sorted(vector):
 
-    error_nan(vector)
-
     assert vector.ndim == 1
 
-    differences = diff(vector)
+    difference_ = diff(vector)
 
-    return (differences <= 0).all() or (0 <= differences).all()
-
-
-def map_int(objects):
-
-    object_to_i = {}
-
-    i_to_object = {}
-
-    i = 0
-
-    for object_ in objects:
-
-        if object_ not in object_to_i:
-
-            object_to_i[object_] = i
-
-            i_to_object[i] = object_
-
-            i += 1
-
-    return object_to_i, i_to_object
+    return (difference_ <= 0).all() or (0 <= difference_).all()
 
 
-def apply_function_on_slices_from_2_matrices(matrix_0, matrix_1, axis, function):
+def map_integer(array_1d):
+
+    assert array_1d.ndim == 1
+
+    value_to_integer = {}
+
+    integer_to_value = {}
+
+    integer = 0
+
+    for value in array_1d:
+
+        if value not in value_to_integer:
+
+            value_to_integer[value] = integer
+
+            integer_to_value[integer] = value
+
+            integer += 1
+
+    return value_to_integer, integer_to_value
+
+
+def apply_function_on_vector_from_2_matrices(matrix_0, matrix_1, axis, function):
 
     error_nan(matrix_0)
 
     error_nan(matrix_1)
+
+    assert axis in (0, 1)
 
     if axis == 1:
 
