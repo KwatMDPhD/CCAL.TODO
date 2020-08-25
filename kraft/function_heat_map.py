@@ -14,7 +14,7 @@ from numpy import (
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .array import check_is_sorted, get_not_nan_unique, ignore_nan_and_function_2
+from .array import check_is_all_sorted, get_not_nan_unique, function_not_nan_2
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
 from .dict_ import merge
@@ -170,7 +170,7 @@ def make(
 
         scores_ = asarray(
             pool.starmap(
-                ignore_nan_and_function_2, ((vector, row, function) for row in matrix),
+                function_not_nan_2, ((vector, row, function) for row in matrix),
             )
         )
 
@@ -195,7 +195,7 @@ def make(
                 vector_ = vector[i_]
 
                 row_x_sampling[:, i] = pool.starmap(
-                    ignore_nan_and_function_2,
+                    function_not_nan_2,
                     ((vector_, row, function) for row in matrix[:, i_]),
                 )
 
@@ -214,7 +214,7 @@ def make(
                 shuffle(vector_)
 
                 row_x_permutation[:, i] = pool.starmap(
-                    ignore_nan_and_function_2,
+                    function_not_nan_2,
                     ((vector_, row, function) for row in matrix),
                 )
 
@@ -306,7 +306,7 @@ def make(
             (
                 not isnan(vector).any(),
                 not isnan(matrix).all(axis=1).any(),
-                check_is_sorted(vector),
+                check_is_all_sorted(vector),
                 (1 < unique(vector, return_counts=True)[1]).all(),
             )
         ):

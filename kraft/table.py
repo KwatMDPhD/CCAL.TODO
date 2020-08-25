@@ -11,7 +11,7 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, Series, isna
 
-from .array import ignore_nan_and_function_1, map_int, normalize as array_normalize
+from .array import function_on_1_number_array_not_nan, map_integer, normalize as array_normalize
 from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_nd
 from .plot import plot_heat_map, plot_histogram
@@ -25,14 +25,14 @@ def normalize_d(dataframe_number, axis, method, **keyword_arguments):
 
     if axis is None:
 
-        matrix = ignore_nan_and_function_1(
+        matrix = function_on_1_number_array_not_nan(
             matrix.ravel(), array_normalize, method, update=True, **keyword_arguments
         ).reshape(matrix.shape)
 
     else:
 
         matrix = apply_along_axis(
-            ignore_nan_and_function_1,
+            function_on_1_number_array_not_nan,
             axis,
             matrix,
             array_normalize,
@@ -51,7 +51,7 @@ def normalize_d(dataframe_number, axis, method, **keyword_arguments):
 def normalize_s(vector, method, **normalize_keyword_arguments):
 
     return Series(
-        data=ignore_nan_and_function_1(
+        data=function_on_1_number_array_not_nan(
             vector.to_numpy(),
             array_normalize,
             method,
@@ -435,9 +435,9 @@ def pivot(
     axis_0_labels, axis_1_labels, numbers, axis_0_name, axis_1_name, function=None,
 ):
 
-    axis_0_label_to_i = map_int(axis_0_labels)[0]
+    axis_0_label_to_i = map_integer(axis_0_labels)[0]
 
-    axis_1_label_to_i = map_int(axis_1_labels)[0]
+    axis_1_label_to_i = map_integer(axis_1_labels)[0]
 
     matrix = full((len(axis_0_label_to_i), len(axis_1_label_to_i)), nan)
 
