@@ -1,5 +1,6 @@
 from numpy import (
     asarray,
+    integer,
     diff,
     full,
     isnan,
@@ -18,28 +19,28 @@ from scipy.stats import rankdata
 from .CONSTANT import RANDOM_SEED
 
 
-def error_nan(numbers):
+def check_has_duplicate(number_array):
 
-    assert not isnan(numbers).any()
-
-
-def check_has_duplicate(array):
-
-    return (unique(array, return_counts=True)[1] != 1).any()
+    return (1 < unique(number_array, return_counts=True)[1]).any()
 
 
-def get_not_nan_unique(vector):
+def get_not_nan_unique(number_array):
 
-    return unique(vector[~isnan(vector)])
+    return unique(number_array[~isnan(number_array)])
 
 
-def guess_type(numbers, n_max_category=16):
+def error_nan(number_array):
 
-    error_nan(numbers)
+    assert not isnan(number_array).any()
 
-    if all(float(number).is_integer() for number in numbers.flatten()):
 
-        n_unique = unique(numbers).size
+def guess_type(number_array, n_max_category=16):
+
+    error_nan(number_array)
+
+    if all(isinstance(number, integer) for number in number_array.ravel()):
+
+        n_unique = unique(number_array).size
 
         if n_unique <= 2:
 
@@ -52,74 +53,74 @@ def guess_type(numbers, n_max_category=16):
     return "continuous"
 
 
-def clip(numbers, standard_deviation):
+def clip(number_array, standard_deviation):
 
-    error_nan(numbers)
+    error_nan(number_array)
 
     assert 0 <= standard_deviation
 
-    mean = numbers.mean()
+    mean = number_array.mean()
 
-    margin = numbers.std() * standard_deviation
+    margin = number_array.std() * standard_deviation
 
-    return numbers.clip(min=mean - margin, max=mean + margin)
+    return number_array.clip(min=mean - margin, max=mean + margin)
 
 
-def shift_minimum(numbers, minimum):
+def shift_minimum(number_array, minimum):
 
-    error_nan(numbers)
+    error_nan(number_array)
 
     if minimum == "0<":
 
-        minimum = numbers[0 < numbers].min()
+        minimum = number_array[0 < number_array].min()
 
-    return numbers + minimum - nanmin(numbers)
-
-
-def log(numbers, log_base="2"):
-
-    error_nan(numbers)
-
-    assert (0 < numbers).all()
-
-    return {"2": log2, "e": loge, "10": log10}[log_base](numbers)
+    return minimum - number_array.min() + number_array
 
 
-def normalize(numbers, method, rank_method="average"):
+def log(number_array, log_base="2"):
 
-    error_nan(numbers)
+    error_nan(number_array)
+
+    assert (0 < number_array).all()
+
+    return {"2": log2, "e": loge, "10": log10}[log_base](number_array)
+
+
+def normalize(number_array, method, rank_method="average"):
+
+    error_nan(number_array)
 
     if method == "-0-":
 
-        standard_deviation = numbers.std()
+        standard_deviation = number_array.std()
 
         assert standard_deviation != 0
 
-        return (numbers - numbers.mean()) / standard_deviation
+        return (number_array - number_array.mean()) / standard_deviation
 
     elif method == "0-1":
 
-        min_ = numbers.min()
+        minimum = number_array.min()
 
-        range_ = numbers.max() - min_
+        range = number_array.max() - minimum
 
-        assert range_ != 0
+        assert range != 0
 
-        return (numbers - min_) / range_
+        return (number_array - minimum) / range
 
     elif method == "sum":
 
-        assert (0 <= numbers).all()
+        assert (0 <= number_array).all()
 
-        sum_ = numbers.sum()
+        sum = number_array.sum()
 
-        assert sum_ != 0
+        assert sum != 0
 
-        return numbers / sum_
+        return number_array / sum
 
     elif method == "rank":
 
-        return rankdata(numbers, method=rank_method).reshape(numbers.shape)
+        return rankdata(number_array, method=rank_method).reshape(number_array.shape)
 
 
 def ignore_nan_and_function_1(
