@@ -14,13 +14,11 @@ from numpy import (
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .array import check_is_all_sorted, function_not_nan_2, get_not_nan_unique
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED
-from .dict_ import merge
+from .dictionary import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
 from .significance import get_moe, get_p_values_and_q_values
-from .table import get_extreme_label_, normalize as series_normalize
 
 HEATMAP_BASE = {
     "type": "heatmap",
@@ -42,33 +40,33 @@ ANNOTATION_BASE = {
 }
 
 
-def _annotate_se(se, y):
+def _annotate_se(text, y):
 
     return {
         "x": 0,
         "y": y,
         "xanchor": "right",
-        "text": "<b>{}</b>".format(se.name),
+        "text": "<b>{}</b>".format(text),
         **ANNOTATION_BASE,
     }
 
 
-def _get_x(score_i):
+def _get_x(score_index):
 
-    return 1.1 + score_i / 6.4
+    return 1.08 + score_index / 6.4
 
 
-def _annotate_scores(scores, y, fraction_row, add_header):
+def _annotate_table(axis_0_label_, score_matrix, y, row_height, add_score_header):
 
-    annotations = []
+    annotation_ = []
 
-    if add_header:
+    if add_score_header:
 
-        for i, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+        for score_index, text in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
 
-            annotations.append(
+            annotation_.append(
                 {
-                    "x": _get_x(i),
+                    "x": _get_x(score_index),
                     "y": y,
                     "xanchor": "center",
                     "text": "<b>{}</b>".format(text),
@@ -76,15 +74,23 @@ def _annotate_scores(scores, y, fraction_row, add_header):
                 }
             )
 
-    y -= fraction_row
+    y -= row_height
 
-    for text, (score, moe, p_value, q_value) in scores.iterrows():
+    for axis_0_index in axis_0_label_.size:
 
-        annotations.append(
-            {"x": 0, "y": y, "xanchor": "right", "text": text, **ANNOTATION_BASE}
+        annotation_.append(
+            {
+                "x": 0,
+                "y": y,
+                "xanchor": "right",
+                "text": axis_0_label_[axis_0_index],
+                **ANNOTATION_BASE,
+            }
         )
 
-        for i, text in enumerate(
+        score, moe, p_value, q_value = score_matrix[axis_0_index]
+
+        for score_index, text in enumerate(
             (
                 "{:.2f} ({:.2f})".format(score, moe),
                 "{:.2e}".format(p_value),
@@ -92,9 +98,9 @@ def _annotate_scores(scores, y, fraction_row, add_header):
             )
         ):
 
-            annotations.append(
+            annotation_.append(
                 {
-                    "x": _get_x(i),
+                    "x": _get_x(score_index),
                     "y": y,
                     "xanchor": "center",
                     "text": text,
@@ -102,11 +108,12 @@ def _annotate_scores(scores, y, fraction_row, add_header):
                 }
             )
 
-        y -= fraction_row
+        y -= row_height
 
-    return annotations
+    return annotation_
 
 
+#
 def make(
     se,
     df,
@@ -339,7 +346,7 @@ def make(
             LAYOUT_BASE,
         )
 
-        layout["annotations"] += _annotate_scores(
+        layout["annotations"] += _annotate_table(
             scores_plot, 1 - fraction_row / 2 * 3, fraction_row, True
         )
 
@@ -529,6 +536,6 @@ def summarize(
             }
         )
 
-        layout["annotations"] += _annotate_scores(scores_, y, fraction_row, i == 0)
+        layout["annotations"] += _annotate_table(scores_, y, fraction_row, i == 0)
 
     plot_plotly({"layout": layout, "data": data}, file_path=file_path)
