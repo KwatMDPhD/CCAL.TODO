@@ -3,7 +3,7 @@ from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
 
-def get_margin_of_error(number_array, confidence=0.95):
+def get_moe(number_array, confidence=0.95):
 
     return norm.ppf(q=confidence) * number_array.std() / sqrt(number_array.size)
 
@@ -12,13 +12,13 @@ def get_p_value(number, random_number_, direction):
 
     if direction == "<":
 
-        significant_number = (random_number_ <= number).sum()
+        significant_n = (random_number_ <= number).sum()
 
     elif direction == ">":
 
-        significant_number = (number <= random_number_).sum()
+        significant_n = (number <= random_number_).sum()
 
-    return max(1, significant_number) / random_number_.size
+    return max(1, significant_n) / random_number_.size
 
 
 def get_p_value_and_q_value(
