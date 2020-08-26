@@ -10,7 +10,6 @@ from plotly.io import show, write_html
 from .array import normalize
 from .dict import merge
 
-
 CONTINUOUS_COLORSCALE = make_colorscale(("#0000ff", "#ffffff", "#ff0000"))
 
 CATEGORICAL_COLORSCALE = make_colorscale(qualitative.Plotly)

@@ -14,10 +14,10 @@ from .clustering import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 from .dict import merge
 from .plot import (
-    plot_plotly,
-    CONTINUOUS_COLORSCALE,
-    CATEGORICAL_COLORSCALE,
     BINARY_COLORSCALE,
+    CATEGORICAL_COLORSCALE,
+    CONTINUOUS_COLORSCALE,
+    plot_plotly,
 )
 from .significance import get_moe, get_p_value_and_q_value
 
@@ -519,7 +519,7 @@ def summarize(
                 "x": axis_1_label_,
                 "zmin": matrix_min,
                 "zmax": matrix_max,
-                "colorscale": DATA_TYPE_TO_COLORSCALE[data["type"]],
+                "colorscale": DATA_TYPE_TO_COLORSCALE[data["data_type"]],
                 **HEATMAP_BASE,
             }
         )

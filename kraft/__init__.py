@@ -2,7 +2,7 @@ from . import (
     CONSTANT,
     array,
     clustering,
-    dictionary,
+    dict,
     function_heat_map,
     gct,
     json,
