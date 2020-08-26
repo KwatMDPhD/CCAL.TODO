@@ -1,8 +1,8 @@
-from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
+from numpy import asarray, exp, log, outer, sign, sqrt
 from scipy.stats import pearsonr
 
 from .array import normalize
-from .grid import get_1d, make_1d, shape
+from .grid import get_1d, make_1d
 from .kernel_density import get_bandwidth
 from .probability import get_probability
 
@@ -51,37 +51,35 @@ def get_ic(vector_0, vector_1):
 
     bandwidth_factor = 1 - abs(correlation) * 2 / 3
 
-    ########
-    grid_nd, grid_nd_probabilities = get_probability(
+    nd_grid, nd_probability_vector = get_probability(
         asarray((vector_0, vector_1)).T,
         plot=False,
-        bandwidths=tuple(
+        bandwidth_=tuple(
             get_bandwidth(vector) * bandwidth_factor for vector in (vector_0, vector_1)
         ),
-        grid_1ds=tuple(
+        _1d_grid_=tuple(
             make_1d(vector.min(), vector.max(), 0.1, 24)
             for vector in (vector_0, vector_1)
         ),
     )
 
-    grid_x, grid_y = get_1d(grid_nd)
+    axis_0_grid, axis_1_grid = get_1d(nd_grid)
 
-    pxy = shape(grid_nd_probabilities, (grid_x, grid_y))
+    p01 = nd_probability_vector.reshape((axis_0_grid.size, axis_1_grid.size))
 
-    dx = grid_x[1] - grid_x[0]
+    d0 = axis_0_grid[1] - axis_0_grid[0]
 
-    dy = grid_y[1] - grid_y[0]
+    d1 = axis_1_grid[1] - axis_1_grid[0]
 
-    px = pxy.sum(axis=1) * dy
+    p0 = p01.sum(axis=1) * d1
 
-    py = pxy.sum(axis=0) * dx
+    p1 = p01.sum(axis=0) * d0
 
-    pxpy = outer(px, py)
+    p0p1 = outer(p0, p1)
 
-    mi = get_kld(pxy.ravel(), pxpy.ravel()).sum() * dx * dy
+    mi = get_kld(p01.ravel(), p0p1.ravel()).sum() * d0 * d1
 
     return sqrt(1 - exp(-2 * mi)) * sign(correlation)
-    ########
 
 
 def get_icd(vector_0, vector_1):

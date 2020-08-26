@@ -5,10 +5,10 @@ from . import (
     dict,
     function_heat_map,
     gct,
-    json,
-    plot,
-    kernel_density,
     grid,
     information,
+    json,
+    kernel_density,
+    plot,
     probability,
 )
