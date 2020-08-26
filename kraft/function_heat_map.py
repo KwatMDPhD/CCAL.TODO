@@ -133,11 +133,7 @@ def make(
     directory_path=None,
 ):
 
-    series = series.loc[series.index & dataframe.columns]
-
-    if vector_ascending is not None:
-
-        series.sort_values(ascending=vector_ascending, inplace=True)
+    series = series.loc[series.index & dataframe.columns].sort_values(ascending=False)
 
     vector, axis_1_label_, vector_label = untangle(series)[:3]
 
@@ -160,7 +156,7 @@ def make(
         score_vector = asarray(
             pool.starmap(
                 function_on_2_number_array_not_nan,
-                ((vector, row_vector, function) for row_vector in matrix),
+                ((vector, row, function) for row in matrix),
             )
         )
 
@@ -168,28 +164,28 @@ def make(
 
             print("0.95 Margin of Error (sample_number={})...".format(sample_number))
 
-            row_x_sample_matrix = full((axis_0_size, sample_number), nan)
+            _x_sample_matrix = full((axis_0_size, sample_number), nan)
 
             sample_number = int(axis_1_size * SAMPLE_FRACTION)
 
             for sample_index in range(sample_number):
 
-                sample_index_ = choice(axis_1_size, size=sample_number)
+                axis_1_index_ = choice(axis_1_size, size=sample_number)
 
-                vector_sample = vector[sample_index_]
+                vector_sample = vector[axis_1_index_]
 
-                row_x_sample_matrix[:, sample_index] = pool.starmap(
+                _x_sample_matrix[:, sample_index] = pool.starmap(
                     function_on_2_number_array_not_nan,
                     (
-                        (vector_sample, row_vector_sample, function)
-                        for row_vector_sample in matrix[:, sample_index_]
+                        (vector_sample, row, function)
+                        for row in matrix[:, axis_1_index_]
                     ),
                 )
 
             margin_of_error_vector = asarray(
                 tuple(
-                    function_on_1_number_array_not_nan(row_vector, get_margin_of_error)
-                    for row_vector in row_x_sample_matrix
+                    function_on_1_number_array_not_nan(row, get_margin_of_error)
+                    for row in _x_sample_matrix
                 )
             )
 
@@ -197,7 +193,7 @@ def make(
 
             print("P-Value and Q-Value (shuffle_number={})...".format(shuffle_number))
 
-            row_x_shuffle_matrix = full((axis_0_size, shuffle_number), nan)
+            _x_shuffle_matrix = full((axis_0_size, shuffle_number), nan)
 
             vector_shuffle = vector.copy()
 
@@ -205,24 +201,34 @@ def make(
 
                 shuffle(vector_shuffle)
 
-                row_x_shuffle_matrix[:, shuffle_index] = pool.starmap(
+                _x_shuffle_matrix[:, shuffle_index] = pool.starmap(
                     function_on_2_number_array_not_nan,
-                    ((vector_shuffle, row_vector, function) for row_vector in matrix),
+                    ((vector_shuffle, row, function) for row in matrix),
                 )
 
             p_value_vector, q_value_vector = get_p_values_and_q_values(
-                score_vector, row_x_shuffle_matrix.ravel(), "<>"
+                score_vector, _x_shuffle_matrix.ravel(), "<>"
             )
 
         pool.terminate()
 
-        statistic_matrix = asarray(
-            (score_vector, margin_of_error_vector, p_value_vector, q_value_vector)
-        ).T
+        statistic_dataframe = entangle(
+            asarray(
+                (score_vector, margin_of_error_vector, p_value_vector, q_value_vector)
+            ).T,
+            axis_0_label_,
+            asarray(("Score", "Margin of Error", "P-Value", "Q-Value")),
+            None,
+            None,
+        )
 
     else:
 
-        statistic_matrix = untangle(function_or_statistic_dataframe)[0]
+        statistic_dataframe = function_or_statistic_dataframe.reindex(
+            labels=axis_0_size
+        )
+
+    statistic_matrix = untangle(function_or_statistic_dataframe)[0]
 
     sort_index_ = argsort(statistic_matrix[:, 0])
 
@@ -232,8 +238,6 @@ def make(
 
     axis_0_label_ = axis_0_label_[sort_index_]
 
-    statistic_label_ = asarray(("Score", "Margin of Error", "P-Value", "Q-Value"))
-
     statistic_dataframe = entangle(
         statistic_matrix, axis_0_label_, statistic_label_, "Feature", "Statistic"
     )
@@ -241,6 +245,8 @@ def make(
     if directory_path is not None:
 
         statistic_dataframe.to_csv("{}statistic.tsv".format(directory_path), sep="\t")
+
+    #
 
     if plot:
 
