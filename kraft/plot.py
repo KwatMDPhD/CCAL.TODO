@@ -42,29 +42,21 @@ def get_color(colorscale, number, maximum_number=None):
 
     if maximum_number is not None:
 
-        if 1 <= number < maximum_number:
+        if 1 <= number:
 
-            n_block = maximum_number - 1
-
-            if number == n_block:
-
-                number = 1.0
-
-            else:
-
-                number = number / n_block
+            number /= maximum_number - 1
 
     if colorscale is None:
 
         colorscale = make_colorscale(qualitative.Plotly)
 
-    for i in range(len(colorscale) - 1):
+    for index in range(len(colorscale) - 1):
 
-        if colorscale[i][0] <= number <= colorscale[i + 1][0]:
+        if colorscale[index][0] <= number <= colorscale[index + 1][0]:
 
-            low_number, low_color = colorscale[i]
+            low_number, low_color = colorscale[index]
 
-            high_number, high_color = colorscale[i + 1]
+            high_number, high_color = colorscale[index + 1]
 
             color = find_intermediate_color(
                 *convert_colors_to_same_type((low_color, high_color))[0],
@@ -73,7 +65,10 @@ def get_color(colorscale, number, maximum_number=None):
             )
 
             return "rgb{}".format(
-                tuple(int(float(i)) for i in color[4:-1].split(sep=",", maxsplit=2))
+                tuple(
+                    int(float(intensity))
+                    for intensity in color[4:-1].split(sep=",", maxsplit=2)
+                )
             )
 
 
