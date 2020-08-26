@@ -8,8 +8,8 @@ def read(file_path):
         return load(io)
 
 
-def write(file_path, dictionary, indent=2):
+def write(file_path, dict, indent_n=2):
 
     with open(file_path, mode="w") as io:
 
-        dump(dictionary, io, indent=indent)
+        dump(dict, io, indent=indent_n)

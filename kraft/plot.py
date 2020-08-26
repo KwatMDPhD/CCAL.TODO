@@ -8,7 +8,14 @@ from plotly.colors import (
 from plotly.io import show, write_html
 
 from .array import normalize
-from .dictionary import merge
+from .dict import merge
+
+
+CONTINUOUS_COLORSCALE = make_colorscale(("#0000ff", "#ffffff", "#ff0000"))
+
+CATEGORICAL_COLORSCALE = make_colorscale(qualitative.Plotly)
+
+BINARY_COLORSCALE = make_colorscale(("#006442", "#ffffff", "#ffa400"))
 
 COLORBAR = {
     "thicknessmode": "fraction",
@@ -16,12 +23,6 @@ COLORBAR = {
     "len": 0.64,
     "ticks": "outside",
     "tickfont": {"size": 10},
-}
-
-DATA_TYPE_TO_COLORSCALE = {
-    "continuous": make_colorscale(("#0000ff", "#ffffff", "#ff0000")),
-    "categorical": make_colorscale(qualitative.Plotly),
-    "binary": make_colorscale(("#006442", "#ffffff", "#ffa400")),
 }
 
 
@@ -38,29 +39,19 @@ def plot_plotly(figure, file_path=None):
         write_html(figure, file_path, config=config)
 
 
-def get_color(colorscale, number, maximum_number=None):
-
-    if maximum_number is not None:
-
-        if 1 <= number:
-
-            number /= maximum_number - 1
-
-    if colorscale is None:
-
-        colorscale = make_colorscale(qualitative.Plotly)
+def get_color(colorscale, fraction):
 
     for index in range(len(colorscale) - 1):
 
-        if colorscale[index][0] <= number <= colorscale[index + 1][0]:
+        low, low_color = colorscale[index]
 
-            low_number, low_color = colorscale[index]
+        high, high_color = colorscale[index + 1]
 
-            high_number, high_color = colorscale[index + 1]
+        if low <= fraction <= high:
 
             color = find_intermediate_color(
                 *convert_colors_to_same_type((low_color, high_color))[0],
-                (number - low_number) / (high_number - low_number),
+                (fraction - low) / (high - low),
                 colortype="rgb",
             )
 
@@ -72,13 +63,20 @@ def get_color(colorscale, number, maximum_number=None):
             )
 
 
+def _get_center_index(group_, group):
+
+    first_index, last_index = nonzero(group_ == group)[0][[0, -1]]
+
+    return first_index + (last_index - first_index) / 2
+
+
 def plot_heat_map(
     matrix,
     axis_0_label_,
     axis_1_label_,
     axis_0_name,
     axis_1_name,
-    colorscale=None,
+    colorscale=CONTINUOUS_COLORSCALE,
     axis_0_group_=None,
     axis_1_group_=None,
     axis_0_group_colorscale=None,
@@ -86,8 +84,8 @@ def plot_heat_map(
     axis_0_group_to_name=None,
     axis_1_group_to_name=None,
     layout=None,
-    axis_0_layout_annotation=None,
-    axis_1_layout_annotation=None,
+    axis_0_annotation=None,
+    axis_1_annotation=None,
     file_path=None,
 ):
 
@@ -143,13 +141,9 @@ def plot_heat_map(
 
         layout = merge(base, layout)
 
-    if colorscale is None:
-
-        colorscale = DATA_TYPE_TO_COLORSCALE["continuous"]
-
     colorbar_x = 1.04
 
-    data = [
+    data_ = [
         {
             "type": "heatmap",
             "z": matrix[::-1],
@@ -166,7 +160,7 @@ def plot_heat_map(
 
         colorbar_x += 0.1
 
-        data.append(
+        data_.append(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
@@ -186,27 +180,24 @@ def plot_heat_map(
                 "showarrow": False,
             }
 
-            if axis_0_layout_annotation is not None:
+            if axis_0_annotation is not None:
 
-                base = merge(base, axis_0_layout_annotation)
+                base = merge(base, axis_0_annotation)
 
-            for group in unique(axis_0_group_):
-
-                index_0, index_1 = nonzero(axis_0_group_ == group)[0][[0, -1]]
-
-                layout["annotations"].append(
-                    {
-                        "y": index_0 + (index_1 - index_0) / 2,
-                        "text": axis_0_group_to_name[group],
-                        **base,
-                    }
-                )
+            layout["annotations"] += [
+                {
+                    "y": _get_center_index(axis_0_group_, group),
+                    "text": axis_0_group_to_name[group],
+                    **base,
+                }
+                for group in unique(axis_0_group_)
+            ]
 
     if axis_1_group_ is not None:
 
         colorbar_x += 0.1
 
-        data.append(
+        data_.append(
             {
                 "yaxis": "y2",
                 "type": "heatmap",
@@ -227,23 +218,20 @@ def plot_heat_map(
                 "showarrow": False,
             }
 
-            if axis_1_layout_annotation is not None:
+            if axis_1_annotation is not None:
 
-                base = merge(base, axis_1_layout_annotation)
+                base = merge(base, axis_1_annotation)
 
-            for group in unique(axis_1_group_):
+            layout["annotations"] += [
+                {
+                    "x": _get_center_index(axis_1_group_, group),
+                    "text": axis_1_group_to_name[group],
+                    **base,
+                }
+                for group in unique(axis_1_group_)
+            ]
 
-                index_0, index_1 = nonzero(axis_1_group_ == group)[0][[0, -1]]
-
-                layout["annotations"].append(
-                    {
-                        "x": index_0 + (index_1 - index_0) / 2,
-                        "text": axis_1_group_to_name[group],
-                        **base,
-                    }
-                )
-
-    plot_plotly({"data": data, "layout": layout}, file_path=file_path)
+    plot_plotly({"data": data_, "layout": layout}, file_path=file_path)
 
 
 def plot_bubble_map(
@@ -254,7 +242,7 @@ def plot_bubble_map(
     axis_1_name,
     color_matrix=None,
     max_size=32,
-    colorscale=None,
+    colorscale=CONTINUOUS_COLORSCALE,
     layout=None,
     file_path=None,
 ):
@@ -292,18 +280,14 @@ def plot_bubble_map(
 
         color_matrix = size_matrix
 
-    y_matrix, x_matrix = meshgrid(axis_0_grid, axis_1_grid)
-
-    if colorscale is None:
-
-        colorscale = DATA_TYPE_TO_COLORSCALE["continuous"]
+    axis_0_matrix, axis_1_matrix = meshgrid(axis_0_grid, axis_1_grid)
 
     plot_plotly(
         {
             "data": [
                 {
-                    "y": y_matrix.ravel(),
-                    "x": x_matrix.ravel(),
+                    "y": axis_0_matrix.ravel(),
+                    "x": axis_1_matrix.ravel(),
                     "text": size_matrix.ravel(),
                     "mode": "markers",
                     "marker": {
@@ -327,6 +311,7 @@ def plot_histogram(
     histnorm=None,
     bin_size=None,
     plot_rug=None,
+    colorscale=CATEGORICAL_COLORSCALE,
     layout=None,
     file_path=None,
 ):
@@ -335,25 +320,25 @@ def plot_histogram(
 
         plot_rug = all(vector.size <= 1e3 for vector in vector_)
 
-    data_number = len(name_)
+    data_n = len(name_)
 
     if plot_rug:
 
         height = 0.04
 
-        yaxis_maximum = data_number * height
+        yaxis_max = data_n * height
 
-        yaxis2_minimum = yaxis_maximum + height
+        yaxis2_min = yaxis_max + height
 
     else:
 
-        yaxis_maximum = 0
+        yaxis_max = 0
 
-        yaxis2_minimum = 0
+        yaxis2_min = 0
 
     if histnorm is None:
 
-        yaxis2_title_text = "Count"
+        yaxis2_title_text = "N"
 
     else:
 
@@ -361,13 +346,13 @@ def plot_histogram(
 
     base = {
         "xaxis": {"anchor": "y"},
+        "yaxis2": {"domain": (yaxis2_min, 1), "title": {"text": yaxis2_title_text}},
         "yaxis": {
-            "domain": (0, yaxis_maximum),
+            "domain": (0, yaxis_max),
             "zeroline": False,
             "dtick": 1,
             "showticklabels": False,
         },
-        "yaxis2": {"domain": (yaxis2_minimum, 1), "title": {"text": yaxis2_title_text}},
     }
 
     if layout is None:
@@ -380,14 +365,12 @@ def plot_histogram(
 
     data = []
 
-    for data_index, (vector, label_, name), in enumerate(zip(vector_, label__, name_)):
+    for index, (vector, label_, name), in enumerate(zip(vector_, label__, name_)):
 
-        color = get_color(
-            DATA_TYPE_TO_COLORSCALE["categorical"], data_index, data_number
-        )
+        color = get_color(colorscale, index / (data_n - 1))
 
         base = {
-            "legendgroup": data_index,
+            "legendgroup": index,
             "name": name,
             "x": vector,
         }
@@ -408,7 +391,7 @@ def plot_histogram(
             data.append(
                 {
                     "showlegend": False,
-                    "y": (data_index,) * vector.size,
+                    "y": (index,) * vector.size,
                     "text": label_,
                     "mode": "markers",
                     "marker": {"symbol": "line-ns-open", "color": color},

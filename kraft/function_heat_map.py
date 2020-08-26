@@ -13,7 +13,12 @@ from .array import (
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 from .dict import merge
-from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
+from .plot import (
+    plot_plotly,
+    CONTINUOUS_COLORSCALE,
+    CATEGORICAL_COLORSCALE,
+    BINARY_COLORSCALE,
+)
 from .significance import get_moe, get_p_value_and_q_value
 
 HEATMAP_BASE = {
@@ -33,6 +38,12 @@ ANNOTATION_BASE = {
     "yanchor": "middle",
     "font": {"size": 10},
     "showarrow": False,
+}
+
+DATA_TYPE_TO_COLORSCALE = {
+    "continuous": CONTINUOUS_COLORSCALE,
+    "categorical": CATEGORICAL_COLORSCALE,
+    "binary": BINARY_COLORSCALE,
 }
 
 
