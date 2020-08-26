@@ -5,12 +5,10 @@ from plotly.colors import (
     make_colorscale,
     qualitative,
 )
-from plotly.io import show, templates, write_html
+from plotly.io import show, write_html
 
 from .array import normalize
 from .dictionary import merge
-
-templates["kraft"] = {"layout": {"autosize": False}}
 
 COLORBAR = {
     "thicknessmode": "fraction",
@@ -29,9 +27,7 @@ DATA_TYPE_TO_COLORSCALE = {
 
 def plot_plotly(figure, file_path=None):
 
-    template = "plotly_white+kraft"
-
-    figure = merge(figure, {"layout": {"template": template}})
+    figure = merge(figure, {"layout": {"autosize": False, "template": "plotly_white"}})
 
     config = {"editable": True}
 
