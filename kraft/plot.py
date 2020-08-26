@@ -366,7 +366,7 @@ def plot_histogram(
 
     for index, (vector, label_, name), in enumerate(zip(vector_, label__, name_)):
 
-        color = get_color(colorscale, index / (data_n - 1))
+        color = get_color(colorscale, index / max(1, (data_n - 1)))
 
         base = {
             "legendgroup": index,
