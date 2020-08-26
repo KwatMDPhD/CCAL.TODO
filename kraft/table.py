@@ -9,16 +9,21 @@ from numpy import (
     unique,
 )
 from numpy.random import choice, seed
-from pandas import DataFrame, Index, Series, isna
+from pandas import DataFrame, Index, Series, concat, isna
 
 from .array import (
     function_on_1_number_array_not_nan,
+    guess_type,
+    log,
     map_integer,
     normalize as array_normalize,
+    shift_minimum,
 )
 from .CONSTANT import RANDOM_SEED
 from .grid import make_grid_nd
 from .plot import plot_heat_map, plot_histogram
+from .support import cast_builtin
+from .table import binarize, drop_axes_label, drop_axis_label, summarize
 
 
 def normalize_d(dataframe_number, axis, method, **keyword_arguments):
@@ -152,15 +157,26 @@ def entangle(matrix, axis_0_label_, axis_1_label_, axis_0_name, axis_1_name):
     )
 
 
-def untangle(dataframe):
+def untangle(pandas):
 
-    return (
-        dataframe.to_numpy(),
-        dataframe.index.to_numpy(),
-        dataframe.columns.to_numpy(),
-        dataframe.index.name,
-        dataframe.columns.name,
-    )
+    if isinstance(pandas, DataFrame):
+
+        return (
+            pandas.to_numpy(),
+            pandas.index.to_numpy(),
+            pandas.columns.to_numpy(),
+            pandas.index.name,
+            pandas.columns.name,
+        )
+
+    elif isinstance(pandas, Series):
+
+        return (
+            pandas.to_numpy(),
+            pandas.index.to_numpy(),
+            pandas.name,
+            pandas.index.name,
+        )
 
 
 def sample(
@@ -468,14 +484,6 @@ def pivot(
         index=Index(data=axis_0_label_to_i, name=axis_0_name),
         columns=Index(data=axis_1_label_to_i, name=axis_1_name),
     )
-
-
-from numpy import nan
-from pandas import DataFrame, concat
-
-from .array import guess_type, log, normalize, shift_minimum
-from .support import cast_builtin
-from .table import binarize, drop_axes_label, drop_axis_label, summarize
 
 
 # TODO: check bad index

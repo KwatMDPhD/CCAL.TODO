@@ -1,6 +1,1 @@
-from . import (
-    array,
-    clustering,
-    CONSTANT,
-    dictionary,
-)
+from . import CONSTANT, array, clustering, dictionary

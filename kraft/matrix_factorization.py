@@ -7,7 +7,7 @@ from sklearn.decomposition import NMF
 
 from .array import normalize
 from .clustering import cluster
-from .CONSTANT import RANDOM_SEED
+from .CONSTANT import GOLDEN_FACTOR, RANDOM_SEED
 from .plot import plot_heat_map, plot_plotly
 
 
@@ -135,7 +135,7 @@ def plot(
     directory_path=None,
 ):
 
-    axis_size = axis_factor_size * 1.618
+    axis_size = axis_factor_size * GOLDEN_FACTOR
 
     factor_axis = {"dtick": 1}
 
