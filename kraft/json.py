@@ -1,15 +1,15 @@
 from json import dump, load
 
 
-def read(json_file_path):
+def read(file_path):
 
-    with open(json_file_path) as io:
+    with open(file_path) as io:
 
         return load(io)
 
 
-def write(json_file_path, dict_, indent=2):
+def write(file_path, dictionary, indent=2):
 
-    with open(json_file_path, mode="w") as io:
+    with open(file_path, mode="w") as io:
 
-        dump(dict_, io, indent=indent)
+        dump(dictionary, io, indent=indent)
