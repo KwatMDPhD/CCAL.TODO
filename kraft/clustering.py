@@ -3,7 +3,7 @@ from numpy.random import choice, seed
 from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
 from scipy.spatial.distance import squareform
 
-from .CONSTANT import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 
 
 def cluster(
@@ -11,7 +11,7 @@ def cluster(
     distance_function="euclidean",
     linkage_method="ward",
     optimal_ordering=False,
-    n_cluster=0,
+    cluster_number=0,
     criterion="maxclust",
 ):
 
@@ -24,7 +24,7 @@ def cluster(
 
     index_ = leaves_list(link)
 
-    cluster_ = fcluster(link, n_cluster, criterion=criterion) - 1
+    cluster_ = fcluster(link, cluster_number, criterion=criterion) - 1
 
     return index_, cluster_
 
@@ -33,57 +33,63 @@ def _get_coclustering_distance(point_x_clustering):
 
     pair_ = asarray(triu_indices(point_x_clustering.shape[0], k=1)).T
 
-    n_pair = pair_.size
+    pair_number = pair_.size
 
-    n_clustering = point_x_clustering.shape[1]
+    clustering_number = point_x_clustering.shape[1]
 
-    distance_ = full(n_pair, 0)
+    distance_ = full(pair_number, 0)
 
-    for index in range(n_pair):
+    for index in range(pair_number):
 
         pair_x_clustering = point_x_clustering[pair_[index]]
 
-        n_try = 0
+        try_number = 0
 
-        n_cocluster = 0
+        cocluster_number = 0
 
-        for clustering_index in range(n_clustering):
+        for clustering_index in range(clustering_number):
 
             cluster_0, cluster_1 = pair_x_clustering[:, clustering_index]
 
             if not isnan(cluster_0) and not isnan(cluster_1):
 
-                n_try += 1
+                try_number += 1
 
                 if cluster_0 == cluster_1:
 
-                    n_cocluster += 1
+                    cocluster_number += 1
 
-        distance_[index] = 1 - n_cocluster / n_try
+        distance_[index] = 1 - cocluster_number / try_number
 
     return squareform(distance_)
 
 
 def cluster_clusterings(
-    point_x_dimension, n_cluster, n_clustering=100, random_seed=RANDOM_SEED, **kwarg_,
+    point_x_dimension,
+    cluster_number,
+    clustering_number=100,
+    random_seed=RANDOM_SEED,
+    **kwarg_,
 ):
 
-    n_point = point_x_dimension.shape[0]
+    point_number = point_x_dimension.shape[0]
 
-    n_point_to_cluster = int(n_point * 0.632)
+    clustering_point_number = int(point_number * SAMPLE_FRACTION)
 
-    point_x_clustering = full((n_point, n_clustering), nan)
+    point_x_clustering = full((point_number, clustering_number), nan)
 
     seed(seed=random_seed)
 
-    for clustering_index in range(n_clustering):
+    for clustering_index in range(clustering_number):
 
-        point_index_ = choice(n_point, size=n_point_to_cluster, replace=False)
+        point_index_ = choice(point_number, size=clustering_point_number, replace=False)
 
         point_x_clustering[point_index_, clustering_index] = cluster(
-            point_x_dimension[point_index_], n_cluster=n_cluster, **kwarg_
+            point_x_dimension[point_index_], cluster_number=cluster_number, **kwarg_
         )[1]
 
     return cluster(
-        _get_coclustering_distance(point_x_clustering), n_cluster=n_cluster, **kwarg_,
+        _get_coclustering_distance(point_x_clustering),
+        cluster_number=cluster_number,
+        **kwarg_,
     )

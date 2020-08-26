@@ -3,7 +3,7 @@ from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
 
-def get_moe(numbers, confidence=0.95):
+def get_margin_of_error(numbers, confidence=0.95):
 
     return norm.ppf(q=confidence) * numbers.std() / sqrt(numbers.size)
 

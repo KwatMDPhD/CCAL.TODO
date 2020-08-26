@@ -193,17 +193,17 @@ def normalize(number_array, method, rank_method="average"):
         return rankdata(number_array, method=rank_method).reshape(number_array.shape)
 
 
-def guess_type(number_array, maximum_n_category=16):
+def guess_type(number_array, category_maximum_number=16):
 
     if all(isinstance(number, integer) for number in number_array.ravel()):
 
-        n_unique = unique(number_array).size
+        unique_number = unique(number_array).size
 
-        if n_unique <= 2:
+        if unique_number <= 2:
 
             return "binary"
 
-        elif n_unique <= maximum_n_category:
+        elif unique_number <= category_maximum_number:
 
             return "categorical"
 

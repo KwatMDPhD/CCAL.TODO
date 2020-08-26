@@ -2,7 +2,6 @@ from math import ceil
 from multiprocessing import Pool
 
 from numpy import (
-    apply_along_axis,
     asarray,
     concatenate,
     full,
@@ -12,13 +11,20 @@ from numpy import (
     where,
 )
 from numpy.random import choice, seed, shuffle
-from pandas import DataFrame
 
 from .clustering import cluster
-from .CONSTANT import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 from .dictionary import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
-from .significance import get_moe, get_p_values_and_q_values
+from .significance import get_margin_of_error, get_p_values_and_q_values
+from .array import (
+    function_on_1_number_array_not_nan,
+    function_on_2_number_array_not_nan,
+    normalize,
+    check_is_extreme,
+    check_is_not_nan,
+)
+from .table import entangle, untangle
 
 HEATMAP_BASE = {
     "type": "heatmap",
@@ -113,148 +119,146 @@ def _annotate_table(axis_0_label_, score_matrix, y, row_height, add_score_header
     return annotation_
 
 
-#
 def make(
-    se,
-    df,
-    function_or_scores,
-    se_ascending=True,
-    n_job=1,
+    #
+    vector,
+    matrix,
+    axis_0_label_,
+    axis_1_label_,
+    #
+    function_or_statistic_table,
+    #
+    job_number=1,
     random_seed=RANDOM_SEED,
-    n_sampling=10,
-    n_permutation=10,
+    sample_number=10,
+    permutation_number=10,
+    #
     score_ascending=False,
-    plot=True,
-    n_extreme=8,
-    se_data_type="continuous",
-    table_data_type="continuous",
+    #
+    plot_number=8,
+    #
+    vector_type="continuous",
+    matrix_type="continuous",
+    #
     plot_std=nan,
+    #
     title="Function Heat Map",
+    #
     directory_path=None,
 ):
 
-    common_labels = se.index & df.columns
+    if callable(function_or_statistic_table):
 
-    assert 0 < common_labels.size
+        function = function_or_statistic_table
 
-    print(
-        "se.index ({}) and df.columns ({}) have {} in common.".format(
-            se.index.size, df.columns.size, common_labels.size
-        )
-    )
+        axis_0_size, axis_1_size = matrix.shape
 
-    se = se.loc[common_labels]
-
-    if se_ascending is not None:
-
-        se.sort_values(ascending=se_ascending, inplace=True)
-
-    df = df.loc[:, se.index]
-
-    if callable(function_or_scores):
-
-        function = function_or_scores
-
-        scores = DataFrame(
-            index=df.index, columns=("Score", "0.95 MoE", "P-Value", "Q-Value")
-        )
-
-        n_row, n_column = df.shape
-
-        n_job = min(n_row, n_job)
-
-        print("Computing scores (n_job={})...".format(n_job))
-
-        pool = Pool(n_job)
-
-        print("Score (function={})...".format(function.__name__))
-
-        vector = se.to_numpy()
-
-        matrix = df.to_numpy()
+        pool = Pool(job_number)
 
         seed(seed=random_seed)
 
-        scores_ = asarray(
+        print("Score (function={})...".format(function.__name__))
+
+        score_vector = asarray(
             pool.starmap(
-                function_not_nan_2, ((vector, row, function) for row in matrix),
+                function_on_2_number_array_not_nan,
+                ((vector, row_vector, function) for row_vector in matrix),
             )
         )
 
-        scores.loc[:, "Score"] = scores_
+        if 0 < sample_number:
 
-        if 0 < n_sampling:
+            print("0.95 MoE (sample_number={})...".format(sample_number))
 
-            print("0.95 MoE (n_sampling={})...".format(n_sampling))
+            row_x_sample_matrix = full((axis_0_size, sample_number), nan)
 
-            row_x_sampling = full((n_row, n_sampling), nan)
+            sample_number = ceil(axis_1_size * SAMPLE_FRACTION)
 
-            n_sample = ceil(n_column * 0.632)
+            for sample_index in range(sample_number):
 
-            def function_(numbers):
+                index_ = choice(axis_1_size, size=sample_number)
 
-                return get_moe(numbers[~isnan(numbers)])
+                vector_sample = vector[index_]
 
-            for i in range(n_sampling):
-
-                i_ = choice(n_column, size=n_sample)
-
-                vector_ = vector[i_]
-
-                row_x_sampling[:, i] = pool.starmap(
-                    function_not_nan_2,
-                    ((vector_, row, function) for row in matrix[:, i_]),
+                row_x_sample_matrix[:, sample_index] = pool.starmap(
+                    function_on_2_number_array_not_nan,
+                    (
+                        (vector_sample, row_vector_sample, function)
+                        for row_vector_sample in matrix[:, index_]
+                    ),
                 )
 
-            scores.loc[:, "0.95 MoE"] = apply_along_axis(function_, 1, row_x_sampling,)
+            margin_of_error_vector = asarray(
+                tuple(
+                    function_on_1_number_array_not_nan(
+                        sample_score_vector, get_margin_of_error
+                    )
+                    for sample_score_vector in row_x_sample_matrix
+                )
+            )
 
-        if 0 < n_permutation:
+        if 0 < permutation_number:
 
-            print("P-Value and Q-Value (n_permutation={})...".format(n_permutation))
+            print(
+                "P-Value and Q-Value (permutation_number={})...".format(
+                    permutation_number
+                )
+            )
 
-            row_x_permutation = full((n_row, n_permutation), nan)
+            row_x_permutation_matrix = full((axis_0_size, permutation_number), nan)
 
-            vector_ = vector.copy()
+            vector_copy = vector.copy()
 
-            for i in range(n_permutation):
+            for permutation_index in range(permutation_number):
 
-                shuffle(vector_)
+                shuffle(vector_copy)
 
-                row_x_permutation[:, i] = pool.starmap(
-                    function_not_nan_2, ((vector_, row, function) for row in matrix),
+                row_x_permutation_matrix[:, permutation_index] = pool.starmap(
+                    function_on_2_number_array_not_nan,
+                    ((vector_copy, row_vector, function) for row_vector in matrix),
                 )
 
-            scores.loc[:, ("P-Value", "Q-Value")] = asarray(
-                get_p_values_and_q_values(scores_, row_x_permutation.ravel(), "<>")
-            ).T
+            p_value_vector, q_value_vector = get_p_values_and_q_values(
+                score_vector, row_x_permutation_matrix.ravel(), "<>"
+            )
 
         pool.terminate()
 
+        statistic_table = entangle(
+            asarray(
+                (score_vector, margin_of_error_vector, p_value_vector, q_value_vector)
+            ).T,
+            axis_0_label_,
+            asarray(("Score", "Margin of Error", "P-Value", "Q-Value")),
+            "Feature",
+            "Statistic",
+        )
+
     else:
 
-        scores = function_or_scores.reindex(labels=df.index)
+        statistic_table = function_or_statistic_table
 
-    scores.sort_values("Score", ascending=score_ascending, inplace=True)
+    statistic_table.sort_values("Score", ascending=False, inplace=True)
 
-    if directory_path is not None:
+    if isinstance(directory_path, str):
 
-        file_path = "{}scores.tsv".format(directory_path)
+        file_path = "{}statistic.tsv".format(directory_path)
 
-        scores.to_csv(file_path, sep="\t")
+        statistic_table.to_csv(file_path, sep="\t")
 
-    if plot:
+    if 0 < plot_number:
 
         plot_plotly(
             {
+                "data": [
+                    {"name": name, "x": numbers.index, "y": numbers}
+                    for name, numbers in scores.items()
+                ],
                 "layout": {
                     "title": {"text": title},
                     "xaxis": {"title": {"text": "Rank"}},
                     "yaxis": {"title": {"text": "Score"}},
                 },
-                "data": [
-                    {"name": name, "x": numbers.index, "y": numbers}
-                    for name, numbers in scores.items()
-                ],
             },
         )
 
@@ -323,31 +327,31 @@ def make(
 
             for number in unique(vector):
 
-                i_ = where(vector == number)[0]
+                index_ = where(vector == number)[0]
 
-                leaf_is.append(i_[cluster(matrix.T[i_])[0]])
+                leaf_is.append(index_[cluster(matrix.T[index_])[0]])
 
             df = df.iloc[:, concatenate(leaf_is)]
 
             se = se.loc[df.columns]
 
-        n_row = 1 + 1 + df.shape[0]
+        axis_0_size = 1 + 1 + df.shape[0]
 
-        fraction_row = 1 / n_row
+        row_fraction = 1 / axis_0_size
 
         layout = merge(
             {
-                "height": max(480, 24 * n_row),
-                "yaxis": {"domain": (0, 1 - fraction_row * 2), "showticklabels": False},
-                "yaxis2": {"domain": (1 - fraction_row, 1), "showticklabels": False},
+                "height": max(480, 24 * axis_0_size),
+                "yaxis": {"domain": (0, 1 - row_fraction * 2), "showticklabels": False},
+                "yaxis2": {"domain": (1 - row_fraction, 1), "showticklabels": False},
                 "title": {"text": title},
-                "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
+                "annotations": [_annotate_se(se, 1 - row_fraction / 2)],
             },
             LAYOUT_BASE,
         )
 
         layout["annotations"] += _annotate_table(
-            scores_plot, 1 - fraction_row / 2 * 3, fraction_row, True
+            scores_plot, 1 - row_fraction / 2 * 3, row_fraction, True
         )
 
         if directory_path is None:
@@ -427,30 +431,30 @@ def summarize(
 
         se_max = None
 
-    n_space = 2
+    space_number = 2
 
-    n_row = 1
+    row_number = 1
 
     for dict_ in table_dicts.values():
 
-        n_row += n_space
+        row_number += space_number
 
-        n_row += dict_["df"].shape[0]
+        row_number += dict_["df"].shape[0]
 
-    fraction_row = 1 / n_row
+    row_fraction = 1 / row_number
 
     layout = merge(
         {
-            "height": max(480, 24 * n_row),
+            "height": max(480, 24 * row_number),
             "title": {"text": title},
-            "annotations": [_annotate_se(se, 1 - fraction_row / 2)],
+            "annotations": [_annotate_se(se, 1 - row_fraction / 2)],
         },
         LAYOUT_BASE,
     )
 
     yaxis = "yaxis{}".format(len(table_dicts) + 1)
 
-    domain = 1 - fraction_row, 1
+    domain = 1 - row_fraction, 1
 
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
@@ -505,8 +509,8 @@ def summarize(
         yaxis = "yaxis{}".format(len(table_dicts) - i)
 
         domain = (
-            max(0, domain[0] - fraction_row * (n_space + df.shape[0])),
-            domain[0] - fraction_row * n_space,
+            max(0, domain[0] - row_fraction * (space_number + df.shape[0])),
+            domain[0] - row_fraction * space_number,
         )
 
         layout[yaxis] = {"domain": domain, "showticklabels": False}
@@ -524,7 +528,7 @@ def summarize(
             }
         )
 
-        y = domain[1] + fraction_row / 2
+        y = domain[1] + row_fraction / 2
 
         layout["annotations"].append(
             {
@@ -536,6 +540,6 @@ def summarize(
             }
         )
 
-        layout["annotations"] += _annotate_table(scores_, y, fraction_row, i == 0)
+        layout["annotations"] += _annotate_table(scores_, y, row_fraction, i == 0)
 
     plot_plotly({"layout": layout, "data": data}, file_path=file_path)
