@@ -3,6 +3,7 @@ from multiprocessing import Pool
 
 from numpy import (
     asarray,
+    argsort,
     concatenate,
     full,
     isnan,
@@ -20,6 +21,7 @@ from .significance import get_margin_of_error, get_p_values_and_q_values
 from .array import (
     function_on_1_number_array_not_nan,
     function_on_2_number_array_not_nan,
+    check_is_all_sorted,
     normalize,
     check_is_extreme,
     check_is_not_nan,
@@ -120,36 +122,27 @@ def _annotate_table(axis_0_label_, score_matrix, y, row_height, add_score_header
 
 
 def make(
-    #
     vector,
     matrix,
     axis_0_label_,
     axis_1_label_,
-    #
-    function_or_statistic_table,
-    #
+    function_or_statistic_dataframe,
     job_number=1,
     random_seed=RANDOM_SEED,
     sample_number=10,
-    permutation_number=10,
-    #
-    score_ascending=False,
-    #
+    shuffle_number=10,
+    plot=True,
     plot_number=8,
-    #
-    vector_type="continuous",
-    matrix_type="continuous",
-    #
-    plot_std=nan,
-    #
+    vector_data_type="continuous",
+    matrix_data_type="continuous",
+    plot_standard_deviation=nan,
     title="Function Heat Map",
-    #
     directory_path=None,
 ):
 
-    if callable(function_or_statistic_table):
+    if callable(function_or_statistic_dataframe):
 
-        function = function_or_statistic_table
+        function = function_or_statistic_dataframe
 
         axis_0_size, axis_1_size = matrix.shape
 
@@ -168,7 +161,7 @@ def make(
 
         if 0 < sample_number:
 
-            print("0.95 MoE (sample_number={})...".format(sample_number))
+            print("Margin of Error (0.95) (sample_number={})...".format(sample_number))
 
             row_x_sample_matrix = full((axis_0_size, sample_number), nan)
 
@@ -190,150 +183,145 @@ def make(
 
             margin_of_error_vector = asarray(
                 tuple(
-                    function_on_1_number_array_not_nan(
-                        sample_score_vector, get_margin_of_error
-                    )
-                    for sample_score_vector in row_x_sample_matrix
+                    function_on_1_number_array_not_nan(row_vector, get_margin_of_error)
+                    for row_vector in row_x_sample_matrix
                 )
             )
 
-        if 0 < permutation_number:
+        if 0 < shuffle_number:
 
-            print(
-                "P-Value and Q-Value (permutation_number={})...".format(
-                    permutation_number
-                )
-            )
+            print("P-Value and Q-Value (shuffle_number={})...".format(shuffle_number))
 
-            row_x_permutation_matrix = full((axis_0_size, permutation_number), nan)
+            row_x_shuffle_matrix = full((axis_0_size, shuffle_number), nan)
 
-            vector_copy = vector.copy()
+            vector_shuffle = vector.copy()
 
-            for permutation_index in range(permutation_number):
+            for shuffle_index in range(shuffle_number):
 
-                shuffle(vector_copy)
+                shuffle(vector_shuffle)
 
-                row_x_permutation_matrix[:, permutation_index] = pool.starmap(
+                row_x_shuffle_matrix[:, shuffle_index] = pool.starmap(
                     function_on_2_number_array_not_nan,
-                    ((vector_copy, row_vector, function) for row_vector in matrix),
+                    ((vector_shuffle, row_vector, function) for row_vector in matrix),
                 )
 
             p_value_vector, q_value_vector = get_p_values_and_q_values(
-                score_vector, row_x_permutation_matrix.ravel(), "<>"
+                score_vector, row_x_shuffle_matrix.ravel(), "<>"
             )
 
         pool.terminate()
 
-        statistic_table = entangle(
-            asarray(
-                (score_vector, margin_of_error_vector, p_value_vector, q_value_vector)
-            ).T,
-            axis_0_label_,
-            asarray(("Score", "Margin of Error", "P-Value", "Q-Value")),
-            "Feature",
-            "Statistic",
-        )
+        statistic_matrix = asarray(
+            (score_vector, margin_of_error_vector, p_value_vector, q_value_vector)
+        ).T
 
     else:
 
-        statistic_table = function_or_statistic_table
+        statistic_matrix = untangle(function_or_statistic_dataframe)[0]
 
-    statistic_table.sort_values("Score", ascending=False, inplace=True)
+    index_ = argsort(statistic_matrix[:, 0])
 
-    if isinstance(directory_path, str):
+    statistic_matrix = statistic_matrix[index_]
 
-        file_path = "{}statistic.tsv".format(directory_path)
+    matrix = matrix[index_]
 
-        statistic_table.to_csv(file_path, sep="\t")
+    axis_0_label_ = axis_0_label_[index_]
 
-    if 0 < plot_number:
+    statistic_label_ = asarray(("Score", "Margin of Error", "P-Value", "Q-Value"))
+
+    if plot:
 
         plot_plotly(
             {
                 "data": [
-                    {"name": name, "x": numbers.index, "y": numbers}
-                    for name, numbers in scores.items()
+                    {
+                        "name": statistic_label_[statistic_index],
+                        "x": statistic_matrix[:, statistic_index],
+                        "y": axis_0_label_,
+                    }
+                    for statistic_index in range(statistic_label_.size)
                 ],
                 "layout": {
                     "title": {"text": title},
-                    "xaxis": {"title": {"text": "Rank"}},
-                    "yaxis": {"title": {"text": "Score"}},
+                    "xaxis": {"title": {"text": "Statistic"}},
+                    "yaxis": {"title": {"text": "Rank"}},
                 },
             },
         )
 
-        scores_plot = scores.copy()
+        if 0 < plot_number:
 
-        if n_extreme is not None:
+            is_ = check_is_extreme(matrix[:, 0], "<>", number=plot_number)
 
-            scores_plot = scores_plot.loc[
-                get_extreme_label_(
-                    scores_plot.loc[:, "Score"], "<>", n=n_extreme, plot=False
-                )
-            ].sort_values("Score", ascending=score_ascending)
+            statistic_matrix = statistic_matrix[is_]
 
-        df = df.loc[scores_plot.index, :]
+            matrix = matrix[is_]
 
-        if se_data_type == "continuous" and 1 < get_not_nan_unique(se.to_numpy()).size:
+            axis_0_label_ = axis_0_label_[is_]
 
-            print("Normalizing heat...")
+        if vector_data_type == "continuous":
 
-            se = series_normalize(se, "-0-").clip(lower=-plot_std, upper=plot_std)
+            print("Normalizing vector heat...")
 
-            se_min = -plot_std
-
-            se_max = plot_std
-
-        else:
-
-            se_min = None
-
-            se_max = None
-
-        if table_data_type == "continuous" and all(
-            1 < get_not_nan_unique(row).size for row in df.dropna(how="all").to_numpy()
-        ):
-
-            print("Normalizing heat...")
-
-            df = dataframe_normalize(df, 1, "-0-").clip(lower=-plot_std, upper=plot_std)
-
-            table_min = -plot_std
-
-            table_max = plot_std
-
-        else:
-
-            table_min = None
-
-            table_max = None
-
-        vector = se.to_numpy()
-
-        matrix = df.to_numpy()
-
-        if all(
-            (
-                not isnan(vector).any(),
-                not isnan(matrix).all(axis=1).any(),
-                check_is_all_sorted(vector),
-                (1 < unique(vector, return_counts=True)[1]).all(),
+            vector = normalize(vector, "-0-").clip(
+                min=-plot_standard_deviation, max=plot_standard_deviation
             )
+
+            vector_minimum = -plot_standard_deviation
+
+            vector_maximum = plot_standard_deviation
+
+        else:
+
+            vector_minimum = None
+
+            vector_maximum = None
+
+        if matrix_data_type == "continuous":
+
+            print("Normalizing matrix heat...")
+
+            matrix = matrix.copy()
+
+            for row_index in range(matrix.shape[0]):
+
+                matrix[row_index] = normalize(matrix[row_index], "-0-").clip(
+                    min=-plot_standard_deviation, max=plot_standard_deviation
+                )
+
+            matrix_minimum = -plot_standard_deviation
+
+            matrix_maximum = plot_standard_deviation
+
+        else:
+
+            matrix_minimum = None
+
+            matrix_maximum = None
+
+        if (
+            check_is_not_nan(vector).all()
+            and check_is_all_sorted(vector)
+            and (1 < unique(vector, return_counts=True)[1]).all()
         ):
 
-            print("Clustering within category...")
+            print("Clustering...")
 
-            leaf_is = []
+            leaf_index_ = []
 
             for number in unique(vector):
 
                 index_ = where(vector == number)[0]
 
-                leaf_is.append(index_[cluster(matrix.T[index_])[0]])
+                leaf_index_.append(index_[cluster(matrix.T[index_])[0]])
 
-            df = df.iloc[:, concatenate(leaf_is)]
+            leaf_index_ = concatenate(leaf_index_)
 
-            se = se.loc[df.columns]
+            vector = vector[leaf_index_]
+
+            matrix = matrix[:, leaf_index_]
+
+            axis_1_label_[leaf_index_]
 
         axis_0_size = 1 + 1 + df.shape[0]
 
@@ -351,7 +339,7 @@ def make(
         )
 
         layout["annotations"] += _annotate_table(
-            scores_plot, 1 - row_fraction / 2 * 3, row_fraction, True
+            statistic_dataframe_plot, 1 - row_fraction / 2 * 3, row_fraction, True
         )
 
         if directory_path is None:
@@ -370,8 +358,8 @@ def make(
                         "yaxis": "y2",
                         "x": se.index.to_numpy(),
                         "z": vector.reshape((1, -1)),
-                        "zmin": se_min,
-                        "zmax": se_max,
+                        "zmin": vector_minimum,
+                        "zmax": vector_maximum,
                         "colorscale": DATA_TYPE_TO_COLORSCALE[se_data_type],
                         **HEATMAP_BASE,
                     },
@@ -380,8 +368,8 @@ def make(
                         "x": df.columns.to_numpy(),
                         "y": df.index.to_numpy()[::-1],
                         "z": matrix[::-1],
-                        "zmin": table_min,
-                        "zmax": table_max,
+                        "zmin": matrix_minimum,
+                        "zmax": matrix_maximum,
                         "colorscale": DATA_TYPE_TO_COLORSCALE[table_data_type],
                         **HEATMAP_BASE,
                     },
@@ -390,7 +378,7 @@ def make(
             file_path=file_path,
         )
 
-    return scores
+    return statistic_dataframe
 
 
 def summarize(

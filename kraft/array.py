@@ -59,27 +59,29 @@ def check_is_all_sorted(vector):
     return (difference_ <= 0).all() or (0 <= difference_).all()
 
 
-def check_is_extreme(vector, direction, low_and_high=(), n=0, standard_deviation=0):
+def check_is_extreme(
+    vector, direction, low_and_high=(), number=0, standard_deviation=0
+):
 
     if len(low_and_high) == 2:
 
         low, high = low_and_high
 
-    elif 0 < n:
+    elif 0 < number:
 
-        if n < 1:
+        if number < 1:
 
-            low = quantile(vector, n)
+            low = quantile(vector, number)
 
-            high = quantile(vector, 1 - n)
+            high = quantile(vector, 1 - number)
 
         else:
 
             vector_sorted = sort(vector)
 
-            low = vector_sorted[n - 1]
+            low = vector_sorted[number - 1]
 
-            high = vector_sorted[-n]
+            high = vector_sorted[-number]
 
     elif 0 < standard_deviation:
 
