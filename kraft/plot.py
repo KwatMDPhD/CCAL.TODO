@@ -7,8 +7,8 @@ from plotly.colors import (
 )
 from plotly.io import show, templates, write_html
 
-from .array import check_is_all_unique, normalize
-from .dict_ import merge
+from .array import normalize
+from .dictionary import merge
 
 templates["kraft"] = {"layout": {"autosize": False}}
 
@@ -39,22 +39,16 @@ def plot_plotly(figure, file_path=None):
 
     if file_path is not None:
 
-        assert file_path.endswith(".html")
-
         write_html(figure, file_path, config=config)
 
 
-def get_color(colorscale, number, n=None):
+def get_color(colorscale, number, maximum_number=None):
 
-    if n is not None:
+    if maximum_number is not None:
 
-        assert float(n).is_integer()
+        if 1 <= number < maximum_number:
 
-        assert float(number).is_integer()
-
-        if 1 <= number < n:
-
-            n_block = n - 1
+            n_block = maximum_number - 1
 
             if number == n_block:
 
@@ -105,10 +99,6 @@ def plot_heat_map(
     axis_1_layout_annotation=None,
     file_path=None,
 ):
-
-    assert not any(
-        check_is_all_unique(labels) for labels in (axis_0_labels, axis_1_labels)
-    )
 
     if axis_0_groups is not None:
 
@@ -435,17 +425,3 @@ def plot_histogram(
             )
 
     plot_plotly({"layout": layout, "data": data}, file_path=file_path)
-
-
-def plot_x_y(xs, ys, xaxis_title_text, yaxis_title_text, title_text=None):
-
-    plot_plotly(
-        {
-            "layout": {
-                "title": {"text": title_text},
-                "xaxis": {"title": {"text": xaxis_title_text}},
-                "yaxis": {"title": {"text": yaxis_title_text}},
-            },
-            "data": [{"x": xs, "y": ys}],
-        }
-    )

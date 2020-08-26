@@ -14,7 +14,7 @@ from sklearn.manifold import MDS
 
 from .array import normalize
 from .CONSTANT import RANDOM_SEED
-from .dict_ import merge
+from .dictionary import merge
 from .geometry import get_convex_hull, get_triangulation
 from .plot import COLORBAR, get_color, make_colorscale, plot_plotly
 
