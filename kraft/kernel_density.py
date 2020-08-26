@@ -2,7 +2,7 @@ from KDEpy import FFTKDE
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
 from .CONSTANT import FLOAT_RESOLUTION
-from .grid import make_grid_1d, make_grid_nd, plot_grid_nd
+from .grid import make_1d, make_nd, plot as grid_plot
 
 
 def get_bandwidth(vector):
@@ -11,35 +11,35 @@ def get_bandwidth(vector):
 
 
 def get_density(
-    point_x_dimension, bandwidths=None, grid_1ds=None, plot=True, dimension_names=None
+    point_x_dimension, bandwidth_=None, _1d_grid_=None, plot=True, dimension_name_=None
 ):
 
     dimension_x_point = point_x_dimension.T
 
-    if bandwidths is None:
+    if bandwidth_ is None:
 
-        bandwidths = tuple(get_bandwidth(dimension) for dimension in dimension_x_point)
+        bandwidth_ = tuple(get_bandwidth(vector) for vector in dimension_x_point)
 
-    if grid_1ds is None:
+    if _1d_grid_ is None:
 
-        grid_1ds = tuple(
-            make_grid_1d(dimension.min(), dimension.max(), 0.1, 8)
-            for dimension in dimension_x_point
+        _1d_grid_ = tuple(
+            make_1d(vector.min(), vector.max(), 0.1, 8) for vector in dimension_x_point
         )
 
-    grid_nd = make_grid_nd(grid_1ds)
+    nd_grid = make_nd(_1d_grid_)
 
-    grid_nd_densities = (
-        FFTKDE(bw=bandwidths).fit(point_x_dimension).evaluate(grid_nd)
+    # TODO: consider 0ing
+    nd_density_vector = (
+        FFTKDE(bw=bandwidth_).fit(point_x_dimension).evaluate(nd_grid)
     ).clip(min=FLOAT_RESOLUTION)
 
     if plot:
 
-        plot_grid_nd(
-            grid_nd,
-            grid_nd_densities,
-            dimension_names=dimension_names,
+        grid_plot(
+            nd_grid,
+            nd_density_vector,
+            dimension_name_=dimension_name_,
             number_name="Density",
         )
 
-    return grid_nd, grid_nd_densities
+    return nd_grid, nd_density_vector

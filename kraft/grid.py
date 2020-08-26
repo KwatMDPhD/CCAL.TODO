@@ -1,123 +1,107 @@
 from numpy import asarray, diff, linspace, meshgrid, unique
-from pandas import DataFrame, Index
 
 from .plot import plot_heat_map, plot_plotly
 
 
-def make_grid_1d(min_, max_, fraction_extension, size):
+def make_1d(min, max, extension_fracton, size):
 
-    assert 0 <= fraction_extension
+    extension = (max - min) * extension_fracton
 
-    extension = (max_ - min_) * fraction_extension
+    min -= extension
 
-    min_ -= extension
+    max += extension
 
-    max_ += extension
-
-    return linspace(min_, max_, num=size)
+    return linspace(min, max, num=size)
 
 
-def make_grid_1d_for_reflecting(grid_1d, grid_number_for_reflecting):
+def reflect_1d(_1d_grid, reflecting_grid_number):
 
-    grid_1d_for_reflection = grid_1d.copy()
+    _1d_grid_reflecting = _1d_grid.copy()
 
-    for i, number in enumerate(grid_1d):
+    for index, number in enumerate(_1d_grid):
 
-        if number < grid_number_for_reflecting:
+        if number < reflecting_grid_number:
 
-            grid_1d_for_reflection[i] += (grid_number_for_reflecting - number) * 2
+            _1d_grid_reflecting[index] += (reflecting_grid_number - number) * 2
 
         else:
 
-            grid_1d_for_reflection[i] -= (number - grid_number_for_reflecting) * 2
+            _1d_grid_reflecting[index] -= (number - reflecting_grid_number) * 2
 
-    return grid_1d_for_reflection
-
-
-def get_d(grid_1d):
-
-    return diff(unique(grid_1d)).min()
+    return _1d_grid_reflecting
 
 
-def make_grid_nd(grid_1ds):
+def get_d(_1d_grid):
+
+    return diff(unique(_1d_grid)).min()
+
+
+def make_nd(_1d_grid_):
 
     return asarray(
         tuple(
             dimension_meshgrid.ravel()
-            for dimension_meshgrid in meshgrid(*grid_1ds, indexing="ij")
+            for dimension_meshgrid in meshgrid(*_1d_grid_, indexing="ij")
         )
     ).T
 
 
-def get_grid_1ds(point_x_dimension):
+def get_1d(point_x_dimension):
 
     return tuple(unique(dimension) for dimension in point_x_dimension.T)
 
 
-def shape(grid_nd_numbers, grid_1ds):
-
-    return grid_nd_numbers.reshape(tuple(grid_1d.size for grid_1d in grid_1ds))
-
-
-def plot_grid_nd(
-    grid_nd,
-    grid_nd_numbers,
-    dimension_names=None,
-    number_name="Number",
-    file_path=None,
+def plot(
+    nd_grid, nd_vector, dimension_name_=None, number_name="Number", file_path=None,
 ):
 
-    n_dimension = grid_nd.shape[1]
+    dimension_n = nd_grid.shape[1]
 
-    if dimension_names is None:
+    if dimension_name_ is None:
 
-        dimension_names = tuple("Dimension {}".format(i) for i in range(n_dimension))
+        dimension_name_ = tuple(
+            "Dimension {}".format(index) for index in range(dimension_n)
+        )
 
-    grid_1ds = get_grid_1ds(grid_nd)
+    _1d_grid_ = get_1d(nd_grid)
 
-    grid_nd_numbers_shape = shape(grid_nd_numbers, grid_1ds)
+    nd_number_array = nd_vector.reshape(tuple(_1d_grid.size for _1d_grid in _1d_grid_))
 
-    for i, grid_1d in enumerate(grid_1ds):
+    for index, _1d_grid in enumerate(_1d_grid_):
 
         print(
             "Grid {}: size={} min={:.2e} max={:.2e}".format(
-                i, grid_1d.size, grid_1d.min(), grid_1d.max()
+                index, _1d_grid.size, _1d_grid.min(), _1d_grid.max()
             )
         )
 
     print(
         "Number: min={:.2e} max={:.2e}".format(
-            grid_nd_numbers_shape.min(), grid_nd_numbers_shape.max()
+            nd_number_array.min(), nd_number_array.max()
         )
     )
 
-    if n_dimension == 1:
+    if dimension_n == 1:
 
         plot_plotly(
             {
+                "data": [{"y": nd_number_array, "x": _1d_grid_[0]}],
                 "layout": {
-                    "xaxis": {"title": {"text": dimension_names[0]}},
                     "yaxis": {"title": {"text": number_name}},
+                    "xaxis": {"title": {"text": dimension_name_[0]}},
                 },
-                "data": [{"x": grid_1ds[0], "y": grid_nd_numbers_shape}],
             },
             file_path=file_path,
         )
 
-    elif n_dimension == 2:
+    elif dimension_n == 2:
 
         plot_heat_map(
-            DataFrame(
-                data=grid_nd_numbers_shape,
-                index=Index(
-                    data=("{:.2e} *".format(number) for number in grid_1ds[0]),
-                    name=dimension_names[0],
-                ),
-                columns=Index(
-                    data=("* {:.2e}".format(number) for number in grid_1ds[1]),
-                    name=dimension_names[1],
-                ),
-            ),
+            nd_number_array,
+            asarray(tuple("{:.2e} *".format(number) for number in _1d_grid_[0])),
+            asarray(tuple("* {:.2e}".format(number) for number in _1d_grid_[1])),
+            dimension_name_[0],
+            dimension_name_[1],
             layout={"title": {"text": number_name}},
             file_path=file_path,
         )

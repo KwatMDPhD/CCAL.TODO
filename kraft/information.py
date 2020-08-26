@@ -1,96 +1,57 @@
 from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
-from .array import check_is_all_not_nan, normalize
-from .grid import get_grid_1ds, make_grid_1d, shape
+from .array import normalize
+from .grid import get_1d, make_1d, shape
 from .kernel_density import get_bandwidth
 from .probability import get_probability
 
 
 def get_entropy(vector):
 
-    check_is_all_not_nan(vector)
+    probability_ = vector / vector.sum()
 
-    assert vector.ndim == 1
-
-    probability = vector / vector.sum()
-
-    return -(probability * log(probability)).sum()
+    return -(probability_ * log(probability_)).sum()
 
 
 def get_kld(vector_0, vector_1):
 
-    check_is_all_not_nan(vector_0)
-
-    check_is_all_not_nan(vector_1)
-
-    assert vector_0.ndim == 1
-
-    assert vector_1.ndim == 1
-
     return vector_0 * log(vector_0 / vector_1)
 
 
-def get_jsd(vector_0, vector_1, vector_reference=None):
+def get_jsd(vector_0, vector_1, reference_vector=None):
 
-    check_is_all_not_nan(vector_0)
+    if reference_vector is None:
 
-    check_is_all_not_nan(vector_1)
+        reference_vector = (vector_0 + vector_1) / 2
 
-    assert vector_0.ndim == 1
+    kld_0_ = get_kld(vector_0, reference_vector)
 
-    assert vector_1.ndim == 1
+    kld_1_ = get_kld(vector_1, reference_vector)
 
-    if vector_reference is None:
-
-        vector_reference = (vector_0 + vector_1) / 2
-
-    kld_0 = get_kld(vector_0, vector_reference)
-
-    kld_1 = get_kld(vector_1, vector_reference)
-
-    return kld_0, kld_1, kld_0 - kld_1
+    return kld_0_, kld_1_, kld_0_ - kld_1_
 
 
 def get_zd(vector_0, vector_1):
 
-    check_is_all_not_nan(vector_0)
+    kld_0_ = get_kld(vector_0, vector_1)
 
-    check_is_all_not_nan(vector_1)
+    kld_1_ = get_kld(vector_1, vector_0)
 
-    assert vector_0.ndim == 1
-
-    assert vector_1.ndim == 1
-
-    kld_0 = get_kld(vector_0, vector_1)
-
-    kld_1 = get_kld(vector_1, vector_0)
-
-    return kld_0, kld_1, kld_0 - kld_1
+    return kld_0_, kld_1_, kld_0_ - kld_1_
 
 
 def get_ic(vector_0, vector_1):
-
-    check_is_all_not_nan(vector_0)
-
-    check_is_all_not_nan(vector_1)
-
-    assert vector_0.ndim == 1
-
-    assert vector_1.ndim == 1
-
-    if unique(vector_0).size < 2 or unique(vector_1).size < 2:
-
-        return nan
 
     vector_0 = normalize(vector_0, "-0-")
 
     vector_1 = normalize(vector_1, "-0-")
 
-    r = pearsonr(vector_0, vector_1)[0]
+    correlation = pearsonr(vector_0, vector_1)[0]
 
-    bandwidth_factor = 1 - abs(r) * 2 / 3
+    bandwidth_factor = 1 - abs(correlation) * 2 / 3
 
+    ########
     grid_nd, grid_nd_probabilities = get_probability(
         asarray((vector_0, vector_1)).T,
         plot=False,
@@ -98,12 +59,12 @@ def get_ic(vector_0, vector_1):
             get_bandwidth(vector) * bandwidth_factor for vector in (vector_0, vector_1)
         ),
         grid_1ds=tuple(
-            make_grid_1d(vector.min(), vector.max(), 0.1, 24)
+            make_1d(vector.min(), vector.max(), 0.1, 24)
             for vector in (vector_0, vector_1)
         ),
     )
 
-    grid_x, grid_y = get_grid_1ds(grid_nd)
+    grid_x, grid_y = get_1d(grid_nd)
 
     pxy = shape(grid_nd_probabilities, (grid_x, grid_y))
 
@@ -119,7 +80,8 @@ def get_ic(vector_0, vector_1):
 
     mi = get_kld(pxy.ravel(), pxpy.ravel()).sum() * dx * dy
 
-    return sqrt(1 - exp(-2 * mi)) * sign(r)
+    return sqrt(1 - exp(-2 * mi)) * sign(correlation)
+    ########
 
 
 def get_icd(vector_0, vector_1):

@@ -1,6 +1,6 @@
 from numpy import absolute, apply_along_axis, log2, product, s_, unique
 
-from .grid import get_d, get_grid_1ds, plot_grid_nd, shape
+from .grid import get_d, get_1d, plot as grid_plot
 from .kernel_density import get_density
 from .plot import plot_plotly
 
@@ -12,7 +12,7 @@ def get_probability(
     grid_nd, grid_nd_densities = get_density(
         point_x_dimension,
         plot=plot,
-        dimension_names=dimension_names,
+        dimension_name_=dimension_names,
         **get_density_keyword_arguments,
     )
 
@@ -23,10 +23,10 @@ def get_probability(
 
     if plot:
 
-        plot_grid_nd(
+        grid_plot(
             grid_nd,
             grid_nd_probabilities,
-            dimension_names=dimension_names,
+            dimension_name_=dimension_names,
             number_name="Probability",
         )
 
@@ -56,9 +56,7 @@ def get_posterior_probability(
 
     grid_nd_posterior_probabilities = (
         apply_along_axis(
-            get_probability_,
-            -1,
-            shape(grid_nd_joint_probabilities, get_grid_1ds(grid_nd)),
+            get_probability_, -1, shape(grid_nd_joint_probabilities, get_1d(grid_nd)),
         )
         * d_target_dimension
     ).reshape(grid_nd_joint_probabilities.shape)
@@ -71,10 +69,10 @@ def get_posterior_probability(
 
     if plot:
 
-        plot_grid_nd(
+        grid_plot(
             grid_nd,
             grid_nd_posterior_probabilities,
-            dimension_names=dimension_names,
+            dimension_name_=dimension_names,
             number_name="Posterior Probability",
         )
 
@@ -98,10 +96,10 @@ def get_posterior_probability(
 
         if plot:
 
-            plot_grid_nd(
+            grid_plot(
                 grid_nd_,
                 grid_nd_posterior_probabilities_,
-                dimension_names=dimension_names,
+                dimension_name_=dimension_names,
                 number_name="P({} = {:.2e} (~{}) | {})".format(
                     dimension_names[-1],
                     target_dimension_grid[target_dimension_i],
