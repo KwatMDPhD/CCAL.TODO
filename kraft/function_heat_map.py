@@ -14,7 +14,7 @@ from .clustering import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 from .dictionary import merge
 from .plot import DATA_TYPE_TO_COLORSCALE, plot_plotly
-from .significance import get_margin_of_error, get_p_values_and_q_values
+from .significance import get_margin_of_error, get_p_value_and_q_value
 
 HEATMAP_BASE = {
     "type": "heatmap",
@@ -259,7 +259,7 @@ def make(
                     ((vector_shuffle, row, function) for row in matrix),
                 )
 
-            p_value_vector, q_value_vector = get_p_values_and_q_values(
+            p_value_vector, q_value_vector = get_p_value_and_q_value(
                 score_vector, _x_shuffle_matrix.ravel(), "<>"
             )
 
