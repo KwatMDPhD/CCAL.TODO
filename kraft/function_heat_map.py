@@ -158,6 +158,7 @@ def make(
     # F
     dataframe,
     function_or_statistic_dataframe,
+    vector_ascending=True,
     job_number=1,
     random_seed=RANDOM_SEED,
     sample_number=10,
@@ -175,7 +176,9 @@ def make(
     series = series.loc[series.index & dataframe.columns]
 
     # B
-    series.sort_values(inplace=True)
+    if vector_ascending is not None:
+
+        series.sort_values(ascending=vector_ascending, inplace=True)
 
     # C
     vector = series.to_numpy()
@@ -400,6 +403,7 @@ def summarize(
     series,
     data_,
     intersect=True,
+    vector_ascending=True,
     vector_data_type="continuous",
     plot_standard_deviation=nan,
     title="Function Heat Map Summary",
@@ -414,7 +418,9 @@ def summarize(
             series = series.loc[series.index & data["dataframe"].columns]
 
     # B
-    series.sort_values(inplace=True)
+    if vector_ascending is not None:
+
+        series.sort_values(ascending=vector_ascending, inplace=True)
 
     # C
     vector = series.to_numpy()

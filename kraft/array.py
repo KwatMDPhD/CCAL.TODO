@@ -60,14 +60,14 @@ def check_is_all_sorted(vector):
 
 
 def check_is_extreme(
-    vector, direction, low_and_high=(), number=0, standard_deviation=0
+    vector, direction, low_and_high=None, number=None, standard_deviation=None
 ):
 
-    if len(low_and_high) == 2:
+    if low_and_high is not None:
 
         low, high = low_and_high
 
-    elif 0 < number:
+    elif number is not None:
 
         if number < 1:
 
@@ -75,15 +75,15 @@ def check_is_extreme(
 
             high = quantile(vector, 1 - number)
 
-        else:
+        elif 1 <= number:
 
-            vector_sorted = sort(vector)
+            vector_sort = sort(vector)
 
-            low = vector_sorted[number - 1]
+            low = vector_sort[number - 1]
 
-            high = vector_sorted[-number]
+            high = vector_sort[-number]
 
-    elif 0 < standard_deviation:
+    elif standard_deviation is not None:
 
         mean = vector.mean()
 
@@ -95,17 +95,17 @@ def check_is_extreme(
 
     if direction == "<>":
 
-        is_ = logical_or(vector <= low, high <= vector)
+        is_extreme_ = logical_or(vector <= low, high <= vector)
 
     elif direction == "<":
 
-        is_ = vector <= low
+        is_extreme_ = vector <= low
 
     elif direction == ">":
 
-        is_ = high <= vector
+        is_extreme_ = high <= vector
 
-    return is_
+    return is_extreme_
 
 
 # ==============================================================================
@@ -137,13 +137,13 @@ def function_on_2_array_2d(matrix_0, matrix_1, function):
 
     for index_0 in range(axis_0_size):
 
-        array_1d_0 = matrix_0[index_0]
+        vector_0 = matrix_0[index_0]
 
         for index_1 in range(axis_1_size):
 
-            array_1d_1 = matrix_1[index_1]
+            vector_1 = matrix_1[index_1]
 
-            matrix[index_0, index_1] = function(array_1d_0, array_1d_1)
+            matrix[index_0, index_1] = function(vector_0, vector_1)
 
     return matrix
 
@@ -199,13 +199,13 @@ def guess_type(number_array, category_maximum_number=16):
 
     if all(isinstance(number, integer) for number in number_array.ravel()):
 
-        unique_number = unique(number_array).size
+        category_number = unique(number_array).size
 
-        if unique_number <= 2:
+        if category_number <= 2:
 
             return "binary"
 
-        elif unique_number <= category_maximum_number:
+        elif category_number <= category_maximum_number:
 
             return "categorical"
 
@@ -229,29 +229,30 @@ def function_on_1_number_array_not_nan(
     number_array, function, *arg_, update=False, **kwarg_
 ):
 
-    is_ = check_is_not_nan(number_array)
+    is_not_nan_ = check_is_not_nan(number_array)
 
-    returned = function(number_array[is_], *arg_, **kwarg_)
+    returned = function(number_array[is_not_nan_], *arg_, **kwarg_)
 
     if update:
 
         number_array_copy = full(number_array.shape, nan)
 
-        number_array_copy[is_] = returned
+        number_array_copy[is_not_nan_] = returned
 
         return number_array_copy
 
-    else:
-
-        return returned
+    return returned
 
 
 def function_on_2_number_array_not_nan(
     number_array_0, number_array_1, function, *arg_, **kwarg_
 ):
 
-    is_ = logical_and(
+    is_not_nan_ = logical_and(
         check_is_not_nan(number_array_0), check_is_not_nan(number_array_1)
     )
 
-    return function(number_array_0[is_], number_array_1[is_], *arg_, **kwarg_)
+    return function(
+        number_array_0[is_not_nan_], number_array_1[is_not_nan_], *arg_, **kwarg_
+    )
+

@@ -22,11 +22,11 @@ def cluster(
         optimal_ordering=optimal_ordering,
     )
 
-    index_ = leaves_list(link)
+    leaf_index_ = leaves_list(link)
 
     cluster_ = fcluster(link, cluster_number, criterion=criterion) - 1
 
-    return index_, cluster_
+    return leaf_index_, cluster_
 
 
 def _get_coclustering_distance(point_x_clustering):
@@ -39,9 +39,9 @@ def _get_coclustering_distance(point_x_clustering):
 
     distance_ = full(pair_number, 0)
 
-    for index in range(pair_number):
+    for pair_index in range(pair_number):
 
-        pair_x_clustering = point_x_clustering[pair_[index]]
+        pair_x_clustering = point_x_clustering[pair_[pair_index]]
 
         try_number = 0
 
@@ -51,15 +51,13 @@ def _get_coclustering_distance(point_x_clustering):
 
             cluster_0, cluster_1 = pair_x_clustering[:, clustering_index]
 
-            if not isnan(cluster_0) and not isnan(cluster_1):
+            if not (isnan(cluster_0) or isnan(cluster_1)):
 
                 try_number += 1
 
-                if cluster_0 == cluster_1:
+                cocluster_number += int(cluster_0 == cluster_1)
 
-                    cocluster_number += 1
-
-        distance_[index] = 1 - cocluster_number / try_number
+        distance_[pair_index] = 1 - cocluster_number / try_number
 
     return squareform(distance_)
 

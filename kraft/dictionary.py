@@ -15,11 +15,7 @@ def merge(dictionary_0, dictionary_1, function=None):
 
         if key in dictionary_0 and key in dictionary_1:
 
-            if callable(function):
-
-                dictionary[key] = function(dictionary_0[key], dictionary_1[key])
-
-            else:
+            if function is None:
 
                 value_0 = dictionary_0[key]
 
@@ -32,6 +28,10 @@ def merge(dictionary_0, dictionary_1, function=None):
                 else:
 
                     dictionary[key] = value_1
+
+            else:
+
+                dictionary[key] = function(dictionary_0[key], dictionary_1[key])
 
         elif key in dictionary_0:
 
