@@ -255,4 +255,3 @@ def function_on_2_number_array_not_nan(
     return function(
         number_array_0[is_not_nan_], number_array_1[is_not_nan_], *arg_, **kwarg_
     )
-

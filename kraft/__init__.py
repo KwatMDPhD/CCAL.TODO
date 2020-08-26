@@ -4,7 +4,7 @@ from . import (
     clustering,
     dictionary,
     function_heat_map,
-    json,
     gct,
+    json,
     plot,
 )
