@@ -9,6 +9,7 @@ from . import (
     information,
     json,
     kernel_density,
+    path,
     plot,
     probability,
 )
