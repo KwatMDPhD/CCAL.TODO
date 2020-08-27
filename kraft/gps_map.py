@@ -7,7 +7,7 @@ from scipy.spatial import Delaunay
 from .CONSTANT import RANDOM_SEED
 from .grid import make_1d
 from .kernel_density import get_bandwidth
-from .plot import plot_heat_map
+from .plot import CATEGORICAL_COLORSCALE, plot_heat_map
 from .point import map_point, plot_node_point, pull_point
 from .probability import get_probability
 
@@ -15,35 +15,29 @@ from .probability import get_probability
 class GPSMap:
     def __init__(
         self,
-        node_,
         node_name,
-        node_x_node_distance,
-        point_,
+        node_,
+        node_x_node,
         point_name,
-        point_x_node_pull,
+        point_,
+        point_x_node,
         random_seed=RANDOM_SEED,
     ):
 
-        #
-        self.node_ = node_
-
         self.node_name = node_name
 
-        self.node_x_dimension = map_point(
-            node_x_node_distance, 2, random_seed=random_seed
-        )
+        self.node_ = node_
 
-        self.point_ = point_
+        self.node_x_dimension = map_point(node_x_node, 2, random_seed=random_seed)
 
         self.point_name = point_name
 
-        self.point_x_node_pull = point_x_node_pull
+        self.point_ = point_
 
-        self.point_x_dimension = pull_point(
-            self.node_x_dimension, self.point_x_node_pull
-        )
+        self.point_x_node = point_x_node
 
-        #
+        self.point_x_dimension = pull_point(self.node_x_dimension, self.point_x_node)
+
         self.group_ = None
 
         self._1d_grid = None
@@ -57,25 +51,22 @@ class GPSMap:
     def plot(self, **kwarg_):
 
         plot_node_point(
-            #
-            self.node_,
             self.node_name,
+            self.node_,
             self.node_x_dimension,
-            self.point_,
             self.point_name,
+            self.point_,
             self.point_x_dimension,
-            #
             group_=self.group_,
             group_colorscale=self.group_colorscale,
             _1d_grid=self._1d_grid,
             nd_probability_vector=self.nd_probability_vector,
             nd_group_vector=self.nd_group_vector,
-            #
             **kwarg_,
         )
 
     def set_group(
-        self, group_, group_colorscale=None, grid_n=64,
+        self, group_, group_colorscale=CATEGORICAL_COLORSCALE, grid_n=64,
     ):
 
         self.group_ = group_
@@ -104,15 +95,15 @@ class GPSMap:
 
         bandwidth_ = tuple(get_bandwidth(vector) for vector in self.point_x_dimension.T)
 
-        grid_1ds = (self._1d_grid,) * 2
+        _1d_grid_ = (self._1d_grid,) * 2
 
         for group in unique(self.group_):
 
             group_to_nd_probability_vector[group] = get_probability(
-                self.point_x_dimension[self.group_ == group].to_numpy(),
+                self.point_x_dimension[self.group_ == group],
                 plot=False,
-                bandwidths=bandwidth_,
-                grid_1ds=grid_1ds,
+                bandwidth_=bandwidth_,
+                _1d_grid_=_1d_grid_,
             )[1].reshape(shape)
 
         self.nd_probability_vector = full(shape, nan)
@@ -147,7 +138,7 @@ class GPSMap:
                     self.nd_group_vector[index_0, index_1] = best_group
 
         plot_heat_map(
-            self.point_x_node_pull.T,
+            self.point_x_node.T,
             self.node_,
             self.point_,
             self.node_name,
@@ -157,15 +148,15 @@ class GPSMap:
             layout={"yaxis": {"dtick": 1}},
         )
 
-    def predict(self, new_point_, new_point_name, new_point_x_node_pull, **kwarg_):
+    def predict(self, new_point_name, new_point_, new_point_x_node, **kwarg_):
 
         plot_node_point(
-            self.node_x_dimension,
-            self.node_,
             self.node_name,
-            new_point_,
+            self.node_,
+            self.node_x_dimension,
             new_point_name,
-            pull_point(self.node_x_dimension, new_point_x_node_pull),
+            new_point_,
+            pull_point(self.node_x_dimension, new_point_x_node),
             group_=None,
             group_colorscale=self.group_colorscale,
             _1d_grid=self._1d_grid,

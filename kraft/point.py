@@ -31,17 +31,17 @@ def map_point(point_x_point_distance, dimension_n, random_seed=RANDOM_SEED, **kw
     return point_x_dimension
 
 
-def pull_point(node_x_dimension, point_x_node_pull):
+def pull_point(node_x_dimension, point_x_node):
 
     dimension_n = node_x_dimension.shape[1]
 
-    point_n = point_x_node_pull.shape[0]
+    point_n = point_x_node.shape[0]
 
     point_x_dimension = full((point_n, dimension_n), nan)
 
     for point_index in range(point_n):
 
-        pull_ = point_x_node_pull[point_index, :]
+        pull_ = point_x_node[point_index, :]
 
         for dimension_index in range(dimension_n):
 
@@ -53,26 +53,22 @@ def pull_point(node_x_dimension, point_x_node_pull):
 
 
 def plot_node_point(
-    #
-    node_,
     node_name,
+    node_,
     node_x_dimension,
-    point_,
     point_name,
+    point_,
     point_x_dimension,
-    #
+    show_node_text=True,
+    node_trace=None,
+    point_trace=None,
     group_=None,
     group_colorscale=CATEGORICAL_COLORSCALE,
     _1d_grid=None,
     nd_probability_vector=None,
     nd_group_vector=None,
-    #
-    show_node_text=True,
-    node_trace=None,
-    point_trace=None,
-    #
-    score_=None,
     score_name=None,
+    score_=None,
     score_colorscale=CONTINUOUS_COLORSCALE,
     score_opacity=0.8,
     score_nan_opacity=0.08,
@@ -82,7 +78,7 @@ def plot_node_point(
 
     title = "{} {} and {} {}".format(node_.size, node_name, point_.size, point_name)
 
-    if score_ is not None:
+    if score_name is not None:
 
         title = "{}<br>{}".format(title, score_name)
 
@@ -112,16 +108,16 @@ def plot_node_point(
 
     data = []
 
-    _0, _1 = triangulation(node_x_dimension)
+    a_0, a_1 = triangulation(node_x_dimension)
 
-    _0, _1 = convex_hull(node_x_dimension)
+    b_0, b_1 = convex_hull(node_x_dimension)
 
     data.append(
         {
             "legendgroup": "Node",
             "name": "Line",
-            "y": _0 + _0,
-            "x": _1 + _1,
+            "y": a_0 + b_0,
+            "x": a_1 + b_1,
             "mode": "lines",
             "line": {"color": "#171412"},
         }
@@ -191,7 +187,7 @@ def plot_node_point(
             }
         )
 
-        group_n = get_not_nan_unique(nd_group_vector).max() + 1
+        group_n = int(get_not_nan_unique(nd_group_vector).max() + 1)
 
         group_to_color = {
             group: get_color(group_colorscale, group / max(1, group_n - 1))
@@ -239,6 +235,8 @@ def plot_node_point(
 
         score_ = score_[sort_index_]
 
+        point_ = point_[sort_index_]
+
         point_x_dimension = point_x_dimension[sort_index_]
 
         score_not_nan_ = get_not_nan_unique(score_)
@@ -264,6 +262,7 @@ def plot_node_point(
                 {
                     "y": point_x_dimension[:, 0],
                     "x": point_x_dimension[:, 1],
+                    "text": point_,
                     "marker": {
                         "color": score_,
                         "colorscale": score_colorscale,
@@ -316,9 +315,7 @@ def plot_node_point(
 
     for point in highlight_point_:
 
-        axis_0_coordinate, axis_1_coordinate = point_x_dimension[
-            (point_ == point).nonzero()[-1]
-        ]
+        axis_0_coordinate, axis_1_coordinate = point_x_dimension[point_ == point][0]
 
         layout["annotations"].append(
             {

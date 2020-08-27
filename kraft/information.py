@@ -1,4 +1,4 @@
-from numpy import asarray, exp, log, outer, sign, sqrt
+from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
 from .array import normalize
@@ -42,6 +42,10 @@ def get_zd(vector_0, vector_1):
 
 
 def get_ic(vector_0, vector_1):
+
+    if unique(vector_0).size == 1 or unique(vector_1).size == 1:
+
+        return nan
 
     vector_0 = normalize(vector_0, "-0-")
 

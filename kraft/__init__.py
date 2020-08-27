@@ -5,6 +5,7 @@ from . import (
     dict,
     function_heat_map,
     gct,
+    gps_map,
     grid,
     information,
     json,

@@ -115,7 +115,7 @@ def _make_matrix_annotation(
 
     y -= row_height
 
-    for index in axis_0_label_.size:
+    for index in range(axis_0_label_.size):
 
         annotation_.append(
             {
@@ -189,7 +189,7 @@ def make(
     axis_1_label_ = sr.index.to_numpy()
 
     #
-    df.reindex(labels=axis_1_label_, axis=1, inplace=True)
+    df = df.reindex(labels=axis_1_label_, axis=1)
 
     if callable(function_or_statistic_df):
 
@@ -218,11 +218,11 @@ def make(
 
             row_x_sample = full((matrix_axis_0_size, sample_n), nan)
 
-            sample_n = int(axis_1_size * SAMPLE_FRACTION)
+            choice_n = int(axis_1_size * SAMPLE_FRACTION)
 
             for sample_index in range(sample_n):
 
-                sample_index_ = choice(axis_1_size, size=sample_n, replace=False)
+                sample_index_ = choice(axis_1_size, size=choice_n, replace=False)
 
                 vector_sample = vector[sample_index_]
 
@@ -316,19 +316,23 @@ def make(
             matrix, matrix_data_type, plot_std
         )
 
-        for number, count in unique(vector, return_counts=True):
+        if vector_data_type != "continuous":
 
-            if 2 < count:
+            for number, count in zip(*unique(vector, return_counts=True)):
 
-                index_ = where(vector == number)[0]
+                if 2 < count:
 
-                index_cluster_ = index_[cluster(matrix.T[index_])[0]]
+                    print("Clustering group {}...".format(number))
 
-                vector[index_] = vector[index_cluster_]
+                    index_ = where(vector == number)[0]
 
-                matrix[:, index_] = matrix[:, index_cluster_]
+                    index_cluster_ = index_[cluster(matrix.T[index_])[0]]
 
-                axis_1_label_[index_] = axis_1_label_[index_cluster_]
+                    vector[index_] = vector[index_cluster_]
+
+                    matrix[:, index_] = matrix[:, index_cluster_]
+
+                    axis_1_label_[index_] = axis_1_label_[index_cluster_]
 
         row_n = matrix.shape[0] + 2
 
@@ -476,7 +480,7 @@ def summarize(
         df = data["df"]
 
         #
-        df.reindex(labels=axis_1_label_, axis=1, inplace=True)
+        df = df.reindex(labels=axis_1_label_, axis=1)
 
         #
         statistic_df = data["statistic_df"].loc[df.index, :]
