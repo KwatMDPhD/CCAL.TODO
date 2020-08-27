@@ -1,6 +1,6 @@
 from numpy import apply_along_axis, full, isnan, nan, unique
 from numpy.random import choice, seed
-from pandas import DataFrame, Index, Series, concat, isna
+from pandas import DataFrame, Index, Series, isna
 
 from .array import (
     function_on_1_number_array_not_nan,
@@ -11,8 +11,7 @@ from .array import (
     shift_minimum,
 )
 from .CONSTANT import RANDOM_SEED
-from .support import cast_builtin
-from .table import binarize, drop_axes_label, drop_axis_label, summarize
+from .table import drop_axes_label, drop_axis_label, summarize
 
 
 def normalize_d(dataframe_number, axis, method, **keyword_arguments):
@@ -61,37 +60,6 @@ def normalize_s(vector, method, **normalize_keyword_arguments):
     )
 
 
-def binarize(series):
-
-    object_to_i = {}
-
-    i = 0
-
-    for object_ in series:
-
-        if not isna(object_) and object_ not in object_to_i:
-
-            object_to_i[object_] = i
-
-            i += 1
-
-    object_x_label = full((len(object_to_i), series.size), 0)
-
-    for label_i, object_ in enumerate(series):
-
-        if not isna(object_):
-
-            object_x_label[object_to_i[object_], label_i] = 1
-
-    dataframe = DataFrame(
-        data=object_x_label, index=list(object_to_i), columns=series.index,
-    )
-
-    dataframe.index.name = series.name
-
-    return dataframe
-
-
 def error_axes(dataframe):
 
     for axis in dataframe.axes:
@@ -103,17 +71,6 @@ def error_axes(dataframe):
         assert not is_na.any()
 
         assert (counts == 1).all()
-
-
-def peak(dataframe, n_axis_0_label=4, n_axis_1_label=2):
-
-    print("-" * 80)
-
-    print(dataframe.iloc[:n_axis_0_label, :n_axis_1_label])
-
-    print(dataframe.shape)
-
-    print("-" * 80)
 
 
 def print_value_n(dataframe, axis):
@@ -336,82 +293,6 @@ def pivot(
 
 # TODO: check bad index
 # TODO: check index.name
-def collapse(matrix):
-
-    print(matrix.shape)
-
-    print("Collapsing...")
-
-    matrix = matrix.groupby(level=0).median()
-
-    print(matrix.shape)
-
-    return matrix
-
-
-def separate_type(feature_x_, drop_constant=True, prefix_feature=True):
-
-    continuous = []
-
-    binary = []
-
-    for _, row in feature_x_.iterrows():
-
-        try:
-
-            is_continuous = (
-                guess_type(row.dropna().astype(float).to_numpy()) == "continuous"
-            )
-
-        except ValueError:
-
-            is_continuous = False
-
-        if is_continuous:
-
-            continuous.append(row.apply(cast_builtin))
-
-        elif not (drop_constant and row.unique().size == 1):
-
-            binary_x_ = binarize(row)
-
-            if prefix_feature:
-
-                template = "{}.{{}}".format(binary_x_.index.name)
-
-            else:
-
-                template = "{}"
-
-            binary_x_.index = (
-                template.format(value) for value in binary_x_.index.to_numpy()
-            )
-
-            binary.append(binary_x_)
-
-    template = "{} ({{}})".format(feature_x_.index.name)
-
-    if 0 < len(continuous):
-
-        continuous_x_ = DataFrame(data=continuous)
-
-        continuous_x_.index.name = template.format("continuous")
-
-    else:
-
-        continuous_x_ = None
-
-    if 0 < len(binary):
-
-        binary_x_ = concat(binary)
-
-        binary_x_.index.name = template.format("binary")
-
-    else:
-
-        binary_x_ = None
-
-    return continuous_x_, binary_x_
 
 
 def process(

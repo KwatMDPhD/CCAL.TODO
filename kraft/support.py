@@ -7,21 +7,21 @@ def print_function_information():
 
     try:
 
-        arguments = (
+        argument_ = (
             "{} = {}".format(key, value)
             for key, value in sorted(stack_1[0].f_locals.items())
         )
 
         separater = "\n    "
 
-        print("@ {}{}{}".format(stack_1[3], separater, separater.join(arguments)))
+        print("@ {}{}{}".format(stack_1[3], separater, separater.join(argument_)))
 
     finally:
 
         del stack_1
 
 
-def cast_builtin(object_):
+def cast_builtin(object):
 
     for builtin_object in (
         None,
@@ -29,18 +29,18 @@ def cast_builtin(object_):
         True,
     ):
 
-        if object_ is builtin_object or object_ == str(builtin_object):
+        if object is builtin_object or object == str(builtin_object):
 
             return builtin_object
 
-    for type_ in (float, int):
+    for type in (float, int):
 
         try:
 
-            return type_(object_)
+            return type(object)
 
         except ValueError:
 
             pass
 
-    return object_
+    return object

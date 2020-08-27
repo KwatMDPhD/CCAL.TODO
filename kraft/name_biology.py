@@ -4,9 +4,9 @@ from pandas import read_csv, read_excel
 from .CONSTANT import DATA_DIRECTORY_PATH
 
 
-def map_str_to_gene():
+def map_to_gene():
 
-    str_to_gene = {}
+    _to_gene = {}
 
     hgnc = read_csv(
         "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
@@ -37,22 +37,22 @@ def map_str_to_gene():
         ).to_numpy(),
     ):
 
-        for str_ in row:
+        for value in row:
 
-            if isinstance(str_, str):
+            if isinstance(value, str):
 
-                for split in str_.split(sep="|"):
+                for split in value.split(sep="|"):
 
-                    str_to_gene[split] = gene
+                    _to_gene[split] = gene
 
-    return str_to_gene
+    return _to_gene
 
 
 def map_cg_to_gene():
 
     cg_to_gene = {}
 
-    for cg_to_genes in (
+    for cg_to_gene_ in (
         read_excel(
             "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
             usecols=(0, 10),
@@ -77,34 +77,34 @@ def map_cg_to_gene():
         ),
     ):
 
-        for cg, genes in cg_to_genes.dropna().items():
+        for cg, gene_ in cg_to_gene_.dropna().items():
 
-            cg_to_gene[cg] = genes.split(sep=";", maxsplit=1)[0]
+            cg_to_gene[cg] = gene_.split(sep=";", maxsplit=1)[0]
 
     return cg_to_gene
 
 
-def name_genes(ids):
+def name_gene(id_):
 
-    _to_gene = {**map_str_to_gene(), **map_cg_to_gene()}
+    _to_gene = {**map_to_gene(), **map_cg_to_gene()}
 
-    genes = asarray(tuple(_to_gene.get(id_) for id_ in ids))
+    gene_ = asarray(tuple(_to_gene.get(id_) for id_ in id_))
 
-    is_named = asarray(tuple(gene is not None for gene in genes))
+    is_ = asarray(tuple(gene is not None for gene in gene_))
 
-    n = is_named.size
+    n = is_.size
 
-    n_named = is_named.sum()
+    name_n = is_.sum()
 
-    print("Named {}/{} ({:.2%})".format(n_named, n, n_named / n))
+    print("Named {}/{} ({:.2%})".format(name_n, n, name_n / n))
 
-    if n_named == 0:
+    if name_n == 0:
 
-        return ids
+        return id_
 
     else:
 
-        return genes
+        return gene_
 
 
 def map_cell_line_name_to_rename():
@@ -117,15 +117,15 @@ def map_cell_line_name_to_rename():
     ).to_dict()
 
 
-def name_cell_lines(names):
+def name_cell_line(name_):
 
     name_to_rename = map_cell_line_name_to_rename()
 
-    renames = []
+    rename_ = []
 
-    fails = []
+    fail_ = []
 
-    for name in names:
+    for name in name_:
 
         if isinstance(name, str):
 
@@ -133,23 +133,23 @@ def name_cell_lines(names):
 
             if name_lower in name_to_rename:
 
-                renames.append(name_to_rename[name_lower])
+                rename_.append(name_to_rename[name_lower])
 
             else:
 
-                renames.append(name)
+                rename_.append(name)
 
-                fails.append(name)
+                fail_.append(name)
 
         else:
 
-            renames.append(None)
+            rename_.append(None)
 
-    if 0 < len(fails):
+    if 0 < len(fail_):
 
-        print("Failed to name: {}.".format(sorted(set(fails))))
+        print("Failed to name: {}.".format(sorted(set(fail_))))
 
-    return asarray(renames)
+    return asarray(rename_)
 
 
 def select_genes(selection=None):
@@ -162,21 +162,21 @@ def select_genes(selection=None):
         "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t", index_col=1
     )
 
-    genes = hgnc.index.to_numpy()
+    gene_ = hgnc.index.to_numpy()
 
-    is_selected = full(genes.size, True)
+    is_ = full(gene_.shape, True)
 
     for label, selection in selection.items():
 
         print("Selecting by {}...".format(label))
 
-        is_selected &= asarray(
+        is_ &= asarray(
             tuple(
                 isinstance(value, str) and value in selection
                 for value in hgnc.loc[:, label].to_numpy()
             )
         )
 
-        print("{}/{}".format(is_selected.sum(), is_selected.size))
+        print("{}/{}".format(is_.sum(), is_.size))
 
-    return genes[is_selected]
+    return gene_[is_]

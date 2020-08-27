@@ -1,8 +1,62 @@
-from numpy import asarray, concatenate, isnan, logical_not, median
+from numpy import asarray, concatenate, full, isnan, logical_not, median
 from numpy.random import choice
+from pandas import DataFrame, Index, concat, isna
 
+from .array import guess_type
 from .grid import make_nd
 from .plot import plot_heat_map, plot_histogram
+from .support import cast_builtin
+
+# ==============================================================================
+# Series
+# ==============================================================================
+
+
+def binarize(sr):
+
+    value_to_axis_0_index = {}
+
+    axis_0_index = 0
+
+    for value in sr:
+
+        if not isna(value) and value not in value_to_axis_0_index:
+
+            value_to_axis_0_index[value] = axis_0_index
+
+            axis_0_index += 1
+
+    value_x_label = full((len(value_to_axis_0_index), sr.size), 0)
+
+    for axis_1_index, value in enumerate(sr):
+
+        if not isna(value):
+
+            value_x_label[value_to_axis_0_index[value], axis_1_index] = 1
+
+    dataframe = DataFrame(
+        data=value_x_label,
+        index=Index(data=value_to_axis_0_index, name=sr.name),
+        columns=sr.index,
+    )
+
+    return dataframe
+
+
+# ==============================================================================
+# DataFrame
+# ==============================================================================
+
+
+def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
+
+    print("-" * 80)
+
+    print(df.iloc[:axis_0_axis_n, :axis_1_label_n])
+
+    print(df.shape)
+
+    print("-" * 80)
 
 
 def sync(df_, axis):
@@ -18,6 +72,11 @@ def sync(df_, axis):
     label_ = asarray(sorted(label_))
 
     return tuple(df.reindex(labels=label_, axis=axis) for df in df_)
+
+
+# ==============================================================================
+# Number DataFrame
+# ==============================================================================
 
 
 def summarize(
@@ -114,3 +173,87 @@ def summarize(
             (axis_0_name, axis_1_name),
             layout={"xaxis": {"title": {"text": "(Not-NaN) Median"}}},
         )
+
+
+def collapse(number_df):
+
+    print(number_df.shape)
+
+    print("Collapsing...")
+
+    number_df = number_df.groupby(level=0).median()
+
+    print(number_df.shape)
+
+    return number_df
+
+
+# ==============================================================================
+# Feature_x_Sample
+# ==============================================================================
+
+
+def separate_type(feature_x_sample, drop_constant=True, prefix_feature=True):
+
+    continuous_row_ = []
+
+    binary_x_sample_ = []
+
+    for _, row in feature_x_sample.iterrows():
+
+        try:
+
+            is_continuous = (
+                guess_type(row.dropna().astype(float).to_numpy()) == "continuous"
+            )
+
+        except ValueError:
+
+            is_continuous = False
+
+        if is_continuous:
+
+            continuous_row_.append(row.apply(cast_builtin))
+
+        elif not (drop_constant and row.unique().size == 1):
+
+            binary_x_sample = binarize(row)
+
+            if prefix_feature:
+
+                axis_0_label_template = "{}.{{}}".format(binary_x_sample.index.name)
+
+            else:
+
+                axis_0_label_template = "{}"
+
+            binary_x_sample.index = (
+                axis_0_label_template.format(label)
+                for label in binary_x_sample.index.to_numpy()
+            )
+
+            binary_x_sample_.append(binary_x_sample)
+
+    axis_0_name_template = "{} ({{}})".format(feature_x_sample.index.name)
+
+    if 0 < len(continuous_row_):
+
+        continuous_x_sample = DataFrame(data=continuous_row_)
+
+        continuous_x_sample.index.name = axis_0_name_template.format("continuous")
+
+    else:
+
+        continuous_x_sample = None
+
+    if 0 < len(binary_x_sample_):
+
+        binary_x_sample = concat(binary_x_sample_)
+
+        binary_x_sample.index.name = axis_0_name_template.format("binary")
+
+    else:
+
+        binary_x_sample = None
+
+    return continuous_x_sample, binary_x_sample

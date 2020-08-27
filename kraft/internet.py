@@ -7,7 +7,7 @@ from urllib.request import urlretrieve
 from requests import get
 
 
-def get_file_name(url):
+def get_name(url):
 
     return unquote(url).split(sep="/")[-1]
 
@@ -16,7 +16,7 @@ def download(url, directory_path, name=None, overwrite=True):
 
     if name is None:
 
-        name = get_file_name(url)
+        name = get_name(url)
 
     file_path = "{}{}".format(directory_path, name)
 
@@ -26,9 +26,9 @@ def download(url, directory_path, name=None, overwrite=True):
 
     if not exists(file_path) or overwrite:
 
-        print("{} ==> {}...".format(url, file_path))
+        print("{} => {}...".format(url, file_path))
 
-        if url.startswith("ftp"):
+        if url[:3] == "ftp":
 
             urlretrieve(url, file_path)
 
