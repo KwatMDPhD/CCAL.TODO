@@ -61,13 +61,15 @@ def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
 
 def sync(df_, axis):
 
+    # TODO: refactor
+
     df_0 = df_[0]
 
     label_ = df_0.axes[axis]
 
     for df in df_[1:]:
 
-        label_ = label_.union(df.axes[axis])
+        label_ = label_.intersection(df.axes[axis])
 
     label_ = asarray(sorted(label_))
 
@@ -80,7 +82,11 @@ def sync(df_, axis):
 
 
 def summarize(
-    number_df, plot=True, heat_map_max_size=int(1e6), histogram_max_size=int(1e3)
+    number_df,
+    plot=True,
+    df_name="DataFrame Name",
+    heat_map_max_size=int(1e6),
+    histogram_max_size=int(1e3),
 ):
 
     matrix = number_df.to_numpy()
@@ -95,12 +101,19 @@ def summarize(
 
     print(matrix.shape)
 
+    title = {"text": df_name}
+
     matrix_size = matrix.size
 
     if plot and matrix_size <= heat_map_max_size:
 
         plot_heat_map(
-            matrix, axis_0_label_, axis_1_label_, axis_0_name, axis_1_name,
+            matrix,
+            axis_0_label_,
+            axis_1_label_,
+            axis_0_name,
+            axis_1_name,
+            layout={"title": title},
         )
 
     is_nan_matrix = isnan(matrix)
@@ -117,7 +130,7 @@ def summarize(
                 (is_nan_matrix.sum(axis=1), is_nan_matrix.sum(axis=0)),
                 (axis_0_label_, axis_1_label_),
                 (axis_0_name, axis_1_name),
-                layout={"xaxis": {"title": {"text": "N NaN"}}},
+                layout={"title": title, "xaxis": {"title": {"text": "N NaN"}}},
             )
 
     is_not_nan_matrix = logical_not(is_nan_matrix)
@@ -164,14 +177,14 @@ def summarize(
             (matrix_not_nan,),
             (label_,),
             ("All",),
-            layout={"xaxis": {"title": {"text": "(Not-NaN) Number"}}},
+            layout={"title": title, "xaxis": {"title": {"text": "(Not-NaN) Number"}}},
         )
 
         plot_histogram(
             (median(matrix, axis=1), median(matrix, axis=0)),
             (axis_0_label_, axis_1_label_),
             (axis_0_name, axis_1_name),
-            layout={"xaxis": {"title": {"text": "(Not-NaN) Median"}}},
+            layout={"title": title, "xaxis": {"title": {"text": "(Not-NaN) Median"}}},
         )
 
 
