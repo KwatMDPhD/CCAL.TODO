@@ -21,6 +21,7 @@ class GPSMap:
         point_name,
         point_,
         point_x_node,
+        node_marker_size=24,
         random_seed=RANDOM_SEED,
     ):
 
@@ -37,6 +38,8 @@ class GPSMap:
         self.point_x_node = point_x_node
 
         self.point_x_dimension = pull_point(self.node_x_dimension, self.point_x_node)
+
+        self.node_marker_size = node_marker_size
 
         self.group_ = None
 
@@ -62,12 +65,17 @@ class GPSMap:
             _1d_grid=self._1d_grid,
             nd_probability_vector=self.nd_probability_vector,
             nd_group_vector=self.nd_group_vector,
+            node_trace={"marker": {"size": self.node_marker_size}},
             **kwarg_,
         )
 
     def set_group(
-        self, group_, group_colorscale=CATEGORICAL_COLORSCALE, grid_n=64,
+        self, group_, group_colorscale=CATEGORICAL_COLORSCALE, grid_n=128,
     ):
+
+        if group_ == "closest_node":
+
+            group_ = self.point_x_node.argmax(axis=1)
 
         self.group_ = group_
 
@@ -162,6 +170,7 @@ class GPSMap:
             _1d_grid=self._1d_grid,
             nd_probability_vector=self.nd_probability_vector,
             nd_group_vector=self.nd_group_vector,
+            node_trace={"marker": {"size": self.node_marker_size}},
             **kwarg_,
         )
 

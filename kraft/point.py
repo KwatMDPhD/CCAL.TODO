@@ -220,7 +220,7 @@ def plot_node_point(
         "marker": {
             "size": 16,
             "color": "#20d9ba",
-            "line": {"width": 0.8, "color": "#ebf6f7"},
+            "line": {"width": 0.8, "color": "#000000"},
         },
         "hoverinfo": "text",
     }
