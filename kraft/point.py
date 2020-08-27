@@ -1,17 +1,17 @@
 from numpy import absolute, full, integer, isnan, median, nan, where
 from sklearn.manifold import MDS
 
-from .array import normalize, get_not_nan_unique
+from .array import get_not_nan_unique, normalize
 from .CONSTANT import RANDOM_SEED
 from .dict import merge
 from .geometry import convex_hull, triangulation
 from .plot import (
+    CATEGORICAL_COLORSCALE,
     COLORBAR,
+    CONTINUOUS_COLORSCALE,
     get_color,
     make_colorscale,
     plot_plotly,
-    CONTINUOUS_COLORSCALE,
-    CATEGORICAL_COLORSCALE,
 )
 
 

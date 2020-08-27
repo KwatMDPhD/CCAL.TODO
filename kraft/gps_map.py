@@ -1,10 +1,9 @@
 from gzip import open as gzip_open
 from pickle import dump, load
 
-from numpy import apply_along_axis, full, nan
+from numpy import full, nan, unique
 from scipy.spatial import Delaunay
 
-from .array import normalize
 from .CONSTANT import RANDOM_SEED
 from .grid import make_1d
 from .kernel_density import get_bandwidth
@@ -25,6 +24,7 @@ class GPSMap:
         random_seed=RANDOM_SEED,
     ):
 
+        #
         self.node_ = node_
 
         self.node_name = node_name
@@ -43,6 +43,7 @@ class GPSMap:
             self.node_x_dimension, self.point_x_node_pull
         )
 
+        #
         self.group_ = None
 
         self._1d_grid = None
@@ -73,111 +74,104 @@ class GPSMap:
             **kwarg_,
         )
 
-    def set_point_group(
-        self, point_group, group_colorscale=None, n_grid=64,
+    def set_group(
+        self, group_, group_colorscale=None, grid_n=64,
     ):
 
-        assert 3 <= point_group.value_counts().min()
-
-        assert not point_group.isna().any()
-
-        self.group_ = point_group
+        self.group_ = group_
 
         self.group_colorscale = group_colorscale
 
-        mask = full((n_grid,) * 2, nan)
+        shape = (grid_n,) * 2
+
+        # TODO: refactor
+
+        mask = full(shape, nan)
 
         triangulation = Delaunay(self.node_x_dimension)
 
-        self._1d_grid = make_1d(0, 1, 1e-3, n_grid)
+        self._1d_grid = make_1d(0, 1, 1e-3, grid_n)
 
-        for i_0 in range(n_grid):
+        for index_0 in range(grid_n):
 
-            for i_1 in range(n_grid):
+            for index_1 in range(grid_n):
 
-                mask[i_0, i_1] = triangulation.find_simplex(
-                    (self._1d_grid[i_0], self._1d_grid[i_1])
+                mask[index_0, index_1] = triangulation.find_simplex(
+                    (self._1d_grid[index_0], self._1d_grid[index_1])
                 )
 
-        group_grid_nd_probabilities = {}
+        group_to_nd_probability_vector = {}
 
-        bandwidths = tuple(self.point_x_dimension.apply(get_bandwidth))
+        bandwidth_ = tuple(get_bandwidth(vector) for vector in self.point_x_dimension.T)
 
         grid_1ds = (self._1d_grid,) * 2
 
-        for group in self.group_.unique():
+        for group in unique(self.group_):
 
-            group_grid_nd_probabilities[group] = shape(
-                get_probability(
-                    self.point_x_dimension[self.group_ == group].to_numpy(),
-                    plot=False,
-                    bandwidths=bandwidths,
-                    grid_1ds=grid_1ds,
-                )[1],
-                grid_1ds,
-            )
+            group_to_nd_probability_vector[group] = get_probability(
+                self.point_x_dimension[self.group_ == group].to_numpy(),
+                plot=False,
+                bandwidths=bandwidth_,
+                grid_1ds=grid_1ds,
+            )[1].reshape(shape)
 
-        self.nd_probability_vector = full((n_grid,) * 2, nan)
+        self.nd_probability_vector = full(shape, nan)
 
-        self.nd_group_vector = full((n_grid,) * 2, nan)
+        self.nd_group_vector = full(shape, nan)
 
-        for i_0 in range(n_grid):
+        for index_0 in range(grid_n):
 
-            for i_1 in range(n_grid):
+            for index_1 in range(grid_n):
 
-                if mask[i_0, i_1] != -1:
+                if mask[index_0, index_1] != -1:
 
-                    max_probability = 0
+                    best_probability = 0
 
-                    max_group = nan
+                    best_group = nan
 
                     for (
                         group,
-                        grid_nd_probabilities,
-                    ) in group_grid_nd_probabilities.items():
+                        nd_probability_vector,
+                    ) in group_to_nd_probability_vector.items():
 
-                        probability = grid_nd_probabilities[i_0, i_1]
+                        probability = nd_probability_vector[index_0, index_1]
 
-                        if max_probability < probability:
+                        if best_probability < probability:
 
-                            max_probability = probability
+                            best_probability = probability
 
-                            max_group = group
+                            best_group = group
 
-                    self.nd_probability_vector[i_0, i_1] = max_probability
+                    self.nd_probability_vector[index_0, index_1] = best_probability
 
-                    self.nd_group_vector[i_0, i_1] = max_group
+                    self.nd_group_vector[index_0, index_1] = best_group
 
         plot_heat_map(
-            DataFrame(
-                data=apply_along_axis(
-                    normalize, 1, self.point_x_node.to_numpy(), "-0-"
-                ),
-                index=self.point_x_node.index,
-                columns=self.point_x_node.columns,
-            ).T,
-            column_annotations=self.group_,
-            column_annotation_colorscale=self.group_colorscale,
+            self.point_x_node_pull.T,
+            self.node_,
+            self.point_,
+            self.node_name,
+            self.point_name,
+            axis_1_group_=self.group_,
+            axis_1_group_colorscale=self.group_colorscale,
             layout={"yaxis": {"dtick": 1}},
         )
 
-    def predict(self, new_point_x_node, **plot_node_point_keyword_arguments):
+    def predict(self, new_point_, new_point_name, new_point_x_node_pull, **kwarg_):
 
         plot_node_point(
             self.node_x_dimension,
-            DataFrame(
-                data=pull_point(
-                    self.node_x_dimension.to_numpy(), new_point_x_node.to_numpy()
-                ),
-                index=new_point_x_node.index,
-                columns=self.node_x_dimension.columns,
-            ),
+            self.node_,
+            self.node_name,
+            new_point_,
+            new_point_name,
+            pull_point(self.node_x_dimension, new_point_x_node_pull),
             group_=None,
             group_colorscale=self.group_colorscale,
             _1d_grid=self._1d_grid,
             nd_probability_vector=self.nd_probability_vector,
             nd_group_vector=self.nd_group_vector,
-            **plot_node_point_keyword_arguments,
+            **kwarg_,
         )
 
 
