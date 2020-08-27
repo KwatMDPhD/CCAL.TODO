@@ -120,7 +120,7 @@ def factorize(
 
 def make_factor_label_(r):
 
-    return asarray(tuple("Factor {}.{}".format(r, index) for index in range(r)))
+    return asarray(tuple("Factor {}_{}".format(r, index) for index in range(r)))
 
 
 def plot(

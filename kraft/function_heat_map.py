@@ -241,6 +241,10 @@ def make(
                 )
             )
 
+        else:
+
+            moe_ = full(score_.shape, nan)
+
         if 0 < shuffle_n:
 
             print("P-Value and Q-Value ({} shuffle)...".format(shuffle_n))
@@ -261,6 +265,10 @@ def make(
             p_value_, q_value_ = get_p_value_and_q_value(
                 score_, row_x_shuffle.ravel(), "<>"
             )
+
+        else:
+
+            p_value_ = q_value_ = full(score_.shape, nan)
 
         pool.terminate()
 
