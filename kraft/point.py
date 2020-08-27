@@ -1,79 +1,68 @@
-from numpy import (
-    absolute,
-    apply_along_axis,
-    asarray,
-    full,
-    integer,
-    isnan,
-    median,
-    nan,
-    unique,
-    where,
-)
+from numpy import absolute, full, integer, isnan, median, nan, unique, where
 from sklearn.manifold import MDS
 
 from .array import normalize
 from .CONSTANT import RANDOM_SEED
-from .dictionary import merge
+from .dict import merge
 from .geometry import get_convex_hull, get_triangulation
 from .plot import COLORBAR, get_color, make_colorscale, plot_plotly
 
 
-def pull_point(node_x_dimension, point_x_node):
+def map_point(point_x_point_distance, dimension_n, random_seed=RANDOM_SEED, **kwarg_):
 
-    point_x_dimension = full((point_x_node.shape[0], node_x_dimension.shape[1]), nan)
+    point_x_dimension = MDS(
+        n_components=dimension_n,
+        random_state=random_seed,
+        dissimilarity="precomputed",
+        **kwarg_,
+    ).fit_transform(point_x_point_distance)
 
-    for point_i in range(point_x_node.shape[0]):
+    for index in range(dimension_n):
 
-        pulls = point_x_node[point_i, :]
-
-        for dimension_i in range(node_x_dimension.shape[1]):
-
-            point_x_dimension[point_i, dimension_i] = (
-                pulls * node_x_dimension[:, dimension_i]
-            ).sum() / pulls.sum()
+        point_x_dimension[:, index] = normalize(point_x_dimension[:, index], "0-1")
 
     return point_x_dimension
 
 
-def map_point(
-    point_x_point_distance,
-    n_dimension,
-    metric=True,
-    n_init=int(1e3),
-    max_iter=int(1e3),
-    verbose=0,
-    eps=1e-3,
-    n_job=1,
-    random_seed=RANDOM_SEED,
-):
+def pull_point(node_x_dimension, point_x_node_pull):
 
-    point_x_dimension = MDS(
-        n_components=n_dimension,
-        metric=metric,
-        n_init=n_init,
-        max_iter=max_iter,
-        verbose=verbose,
-        eps=eps,
-        n_jobs=n_job,
-        random_state=random_seed,
-        dissimilarity="precomputed",
-    ).fit_transform(point_x_point_distance)
+    dimension_n = node_x_dimension.shape[1]
 
-    return apply_along_axis(normalize, 0, point_x_dimension, "0-1")
+    point_n = point_x_node_pull.shape[0]
+
+    point_x_dimension = full((point_n, dimension_n), nan)
+
+    for point_index in range(point_n):
+
+        pull_ = point_x_node_pull[point_index, :]
+
+        for dimension_index in range(dimension_n):
+
+            point_x_dimension[point_index, dimension_index] = (
+                pull_ * node_x_dimension[:, dimension_index]
+            ).sum() / pull_.sum()
+
+    return point_x_dimension
 
 
 def plot_node_point(
+    #
+    node_,
+    node_name,
     node_x_dimension,
+    point_,
+    point_name,
     point_x_dimension,
+    #
+    group_=None,
+    group_colorscale=None,
+    _1d_grid=None,
+    nd_probability_vector=None,
+    nd_group_vector=None,
+    #
     show_node_text=True,
     node_trace=None,
     point_trace=None,
-    groups=None,
-    group_colorscale=None,
-    grid_1d=None,
-    grid_nd_probability=None,
-    grid_nd_group=None,
     scores=None,
     score_colorscale=None,
     score_opacity=0.8,
@@ -82,29 +71,7 @@ def plot_node_point(
     file_path=None,
 ):
 
-    nodes = node_x_dimension.index.to_numpy()
-
-    node_name = node_x_dimension.index.name
-
-    node_x_dimension = asarray(
-        (
-            node_x_dimension.iloc[:, 1].to_numpy(),
-            1 - node_x_dimension.iloc[:, 0].to_numpy(),
-        )
-    ).T
-
-    points = point_x_dimension.index.to_numpy()
-
-    point_name = point_x_dimension.index.name
-
-    point_x_dimension = asarray(
-        (
-            point_x_dimension.iloc[:, 1].to_numpy(),
-            1 - point_x_dimension.iloc[:, 0].to_numpy(),
-        )
-    ).T
-
-    title = "{} {} and {} {}".format(nodes.size, node_name, points.size, point_name)
+    title = "{} {} and {} {}".format(node_.size, node_name, point_.size, point_name)
 
     if scores is not None:
 
@@ -160,7 +127,7 @@ def plot_node_point(
         "name": node_name,
         "x": node_x_dimension[:, 0],
         "y": node_x_dimension[:, 1],
-        "text": nodes,
+        "text": node_,
         "mode": "markers",
         "marker": {
             "size": 20,
@@ -199,25 +166,25 @@ def plot_node_point(
                 "arrowwidth": arrowwidth,
                 "arrowcolor": arrowcolor,
             }
-            for node, (x, y) in zip(nodes, node_x_dimension)
+            for node, (x, y) in zip(node_, node_x_dimension)
         ]
 
-    if grid_nd_group is not None:
+    if nd_group_vector is not None:
 
         data.append(
             {
                 "type": "contour",
                 "showlegend": False,
-                "x": grid_1d,
-                "y": 1 - grid_1d,
-                "z": grid_nd_probability,
+                "x": _1d_grid,
+                "y": 1 - _1d_grid,
+                "z": nd_probability_vector,
                 "autocontour": False,
                 "ncontours": 24,
                 "contours": {"coloring": "none"},
             }
         )
 
-        unique_groups = unique(grid_nd_group[~isnan(grid_nd_group)])
+        unique_groups = unique(nd_group_vector[~isnan(nd_group_vector)])
 
         n_unique_group = unique_groups.size
 
@@ -228,15 +195,15 @@ def plot_node_point(
 
         for group in unique_groups:
 
-            grid_nd_probability_group = grid_nd_probability.copy()
+            grid_nd_probability_group = nd_probability_vector.copy()
 
-            grid_nd_probability_group[grid_nd_group != group] = nan
+            grid_nd_probability_group[nd_group_vector != group] = nan
 
             data.append(
                 {
                     "type": "heatmap",
-                    "x": grid_1d,
-                    "y": 1 - grid_1d,
+                    "x": _1d_grid,
+                    "y": 1 - _1d_grid,
                     "z": grid_nd_probability_group,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", group_to_color[group])
@@ -310,13 +277,13 @@ def plot_node_point(
             )
         )
 
-    elif groups is not None:
+    elif group_ is not None:
 
         for group in unique_groups:
 
             name = "Group {}".format(group)
 
-            i_ = groups == group
+            i_ = group_ == group
 
             data.append(
                 merge(
@@ -326,7 +293,7 @@ def plot_node_point(
                         "name": name,
                         "x": point_x_dimension[i_, 0],
                         "y": point_x_dimension[i_, 1],
-                        "text": points[i_],
+                        "text": point_[i_],
                         "marker": {"color": group_to_color[group]},
                     },
                 )
@@ -338,13 +305,13 @@ def plot_node_point(
                 **base,
                 "x": point_x_dimension[:, 0],
                 "y": point_x_dimension[:, 1],
-                "text": points,
+                "text": point_,
             }
         )
 
     for point in points_to_highlight:
 
-        i = (points == point).nonzero()[-1]
+        i = (point_ == point).nonzero()[-1]
 
         x, y = point_x_dimension[i]
 
