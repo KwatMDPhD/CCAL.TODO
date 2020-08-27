@@ -1,8 +1,7 @@
 from os.path import isfile
 
-from pandas import read_csv, value_counts
-
 import ravel
+from pandas import read_csv, value_counts
 
 from .shell import command
 
