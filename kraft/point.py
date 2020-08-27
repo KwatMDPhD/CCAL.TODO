@@ -1,11 +1,18 @@
-from numpy import absolute, full, integer, isnan, median, nan, unique, where
+from numpy import absolute, full, integer, isnan, median, nan, where
 from sklearn.manifold import MDS
 
-from .array import normalize
+from .array import normalize, get_not_nan_unique
 from .CONSTANT import RANDOM_SEED
 from .dict import merge
-from .geometry import get_convex_hull, get_triangulation
-from .plot import COLORBAR, get_color, make_colorscale, plot_plotly
+from .geometry import convex_hull, triangulation
+from .plot import (
+    COLORBAR,
+    get_color,
+    make_colorscale,
+    plot_plotly,
+    CONTINUOUS_COLORSCALE,
+    CATEGORICAL_COLORSCALE,
+)
 
 
 def map_point(point_x_point_distance, dimension_n, random_seed=RANDOM_SEED, **kwarg_):
@@ -55,7 +62,7 @@ def plot_node_point(
     point_x_dimension,
     #
     group_=None,
-    group_colorscale=None,
+    group_colorscale=CATEGORICAL_COLORSCALE,
     _1d_grid=None,
     nd_probability_vector=None,
     nd_group_vector=None,
@@ -63,21 +70,19 @@ def plot_node_point(
     show_node_text=True,
     node_trace=None,
     point_trace=None,
-    scores=None,
-    score_colorscale=None,
+    #
+    score_=None,
+    score_name=None,
+    score_colorscale=CONTINUOUS_COLORSCALE,
     score_opacity=0.8,
-    score_nan_opacity=0.1,
-    points_to_highlight=(),
+    score_nan_opacity=0.08,
+    highlight_point_=(),
     file_path=None,
 ):
 
     title = "{} {} and {} {}".format(node_.size, node_name, point_.size, point_name)
 
-    if scores is not None:
-
-        score_name = scores.name
-
-        scores = scores.to_numpy()
+    if score_ is not None:
 
         title = "{}<br>{}".format(title, score_name)
 
@@ -100,23 +105,23 @@ def plot_node_point(
                 "family": "Times New Roman, sans-serif",
             },
         },
-        "xaxis": axis,
         "yaxis": axis,
+        "xaxis": axis,
         "annotations": [],
     }
 
     data = []
 
-    triangulation_0s, triangulation_1s = get_triangulation(node_x_dimension)
+    _0, _1 = triangulation(node_x_dimension)
 
-    convex_hull_0s, convex_hull_1s = get_convex_hull(node_x_dimension)
+    _0, _1 = convex_hull(node_x_dimension)
 
     data.append(
         {
             "legendgroup": "Node",
             "name": "Line",
-            "x": triangulation_0s + convex_hull_0s,
-            "y": triangulation_1s + convex_hull_1s,
+            "y": _0 + _0,
+            "x": _1 + _1,
             "mode": "lines",
             "line": {"color": "#171412"},
         }
@@ -125,8 +130,8 @@ def plot_node_point(
     base = {
         "legendgroup": "Node",
         "name": node_name,
-        "x": node_x_dimension[:, 0],
-        "y": node_x_dimension[:, 1],
+        "y": node_x_dimension[:, 0],
+        "x": node_x_dimension[:, 1],
         "text": node_,
         "mode": "markers",
         "marker": {
@@ -151,8 +156,8 @@ def plot_node_point(
 
         layout["annotations"] += [
             {
-                "x": x,
-                "y": y,
+                "y": axis_0_coordinate,
+                "x": axis_1_coordinate,
                 "text": "<b>{}</b>".format(node),
                 "font": {
                     "size": 16,
@@ -166,7 +171,9 @@ def plot_node_point(
                 "arrowwidth": arrowwidth,
                 "arrowcolor": arrowcolor,
             }
-            for node, (x, y) in zip(node_, node_x_dimension)
+            for node, (axis_0_coordinate, axis_1_coordinate) in zip(
+                node_, node_x_dimension
+            )
         ]
 
     if nd_group_vector is not None:
@@ -175,36 +182,34 @@ def plot_node_point(
             {
                 "type": "contour",
                 "showlegend": False,
-                "x": _1d_grid,
-                "y": 1 - _1d_grid,
                 "z": nd_probability_vector,
+                "y": _1d_grid,
+                "x": _1d_grid,
                 "autocontour": False,
                 "ncontours": 24,
                 "contours": {"coloring": "none"},
             }
         )
 
-        unique_groups = unique(nd_group_vector[~isnan(nd_group_vector)])
-
-        n_unique_group = unique_groups.size
+        group_n = get_not_nan_unique(nd_group_vector).max() + 1
 
         group_to_color = {
-            group: get_color(group_colorscale, group, n_unique_group)
-            for group in unique_groups
+            group: get_color(group_colorscale, group / max(1, group_n - 1))
+            for group in range(group_n)
         }
 
-        for group in unique_groups:
+        for group in range(group_n):
 
-            grid_nd_probability_group = nd_probability_vector.copy()
+            nd_group_probability_vector = nd_probability_vector.copy()
 
-            grid_nd_probability_group[nd_group_vector != group] = nan
+            nd_group_probability_vector[nd_group_vector != group] = nan
 
             data.append(
                 {
                     "type": "heatmap",
+                    "z": nd_group_probability_vector,
+                    "y": _1d_grid,
                     "x": _1d_grid,
-                    "y": 1 - _1d_grid,
-                    "z": grid_nd_probability_group,
                     "colorscale": make_colorscale(
                         ("rgb(255, 255, 255)", group_to_color[group])
                     ),
@@ -228,31 +233,28 @@ def plot_node_point(
 
         base = merge(base, point_trace)
 
-    if scores is not None:
+    if score_ is not None:
 
-        i_ = absolute(scores).argsort()
+        sort_index_ = absolute(score_).argsort()
 
-        scores = scores[i_]
+        score_ = score_[sort_index_]
 
-        point_x_dimension = point_x_dimension[i_]
+        point_x_dimension = point_x_dimension[sort_index_]
 
-        if score_nan_opacity == 0:
+        score_not_nan_ = get_not_nan_unique(score_)
 
-            scores = scores[~isnan(scores)]
+        if all(isinstance(score, integer) for score in score_not_nan_):
 
-        else:
-
-            score_opacity = where(isnan(scores), score_nan_opacity, score_opacity)
-
-        if all(isinstance(score, integer) for score in scores):
-
-            tickvals = unique(scores)
-
-            ticktext = tickvals
+            tickvals = ticktext = score_not_nan_
 
         else:
 
-            tickvals = (scores.min(), median(scores), scores.mean(), scores.max())
+            tickvals = (
+                score_not_nan_.min(),
+                median(score_not_nan_),
+                score_not_nan_.mean(),
+                score_not_nan_.max(),
+            )
 
             ticktext = tuple("{:.2e}".format(number) for number in tickvals)
 
@@ -260,10 +262,10 @@ def plot_node_point(
             merge(
                 base,
                 {
-                    "x": point_x_dimension[:, 0],
-                    "y": point_x_dimension[:, 1],
+                    "y": point_x_dimension[:, 0],
+                    "x": point_x_dimension[:, 1],
                     "marker": {
-                        "color": scores,
+                        "color": score_,
                         "colorscale": score_colorscale,
                         "colorbar": {
                             **COLORBAR,
@@ -271,7 +273,9 @@ def plot_node_point(
                             "tickvals": tickvals,
                             "ticktext": ticktext,
                         },
-                        "opacity": score_opacity,
+                        "opacity": where(
+                            isnan(score_), score_nan_opacity, score_opacity
+                        ),
                     },
                 },
             )
@@ -279,11 +283,11 @@ def plot_node_point(
 
     elif group_ is not None:
 
-        for group in unique_groups:
+        for group in range(group_n):
 
             name = "Group {}".format(group)
 
-            i_ = group_ == group
+            index_ = group_ == group
 
             data.append(
                 merge(
@@ -291,34 +295,35 @@ def plot_node_point(
                     {
                         "legendgroup": name,
                         "name": name,
-                        "x": point_x_dimension[i_, 0],
-                        "y": point_x_dimension[i_, 1],
-                        "text": point_[i_],
+                        "y": point_x_dimension[index_, 0],
+                        "x": point_x_dimension[index_, 1],
+                        "text": point_[index_],
                         "marker": {"color": group_to_color[group]},
                     },
                 )
             )
+
     else:
 
         data.append(
             {
                 **base,
-                "x": point_x_dimension[:, 0],
-                "y": point_x_dimension[:, 1],
+                "y": point_x_dimension[:, 0],
+                "x": point_x_dimension[:, 1],
                 "text": point_,
             }
         )
 
-    for point in points_to_highlight:
+    for point in highlight_point_:
 
-        i = (point_ == point).nonzero()[-1]
-
-        x, y = point_x_dimension[i]
+        axis_0_coordinate, axis_1_coordinate = point_x_dimension[
+            (point_ == point).nonzero()[-1]
+        ]
 
         layout["annotations"].append(
             {
-                "x": x,
-                "y": y,
+                "y": axis_0_coordinate,
+                "x": axis_1_coordinate,
                 "text": "<b>{}</b>".format(point),
                 "arrowhead": 2,
                 "arrowwidth": 2,
@@ -328,4 +333,4 @@ def plot_node_point(
             }
         )
 
-    plot_plotly({"layout": layout, "data": data}, file_path=file_path)
+    plot_plotly({"data": data, "layout": layout}, file_path=file_path)
