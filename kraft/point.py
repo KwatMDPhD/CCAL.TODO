@@ -72,7 +72,7 @@ def plot_node_point(
     score_colorscale=CONTINUOUS_COLORSCALE,
     score_opacity=0.8,
     score_nan_opacity=0.08,
-    highlight_point_=(),
+    point_highlight_=(),
     file_path=None,
 ):
 
@@ -313,7 +313,7 @@ def plot_node_point(
             }
         )
 
-    for point in highlight_point_:
+    for point in point_highlight_:
 
         axis_0_coordinate, axis_1_coordinate = point_x_dimension[point_ == point][0]
 
