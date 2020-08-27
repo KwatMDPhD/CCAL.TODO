@@ -10,6 +10,7 @@ from . import (
     json,
     kernel_density,
     path,
+    pd,
     plot,
     probability,
 )

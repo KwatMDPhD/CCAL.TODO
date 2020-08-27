@@ -1,13 +1,4 @@
-from numpy import (
-    apply_along_axis,
-    asarray,
-    concatenate,
-    full,
-    isnan,
-    median,
-    nan,
-    unique,
-)
+from numpy import apply_along_axis, full, isnan, nan, unique
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, Series, concat, isna
 
@@ -20,8 +11,6 @@ from .array import (
     shift_minimum,
 )
 from .CONSTANT import RANDOM_SEED
-from .grid import make_grid_nd
-from .plot import plot_heat_map, plot_histogram
 from .support import cast_builtin
 from .table import binarize, drop_axes_label, drop_axis_label, summarize
 
@@ -146,37 +135,6 @@ def print_value_n(dataframe, axis):
         print("-" * 80)
 
         print(value_n)
-
-
-def entangle(matrix, axis_0_label_, axis_1_label_, axis_0_name, axis_1_name):
-
-    return DataFrame(
-        data=matrix,
-        index=Index(data=axis_0_label_, name=axis_0_name),
-        columns=Index(data=axis_1_label_, name=axis_1_name),
-    )
-
-
-def untangle(pandas):
-
-    if isinstance(pandas, DataFrame):
-
-        return (
-            pandas.to_numpy(),
-            pandas.index.to_numpy(),
-            pandas.columns.to_numpy(),
-            pandas.index.name,
-            pandas.columns.name,
-        )
-
-    elif isinstance(pandas, Series):
-
-        return (
-            pandas.to_numpy(),
-            pandas.index.to_numpy(),
-            pandas.name,
-            pandas.index.name,
-        )
 
 
 def sample(
@@ -339,116 +297,6 @@ def drop_axes_label(
             axis = 0
 
         can_return = True
-
-
-def sync_axis(dataframes, axis):
-
-    dataframe_0 = dataframes[0]
-
-    labels = dataframe_0.axes[axis]
-
-    for dataframe in dataframes[1:]:
-
-        labels = labels.union(dataframe.axes[axis])
-
-    labels = asarray(sorted(labels))
-
-    return tuple(
-        dataframe.reindex(labels=labels, axis=axis) for dataframe in dataframes
-    )
-
-
-def summarize(
-    dataframe_number,
-    plot=True,
-    plot_heat_map_max_size=int(1e6),
-    plot_histogram_max_size=int(1e3),
-):
-
-    matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(
-        dataframe_number
-    )
-
-    print(matrix.shape)
-
-    matrix_size = matrix.size
-
-    if plot and matrix_size <= plot_heat_map_max_size:
-
-        plot_heat_map(
-            matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name,
-        )
-
-    is_nan = isnan(matrix)
-
-    n_nan = is_nan.sum()
-
-    if 0 < n_nan:
-
-        print("% NaN: {:.2%}".format(n_nan / matrix_size))
-
-        if plot:
-
-            plot_histogram(
-                (is_nan.sum(axis=1), is_nan.sum(axis=0)),
-                (axis_0_labels, axis_1_labels),
-                (axis_0_name, axis_1_name),
-                layout={"xaxis": {"title": {"text": "N NaN"}}},
-            )
-
-    not_nan_numbers = matrix[~is_nan].ravel()
-
-    print("(Not-NaN) min: {:.2e}".format(not_nan_numbers.min()))
-
-    print("(Not-NaN) median: {:.2e}".format(median(not_nan_numbers)))
-
-    print("(Not-NaN) mean: {:.2e}".format(not_nan_numbers.mean()))
-
-    print("(Not-NaN) max: {:.2e}".format(not_nan_numbers.max()))
-
-    if plot:
-
-        labels = asarray(
-            tuple(
-                "{}_{}".format(label_0, label_1)
-                for label_0, label_1 in make_grid_nd((axis_0_labels, axis_1_labels))[
-                    ~is_nan.ravel()
-                ]
-            )
-        )
-
-        if plot_histogram_max_size < not_nan_numbers.size:
-
-            print("Choosing {} for histogram...".format(plot_histogram_max_size))
-
-            i_ = concatenate(
-                (
-                    choice(
-                        not_nan_numbers.size,
-                        size=plot_histogram_max_size,
-                        replace=False,
-                    ),
-                    (not_nan_numbers.argmin(), not_nan_numbers.argmax()),
-                )
-            )
-
-            not_nan_numbers = not_nan_numbers[i_]
-
-            labels = labels[i_]
-
-        plot_histogram(
-            (not_nan_numbers,),
-            (labels,),
-            ("All",),
-            layout={"xaxis": {"title": {"text": "(Not-NaN) Number"}}},
-        )
-
-        plot_histogram(
-            (median(matrix, axis=1), median(matrix, axis=0)),
-            (axis_0_labels, axis_1_labels),
-            (axis_0_name, axis_1_name),
-            layout={"xaxis": {"title": {"text": "(Not-NaN) Median"}}},
-        )
 
 
 def pivot(
