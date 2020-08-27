@@ -15,4 +15,5 @@ from . import (
     pd,
     plot,
     probability,
+    shell,
 )
