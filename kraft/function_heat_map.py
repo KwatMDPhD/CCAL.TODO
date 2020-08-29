@@ -243,7 +243,7 @@ def make(
 
         else:
 
-            moe_ = full(score_.shape, nan)
+            moe_ = full(score_.size, nan)
 
         if 0 < shuffle_n:
 
@@ -268,7 +268,7 @@ def make(
 
         else:
 
-            p_value_ = q_value_ = full(score_.shape, nan)
+            p_value_ = q_value_ = full(score_.size, nan)
 
         pool.terminate()
 
