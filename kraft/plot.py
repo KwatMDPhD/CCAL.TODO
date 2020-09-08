@@ -364,7 +364,10 @@ def plot_histogram(
 
     data = []
 
-    for index, (vector, label_, name), in enumerate(zip(vector_, label__, name_)):
+    for (
+        index,
+        (vector, label_, name),
+    ) in enumerate(zip(vector_, label__, name_)):
 
         color = get_color(colorscale, index / max(1, (data_n - 1)))
 

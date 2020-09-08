@@ -59,7 +59,11 @@ def _get_coclustering_distance(point_x_clustering):
 
 
 def cluster_clusterings(
-    point_x_dimension, cluster_n, clustering_n=100, random_seed=RANDOM_SEED, **kwarg_,
+    point_x_dimension,
+    cluster_n,
+    clustering_n=100,
+    random_seed=RANDOM_SEED,
+    **kwarg_,
 ):
 
     point_n = point_x_dimension.shape[0]

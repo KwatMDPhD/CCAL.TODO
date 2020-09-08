@@ -5,11 +5,17 @@ from .kernel_density import get_density
 
 
 def get_probability(
-    point_x_dimension, plot=True, dimension_name_=None, **kwarg_,
+    point_x_dimension,
+    plot=True,
+    dimension_name_=None,
+    **kwarg_,
 ):
 
     nd_grid, nd_density_vector = get_density(
-        point_x_dimension, plot=plot, dimension_name_=dimension_name_, **kwarg_,
+        point_x_dimension,
+        plot=plot,
+        dimension_name_=dimension_name_,
+        **kwarg_,
     )
 
     nd_probability_vector = nd_density_vector / (
@@ -38,7 +44,10 @@ def get_posterior_probability(
 ):
 
     nd_grid, nd_probability_vector = get_probability(
-        point_x_dimension, plot=plot, dimension_name_=dimension_name_, **kwarg_,
+        point_x_dimension,
+        plot=plot,
+        dimension_name_=dimension_name_,
+        **kwarg_,
     )
 
     target_dimension_d = get_d(nd_grid[:, -1])

@@ -52,7 +52,11 @@ def get_1d(point_x_dimension):
 
 
 def plot(
-    nd_grid, nd_vector, dimension_name_=None, number_name="Number", file_path=None,
+    nd_grid,
+    nd_vector,
+    dimension_name_=None,
+    number_name="Number",
+    file_path=None,
 ):
 
     dimension_n = nd_grid.shape[1]

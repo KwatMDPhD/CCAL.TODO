@@ -70,7 +70,10 @@ class GPSMap:
         )
 
     def set_group(
-        self, group_, group_colorscale=CATEGORICAL_COLORSCALE, grid_n=128,
+        self,
+        group_,
+        group_colorscale=CATEGORICAL_COLORSCALE,
+        grid_n=128,
     ):
 
         if group_ == "closest_node":

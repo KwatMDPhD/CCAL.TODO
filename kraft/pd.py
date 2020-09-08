@@ -1,8 +1,26 @@
-from numpy import asarray, concatenate, full, isnan, logical_not, median
-from numpy.random import choice
+from numpy import (
+    apply_along_axis,
+    asarray,
+    concatenate,
+    full,
+    isnan,
+    logical_not,
+    median,
+    nan,
+    unique,
+)
+from numpy.random import choice, seed
 from pandas import DataFrame, Index, concat, isna
 
-from .array import guess_type
+from .array import (
+    function_on_1_number_array_not_nan,
+    guess_type,
+    log,
+    map_integer,
+    normalize as array_normalize,
+    shift_min,
+)
+from .CONSTANT import RANDOM_SEED
 from .grid import make_nd
 from .plot import plot_heat_map, plot_histogram
 from .support import cast_builtin
@@ -163,7 +181,9 @@ def summarize(
             index_ = concatenate(
                 (
                     choice(
-                        matrix_not_nan.size, size=histogram_max_size, replace=False,
+                        matrix_not_nan.size,
+                        size=histogram_max_size,
+                        replace=False,
                     ),
                     (matrix_not_nan.argmin(), matrix_not_nan.argmax()),
                 )
@@ -270,23 +290,6 @@ def separate_type(feature_x_sample, drop_constant=True, prefix_feature=True):
         binary_x_sample = None
 
     return continuous_x_sample, binary_x_sample
-
-
-# TODO
-from numpy import apply_along_axis, full, isnan, nan, unique
-from numpy.random import choice, seed
-from pandas import DataFrame, Index, isna
-
-from .array import (
-    function_on_1_number_array_not_nan,
-    guess_type,
-    log,
-    map_integer,
-    normalize as array_normalize,
-    shift_minimum,
-)
-from .CONSTANT import RANDOM_SEED
-from .table import drop_axes_label, drop_axis_label, summarize
 
 
 def error_axes(dataframe):
@@ -486,7 +489,12 @@ def drop_axes_label(
 
 
 def pivot(
-    axis_0_labels, axis_1_labels, numbers, axis_0_name, axis_1_name, function=None,
+    axis_0_labels,
+    axis_1_labels,
+    numbers,
+    axis_0_name,
+    axis_1_name,
+    function=None,
 ):
 
     axis_0_label_to_i = map_integer(axis_0_labels)[0]
@@ -611,7 +619,10 @@ def process(
             matrix = shift_minimum(matrix, log_shift)
 
         feature_x_sample = DataFrame(
-            data=log(matrix, log_base=log_base,),
+            data=log(
+                matrix,
+                log_base=log_base,
+            ),
             index=feature_x_sample.index,
             columns=feature_x_sample.columns,
         )
