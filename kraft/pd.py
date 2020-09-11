@@ -66,6 +66,19 @@ def binarize(sr):
 # ==============================================================================
 
 
+def error_axes(df):
+
+    for label_ in df.axes:
+
+        label_, count_ = unique(label_.to_numpy(), return_counts=True)
+
+        is_not_na_ = logical_not(isna(label_))
+
+        assert is_not_na_.all()
+
+        assert (count_ == 1).all()
+
+
 def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
 
     print("-" * 80)
@@ -77,9 +90,20 @@ def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
     print("-" * 80)
 
 
-def sync(df_, axis):
+def count_value(df):
 
-    # TODO: refactor
+    for label, value_ in df.items():
+
+        print("-" * 80)
+
+        print(label)
+
+        value_n_ = value_.value_counts()
+
+        print(value_n_)
+
+
+def sync(df_, axis):
 
     df_0 = df_[0]
 
@@ -92,6 +116,71 @@ def sync(df_, axis):
     label_ = asarray(sorted(label_))
 
     return tuple(df.reindex(labels=label_, axis=axis) for df in df_)
+
+
+def sample(
+    df,
+    axis_0_label_n,
+    axis_1_label_n,
+    random_seed=RANDOM_SEED,
+    **kwarg_,
+):
+
+    matrix = df.to_numpy()
+
+    axis_0_label_ = df.index.to_numpy()
+
+    axis_1_label_ = df.columns.to_numpy()
+
+    axis_0_name = df.index.name
+
+    axis_1_name = df.columns.name
+
+    axis_0_size = axis_0_label_.size
+
+    axis_1_size = axis_1_label_.size
+
+    seed(seed=random_seed)
+
+    if axis_0_label_n is not None:
+
+        if axis_0_label_n < 1:
+
+            axis_0_label_n = int(axis_0_label_n * axis_0_size)
+
+        axis_0_index_ = choice(axis_0_size, size=axis_0_label_n, **kwarg_)
+
+    if axis_1_label_n is not None:
+
+        if axis_1_label_n < 1:
+
+            axis_1_label_n = int(axis_1_label_n * axis_1_size)
+
+        axis_1_index_ = choice(axis_1_size, size=axis_1_label_n, **kwarg_)
+
+    if axis_0_label_n is not None and axis_1_label_n is not None:
+
+        return DataFrame(
+            data=matrix[axis_0_index_, axis_1_index_],
+            index=Index(data=axis_0_label_[axis_0_index_], name=axis_0_name),
+            columns=Index(data=axis_1_label_[axis_1_index_], name=axis_1_name),
+        )
+
+    elif axis_0_label_n is not None:
+
+        return DataFrame(
+            data=matrix[axis_0_index_],
+            index=Index(data=axis_0_label_[axis_0_index_], name=axis_0_name),
+            columns=Index(data=axis_1_label_, name=axis_1_name),
+        )
+
+    elif axis_1_label_n is not None:
+
+        return DataFrame(
+            data=matrix[:, axis_1_index_],
+            index=Index(data=axis_0_label_, name=axis_0_name),
+            columns=Index(data=axis_1_label_[axis_1_index_], name=axis_1_name),
+        )
 
 
 # ==============================================================================
@@ -222,7 +311,7 @@ def collapse(number_df):
 
 
 # ==============================================================================
-# Feature_x_Sample
+# Feature x Sample
 # ==============================================================================
 
 
@@ -292,112 +381,14 @@ def separate_type(feature_x_sample, drop_constant=True, prefix_feature=True):
     return continuous_x_sample, binary_x_sample
 
 
-def error_axes(dataframe):
-
-    for axis in dataframe.axes:
-
-        axis, counts = unique(axis.to_numpy(), return_counts=True)
-
-        is_na = isna(axis)
-
-        assert not is_na.any()
-
-        assert (counts == 1).all()
+# TODO: refactor
 
 
-def print_value_n(dataframe, axis):
-
-    assert axis in (0, 1)
-
-    if axis == 0:
-
-        generator = dataframe.iterrows()
-
-    else:
-
-        generator = dataframe.items()
-
-    for _, values in generator:
-
-        value_n = values.value_counts()
-
-        print("-" * 80)
-
-        print(value_n)
-
-
-def sample(
-    dataframe,
-    n_axis_0_label,
-    n_axis_1_label,
-    random_seed=RANDOM_SEED,
-    **keyword_arguments,
-):
-
-    matrix, axis_0_labels, axis_1_labels, axis_0_name, axis_1_name = untangle(dataframe)
-
-    axis_0_size = axis_0_labels.size
-
-    axis_1_size = axis_1_labels.size
-
-    seed(seed=random_seed)
-
-    if n_axis_0_label is not None:
-
-        if n_axis_0_label < 1:
-
-            n_axis_0_label = int(n_axis_0_label * axis_0_size)
-
-        if keyword_arguments is None:
-
-            keyword_arguments = {}
-
-        axis_0_is = choice(axis_0_size, size=n_axis_0_label, **keyword_arguments)
-
-    if n_axis_1_label is not None:
-
-        if n_axis_1_label < 1:
-
-            n_axis_1_label = int(n_axis_1_label * axis_1_size)
-
-        if keyword_arguments is None:
-
-            keyword_arguments = {}
-
-        axis_1_is = choice(axis_1_size, size=n_axis_1_label, **keyword_arguments)
-
-    if n_axis_0_label is not None and n_axis_1_label is not None:
-
-        return DataFrame(
-            data=matrix[axis_0_is, axis_1_is],
-            index=Index(data=axis_0_labels[axis_0_is], name=axis_0_name),
-            columns=Index(data=axis_1_labels[axis_1_is], name=axis_1_name),
-        )
-
-    elif n_axis_0_label is not None:
-
-        return DataFrame(
-            data=matrix[axis_0_is],
-            index=Index(data=axis_0_labels[axis_0_is], name=axis_0_name),
-            columns=Index(data=axis_1_labels, name=axis_1_name),
-        )
-
-    elif n_axis_1_label is not None:
-
-        return DataFrame(
-            data=matrix[:, axis_1_is],
-            index=Index(data=axis_0_labels, name=axis_0_name),
-            columns=Index(data=axis_1_labels[axis_1_is], name=axis_1_name),
-        )
-
-
-def drop_axis_label(
-    dataframe, axis, min_not_na_value=None, min_not_na_unique_value=None
-):
+def drop_axis_label(df, axis, min_not_na_value=None, min_not_na_unique_value=None):
 
     assert all(min_not_na_value is not None, min_not_na_unique_value is not None)
 
-    shape_before = dataframe.shape
+    shape_before = df.shape
 
     is_keep = full(shape_before[axis], True)
 
@@ -409,7 +400,7 @@ def drop_axis_label(
 
         axis_ = 0
 
-    matrix = dataframe.to_numpy()
+    matrix = df.to_numpy()
 
     if min_not_na_value is not None:
 
@@ -427,7 +418,7 @@ def drop_axis_label(
 
         if min_not_na_unique_value < 1:
 
-            min_not_na_unique_value = min_not_na_unique_value * dataframe.shape[axis_]
+            min_not_na_unique_value = min_not_na_unique_value * df.shape[axis_]
 
         def function_1(vector):
 
@@ -437,22 +428,20 @@ def drop_axis_label(
 
     if axis == 0:
 
-        dataframe = dataframe.loc[is_keep, :]
+        df = df.loc[is_keep, :]
 
     elif axis == 1:
 
-        dataframe = dataframe.loc[:, is_keep]
+        df = df.loc[:, is_keep]
 
-    print("{} ==> {}".format(shape_before, dataframe.shape))
+    print("{} ==> {}".format(shape_before, df.shape))
 
-    return dataframe
+    return df
 
 
-def drop_axes_label(
-    dataframe, axis=None, min_not_na_value=None, min_not_na_unique_value=None
-):
+def drop_axes_label(df, axis=None, min_not_na_value=None, min_not_na_unique_value=None):
 
-    shape_before = dataframe.shape
+    shape_before = df.shape
 
     if axis is None:
 
@@ -462,18 +451,18 @@ def drop_axes_label(
 
     while True:
 
-        dataframe = drop_axis_label(
-            dataframe,
+        df = drop_axis_label(
+            df,
             axis,
             min_not_na_value=min_not_na_value,
             min_not_na_unique_value=min_not_na_unique_value,
         )
 
-        shape_after = dataframe.shape
+        shape_after = df.shape
 
         if all(can_return, shape_before == shape_after):
 
-            return dataframe
+            return df
 
         shape_before = shape_after
 
@@ -489,23 +478,21 @@ def drop_axes_label(
 
 
 def pivot(
-    axis_0_labels,
-    axis_1_labels,
-    numbers,
+    axis_0_label_,
+    axis_1_label_,
+    value_,
     axis_0_name,
     axis_1_name,
     function=None,
 ):
 
-    axis_0_label_to_i = map_integer(axis_0_labels)[0]
+    axis_0_label_to_i = map_integer(axis_0_label_)[0]
 
-    axis_1_label_to_i = map_integer(axis_1_labels)[0]
+    axis_1_label_to_i = map_integer(axis_1_label_)[0]
 
     matrix = full((len(axis_0_label_to_i), len(axis_1_label_to_i)), nan)
 
-    for axis_0_label, axis_1_label, number in zip(
-        axis_0_labels, axis_1_labels, numbers
-    ):
+    for axis_0_label, axis_1_label, number in zip(axis_0_label_, axis_1_label_, value_):
 
         i_0 = axis_0_label_to_i[axis_0_label]
 
@@ -616,7 +603,7 @@ def process(
 
         if log_shift is not None:
 
-            matrix = shift_minimum(matrix, log_shift)
+            matrix = shift_min(matrix, log_shift)
 
         feature_x_sample = DataFrame(
             data=log(
