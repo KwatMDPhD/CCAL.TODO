@@ -1,3 +1,4 @@
+from pandas import isna
 from numpy import (
     asarray,
     diff,
@@ -19,6 +20,7 @@ from numpy.random import seed, shuffle as shuffle_
 from scipy.stats import rankdata
 
 from .CONSTANT import RANDOM_SEED
+
 
 # ==============================================================================
 # 1D array
@@ -152,6 +154,16 @@ def function_on_2_2d_array(matrix_0, matrix_1, function):
             matrix[index_0, index_1] = function(vector_0, vector_1)
 
     return matrix
+
+
+# ==============================================================================
+# ND array
+# ==============================================================================
+
+
+def check_is_not_na(nd_array):
+
+    return logical_not(isna(nd_array))
 
 
 # ==============================================================================
