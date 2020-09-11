@@ -1,4 +1,3 @@
-from pandas import isna
 from numpy import (
     asarray,
     diff,
@@ -17,10 +16,10 @@ from numpy import (
     unique,
 )
 from numpy.random import seed, shuffle as shuffle_
+from pandas import isna
 from scipy.stats import rankdata
 
 from .CONSTANT import RANDOM_SEED
-
 
 # ==============================================================================
 # 1D array
@@ -34,7 +33,7 @@ def check_is_in(_1d_array, lookup_1d_array):
     return asarray(tuple(value in lookup for value in _1d_array))
 
 
-def map_integer(_1d_array):
+def map_int(_1d_array):
 
     value_to_integer = {}
 
@@ -44,11 +43,13 @@ def map_integer(_1d_array):
 
     for value in _1d_array:
 
-        value_to_integer[value] = integer
+        if value not in value_to_integer:
 
-        integer_to_value[integer] = value
+            value_to_integer[value] = integer
 
-        integer += 1
+            integer_to_value[integer] = value
+
+            integer += 1
 
     return value_to_integer, integer_to_value
 

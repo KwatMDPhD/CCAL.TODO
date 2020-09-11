@@ -12,19 +12,11 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, concat, isna
 
-from .array import (
-    guess_type,
-    log,
-    map_integer,
-    normalize,
-    check_is_not_na,
-    shift_min,
-)
+from .array import check_is_not_na, guess_type, log, map_int, normalize, shift_min
 from .CONSTANT import RANDOM_SEED
 from .grid import make_nd
 from .plot import plot_heat_map, plot_histogram
 from .support import cast_builtin
-
 
 # ==============================================================================
 # Series
@@ -280,9 +272,9 @@ def pivot(
     function=None,
 ):
 
-    axis_0_label_to_index = map_integer(axis_0_label_)[0]
+    axis_0_label_to_index = map_int(axis_0_label_)[0]
 
-    axis_1_label_to_index = map_integer(axis_1_label_)[0]
+    axis_1_label_to_index = map_int(axis_1_label_)[0]
 
     matrix = full((len(axis_0_label_to_index), len(axis_1_label_to_index)), nan)
 
