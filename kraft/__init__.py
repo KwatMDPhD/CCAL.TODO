@@ -18,6 +18,7 @@ from . import (
     pd,
     plot,
     probability,
+    sea,
     shell,
     support,
 )

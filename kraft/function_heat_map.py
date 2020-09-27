@@ -51,7 +51,9 @@ def _process_vector_for_plot(vector, data_type, plot_std):
 
     if data_type == "continuous":
 
-        vector = normalize(vector, "-0-").clip(min=-plot_std, max=plot_std)
+        vector = function_on_1_number_array_not_nan(
+            vector, normalize, "-0-", update=True
+        ).clip(min=-plot_std, max=plot_std)
 
         return vector, -plot_std, plot_std
 
