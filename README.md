@@ -1,20 +1,35 @@
-## Install
+## Download
 
 ```sh
 git clone https://github.com/kwatme/kraft
+```
 
-pip install --editable kraft/
+Check that the data file sizes are good.
 
-ls --size kraft/kraft/data/ # Make sure that the file sizes are good
+```sh
+ls --size kraft/kraft/data/
+```
 
-# If file sizes are small, then they are pointers instead of the files themselves; so git large file system to fetch them
+If the data file sizes are small (they are pointers to the files in the GitLFS server), fetch them with GitLFS.
 
-# Install git-lfs
+Install git-lfs
 
-# Fetch
+```sh
+cd kraft/
 
 git lfs fetch
 
-ls --size kraft/kraft/data/ # Check the file sizes again
+cd ..
+```
 
+Confirm that the data file sizes are good.
+
+```sh
+ls --size kraft/kraft/data/
+```
+
+## Install
+
+```sh
+pip install --editable kraft/
 ```
