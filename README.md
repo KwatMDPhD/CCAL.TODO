@@ -1,35 +1,17 @@
-## Download
+## Set up Git LFS
+
+Install Git LFS
+
+Activate Git LFS for the current GitHub account
 
 ```sh
-git clone https://github.com/kwatme/kraft
-```
-
-Check that the data file sizes are good.
-
-```sh
-ls --size kraft/kraft/data/
-```
-
-If the data file sizes are small (they are pointers to the files in the GitLFS server), fetch them with GitLFS.
-
-Install git-lfs
-
-```sh
-cd kraft/
-
-git lfs fetch
-
-cd ..
-```
-
-Confirm that the data file sizes are good.
-
-```sh
-ls --size kraft/kraft/data/
+git lfs install
 ```
 
 ## Install
 
 ```sh
+git clone https://github.com/kwatme/kraft
+
 pip install --editable kraft/
 ```

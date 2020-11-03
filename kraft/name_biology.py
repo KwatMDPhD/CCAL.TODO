@@ -67,7 +67,7 @@ def map_cg_to_gene():
             squeeze=True,
         ),
         read_csv(
-            "{}infinium-methylationepic-v-1-0-b5-manifest-file-csv.zip".format(
+            "{}infinium-methylationepic-v-1-0-b5-manifest-file.csv.gz".format(
                 DATA_DIRECTORY_PATH
             ),
             skiprows=7,
