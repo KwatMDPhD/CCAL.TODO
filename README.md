@@ -1,6 +1,6 @@
 ## Set up Git LFS
 
-Install Git LFS command line tool
+Install Git LFS (command line tool)
 
 Install (more like activate) Git LFS (for the current GitHub account)
 
