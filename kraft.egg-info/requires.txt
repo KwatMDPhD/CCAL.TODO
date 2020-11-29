@@ -1,0 +1,10 @@
+numpy
+pandas
+xlrd
+scipy
+scikit-learn
+statsmodels
+KDEpy
+plotly
+click
+requests
