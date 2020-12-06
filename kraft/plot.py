@@ -1,10 +1,7 @@
 from numpy import arange, argsort, meshgrid, nonzero, unique
-from plotly.colors import (
-    convert_colors_to_same_type,
-    find_intermediate_color,
-    make_colorscale,
-    qualitative,
-)
+from plotly.colors import (convert_colors_to_same_type,
+                           find_intermediate_color, make_colorscale,
+                           qualitative)
 from plotly.io import show, write_html
 
 from .array import normalize

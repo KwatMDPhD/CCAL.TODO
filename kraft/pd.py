@@ -1,18 +1,10 @@
-from numpy import (
-    apply_along_axis,
-    asarray,
-    concatenate,
-    full,
-    isnan,
-    logical_not,
-    median,
-    nan,
-    unique,
-)
+from numpy import (apply_along_axis, asarray, concatenate, full, isnan,
+                   logical_not, median, nan, unique)
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, concat, isna
 
-from .array import check_is_not_na, guess_type, log, map_int, normalize, shift_min
+from .array import (check_is_not_na, guess_type, log, map_int, normalize,
+                    shift_min)
 from .CONSTANT import RANDOM_SEED
 from .grid import make_nd
 from .plot import plot_heat_map, plot_histogram
