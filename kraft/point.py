@@ -5,8 +5,14 @@ from .array import get_not_nan_unique, normalize
 from .CONSTANT import RANDOM_SEED
 from .dict import merge
 from .geometry import convex_hull, triangulation
-from .plot import (CATEGORICAL_COLORSCALE, COLORBAR, CONTINUOUS_COLORSCALE,
-                   get_color, make_colorscale, plot_plotly)
+from .plot import (
+    CATEGORICAL_COLORSCALE,
+    COLORBAR,
+    CONTINUOUS_COLORSCALE,
+    get_color,
+    make_colorscale,
+    plot_plotly,
+)
 
 
 def map_point(point_x_point_distance, dimension_n, random_seed=RANDOM_SEED, **kwarg_):

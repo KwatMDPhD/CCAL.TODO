@@ -4,13 +4,21 @@ from numpy import asarray, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .array import (check_is_extreme, function_on_1_number_array_not_nan,
-                    function_on_2_number_array_not_nan, normalize)
+from .array import (
+    check_is_extreme,
+    function_on_1_number_array_not_nan,
+    function_on_2_number_array_not_nan,
+    normalize,
+)
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 from .dict import merge
-from .plot import (BINARY_COLORSCALE, CATEGORICAL_COLORSCALE,
-                   CONTINUOUS_COLORSCALE, plot_plotly)
+from .plot import (
+    BINARY_COLORSCALE,
+    CATEGORICAL_COLORSCALE,
+    CONTINUOUS_COLORSCALE,
+    plot_plotly,
+)
 from .significance import get_moe, get_p_value_and_q_value
 
 HEATMAP_BASE = {

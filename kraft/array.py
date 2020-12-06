@@ -1,6 +1,20 @@
-from numpy import (asarray, diff, full, integer, isnan, log as loge, log2,
-                   log10, logical_and, logical_not, logical_or, nan, quantile,
-                   sort, unique)
+from numpy import (
+    asarray,
+    diff,
+    full,
+    integer,
+    isnan,
+    log as loge,
+    log2,
+    log10,
+    logical_and,
+    logical_not,
+    logical_or,
+    nan,
+    quantile,
+    sort,
+    unique,
+)
 from numpy.random import seed, shuffle as shuffle_
 from pandas import isna
 from scipy.stats import rankdata

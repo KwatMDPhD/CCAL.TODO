@@ -1,5 +1,15 @@
-from numpy import (absolute, asarray, concatenate, cumsum, full, inf, linspace,
-                   minimum, nan, nanmax)
+from numpy import (
+    absolute,
+    asarray,
+    concatenate,
+    cumsum,
+    full,
+    inf,
+    linspace,
+    minimum,
+    nan,
+    nanmax,
+)
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
