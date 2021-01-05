@@ -13,8 +13,10 @@ from numpy import (
 from pandas import DataFrame, concat
 from statsmodels.sandbox.distributions.extras import ACSkewT_gen
 
+from .array import check_array_for_bad
+from .dict import merge
+from .information import compute_kld
 from .plot import plot_plotly
-from .support import merge
 
 
 def compute_pdf_and_pdf_reference_context(
@@ -23,9 +25,9 @@ def compute_pdf_and_pdf_reference_context(
 
     center = pdf_reference.argmax()
 
-    left_kl = compute_kullback_leibler_divergence(pdf[:center], pdf_reference[:center])
+    left_kl = compute_kld(pdf[:center], pdf_reference[:center])
 
-    right_kl = compute_kullback_leibler_divergence(pdf[center:], pdf_reference[center:])
+    right_kl = compute_kld(pdf[center:], pdf_reference[center:])
 
     left_kl[left_kl == inf] = 0
 

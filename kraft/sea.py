@@ -12,7 +12,7 @@ def score_sample_and_set(
     element_scores,
     elements,
     sort_element_scores=True,
-    method="classic",
+    method="ks",
     plot_process=False,
     plot=True,
     title="Score Set",
@@ -42,7 +42,7 @@ def score_sample_and_set(
 
     a = element_scores.abs().to_numpy()
 
-    if method == "classic":
+    if method == "ks":
 
         h_1 *= a
 
@@ -86,7 +86,8 @@ def score_sample_and_set(
 
         s = r
 
-    elif method == "2020":
+    elif method == "pk":
+        print(h_1.sum(), m_1.sum())
 
         h_a = h_1 * a
 
@@ -149,9 +150,9 @@ def score_sample_and_set(
                 },
             )
 
-        l_h, l_m, l = get_jsd(h_a_p_lc, m_a_p_lc, vector_reference=a_p_lc)
+        l_h, l_m, l = get_jsd(h_a_p_lc, m_a_p_lc, reference_vector=a_p_lc)
 
-        r_h, r_m, r = get_jsd(h_a_p_rc, m_a_p_rc, vector_reference=a_p_rc)
+        r_h, r_m, r = get_jsd(h_a_p_rc, m_a_p_rc, reference_vector=a_p_rc)
 
         s = r - l
 
@@ -165,7 +166,7 @@ def score_sample_and_set(
             "marker": {"color": "#ff1968"},
         }
 
-        if method == "2020":
+        if method == "pk":
 
             plot_plotly(
                 {
@@ -274,12 +275,12 @@ def _score_sample_and_sets(element_scores, set_to_elements, method):
             method=method,
             plot=False,
         )
-        for elements in set_to_elements.to_numpy()()
+        for elements in asarray(tuple(set_to_elements.values()))
     )
 
 
 def score_samples_and_sets(
-    element_x_sample, set_to_elements, method="classic", n_job=1, file_path=None
+    element_x_sample, set_to_elements, method="ks", n_job=1, file_path=None
 ):
 
     pool = Pool(processes=n_job)

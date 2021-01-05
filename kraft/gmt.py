@@ -6,9 +6,9 @@ def read(file_path):
 
         for line in io.readlines():
 
-            split_ = line.split(sep="\t")
+            split_ = line.strip().split(sep="\t")
 
-            set_to_gene_[split_[0]] = tuple(gene for gene in split_[2:-1] if gene != "")
+            set_to_gene_[split_[0]] = tuple(gene for gene in split_[2:] if gene != "")
 
     return set_to_gene_
 
