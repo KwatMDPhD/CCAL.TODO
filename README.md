@@ -1,17 +1,11 @@
-## Set up Git LFS
-
-Install Git LFS (command line tool)
-
-Install (more like activate) Git LFS (for the current GitHub account)
-
-```sh
-git lfs install
-```
+Module for doing a lot of things.
 
 ## Install
 
 ```sh
-git clone https://github.com/kwatme/kraft
-
-pip install --editable kraft/
+pip install git+https://github.com/KwatME/kraft
 ```
+
+## Use
+
+See [examples](notebook).
