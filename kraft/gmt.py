@@ -1,8 +1,8 @@
-def read(file_path):
+def _read(path):
 
     set_to_gene_ = {}
 
-    with open(file_path) as io:
+    with open(path) as io:
 
         for line in io.readlines():
 
@@ -13,12 +13,16 @@ def read(file_path):
     return set_to_gene_
 
 
-def read_multiple(file_path_):
+def read(path_):
 
-    gene_set_gene_ = {}
+    if isinstance(path_, str):
 
-    for file_path in file_path_:
+        path_ = (path_,)
 
-        gene_set_gene_.update(read(file_path))
+    set_to_gene_ = {}
 
-    return gene_set_gene_
+    for path in path_:
+
+        set_to_gene_.update(_read(path))
+
+    return set_to_gene_

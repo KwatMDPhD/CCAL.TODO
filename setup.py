@@ -2,7 +2,7 @@ from os import listdir
 
 from setuptools import setup
 
-name = "Kraft"
+name = "kraft"
 
 directory_path = "{}/data/".format(name)
 
@@ -14,6 +14,7 @@ setup(
         "numpy",
         "pandas",
         "xlrd",
+        "openpyxl",
         "scipy",
         "scikit-learn",
         "statsmodels",
