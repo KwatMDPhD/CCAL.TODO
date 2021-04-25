@@ -18,7 +18,7 @@ setup(
         "scipy",
         "scikit-learn",
         "statsmodels",
-        #"KDEpy",
+        "KDEpy",
         "plotly",
         "click",
         "requests",
