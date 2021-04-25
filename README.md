@@ -1,9 +1,7 @@
-Module for doing a lot of things.
-
 ## Install
 
 ```sh
-pip install git+https://github.com/KwatME/kraft
+python3 -m pip install git+https://github.com/KwatME/Kraft.py
 ```
 
 ## Use

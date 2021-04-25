@@ -2,7 +2,7 @@ from os import listdir
 
 from setuptools import setup
 
-name = "kraft"
+name = "Kraft"
 
 directory_path = "{}/data/".format(name)
 
@@ -17,7 +17,7 @@ setup(
         "scipy",
         "scikit-learn",
         "statsmodels",
-        "KDEpy",
+        #"KDEpy",
         "plotly",
         "click",
         "requests",
