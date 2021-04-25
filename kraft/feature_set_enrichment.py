@@ -87,7 +87,6 @@ def score_sample_and_set(
         s = r
 
     elif method == "pk":
-        print(h_1.sum(), m_1.sum())
 
         h_a = h_1 * a
 
