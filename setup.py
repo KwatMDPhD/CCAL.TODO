@@ -2,14 +2,14 @@ from os import listdir
 
 from setuptools import setup
 
-name = "kraft"
+n = "kraft"
 
-directory_path = "{}/data/".format(name)
+d = "{}/data/".format(n)
 
 setup(
-    name=name,
+    name=n,
     version="0.1.0",
-    python_requires=">=3.6",
+    python_requires=">=3.6,<3.9",
     install_requires=(
         "numpy",
         "pandas",
@@ -23,10 +23,6 @@ setup(
         "click",
         "requests",
     ),
-    packages=(name,),
-    package_data={
-        name: tuple(
-            "{}{}".format(directory_path, name) for name in listdir(path=directory_path)
-        )
-    },
+    packages=(n,),
+    package_data={n: tuple("{}{}".format(d, n) for n in listdir(path=d))},
 )
