@@ -12,7 +12,7 @@ from .array import (
 )
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
-from .dict import merge
+from .dict_a import merge
 from .plot import (
     BINARY_COLORSCALE,
     CATEGORICAL_COLORSCALE,
@@ -51,9 +51,11 @@ def _process_vector_for_plot(vector, data_type, plot_std):
 
     if data_type == "continuous":
 
-        vector = function_on_1_number_array_not_nan(
-            vector, normalize, "-0-", update=True
-        ).clip(min=-plot_std, max=plot_std)
+        if 0 < vector.std():
+
+            vector = function_on_1_number_array_not_nan(
+                vector, normalize, "-0-", update=True
+            ).clip(min=-plot_std, max=plot_std)
 
         return vector, -plot_std, plot_std
 
@@ -155,17 +157,16 @@ def _make_matrix_annotation(
 
 
 def make(
-    sr,
-    #
+    se,
     df,
     function_or_statistic_df,
     vector_ascending=True,
-    job_n=1,
+    n_job=1,
     random_seed=RANDOM_SEED,
-    sample_n=10,
-    shuffle_n=10,
+    n_sample=10,
+    n_shuffle=10,
     plot=True,
-    plot_n=8,
+    n_plot=8,
     vector_data_type="continuous",
     matrix_data_type="continuous",
     plot_std=nan,
@@ -174,21 +175,21 @@ def make(
 ):
 
     #
-    sr = sr.loc[sr.index & df.columns]
+    se = se.loc[se.index.intersection(df.columns)]
 
     #
     if vector_ascending is not None:
 
-        sr.sort_values(ascending=vector_ascending, inplace=True)
+        se.sort_values(ascending=vector_ascending, inplace=True)
 
     #
-    vector = sr.to_numpy()
+    vector = se.to_numpy()
 
     #
-    vector_name = sr.name
+    vector_name = se.name
 
     #
-    axis_1_label_ = sr.index.to_numpy()
+    axis_1_label_ = se.index.to_numpy()
 
     #
     df = df.reindex(labels=axis_1_label_, axis=1)
@@ -201,7 +202,7 @@ def make(
 
         function = function_or_statistic_df
 
-        pool = Pool(job_n)
+        pool = Pool(n_job)
 
         seed(seed=random_seed)
 
@@ -214,15 +215,15 @@ def make(
             )
         )
 
-        if 0 < sample_n:
+        if 0 < n_sample:
 
-            print("0.95 MoE ({} sample)...".format(sample_n))
+            print("0.95 MoE ({} sample)...".format(n_sample))
 
-            row_x_sample = full((matrix_axis_0_size, sample_n), nan)
+            row_x_sample = full((matrix_axis_0_size, n_sample), nan)
 
             choice_n = int(axis_1_size * SAMPLE_FRACTION)
 
-            for sample_index in range(sample_n):
+            for sample_index in range(n_sample):
 
                 sample_index_ = choice(axis_1_size, size=choice_n, replace=False)
 
@@ -247,15 +248,15 @@ def make(
 
             moe_ = full(score_.size, nan)
 
-        if 0 < shuffle_n:
+        if 0 < n_shuffle:
 
-            print("P-Value and Q-Value ({} shuffle)...".format(shuffle_n))
+            print("P-Value and Q-Value ({} shuffle)...".format(n_shuffle))
 
-            row_x_shuffle = full((matrix_axis_0_size, shuffle_n), nan)
+            row_x_shuffle = full((matrix_axis_0_size, n_shuffle), nan)
 
             vector_shuffle = vector.copy()
 
-            for shuffle_index in range(shuffle_n):
+            for shuffle_index in range(n_shuffle):
 
                 shuffle(vector_shuffle)
 
@@ -306,9 +307,9 @@ def make(
         #
         statistic_matrix = statistic_df.to_numpy()
 
-        if plot_n is not None:
+        if n_plot is not None and n_plot < statistic_matrix.shape[0]:
 
-            is_ = check_is_extreme(statistic_matrix[:, 0], "<>", n=plot_n)
+            is_ = check_is_extreme(statistic_matrix[:, 0], "<>", n=n_plot)
 
             statistic_matrix = statistic_matrix[is_]
 
@@ -407,7 +408,7 @@ def make(
 
 
 def summarize(
-    sr,
+    se,
     data_,
     intersect=True,
     vector_ascending=True,
@@ -422,21 +423,21 @@ def summarize(
 
         for data in data_:
 
-            sr = sr.loc[sr.index & data["df"].columns]
+            se = se.loc[se.index.intersection(data["df"].columns)]
 
     #
     if vector_ascending is not None:
 
-        sr.sort_values(ascending=vector_ascending, inplace=True)
+        se.sort_values(ascending=vector_ascending, inplace=True)
 
     #
-    vector = sr.to_numpy()
+    vector = se.to_numpy()
 
     #
-    vector_name = sr.name
+    vector_name = se.name
 
     #
-    axis_1_label_ = sr.index.to_numpy()
+    axis_1_label_ = se.index.to_numpy()
 
     #
     vector, vector_min, vector_max = _process_vector_for_plot(
@@ -484,16 +485,16 @@ def summarize(
         }
     ]
 
-    for index, data in enumerate(data_):
+    for index, b in enumerate(data_):
 
         #
-        df = data["df"]
+        df = b["df"]
 
         #
         df = df.reindex(labels=axis_1_label_, axis=1)
 
         #
-        statistic_df = data["statistic_df"].loc[df.index, :]
+        statistic_df = b["statistic_df"].loc[df.index, :]
 
         #
         statistic_df.sort_values("Score", ascending=False, inplace=True)
@@ -512,7 +513,7 @@ def summarize(
 
         #
         matrix, matrix_min, matrix_max = _process_matrix_for_plot(
-            matrix, data["data_type"], plot_std
+            matrix, b["data_type"], plot_std
         )
 
         yaxis = "yaxis{}".format(data_n - index)
@@ -533,7 +534,7 @@ def summarize(
                 "x": axis_1_label_,
                 "zmin": matrix_min,
                 "zmax": matrix_max,
-                "colorscale": DATA_TYPE_TO_COLORSCALE[data["data_type"]],
+                "colorscale": DATA_TYPE_TO_COLORSCALE[b["data_type"]],
                 **HEATMAP_BASE,
             }
         )
@@ -545,7 +546,7 @@ def summarize(
                 "y": y,
                 "x": 0.5,
                 "xanchor": "center",
-                "text": "<b>{}</b>".format(data["name"]),
+                "text": "<b>{}</b>".format(b["name"]),
                 **ANNOTATION_BASE,
             }
         )

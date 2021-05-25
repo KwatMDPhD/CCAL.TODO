@@ -9,7 +9,7 @@ from plotly.colors import (
 from plotly.io import show, write_html
 
 from .array import normalize
-from .dict import merge
+from .dict_a import merge
 
 CONTINUOUS_COLORSCALE = make_colorscale(("#0000ff", "#ffffff", "#ff0000"))
 

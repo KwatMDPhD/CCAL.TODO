@@ -23,6 +23,8 @@ def score_sample_and_set(
     file_path=None,
 ):
 
+    element_scores = element_scores.dropna()
+
     if sort_element_scores:
 
         element_scores = element_scores.sort_values()

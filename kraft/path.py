@@ -3,67 +3,58 @@ from os.path import abspath, dirname, expanduser, isdir
 from re import sub
 
 
-def make(path):
+def make(p):
 
-    directory_path = dirname(path)
+    dp = dirname(p)
 
-    missing_directory_path_ = []
+    mdp_ = []
 
-    while directory_path != "" and not isdir(directory_path):
+    while dp != "" and not isdir(dp):
 
-        missing_directory_path_.append(directory_path)
+        mdp_.append(dp)
 
-        directory_path = dirname(directory_path)
+        dp = dirname(dp)
 
-    for directory_path in missing_directory_path_[::-1]:
+    for dp in mdp_[::-1]:
 
-        mkdir(directory_path)
+        mkdir(dp)
 
-        print("{}/".format(directory_path))
-
-
-def get_child_path(directory_path, absolute=True):
-
-    child_path_ = []
-
-    for _directory_path, directory_name_, file_name_ in walk(directory_path):
-
-        for name in directory_name_:
-
-            child_path_.append("{}/{}/".format(_directory_path, name))
-
-        for name in file_name_:
-
-            child_path_.append("{}/{}".format(_directory_path, name))
-
-    if absolute:
-
-        return tuple(child_path_)
-
-    else:
-
-        n = len(directory_path) + 1
-
-        return tuple(child_path[n:] for child_path in child_path_)
+        print("{}/".format(dp))
 
 
-def clean(name):
+def get_cp(dp):
 
-    name_clean = sub(r"(?u)[^-\w.]", "_", name.strip().lower())
+    cp_ = []
 
-    print("{} => {}".format(name, name_clean))
+    for _dp, dn_, fn_ in walk(dp):
 
-    return name_clean
+        for n in dn_:
+
+            cp_.append("{}/{}/".format(_dp, n))
+
+        for n in fn_:
+
+            cp_.append("{}/{}".format(_dp, n))
+
+    return cp_
 
 
+def clean(n):
 
-def get_absolute_path(path):
+    cn = sub(r"(?u)[^-\w.]", "_", n.strip().lower())
 
-    return abspath(expanduser(path))
+    print("{} => {}".format(n, cn))
+
+    return cn
 
 
-def list(directory_path):
+def make_absolute(p):
 
-    return tuple(
-        "{}{}".format(directory_path, name) for name in listdir(make=directory_path)
-    )
+    return abspath(expanduser(p))
+
+
+def list_absolute(dp):
+
+    return [
+        "{}{}".format(dp, n) for n in listdir(path=dp)
+    ]
