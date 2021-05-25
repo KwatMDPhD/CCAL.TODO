@@ -1,5 +1,5 @@
 from os import listdir, mkdir, walk
-from os.path import dirname, isdir
+from os.path import abspath, dirname, expanduser, isdir
 from re import sub
 
 
@@ -54,6 +54,12 @@ def clean(name):
     print("{} => {}".format(name, name_clean))
 
     return name_clean
+
+
+
+def get_absolute_path(path):
+
+    return abspath(expanduser(path))
 
 
 def list(directory_path):

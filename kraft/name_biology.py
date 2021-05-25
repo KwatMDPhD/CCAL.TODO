@@ -47,6 +47,18 @@ def map_to_gene():
 
     return _to_gene
 
+def map_enst_to_gene():
+
+    df = read_csv("{}enst_to_gene.tsv".format(DATA_DIRECTORY_PATH), sep="\t")
+
+    gene_name_ = df["Gene name"]
+
+    enst_to_gene = {
+        **dict(zip(df["Transcript stable ID version"], gene_name_)),
+        **dict(zip(df["Transcript stable ID"], gene_name_)),
+    }
+
+    return enst_to_gene
 
 def map_cg_to_gene():
 
@@ -86,7 +98,7 @@ def map_cg_to_gene():
 
 def name_gene(id_):
 
-    _to_gene = {**map_to_gene(), **map_cg_to_gene()}
+    _to_gene = {**map_to_gene(), **map_enst_to_gene(), **map_cg_to_gene()}
 
     gene_ = asarray(tuple(_to_gene.get(id_) for id_ in id_))
 

@@ -3,44 +3,36 @@ from inspect import stack
 
 def print_function_information():
 
-    stack_1 = stack()[1]
+    s1 = stack()[1]
 
-    try:
-
-        argument_ = (
-            "{} = {}".format(key, value)
-            for key, value in sorted(stack_1[0].f_locals.items())
+    print(
+        "@{}({})".format(
+            s1[3],
+            ", ".join("{}={}".format(k, v) for k, v in s1[0].f_locals.items()),
         )
-
-        separater = "\n    "
-
-        print("@ {}{}{}".format(stack_1[3], separater, separater.join(argument_)))
-
-    finally:
-
-        del stack_1
+    )
 
 
-def cast_builtin(object):
+def cast_builtin(o):
 
-    for builtin_object in (
+    for bo in [
         None,
         False,
         True,
-    ):
+    ]:
 
-        if object is builtin_object or object == str(builtin_object):
+        if o is bo or o == str(bo):
 
-            return builtin_object
+            return bo
 
-    for type in (float, int):
+    for t in [int, float]:
 
         try:
 
-            return type(object)
+            return t(o)
 
         except ValueError:
 
             pass
 
-    return object
+    return o
