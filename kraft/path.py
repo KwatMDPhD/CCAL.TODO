@@ -2,59 +2,56 @@ from os import listdir, mkdir, walk
 from os.path import abspath, dirname, expanduser, isdir
 from re import sub
 
-
-def make(p):
-
-    dp = dirname(p)
-
-    mdp_ = []
-
-    while dp != "" and not isdir(dp):
-
-        mdp_.append(dp)
-
-        dp = dirname(dp)
-
-    for dp in mdp_[::-1]:
-
-        mkdir(dp)
-
-        print("{}/".format(dp))
-
-
-def get_cp(dp):
-
-    cp_ = []
-
-    for _dp, dn_, fn_ in walk(dp):
-
-        for n in dn_:
-
-            cp_.append("{}/{}/".format(_dp, n))
-
-        for n in fn_:
-
-            cp_.append("{}/{}".format(_dp, n))
-
-    return cp_
-
-
 def clean(n):
 
-    cn = sub(r"(?u)[^-\w.]", "_", n.strip().lower())
+    c = sub(r"(?u)[^-\w.]", "_", n.strip().lower())
 
-    print("{} => {}".format(n, cn))
+    print("{} => {}".format(n, c))
 
-    return cn
+    return c
 
 
-def make_absolute(p):
+def get_absolute(p):
 
     return abspath(expanduser(p))
 
 
-def list_absolute(dp):
+def list_directory(d):
 
-    return [
-        "{}{}".format(dp, n) for n in listdir(path=dp)
-    ]
+    return ["{}{}".format(d, n) for n in listdir(d) if not n[0] != "."]
+
+
+def get_child_(d):
+
+    p_ = []
+
+    for d, d_, f_ in walk(d):
+
+        for n in d_:
+
+            p_.append("{}/{}/".format(d, n))
+
+        for n in f_:
+
+            p_.append("{}/{}".format(d, n))
+
+    return p_
+
+
+def make(p):
+
+    d = dirname(p)
+
+    d_ = []
+
+    while d != "" and not isdir(d):
+
+        d_.append(d)
+
+        d = dirname(d)
+
+    for d in d_[::-1]:
+
+        mkdir(d)
+
+        print("Made {}/".format(d))

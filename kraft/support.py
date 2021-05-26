@@ -1,29 +1,29 @@
 from inspect import stack
 
 
-def print_function_information():
+def print_stack_state():
 
-    s1 = stack()[1]
+    s = stack()[1]
 
     print(
         "@{}({})".format(
-            s1[3],
-            ", ".join("{}={}".format(k, v) for k, v in s1[0].f_locals.items()),
+            s[3],
+            ", ".join("{}={}".format(k, v) for k, v in s[0].f_locals.items()),
         )
     )
 
 
 def cast_builtin(o):
 
-    for bo in [
+    for b in [
         None,
         False,
         True,
     ]:
 
-        if o is bo or o == str(bo):
+        if o is b or o == str(b):
 
-            return bo
+            return b
 
     for t in [int, float]:
 

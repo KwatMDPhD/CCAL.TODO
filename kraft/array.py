@@ -1,5 +1,6 @@
 from numpy import (
     asarray,
+    apply_along_axis,
     diff,
     full,
     integer,
@@ -70,6 +71,8 @@ def check_is_extreme(
     vector, direction, low_and_high=None, n=None, standard_deviation=None
 ):
 
+    vector2 = vector[~isnan(vector)]
+
     if low_and_high is not None:
 
         low, high = low_and_high
@@ -78,13 +81,13 @@ def check_is_extreme(
 
         if n < 1:
 
-            low = quantile(vector, n)
+            low = quantile(vector2, n)
 
-            high = quantile(vector, 1 - n)
+            high = quantile(vector2, 1 - n)
 
         else:
 
-            vector_sort = sort(vector)
+            vector_sort = sort(vector2)
 
             low = vector_sort[n - 1]
 
@@ -92,9 +95,9 @@ def check_is_extreme(
 
     elif standard_deviation is not None:
 
-        mean = vector.mean()
+        mean = vector2.mean()
 
-        margin = vector.std() * standard_deviation
+        margin = vector2.std() * standard_deviation
 
         low = mean - margin
 
@@ -190,9 +193,9 @@ def shift_min(number_array, min):
     return min - number_array.min() + number_array
 
 
-def log(number_array, log_base="e"):
+def log(number_array, log_base=2):
 
-    return {"2": log2, "e": loge, "10": log10}[log_base](number_array)
+    return {2: log2, "e": loge, 10: log10}[log_base](number_array)
 
 
 def normalize(number_array, method, rank_method="average"):
@@ -215,6 +218,13 @@ def normalize(number_array, method, rank_method="average"):
 
         return rankdata(number_array, method=rank_method).reshape(number_array.shape)
 
+def normalize_nd(
+    array, axis, method, rank_method="average"
+):
+
+    return apply_along_axis(
+        normalize, axis, array, method, rank_method
+    )
 
 def guess_type(number_array, category_max_n=16):
 

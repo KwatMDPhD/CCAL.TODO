@@ -12,7 +12,7 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, concat, isna
 
-from .array import check_is_not_na, guess_type, log, map_int, normalize, shift_min
+from .array import check_is_not_na, guess_type, log, map_int, normalize_nd, shift_min
 from .CONSTANT import RANDOM_SEED
 from .grid import make_nd
 from .plot import plot_heat_map, plot_histogram
@@ -610,7 +610,7 @@ def process(
         print("Axis-{} {} normalizing...".format(normalize_axis, normalize_method))
 
         feature_x_sample = DataFrame(
-            data=normalize(
+            data=normalize_nd(
                 feature_x_sample.to_numpy(), normalize_axis, normalize_method
             ),
             index=feature_x_sample.index,
