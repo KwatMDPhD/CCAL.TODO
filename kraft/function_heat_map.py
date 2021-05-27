@@ -19,7 +19,7 @@ from .plot import (
     CONTINUOUS_COLORSCALE,
     plot_plotly,
 )
-from .significance import get_moe, get_p_value_and_q_value
+from .significance import get_moe, get_p__q_
 
 HEATMAP_BASE = {
     "type": "heatmap",
@@ -265,9 +265,7 @@ def make(
                     ((vector_shuffle, row, function) for row in matrix),
                 )
 
-            p_value_, q_value_ = get_p_value_and_q_value(
-                score_, row_x_shuffle.ravel(), "<>"
-            )
+            p_value_, q_value_ = get_p__q_(score_, row_x_shuffle.ravel(), "<>")
 
         else:
 

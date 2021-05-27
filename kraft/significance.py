@@ -3,55 +3,46 @@ from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
 
-def get_moe(number_array, confidence=0.95):
+def get_moe(v, confidence=0.95):
 
-    return norm.ppf(q=confidence) * number_array.std() / sqrt(number_array.size)
-
-
-def get_p_value(number, random_number_, direction):
-
-    if direction == "<":
-
-        significant_n = (random_number_ <= number).sum()
-
-    elif direction == ">":
-
-        significant_n = (number <= random_number_).sum()
-
-    return max(1, significant_n) / random_number_.size
+    return norm.ppf(confidence) * v.std() / sqrt(v.size)
 
 
-def get_p_value_and_q_value(
-    number_, random_number_, direction, multipletests_method="fdr_bh"
-):
+def get_p(n, r_, d):
 
-    if "<" in direction:
+    if d == "<":
 
-        left_p_value_ = asarray(
-            tuple(get_p_value(number, random_number_, "<") for number in number_)
-        )
+        is_ = r_ <= n
 
-        left_q_value_ = multipletests(left_p_value_, method=multipletests_method)[1]
+    elif d == ">":
 
-    if ">" in direction:
+        is_ = n <= r_
 
-        right_p_value_ = asarray(
-            tuple(get_p_value(number, random_number_, ">") for number in number_)
-        )
+    return max(1, is_.sum()) / r_.size
 
-        right_q_value_ = multipletests(right_p_value_, method=multipletests_method)[1]
 
-    if direction == "<":
+def get_p__q_(n_, r_, d, multipletests_method="fdr_bh"):
 
-        return left_p_value_, left_q_value_
+    if "<" in d:
 
-    elif direction == ">":
+        lp_ = asarray([get_p(n, r_, "<") for n in n_])
 
-        return right_p_value_, right_q_value_
+        lq_ = multipletests(lp_, method=multipletests_method)[1]
 
-    elif direction == "<>":
+    if ">" in d:
 
-        return (
-            where(left_p_value_ < right_p_value_, left_p_value_, right_p_value_),
-            where(left_q_value_ < right_q_value_, left_q_value_, right_q_value_),
-        )
+        rp_ = asarray([get_p(n, r_, ">") for n in n_])
+
+        rq_ = multipletests(rp_, method=multipletests_method)[1]
+
+    if d == "<":
+
+        return lp_, lq_
+
+    elif d == ">":
+
+        return rp_, rq_
+
+    elif d == "<>":
+
+        return where(lp_ < rp_, lp_, rp_), where(lq_ < rq_, lq_, rq_)
