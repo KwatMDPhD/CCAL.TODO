@@ -167,7 +167,7 @@ def make(
     n_shuffle=10,
     plot=True,
     n_plot=8,
-    v_data_type="continuous",
+    vector_data_type="continuous",
     matrix_data_type="continuous",
     plot_std=nan,
     title="Function Heat Map",
@@ -317,7 +317,7 @@ def make(
 
         #
         vector, vector_min, vector_max = _process_vector_for_plot(
-            vector, v_data_type, plot_std
+            vector, vector_data_type, plot_std
         )
 
         #
@@ -325,7 +325,7 @@ def make(
             matrix, matrix_data_type, plot_std
         )
 
-        if v_data_type != "continuous":
+        if vector_data_type != "continuous":
 
             for number, count in zip(*unique(vector, return_counts=True)):
 
@@ -382,7 +382,7 @@ def make(
                         "x": axis_1_label_,
                         "zmin": vector_min,
                         "zmax": vector_max,
-                        "colorscale": DATA_TYPE_TO_COLORSCALE[v_data_type],
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[vector_data_type],
                         **HEATMAP_BASE,
                     },
                     #
@@ -410,7 +410,7 @@ def summarize(
     data_,
     intersect=True,
     vector_ascending=True,
-    v_data_type="continuous",
+    vector_data_type="continuous",
     plot_std=nan,
     title="Function Heat Map Summary",
     file_path=None,
@@ -439,7 +439,7 @@ def summarize(
 
     #
     vector, vector_min, vector_max = _process_vector_for_plot(
-        vector, v_data_type, plot_std
+        vector, vector_data_type, plot_std
     )
 
     row_n = 1
@@ -478,7 +478,7 @@ def summarize(
             "x": axis_1_label_,
             "zmin": vector_min,
             "zmax": vector_max,
-            "colorscale": DATA_TYPE_TO_COLORSCALE[v_data_type],
+            "colorscale": DATA_TYPE_TO_COLORSCALE[vector_data_type],
             **HEATMAP_BASE,
         }
     ]

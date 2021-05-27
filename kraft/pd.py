@@ -12,7 +12,14 @@ from numpy import (
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, concat, isna
 
-from .array import check_is_not_na, guess_type, log, map_int, normalize_nd, shift_min
+from .array import (
+    check_is_not_na,
+    guess_type,
+    log,
+    map_integer,
+    normalize,
+    shift_minimum,
+)
 from .CONSTANT import RANDOM_SEED
 from .grid import make_gn
 from .plot import plot_heat_map, plot_histogram
@@ -272,9 +279,9 @@ def pivot(
     function=None,
 ):
 
-    axis_0_label_to_index = map_int(axis_0_label_)[0]
+    axis_0_label_to_index = map_integer(axis_0_label_)[0]
 
-    axis_1_label_to_index = map_int(axis_1_label_)[0]
+    axis_1_label_to_index = map_integer(axis_1_label_)[0]
 
     matrix = full((len(axis_0_label_to_index), len(axis_1_label_to_index)), nan)
 
@@ -518,7 +525,7 @@ def process(
     drop_axis=None,
     drop_not_na_min_n=None,
     drop_not_na_unique_min_n=None,
-    log_shift_min=None,
+    log_shift_minimum=None,
     log_base=None,
     normalize_axis=None,
     normalize_method=None,
@@ -586,13 +593,15 @@ def process(
 
     if log_base is not None:
 
-        print("Logging (log_min={}, log_base={})...".format(log_shift_min, log_base))
+        print(
+            "Logging (log_min={}, log_base={})...".format(log_shift_minimum, log_base)
+        )
 
         matrix = feature_x_sample.to_numpy()
 
-        if log_shift_min is not None:
+        if log_shift_minimum is not None:
 
-            matrix = shift_min(matrix, log_shift_min)
+            matrix = shift_minimum(matrix, log_shift_minimum)
 
         feature_x_sample = DataFrame(
             data=log(
@@ -610,8 +619,8 @@ def process(
         print("Axis-{} {} normalizing...".format(normalize_axis, normalize_method))
 
         feature_x_sample = DataFrame(
-            data=normalize_nd(
-                feature_x_sample.to_numpy(), normalize_axis, normalize_method
+            data=apply_along_axis(
+                normalize, normalize_axis, feature_x_sample.to_numpy(), normalize_method
             ),
             index=feature_x_sample.index,
             columns=feature_x_sample.columns,

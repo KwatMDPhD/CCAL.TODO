@@ -1,5 +1,4 @@
 from numpy import (
-    apply_along_axis,
     asarray,
     diff,
     full,
@@ -34,7 +33,7 @@ def check_is_in(a, b):
     return asarray([v in d for v in a])
 
 
-def map_int(a):
+def map_integer(a):
 
     vti = {}
 
@@ -60,7 +59,7 @@ def map_int(a):
 # ==============================================================================
 
 
-def check_is_all_sorted(v):
+def check_is_sorted(v):
 
     d = diff(v)
 
@@ -180,7 +179,7 @@ def clip(a, s):
     return a.clip(m - e, m + e)
 
 
-def shift_min(a, m):
+def shift_minimum(a, m):
 
     if m == "0<":
 
@@ -255,7 +254,7 @@ def get_not_nan_unique(a):
     return unique(a[check_is_not_nan(a)])
 
 
-def function_on_1_a_not_nan(a, f, *a_, update=False, **k_):
+def function_on_1_number_array_not_nan(a, f, *a_, update=False, **k_):
 
     is_ = check_is_not_nan(a)
 
@@ -272,7 +271,7 @@ def function_on_1_a_not_nan(a, f, *a_, update=False, **k_):
     return r
 
 
-def function_on_2_a_not_nan(a, b, f, *a_, **k_):
+def function_on_2_number_array_not_nan(a, b, f, *a_, **k_):
 
     is_ = logical_and(check_is_not_nan(a), check_is_not_nan(b))
 
