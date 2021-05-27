@@ -1,12 +1,12 @@
 from subprocess import PIPE, run
 
 
-def command(command):
+def command(c):
 
-    print(command)
+    print(c)
 
     return run(
-        command,
+        c,
         shell=True,
         stdout=PIPE,
         stderr=PIPE,
