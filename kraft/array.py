@@ -27,93 +27,91 @@ from .CONSTANT import RANDOM_SEED
 # ==============================================================================
 
 
-def check_is_in(_1d_array, lookup_1d_array):
+def check_is_in(a, b):
 
-    lookup = {value: None for value in lookup_1d_array}
+    d = {v: None for v in b}
 
-    return asarray(tuple(value in lookup for value in _1d_array))
+    return asarray([v in d for v in a])
 
 
-def map_int(_1d_array):
+def map_int(a):
 
-    value_to_integer = {}
+    vti = {}
 
-    integer_to_value = {}
+    itv = {}
 
-    integer = 0
+    i = 0
 
-    for value in _1d_array:
+    for v in a:
 
-        if value not in value_to_integer:
+        if v not in vti:
 
-            value_to_integer[value] = integer
+            vti[v] = i
 
-            integer_to_value[integer] = value
+            itv[i] = v
 
-            integer += 1
+            i += 1
 
-    return value_to_integer, integer_to_value
+    return vti, itv
 
 
 # ==============================================================================
-# Vector
+# v
 # ==============================================================================
 
 
-def check_is_all_sorted(vector):
+def check_is_all_sorted(v):
 
-    difference_ = diff(vector)
+    d = diff(v)
 
-    return (difference_ <= 0).all() or (0 <= difference_).all()
+    return (d <= 0).all() or (0 <= d).all()
 
 
-def check_is_extreme(
-    vector, direction, low_and_high=None, n=None, standard_deviation=None
-):
+def check_is_extreme(v, d, threshold_=None, n=None, std=None):
 
-    vector2 = vector[~isnan(vector)]
+    v2 = v[~isnan(v)]
 
-    if low_and_high is not None:
+    if threshold_ is not None:
 
-        low, high = low_and_high
+        l, h = threshold_
 
     elif n is not None:
 
         if n < 1:
 
-            low = quantile(vector2, n)
+            l = quantile(v2, n)
 
-            high = quantile(vector2, 1 - n)
+            h = quantile(v2, 1 - n)
 
         else:
 
-            vector_sort = sort(vector2)
+            v2 = sort(v2)
 
-            low = vector_sort[n - 1]
+            l = v2[n - 1]
 
-            high = vector_sort[-n]
+            h = v2[-n]
 
-    elif standard_deviation is not None:
+    elif std is not None:
 
-        mean = vector2.mean()
+        m = v2.mean()
 
-        margin = vector2.std() * standard_deviation
+        e = v2.std() * std
 
-        low = mean - margin
+        l = m - e
 
-        high = mean + margin
+        h = m + e
 
-    if direction == "<>":
+    if d == "<>":
 
-        return logical_or(vector <= low, high <= vector)
+        return logical_or(v <= l, h <= v)
 
-    elif direction == "<":
+    elif d == "<":
 
-        return vector <= low
+        return v <= l
 
-    elif direction == ">":
+    elif d == ">":
 
-        return high <= vector
+        return h <= v
 
 
 # ==============================================================================
@@ -121,17 +119,17 @@ def check_is_extreme(
 # ==============================================================================
 
 
-def shuffle(_2d_array, random_seed=RANDOM_SEED):
+def shuffle(a, random_seed=RANDOM_SEED):
 
-    _2d_array_copy = _2d_array.copy()
+    b = a.copy()
 
-    seed(seed=random_seed)
+    seed(random_seed)
 
-    for index in range(_2d_array_copy.shape[0]):
+    for i in range(b.shape[0]):
 
-        shuffle_(_2d_array_copy[index])
+        shuffle_(b[i])
 
-    return _2d_array_copy
+    return b
 
 
 # ==============================================================================
@@ -139,25 +137,23 @@ def shuffle(_2d_array, random_seed=RANDOM_SEED):
 # ==============================================================================
 
 
-def function_on_2_2d_array(matrix_0, matrix_1, function):
+def function_on_2_2d_array(m0, m1, f):
 
-    axis_0_size = matrix_0.shape[0]
+    s0 = m0.shape[0]
 
-    axis_1_size = matrix_1.shape[0]
+    s1 = m1.shape[0]
 
-    matrix = full((axis_0_size, axis_1_size), nan)
+    m = full((s0, s1), nan)
 
-    for index_0 in range(axis_0_size):
+    for i0 in range(s0):
 
-        vector_0 = matrix_0[index_0]
+        v0 = m0[i0]
 
-        for index_1 in range(axis_1_size):
+        for i1 in range(s1):
 
-            vector_1 = matrix_1[index_1]
+            m[i0, i1] = function(v0, m1[i1])
 
-            matrix[index_0, index_1] = function(vector_0, vector_1)
-
-    return matrix
+    return m
 
 
 # ==============================================================================
@@ -165,9 +161,9 @@ def function_on_2_2d_array(matrix_0, matrix_1, function):
 # ==============================================================================
 
 
-def check_is_not_na(nd_array):
+def check_is_not_na(a):
 
-    return logical_not(isna(nd_array))
+    return logical_not(isna(a))
 
 
 # ==============================================================================
@@ -175,66 +171,69 @@ def check_is_not_na(nd_array):
 # ==============================================================================
 
 
-def clip(number_array, standard_deviation):
+def clip(a, s):
 
-    mean = number_array.mean()
+    m = a.mean()
 
-    margin = number_array.std() * standard_deviation
+    e = a.std() * s
 
-    return number_array.clip(min=mean - margin, max=mean + margin)
-
-
-def shift_min(number_array, min):
-
-    if min == "0<":
-
-        min = number_array[0 < number_array].min()
-
-    return min - number_array.min() + number_array
+    return a.clip(m - e, m + e)
 
 
-def log(number_array, log_base=2):
+def shift_min(a, m):
 
-    return {2: log2, "e": loge, 10: log10}[log_base](number_array)
+    if m == "0<":
 
+        is_ = 0 < a
 
-def normalize(number_array, method, rank_method="average"):
+        if is_.any():
 
-    if method == "-0-":
+            m = a[is_].min()
 
-        return (number_array - number_array.mean()) / number_array.std()
+        else:
 
-    elif method == "0-1":
+            m = 1
 
-        min = number_array.min()
-
-        return (number_array - min) / (number_array.max() - min)
-
-    elif method == "sum":
-
-        return number_array / number_array.sum()
-
-    elif method == "rank":
-
-        return rankdata(number_array, method=rank_method).reshape(number_array.shape)
+    return m - a.min() + a
 
 
-def normalize_nd(array, axis, method, rank_method="average"):
+def log(a, base=2):
 
-    return apply_along_axis(normalize, axis, array, method, rank_method)
+    return {2: log2, "e": loge, 10: log10}[base](a)
 
 
-def guess_type(number_array, category_max_n=16):
+def normalize(a, m, rank_method="average"):
 
-    if all(isinstance(number, integer) for number in number_array.ravel()):
+    if m == "-0-":
 
-        category_n = unique(number_array).size
+        return (a - a.mean()) / a.std()
 
-        if category_n <= 2:
+    elif m == "0-1":
+
+        n = a.min()
+
+        return (a - n) / (a.max() - n)
+
+    elif m == "sum":
+
+        return a / a.sum()
+
+    elif m == "rank":
+
+        return rankdata(a, rank_method).reshape(a.shape)
+
+
+def guess_type(a, max_n_category=16):
+
+    if all(isinstance(n, integer) for n in a.ravel()):
+
+        n = unique(a).size
+
+        if n <= 2:
 
             return "binary"
 
-        elif category_n <= category_max_n:
+        elif n <= max_n_category:
 
             return "categorical"
 
@@ -246,41 +245,35 @@ def guess_type(number_array, category_max_n=16):
 # ==============================================================================
 
 
-def check_is_not_nan(number_array):
+def check_is_not_nan(a):
 
-    return logical_not(isnan(number_array))
-
-
-def get_not_nan_unique(number_array):
-
-    return unique(number_array[check_is_not_nan(number_array)])
+    return logical_not(isnan(a))
 
 
-def function_on_1_number_array_not_nan(
-    number_array, function, *arg_, update=False, **kwarg_
-):
+def get_not_nan_unique(a):
 
-    is_ = check_is_not_nan(number_array)
+    return unique(a[check_is_not_nan(a)])
 
-    returned = function(number_array[is_], *arg_, **kwarg_)
+
+def function_on_1_a_not_nan(a, f, *a_, update=False, **k_):
+
+    is_ = check_is_not_nan(a)
+
+    r = f(a[is_], *a_, **k_)
 
     if update:
 
-        number_array_copy = full(number_array.shape, nan)
+        b = full(a.shape, nan)
 
-        number_array_copy[is_] = returned
+        b[is_] = r
 
-        return number_array_copy
+        return b
 
-    return returned
+    return r
 
 
-def function_on_2_number_array_not_nan(
-    number_array_0, number_array_1, function, *arg_, **kwarg_
-):
+def function_on_2_a_not_nan(a, b, f, *a_, **k_):
 
-    is_ = logical_and(
-        check_is_not_nan(number_array_0), check_is_not_nan(number_array_1)
-    )
+    is_ = logical_and(check_is_not_nan(a), check_is_not_nan(b))
 
-    return function(number_array_0[is_], number_array_1[is_], *arg_, **kwarg_)
+    return f(a[is_], b[is_], *a_, **k_)
