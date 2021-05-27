@@ -1,6 +1,6 @@
 from numpy import (
-    asarray,
     apply_along_axis,
+    asarray,
     diff,
     full,
     integer,
@@ -218,13 +218,11 @@ def normalize(number_array, method, rank_method="average"):
 
         return rankdata(number_array, method=rank_method).reshape(number_array.shape)
 
-def normalize_nd(
-    array, axis, method, rank_method="average"
-):
 
-    return apply_along_axis(
-        normalize, axis, array, method, rank_method
-    )
+def normalize_nd(array, axis, method, rank_method="average"):
+
+    return apply_along_axis(normalize, axis, array, method, rank_method)
+
 
 def guess_type(number_array, category_max_n=16):
 

@@ -2,6 +2,7 @@ from os import listdir, mkdir, walk
 from os.path import abspath, dirname, expanduser, isdir
 from re import sub
 
+
 def clean(n):
 
     c = sub(r"(?u)[^-\w.]", "_", n.strip().lower())

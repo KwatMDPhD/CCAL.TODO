@@ -9,7 +9,7 @@ from plotly.colors import (
 from plotly.io import show, write_html
 
 from .array import normalize
-from .dict_a import merge
+from .dictionary import merge
 
 CONTINUOUS_COLORSCALE = make_colorscale(("#0000ff", "#ffffff", "#ff0000"))
 
@@ -404,33 +404,6 @@ def plot_histogram(
             )
 
     plot_plotly({"data": data, "layout": layout}, file_path=file_path)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 def plot_point_and_annotate(

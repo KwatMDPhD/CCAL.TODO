@@ -4,7 +4,7 @@ from numpy import asarray
 from pandas import DataFrame, Index
 from pandas.api.types import is_numeric_dtype
 
-from .dict_a import summarize
+from .dictionary import summarize
 from .internet import download
 from .name_biology import name_gene
 from .pd import collapse, peek, separate_type

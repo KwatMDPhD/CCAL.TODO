@@ -47,6 +47,7 @@ def map_to_gene():
 
     return _to_gene
 
+
 def map_enst_to_gene():
 
     df = read_csv("{}enst_to_gene.tsv".format(DATA_DIRECTORY_PATH), sep="\t")
@@ -59,6 +60,7 @@ def map_enst_to_gene():
     }
 
     return enst_to_gene
+
 
 def map_cg_to_gene():
 

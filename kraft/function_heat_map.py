@@ -12,7 +12,7 @@ from .array import (
 )
 from .clustering import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
-from .dict_a import merge
+from .dictionary import merge
 from .plot import (
     BINARY_COLORSCALE,
     CATEGORICAL_COLORSCALE,

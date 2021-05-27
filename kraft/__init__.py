@@ -1,29 +1,31 @@
-from . import CONSTANT
-from . import array
-from . import clustering
-from . import dict_a
-from . import function_heat_map
-from . import gct
-from . import geo
-from . import geometry
-from . import gff
-from . import gmt
-from . import gps_map
-from . import grid
-from . import information
-from . import internet
-from . import iterable
-from . import json
-from . import kernel_density
-from . import matrix_factorization
-from . import name_biology
-from . import path
-from . import pd
-from . import plot
-from . import point
-from . import probability
-from . import score_set
-from . import shell
-from . import significance
-from . import str_a
-from . import support
+from . import (
+    CONSTANT,
+    array,
+    clustering,
+    dictionary,
+    function_heat_map,
+    gct,
+    geo,
+    geometry,
+    gff,
+    gmt,
+    gps_map,
+    grid,
+    information,
+    internet,
+    iterable,
+    json,
+    kernel_density,
+    matrix_factorization,
+    name_biology,
+    path,
+    pd,
+    plot,
+    point,
+    probability,
+    score_set,
+    shell,
+    significance,
+    string,
+    support,
+)

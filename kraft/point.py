@@ -3,7 +3,7 @@ from sklearn.manifold import MDS
 
 from .array import get_not_nan_unique, normalize
 from .CONSTANT import RANDOM_SEED
-from .dict_a import merge
+from .dictionary import merge
 from .geometry import convex_hull, triangulation
 from .plot import (
     CATEGORICAL_COLORSCALE,

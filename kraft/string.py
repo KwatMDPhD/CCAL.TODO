@@ -1,21 +1,19 @@
 from re import match, sub
 
 
-def title(str_):
+def title(s):
 
-    title = ""
+    t = ""
 
-    for character, is_upper in zip(
-        sub(r"_", " ", str_.title()), (character.isupper() for character in str_)
-    ):
+    for isu, c in zip((c.isupper() for c in s), sub(r"_", " ", s.title())):
 
-        if is_upper:
+        if isu:
 
-            character = character.upper()
+            c = c.upper()
 
-        title += character
+        t += c
 
-    for word in (
+    for w in [
         r" a ",
         r" an ",
         r" the ",
@@ -33,21 +31,21 @@ def title(str_):
         r"'m",
         r"'s",
         r"'re",
-    ):
+    ]:
 
-        title = sub(word.title(), word, title)
+        t = sub(w.title(), w, t)
 
-    return title
-
-
-def untitle(str_):
-
-    return sub(r"[ -]", "_", str_.lower())
+    return t
 
 
-def check_is_version(str_):
+def untitle(s):
 
-    return bool(match(r"^(0\.|[1-9]+\.){2}(0\.|[1-9]+)$", str_))
+    return sub(r"[ -]", "_", s.lower())
+
+
+def check_is_version(s):
+
+    return bool(match(r"^(0\.|[1-9]+\.){2}(0\.|[1-9]+)$", s))
 
 
 def skip_quote_and_split(str_, separator=" "):
@@ -89,22 +87,22 @@ def skip_quote_and_split(str_, separator=" "):
     return splits
 
 
-def make_unique(strs):
+def make_unique(s_):
 
-    uniques = []
+    u_ = []
 
-    for str_ in strs:
+    for s in s_:
 
-        original = str_
+        o = s
 
         i = 2
 
-        while str_ in uniques:
+        while s in u_:
 
-            str_ = "{}{}".format(original, i)
+            s = "{}{}".format(o, i)
 
             i += 1
 
-        uniques.append(str_)
+        u_.append(s)
 
-    return uniques
+    return u_
