@@ -2,44 +2,38 @@ from KDEpy import FFTKDE
 from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
 from .CONSTANT import FLOAT_RESOLUTION
-from .grid import make_1d, make_nd, plot as grid_plot
+from .grid import make_g1, make_gn, plot as grid_plot
 
 
-def get_bandwidth(vector):
+def get_bandwidth(v):
 
-    return KDEMultivariate(vector, "c").bw[0]
+    return KDEMultivariate(v, "c").bw[0]
 
 
-def get_density(
-    point_x_dimension, bandwidth_=None, _1d_grid_=None, plot=True, dimension_name_=None
-):
+def get_density(pxd, bandwidth_=None, g1_=None, plot=True, **plot_k_):
 
-    dimension_x_point = point_x_dimension.T
+    dxp = pxd.T
 
     if bandwidth_ is None:
 
-        bandwidth_ = tuple(get_bandwidth(vector) for vector in dimension_x_point)
+        bandwidth_ = [get_bandwidth(v) for v in dxp]
 
-    if _1d_grid_ is None:
+    if g1_ is None:
 
-        _1d_grid_ = tuple(
-            make_1d(vector.min(), vector.max(), 0.1, 8) for vector in dimension_x_point
-        )
+        g1_ = [make_g1(v.min(), v.max(), 0.1, 8) for v in dxp]
 
-    nd_grid = make_nd(_1d_grid_)
+    gn = make_gn(g1_)
 
-    # TODO: consider 0ing
-    nd_density_vector = (
-        FFTKDE(bw=bandwidth_).fit(point_x_dimension).evaluate(nd_grid)
-    ).clip(min=FLOAT_RESOLUTION)
+    # TODO: consider setting the values whose magnitudes are less than the resolution to be 0
+    v = FFTKDE(bw=bandwidth_).fit(pxd).evaluate(gn).clip(FLOAT_RESOLUTION)
 
     if plot:
 
         grid_plot(
-            nd_grid,
-            nd_density_vector,
-            dimension_name_=dimension_name_,
-            number_name="Density",
+            gn,
+            v,
+            value_name="Density",
+            **plot_k_,
         )
 
-    return nd_grid, nd_density_vector
+    return gn, v

@@ -14,7 +14,7 @@ from pandas import DataFrame, Index, concat, isna
 
 from .array import check_is_not_na, guess_type, log, map_int, normalize_nd, shift_min
 from .CONSTANT import RANDOM_SEED
-from .grid import make_nd
+from .grid import make_gn
 from .plot import plot_heat_map, plot_histogram
 from .support import cast_builtin
 
@@ -375,7 +375,7 @@ def summarize(
         label_ = asarray(
             tuple(
                 "{}_{}".format(label_0, label_1)
-                for label_0, label_1 in make_nd((axis_0_label_, axis_1_label_))[
+                for label_0, label_1 in make_gn((axis_0_label_, axis_1_label_))[
                     is_not_nan_matrix.ravel()
                 ]
             )

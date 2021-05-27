@@ -2,7 +2,7 @@ from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
 from .array import normalize
-from .grid import get_1d, make_1d
+from .grid import get_g1_, make_g1
 from .kernel_density import get_bandwidth
 from .probability import get_probability
 
@@ -62,12 +62,12 @@ def get_ic(vector_0, vector_1):
             get_bandwidth(vector) * bandwidth_factor for vector in (vector_0, vector_1)
         ),
         _1d_grid_=tuple(
-            make_1d(vector.min(), vector.max(), 0.1, 24)
+            make_g1(vector.min(), vector.max(), 0.1, 24)
             for vector in (vector_0, vector_1)
         ),
     )
 
-    axis_0_grid, axis_1_grid = get_1d(nd_grid)
+    axis_0_grid, axis_1_grid = get_g1_(nd_grid)
 
     p01 = nd_probability_vector.reshape((axis_0_grid.size, axis_1_grid.size))
 

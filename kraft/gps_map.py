@@ -5,7 +5,7 @@ from numpy import full, nan, unique
 from scipy.spatial import Delaunay
 
 from .CONSTANT import RANDOM_SEED
-from .grid import make_1d
+from .grid import make_g1
 from .kernel_density import get_bandwidth
 from .plot import CATEGORICAL_COLORSCALE, plot_heat_map
 from .point import map_point, plot_node_point, pull_point
@@ -92,7 +92,7 @@ class GPSMap:
 
         triangulation = Delaunay(self.node_x_dimension)
 
-        self._1d_grid = make_1d(0, 1, 1e-3, grid_n)
+        self._1d_grid = make_g1(0, 1, 1e-3, grid_n)
 
         for index_0 in range(grid_n):
 
