@@ -15,50 +15,48 @@ from .plot import (
 )
 
 
-def map_point(point_x_point_distance, dimension_n, random_seed=RANDOM_SEED, **kwarg_):
+def map_point(pxpd, n, random_seed=RANDOM_SEED, **k_):
 
-    point_x_dimension = MDS(
-        n_components=dimension_n,
+    pxd = MDS(
+        n_components=n,
         random_state=random_seed,
         dissimilarity="precomputed",
-        **kwarg_,
-    ).fit_transform(point_x_point_distance)
+        **k_,
+    ).fit_transform(pxpd)
 
-    for index in range(dimension_n):
+    for i in range(n):
 
-        point_x_dimension[:, index] = normalize(point_x_dimension[:, index], "0-1")
+        pxd[:, i] = normalize(pxd[:, i], "0-1")
 
-    return point_x_dimension
+    return pxd
 
 
-def pull_point(node_x_dimension, point_x_node):
+def pull_point(nxd, pxn):
 
-    dimension_n = node_x_dimension.shape[1]
+    nd = nxd.shape[1]
 
-    point_n = point_x_node.shape[0]
+    np = pxn.shape[0]
 
-    point_x_dimension = full((point_n, dimension_n), nan)
+    pxd = full([np, nd], nan)
 
-    for point_index in range(point_n):
+    for pi in range(np):
 
-        pull_ = point_x_node[point_index, :]
+        p_ = pxn[pi, :]
 
-        for dimension_index in range(dimension_n):
+        for di in range(nd):
 
-            point_x_dimension[point_index, dimension_index] = (
-                pull_ * node_x_dimension[:, dimension_index]
-            ).sum() / pull_.sum()
+            pxd[pi, di] = (p_ * nxd[:, di]).sum() / p_.sum()
 
-    return point_x_dimension
+    return pxd
 
 
 def plot_node_point(
     node_name,
     node_,
-    node_x_dimension,
-    point_name,
+    nxd,
+    npame,
     point_,
-    point_x_dimension,
+    pxd,
     show_node_text=True,
     node_trace=None,
     point_trace=None,
@@ -76,7 +74,7 @@ def plot_node_point(
     file_path=None,
 ):
 
-    title = "{} {} and {} {}".format(node_.size, node_name, point_.size, point_name)
+    title = "{} {} and {} {}".format(node_.size, node_name, point_.size, npame)
 
     if score_name is not None:
 
@@ -108,9 +106,9 @@ def plot_node_point(
 
     data = []
 
-    a_0, a_1 = triangulation(node_x_dimension)
+    a_0, a_1 = triangulation(nxd)
 
-    b_0, b_1 = convex_hull(node_x_dimension)
+    b_0, b_1 = convex_hull(nxd)
 
     data.append(
         {
@@ -126,8 +124,8 @@ def plot_node_point(
     base = {
         "legendgroup": "Node",
         "name": node_name,
-        "y": node_x_dimension[:, 0],
-        "x": node_x_dimension[:, 1],
+        "y": nxd[:, 0],
+        "x": nxd[:, 1],
         "text": node_,
         "mode": "markers",
         "marker": {
@@ -167,9 +165,7 @@ def plot_node_point(
                 "arrowwidth": arrowwidth,
                 "arrowcolor": arrowcolor,
             }
-            for node, (axis_0_coordinate, axis_1_coordinate) in zip(
-                node_, node_x_dimension
-            )
+            for node, (axis_0_coordinate, axis_1_coordinate) in zip(node_, nxd)
         ]
 
     if nd_group_vector is not None:
@@ -215,7 +211,7 @@ def plot_node_point(
             )
 
     base = {
-        "name": point_name,
+        "name": npame,
         "mode": "markers",
         "marker": {
             "size": 16,
@@ -237,7 +233,7 @@ def plot_node_point(
 
         point_ = point_[sort_index_]
 
-        point_x_dimension = point_x_dimension[sort_index_]
+        pxd = pxd[sort_index_]
 
         score_not_nan_ = get_not_nan_unique(score_)
 
@@ -260,8 +256,8 @@ def plot_node_point(
             merge(
                 base,
                 {
-                    "y": point_x_dimension[:, 0],
-                    "x": point_x_dimension[:, 1],
+                    "y": pxd[:, 0],
+                    "x": pxd[:, 1],
                     "text": point_,
                     "marker": {
                         "color": score_,
@@ -294,8 +290,8 @@ def plot_node_point(
                     {
                         "legendgroup": name,
                         "name": name,
-                        "y": point_x_dimension[index_, 0],
-                        "x": point_x_dimension[index_, 1],
+                        "y": pxd[index_, 0],
+                        "x": pxd[index_, 1],
                         "text": point_[index_],
                         "marker": {"color": group_to_color[group]},
                     },
@@ -307,15 +303,15 @@ def plot_node_point(
         data.append(
             {
                 **base,
-                "y": point_x_dimension[:, 0],
-                "x": point_x_dimension[:, 1],
+                "y": pxd[:, 0],
+                "x": pxd[:, 1],
                 "text": point_,
             }
         )
 
     for point in point_highlight_:
 
-        axis_0_coordinate, axis_1_coordinate = point_x_dimension[point_ == point][0]
+        axis_0_coordinate, axis_1_coordinate = pxd[point_ == point][0]
 
         layout["annotations"].append(
             {
