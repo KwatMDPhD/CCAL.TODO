@@ -7,41 +7,41 @@ from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 
 
 def cluster(
-    point_x_dimension,
+    pxd,
     distance_function="euclidean",
     linkage_method="ward",
     optimal_ordering=False,
-    cluster_n=0,
+    n_cluster=0,
     criterion="maxclust",
 ):
 
     link = linkage(
-        point_x_dimension,
+        pxd,
         metric=distance_function,
         method=linkage_method,
         optimal_ordering=optimal_ordering,
     )
 
-    return leaves_list(link), fcluster(link, cluster_n, criterion=criterion) - 1
+    return leaves_list(link), fcluster(link, n_cluster, criterion=criterion) - 1
 
 
-def _get_coclustering_distance(point_x_clustering):
+def _get_coclustering_distance(pxc):
 
-    pair_ = asarray(triu_indices(point_x_clustering.shape[0], k=1)).T
+    pair_ = asarray(triu_indices(pxc.shape[0], k=1)).T
 
-    pair_n = pair_.size
+    n_pair = pair_.size
 
-    clustering_n = point_x_clustering.shape[1]
+    clustering_n = pxc.shape[1]
 
-    distance_ = full(pair_n, 0)
+    distance_ = full(n_pair, 0)
 
-    for pair_index in range(pair_n):
+    for pair_index in range(n_pair):
 
-        pair_x_clustering = point_x_clustering[pair_[pair_index]]
+        pair_x_clustering = pxc[pair_[pair_index]]
 
         clustering_n = 0
 
-        cocluster_n = 0
+        con_cluster = 0
 
         for clustering_index in range(clustering_n):
 
@@ -51,26 +51,26 @@ def _get_coclustering_distance(point_x_clustering):
 
                 clustering_n += 1
 
-                cocluster_n += int(cluster_0 == cluster_1)
+                con_cluster += int(cluster_0 == cluster_1)
 
-        distance_[pair_index] = 1 - cocluster_n / clustering_n
+        distance_[pair_index] = 1 - con_cluster / clustering_n
 
     return squareform(distance_)
 
 
 def cluster_clusterings(
-    point_x_dimension,
-    cluster_n,
+    pxd,
+    n_cluster,
     clustering_n=100,
     random_seed=RANDOM_SEED,
     **kwarg_,
 ):
 
-    point_n = point_x_dimension.shape[0]
+    point_n = pxd.shape[0]
 
     sample_n = int(point_n * SAMPLE_FRACTION)
 
-    point_x_clustering = full((point_n, clustering_n), nan)
+    pxc = full((point_n, clustering_n), nan)
 
     seed(seed=random_seed)
 
@@ -78,10 +78,6 @@ def cluster_clusterings(
 
         index_ = choice(point_n, size=sample_n, replace=False)
 
-        point_x_clustering[index_, index] = cluster(
-            point_x_dimension[index_], cluster_n=cluster_n, **kwarg_
-        )[1]
+        pxc[index_, index] = cluster(pxd[index_], n_cluster=n_cluster, **kwarg_)[1]
 
-    return cluster(
-        _get_coclustering_distance(point_x_clustering), cluster_n=cluster_n, **kwarg_
-    )
+    return cluster(_get_coclustering_distance(pxc), n_cluster=n_cluster, **kwarg_)

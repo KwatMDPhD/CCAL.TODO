@@ -19,7 +19,7 @@ def get_absolute(p):
 
 def list_directory(d):
 
-    return ["{}{}".format(d, n) for n in listdir(d) if not n[0] != "."]
+    return ["{}{}".format(d, n) for n in listdir(d) if n[0] != "."]
 
 
 def get_child_(d):

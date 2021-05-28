@@ -1,5 +1,4 @@
 from numpy import arange, argsort, meshgrid, nonzero, unique
-from pandas import Series
 from plotly.colors import (
     convert_colors_to_same_type,
     find_intermediate_color,
@@ -406,98 +405,55 @@ def plot_histogram(
     plot_plotly({"data": data, "layout": layout}, file_path=file_path)
 
 
-def plot_point_and_annotate(
-    x,
-    y,
-    abs_dimension,
-    annotation=(),
-    opacity=0.64,
-    annotation_font_size=10,
+def plot_point(
+    p,
+    annotation_font_size=16,
     title=None,
-    html_file_path=None,
+    file_path=None,
 ):
 
-    if x is None:
-
-        x = Series(range(y.size), name="Rank", index=y.index)
-
-    if abs_dimension == "x":
-
-        is_negative = x < 0
-
-    elif abs_dimension == "y":
-
-        is_negative = y < 0
-
-    data = [
+    d_ = [
         {
             "type": "scatter",
-            "name": "-",
-            "x": x[is_negative],
-            "y": y[is_negative].abs(),
-            "text": y.index[is_negative],
+            "name": "Name",
+            "y": p.iloc[:, 0],
+            "x": p.iloc[:, 1],
+            "text": p.index,
             "mode": "markers",
-            "marker": {"color": "#0088ff", "opacity": opacity},
-        },
-        {
-            "type": "scatter",
-            "name": "+",
-            "x": x[~is_negative],
-            "y": y[~is_negative],
-            "text": y.index[~is_negative],
-            "mode": "markers",
-            "marker": {"color": "#ff1968", "opacity": opacity},
-        },
+            "marker": {
+                "size": p["Size"],
+                "color": p["Color"],
+                "opacity": p["Opacity"],
+                "line": {"width": 0},
+            },
+        }
     ]
 
-    annotations = []
+    a_ = []
 
-    for group_name, elements, size, color in annotation:
+    for n, r in p.loc[p["Annotate"]].iterrows():
 
-        group_elements = y.index & elements
-
-        group_x = x[group_elements]
-
-        group_y = y[group_elements]
-
-        data.append(
+        a_.append(
             {
-                "type": "scatter",
-                "name": group_name,
-                "x": group_x,
-                "y": group_y.abs(),
-                "text": group_elements,
-                "mode": "markers",
-                "marker": {
-                    "size": size,
-                    "color": color,
-                    "line": {"width": 1, "color": "#ebf6f7"},
-                },
+                "y": r[0],
+                "x": r[1],
+                "text": n,
+                "font": {"size": annotation_font_size},
+                "arrowhead": 2,
+                "arrowsize": 1,
+                "clicktoshow": "onoff",
             }
         )
 
-        annotations += [
-            {
-                "x": x_,
-                "y": abs(y_),
-                "text": element,
-                "font": {"size": annotation_font_size},
-                "arrowhead": 2,
-                "arrowsize": 0.8,
-                "clicktoshow": "onoff",
-            }
-            for element, x_, y_ in zip(group_elements, group_x, group_y)
-        ]
-
     plot_plotly(
         {
+            "data": d_,
             "layout": {
                 "title": title,
-                "xaxis": {"title": x.name},
-                "yaxis": {"title": y.name},
-                "annotations": annotations,
+                "yaxis": {"title": p.columns[0]},
+                "xaxis": {"title": p.columns[1]},
+                "annotations": a_,
             },
-            "data": data,
         },
-        html_file_path,
+        file_path=file_path,
     )

@@ -606,7 +606,7 @@ def process(
         feature_x_sample = DataFrame(
             data=log(
                 matrix,
-                log_base=log_base,
+                base=log_base,
             ),
             index=feature_x_sample.index,
             columns=feature_x_sample.columns,

@@ -47,171 +47,157 @@ DATA_TYPE_TO_COLORSCALE = {
 }
 
 
-def _process_vector_for_plot(vector, data_type, plot_std):
+def _process_vector_for_plot(v, t, s):
 
-    if data_type == "continuous":
+    if t == "continuous":
 
-        if 0 < vector.std():
+        if 0 < v.std():
 
-            vector = function_on_1_number_array_not_nan(
-                vector, normalize, "-0-", update=True
-            ).clip(min=-plot_std, max=plot_std)
+            v = function_on_1_number_array_not_nan(
+                v, normalize, "-0-", update=True
+            ).clip(-s, s)
 
-        return vector, -plot_std, plot_std
+        return v, -s, s
 
-    return vector.copy(), None, None
-
-
-def _process_matrix_for_plot(matrix, data_type, plot_std):
-
-    matrix = matrix.copy()
-
-    if data_type == "continuous":
-
-        for index in range(matrix.shape[0]):
-
-            matrix[index] = _process_vector_for_plot(
-                matrix[index], data_type, plot_std
-            )[0]
-
-        return matrix, -plot_std, plot_std
-
-    return matrix, None, None
+    return v.copy(), None, None
 
 
-def _make_vector_annotation(vector_name, y):
+def _process_matrix_for_plot(m, t, s):
+
+    m = m.copy()
+
+    if t == "continuous":
+
+        for i in range(m.shape[0]):
+
+            m[i] = _process_vector_for_plot(m[i], t, s)[0]
+
+        return m, -s, s
+
+    return m, None, None
+
+
+def _make_vector_annotation(n, y):
 
     return [
         {
             "y": y,
             "x": 0,
             "xanchor": "right",
-            "text": "<b>{}</b>".format(vector_name),
+            "text": "<b>{}</b>".format(n),
             **ANNOTATION_BASE,
         }
     ]
 
 
-def _get_statistic_x(index):
+def _get_statistic_x(i):
 
-    return 1.08 + index / 6.4
+    return 1.08 + i / 6.4
 
 
-def _make_matrix_annotation(
-    axis_0_label_, statistic_matrix, y, row_height, add_score_header
-):
+def _make_matrix_annotation(l_, m, y, h, a):
 
-    annotation_ = []
+    a_ = []
 
-    if add_score_header:
+    if a:
 
-        for index, statistic in enumerate(("Score (\u0394)", "P-Value", "Q-Value")):
+        for i, s in enumerate(["Score (\u0394)", "P-Value", "Q-Value"]):
 
-            annotation_.append(
+            a_.append(
                 {
                     "y": y,
-                    "x": _get_statistic_x(index),
+                    "x": _get_statistic_x(i),
                     "xanchor": "center",
-                    "text": "<b>{}</b>".format(statistic),
+                    "text": "<b>{}</b>".format(s),
                     **ANNOTATION_BASE,
                 }
             )
 
-    y -= row_height
+    y -= h
 
-    for index in range(axis_0_label_.size):
+    for i in range(l_.size):
 
-        annotation_.append(
+        a_.append(
             {
                 "y": y,
                 "x": 0,
                 "xanchor": "right",
-                "text": axis_0_label_[index],
+                "text": l_[i],
                 **ANNOTATION_BASE,
             }
         )
 
-        score, moe, p_value, q_value = statistic_matrix[index]
+        score, moe, p, q = m[i]
 
-        for index, statistic in enumerate(
+        for i, s in enumerate(
             (
                 "{:.2f} ({:.2f})".format(score, moe),
-                "{:.2e}".format(p_value),
-                "{:.2e}".format(q_value),
+                "{:.2e}".format(p),
+                "{:.2e}".format(q),
             )
         ):
 
-            annotation_.append(
+            a_.append(
                 {
                     "y": y,
-                    "x": _get_statistic_x(index),
+                    "x": _get_statistic_x(i),
                     "xanchor": "center",
-                    "text": statistic,
+                    "text": s,
                     **ANNOTATION_BASE,
                 }
             )
 
-        y -= row_height
+        y -= h
 
-    return annotation_
+    return a_
 
 
 def make(
-    se,
-    df,
-    function_or_statistic_df,
-    vector_ascending=True,
+    v,
+    m,
+    fs,
+    v_ascending=True,
     n_job=1,
     random_seed=RANDOM_SEED,
     n_sample=10,
     n_shuffle=10,
     plot=True,
     n_plot=8,
-    vector_data_type="continuous",
-    matrix_data_type="continuous",
+    v_data_type="continuous",
+    m_data_type="continuous",
     plot_std=nan,
     title="Function Heat Map",
     directory_path=None,
 ):
 
-    #
-    se = se.loc[se.index.intersection(df.columns)]
+    v = v.loc[v.index.intersection(m.columns)]
 
-    #
-    if vector_ascending is not None:
+    if v_ascending is not None:
 
-        se.sort_values(ascending=vector_ascending, inplace=True)
+        v.sort_values(ascending=v_ascending, inplace=True)
 
-    #
-    vector = se.to_numpy()
+    v2 = v.to_numpy()
 
-    #
-    vector_name = se.name
+    a1l_ = v.index.to_numpy()
 
-    #
-    axis_1_label_ = se.index.to_numpy()
+    m = m.reindex(labels=a1l_, axis=1)
 
-    #
-    df = df.reindex(labels=axis_1_label_, axis=1)
+    if callable(fs):
 
-    if callable(function_or_statistic_df):
+        m2 = m.to_numpy()
 
-        matrix = df.to_numpy()
-
-        matrix_axis_0_size, axis_1_size = matrix.shape
-
-        function = function_or_statistic_df
+        ma0s, a1s = m.shape
 
         pool = Pool(n_job)
 
-        seed(seed=random_seed)
+        seed(random_seed)
 
-        print("Score ({})...".format(function.__name__))
+        print("Score ({})...".format(fs.__name__))
 
         score_ = asarray(
             pool.starmap(
                 function_on_2_number_array_not_nan,
-                ((vector, row, function) for row in matrix),
+                ([v2, r, fs] for r in m2),
             )
         )
 
@@ -219,29 +205,23 @@ def make(
 
             print("0.95 MoE ({} sample)...".format(n_sample))
 
-            row_x_sample = full((matrix_axis_0_size, n_sample), nan)
+            rxs = full([ma0s, n_sample], nan)
 
-            choice_n = int(axis_1_size * SAMPLE_FRACTION)
+            n = int(a1s * SAMPLE_FRACTION)
 
-            for sample_index in range(n_sample):
+            for i in range(n_sample):
 
-                sample_index_ = choice(axis_1_size, size=choice_n, replace=False)
+                i_ = choice(a1s, size=n, replace=False)
 
-                vector_sample = vector[sample_index_]
+                vc = v2[i_]
 
-                row_x_sample[:, sample_index] = pool.starmap(
+                rxs[:, i] = pool.starmap(
                     function_on_2_number_array_not_nan,
-                    (
-                        (vector_sample, row, function)
-                        for row in matrix[:, sample_index_]
-                    ),
+                    ([vc, r, fs] for r in m2[:, i_]),
                 )
 
             moe_ = asarray(
-                tuple(
-                    function_on_1_number_array_not_nan(row, get_moe)
-                    for row in row_x_sample
-                )
+                [function_on_1_number_array_not_nan(r, get_moe) for r in rxs]
             )
 
         else:
@@ -252,116 +232,102 @@ def make(
 
             print("P-Value and Q-Value ({} shuffle)...".format(n_shuffle))
 
-            row_x_shuffle = full((matrix_axis_0_size, n_shuffle), nan)
+            rxs = full([ma0s, n_shuffle], nan)
 
-            vector_shuffle = vector.copy()
+            vc = v2.copy()
 
-            for shuffle_index in range(n_shuffle):
+            for i in range(n_shuffle):
 
-                shuffle(vector_shuffle)
+                shuffle(vc)
 
-                row_x_shuffle[:, shuffle_index] = pool.starmap(
+                rxs[:, i] = pool.starmap(
                     function_on_2_number_array_not_nan,
-                    ((vector_shuffle, row, function) for row in matrix),
+                    ([vc, r, fs] for r in m2),
                 )
 
-            p_value_, q_value_ = get_p__q_(score_, row_x_shuffle.ravel(), "<>")
+            p_, q_ = get_p__q_(score_, rxs.ravel(), "<>")
 
         else:
 
-            p_value_ = q_value_ = full(score_.size, nan)
+            p_ = q_ = full(score_.size, nan)
 
         pool.terminate()
 
-        statistic_df = DataFrame(
-            data=asarray((score_, moe_, p_value_, q_value_)).T,
-            index=df.index,
-            columns=("Score", "MoE", "P-Value", "Q-Value"),
+        fs = DataFrame(
+            asarray([score_, moe_, p_, q_]).T,
+            index=m.index,
+            columns=["Score", "MoE", "P-Value", "Q-Value"],
         )
 
     else:
 
-        #
-        statistic_df = function_or_statistic_df.loc[df.index, :]
+        fs = fs.loc[m.index, :]
 
-    #
-    statistic_df.sort_values("Score", ascending=False, inplace=True)
+    fs.sort_values("Score", ascending=False, inplace=True)
 
     if directory_path is not None:
 
-        statistic_df.to_csv("{}statistic.tsv".format(directory_path), sep="\t")
+        fs.to_csv("{}statistic.tsv".format(directory_path), sep="\t")
 
-    #
-    df = df.loc[statistic_df.index, :]
+    m = m.loc[fs.index, :]
 
     if plot:
 
-        #
-        matrix = df.to_numpy()
+        m2 = m.to_numpy()
 
-        #
-        axis_0_label_ = df.index.to_numpy()
+        a0l_ = m.index.to_numpy()
 
-        #
-        statistic_matrix = statistic_df.to_numpy()
+        fs2 = fs.to_numpy()
 
-        if n_plot is not None and n_plot < statistic_matrix.shape[0]:
+        if n_plot is not None and (n_plot / 2) < fs2.shape[0]:
 
-            is_ = check_is_extreme(statistic_matrix[:, 0], "<>", n=n_plot)
+            is_ = check_is_extreme(fs2[:, 0], "<>", n=n_plot)
 
-            statistic_matrix = statistic_matrix[is_]
+            fs2 = fs2[is_]
 
-            matrix = matrix[is_]
+            m2 = m2[is_]
 
-            axis_0_label_ = axis_0_label_[is_]
+            a0l_ = a0l_[is_]
 
-        #
-        vector, vector_min, vector_max = _process_vector_for_plot(
-            vector, vector_data_type, plot_std
-        )
+        v2, vmi, vma = _process_vector_for_plot(v2, v_data_type, plot_std)
 
-        #
-        matrix, matrix_min, matrix_max = _process_matrix_for_plot(
-            matrix, matrix_data_type, plot_std
-        )
+        m2, mmi, mma = _process_matrix_for_plot(m2, m_data_type, plot_std)
 
-        if vector_data_type != "continuous":
+        if v_data_type != "continuous":
 
-            for number, count in zip(*unique(vector, return_counts=True)):
+            for n, c in zip(*unique(v2, return_counts=True)):
 
-                if 2 < count:
+                if 2 < c:
 
-                    print("Clustering group {}...".format(number))
+                    print("Clustering v={}...".format(n))
 
-                    index_ = where(vector == number)[0]
+                    i_ = where(v2 == n)[0]
 
-                    index_cluster_ = index_[cluster(matrix.T[index_])[0]]
+                    ci_ = i_[cluster(m2.T[i_])[0]]
 
-                    vector[index_] = vector[index_cluster_]
+                    v2[i_] = v2[ci_]
 
-                    matrix[:, index_] = matrix[:, index_cluster_]
+                    m2[:, i_] = m2[:, ci_]
 
-                    axis_1_label_[index_] = axis_1_label_[index_cluster_]
+                    a1l_[i_] = a1l_[ci_]
 
-        row_n = matrix.shape[0] + 2
+        nr = m2.shape[0] + 2
 
-        row_height = 1 / row_n
+        h = 1 / nr
 
-        #
         layout = merge(
             {
-                "height": max(480, 24 * row_n),
+                "height": max(480, 24 * nr),
                 "title": {"text": title},
-                "yaxis2": {"domain": (1 - row_height, 1), "showticklabels": False},
-                "yaxis": {"domain": (0, 1 - row_height * 2), "showticklabels": False},
-                "annotations": _make_vector_annotation(vector_name, 1 - row_height / 2),
+                "yaxis2": {"domain": (1 - h, 1), "showticklabels": False},
+                "yaxis": {"domain": (0, 1 - h * 2), "showticklabels": False},
+                "annotations": _make_vector_annotation(v.name, 1 - h / 2),
             },
             LAYOUT_BASE,
         )
 
-        #
         layout["annotations"] += _make_matrix_annotation(
-            axis_0_label_, statistic_matrix, 1 - row_height / 2 * 3, row_height, True
+            a0l_, fs2, 1 - h / 2 * 3, h, True
         )
 
         if directory_path is None:
@@ -375,25 +341,23 @@ def make(
         plot_plotly(
             {
                 "data": [
-                    #
                     {
                         "yaxis": "y2",
-                        "z": vector.reshape((1, -1)),
-                        "x": axis_1_label_,
-                        "zmin": vector_min,
-                        "zmax": vector_max,
-                        "colorscale": DATA_TYPE_TO_COLORSCALE[vector_data_type],
+                        "z": v2.reshape([1, -1]),
+                        "x": a1l_,
+                        "zmin": vmi,
+                        "zmax": vma,
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[v_data_type],
                         **HEATMAP_BASE,
                     },
-                    #
                     {
                         "yaxis": "y",
-                        "z": matrix[::-1],
-                        "y": axis_0_label_[::-1],
-                        "x": axis_1_label_,
-                        "zmin": matrix_min,
-                        "zmax": matrix_max,
-                        "colorscale": DATA_TYPE_TO_COLORSCALE[matrix_data_type],
+                        "z": m2[::-1],
+                        "y": a0l_[::-1],
+                        "x": a1l_,
+                        "zmin": mmi,
+                        "zmax": mma,
+                        "colorscale": DATA_TYPE_TO_COLORSCALE[m_data_type],
                         **HEATMAP_BASE,
                     },
                 ],
@@ -402,156 +366,131 @@ def make(
             file_path=file_path,
         )
 
-    return statistic_df
+    return fs
 
 
 def summarize(
-    se,
-    data_,
+    v,
+    d_,
     intersect=True,
-    vector_ascending=True,
-    vector_data_type="continuous",
+    v_ascending=True,
+    v_data_type="continuous",
     plot_std=nan,
     title="Function Heat Map Summary",
     file_path=None,
 ):
 
-    #
     if intersect:
 
-        for data in data_:
+        for d in d_:
 
-            se = se.loc[se.index.intersection(data["df"].columns)]
+            v = v.loc[v.index.intersection(d["m"].columns)]
 
-    #
-    if vector_ascending is not None:
+    if v_ascending is not None:
 
-        se.sort_values(ascending=vector_ascending, inplace=True)
+        v.sort_values(ascending=v_ascending, inplace=True)
 
-    #
-    vector = se.to_numpy()
+    v2 = v.to_numpy()
 
-    #
-    vector_name = se.name
+    a1l_ = v.index.to_numpy()
 
-    #
-    axis_1_label_ = se.index.to_numpy()
+    v2, vmi, vma = _process_vector_for_plot(v2, v_data_type, plot_std)
 
-    #
-    vector, vector_min, vector_max = _process_vector_for_plot(
-        vector, vector_data_type, plot_std
-    )
+    nr = 1
 
-    row_n = 1
+    ns = 2
 
-    space_n = 2
+    for d in d_:
 
-    for data in data_:
+        nr += d["m"].shape[0] + ns
 
-        row_n += data["df"].shape[0] + space_n
+    h = 1 / nr
 
-    row_height = 1 / row_n
-
-    #
     layout = merge(
         {
-            "height": max(480, 24 * row_n),
+            "height": max(480, 24 * nr),
             "title": {"text": title},
-            "annotations": _make_vector_annotation(vector_name, 1 - row_height / 2),
+            "annotations": _make_vector_annotation(v.name, 1 - h / 2),
         },
         LAYOUT_BASE,
     )
 
-    data_n = len(data_)
+    nd = len(d_)
 
-    yaxis = "yaxis{}".format(data_n + 1)
+    yaxis = "yaxis{}".format(nd + 1)
 
-    domain = 1 - row_height, 1
+    domain = 1 - h, 1
 
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
     data = [
-        #
         {
             "yaxis": yaxis.replace("axis", ""),
-            "z": vector.reshape((1, -1)),
-            "x": axis_1_label_,
-            "zmin": vector_min,
-            "zmax": vector_max,
-            "colorscale": DATA_TYPE_TO_COLORSCALE[vector_data_type],
+            "z": v2.reshape((1, -1)),
+            "x": a1l_,
+            "zmin": vmi,
+            "zmax": vma,
+            "colorscale": DATA_TYPE_TO_COLORSCALE[v_data_type],
             **HEATMAP_BASE,
         }
     ]
 
-    for index, b in enumerate(data_):
+    for i, d in enumerate(d_):
 
-        #
-        df = b["df"]
+        m = d["m"]
 
-        #
-        df = df.reindex(labels=axis_1_label_, axis=1)
+        m = m.reindex(labels=a1l_, axis=1)
 
-        #
-        statistic_df = b["statistic_df"].loc[df.index, :]
+        statistic_m = d["statistic"].loc[m.index, :]
 
-        #
-        statistic_df.sort_values("Score", ascending=False, inplace=True)
+        statistic_m.sort_values("Score", ascending=False, inplace=True)
 
-        #
-        df = df.loc[statistic_df.index, :]
+        m = m.loc[statistic_m.index, :]
 
-        #
-        matrix = df.to_numpy()
+        m2 = m.to_numpy()
 
-        #
-        axis_0_label_ = df.index.to_numpy()
+        a0l_ = m.index.to_numpy()
 
-        #
-        statistic_matrix = statistic_df.to_numpy()
+        statistic_matrix = statistic_m.to_numpy()
 
-        #
-        matrix, matrix_min, matrix_max = _process_matrix_for_plot(
-            matrix, b["data_type"], plot_std
-        )
+        m2, mmi, mma = _process_matrix_for_plot(m2, d["data_type"], plot_std)
 
-        yaxis = "yaxis{}".format(data_n - index)
+        yaxis = "yaxis{}".format(nd - i)
 
         domain = (
-            max(0, domain[0] - row_height * (space_n + df.shape[0])),
-            domain[0] - row_height * space_n,
+            max(0, domain[0] - h * (ns + m.shape[0])),
+            domain[0] - h * ns,
         )
 
         layout[yaxis] = {"domain": domain, "showticklabels": False}
 
         data.append(
-            #
             {
                 "yaxis": yaxis.replace("axis", ""),
-                "z": matrix[::-1],
-                "y": axis_0_label_[::-1],
-                "x": axis_1_label_,
-                "zmin": matrix_min,
-                "zmax": matrix_max,
-                "colorscale": DATA_TYPE_TO_COLORSCALE[b["data_type"]],
+                "z": m2[::-1],
+                "y": a0l_[::-1],
+                "x": a1l_,
+                "zmin": mmi,
+                "zmax": mma,
+                "colorscale": DATA_TYPE_TO_COLORSCALE[d["data_type"]],
                 **HEATMAP_BASE,
             }
         )
 
-        y = domain[1] + row_height / 2
+        y = domain[1] + h / 2
 
         layout["annotations"].append(
             {
                 "y": y,
                 "x": 0.5,
                 "xanchor": "center",
-                "text": "<b>{}</b>".format(b["name"]),
+                "text": "<b>{}</b>".format(d["name"]),
                 **ANNOTATION_BASE,
             }
         )
 
-        #
         layout["annotations"] += _make_matrix_annotation(
-            axis_0_label_, statistic_matrix, y, row_height, index == 0
+            a0l_, statistic_matrix, y, h, i == 0
         )
 
     plot_plotly({"data": data, "layout": layout}, file_path=file_path)
