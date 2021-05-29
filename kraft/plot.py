@@ -16,7 +16,7 @@ from plotly.io import (
     write_html,
 )
 
-from .array import (
+from .number__ import (
     normalize,
 )
 from .dictionary import (
@@ -51,12 +51,12 @@ COLORBAR = {
 
 
 def plot_plotly(
-    figure,
-    file_path=None,
+    fi,
+    pa="",
 ):
 
-    figure = merge(
-        figure,
+    fi = merge(
+        fi,
         {
             "layout": {
                 "autosize": False,
@@ -65,19 +65,19 @@ def plot_plotly(
         },
     )
 
-    config = {"editable": True}
+    co = {"editable": True}
 
     show(
-        figure,
-        config=config,
+        fi,
+        config=co,
     )
 
-    if file_path is not None:
+    if pa != "":
 
         write_html(
-            figure,
-            file_path,
-            config=config,
+            fi,
+            pa,
+            config=co,
         )
 
 
@@ -153,7 +153,7 @@ def plot_heat_map(
     layout=None,
     axis_0_annotation=None,
     axis_1_annotation=None,
-    file_path=None,
+    pa="",
 ):
 
     if axis_0_group_ is not None:
@@ -354,7 +354,7 @@ def plot_heat_map(
             "data": data_,
             "layout": layout,
         },
-        file_path=file_path,
+        pa=pa,
     )
 
 
@@ -368,7 +368,7 @@ def plot_bubble_map(
     max_size=32,
     colorscale=CONTINUOUS_COLORSCALE,
     layout=None,
-    file_path=None,
+    pa="",
 ):
 
     (
@@ -449,7 +449,7 @@ def plot_bubble_map(
             ],
             "layout": layout,
         },
-        file_path=file_path,
+        pa=pa,
     )
 
 
@@ -462,7 +462,7 @@ def plot_histogram(
     plot_rug=None,
     colorscale=CATEGORICAL_COLORSCALE,
     layout=None,
-    file_path=None,
+    pa="",
 ):
 
     if plot_rug is None:
@@ -582,7 +582,7 @@ def plot_histogram(
             "data": data,
             "layout": layout,
         },
-        file_path=file_path,
+        pa=pa,
     )
 
 
@@ -590,7 +590,7 @@ def plot_point(
     p,
     annotation_font_size=16,
     title=None,
-    file_path=None,
+    pa="",
 ):
 
     d_ = [
@@ -645,5 +645,5 @@ def plot_point(
                 "annotations": a_,
             },
         },
-        file_path=file_path,
+        pa=pa,
     )
