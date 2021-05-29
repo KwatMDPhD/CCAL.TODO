@@ -36,3 +36,16 @@ def cast_builtin(o):
             pass
 
     return o
+
+
+def check_is_iterable(an):
+
+    try:
+
+        iter(an)
+
+        return True
+
+    except:
+
+        return False
