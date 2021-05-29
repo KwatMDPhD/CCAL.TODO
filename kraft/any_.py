@@ -1,28 +1,31 @@
-from numpy import asarray
+from numpy import (
+    asarray,
+)
 
 
-def map_integer(an_):
+def check_is_iterable(
+    an_,
+):
 
-    an_it = {}
+    try:
 
-    it_an = {}
+        iter(an_)
 
-    it = 1
+        return True
 
-    for an in an_:
+    except:
 
-        if an not in an_it:
-
-            an_it[an] = it
-
-            it_an[it] = an
-
-            it += 1
-
-    return an_it, it_an
+        return False
 
 
-def flatten(an_):
+def flatten(
+    an_,
+    ty_=(
+        tuple,
+        list,
+        set,
+    ),
+):
 
     an_ = list(an_)
 
@@ -30,7 +33,10 @@ def flatten(an_):
 
     while ie < len(an_):
 
-        while check_is_iterable(an_[ie]):
+        while isinstance(
+            an_[ie],
+            ty_,
+        ):
 
             if len(an_[ie]) == 0:
 
@@ -49,8 +55,40 @@ def flatten(an_):
     return an_
 
 
-def check_is_in(an1_, an2_):
+def map_integer(
+    an_,
+):
+
+    an_it = {}
+
+    it_an = {}
+
+    it = 1
+
+    for an in an_:
+
+        if an not in an_it:
+
+            an_it[an] = it
+
+            it_an[it] = an
+
+            it += 1
+
+    return (
+        an_it,
+        it_an,
+    )
+
+
+def check_is_in(
+    an1_,
+    an2_,
+):
 
     an2_no = {an2: None for an2 in an2_}
 
-    return asarray([an1 in an2_no for an1 in an1_])
+    return asarray(
+        [an1 in an2_no for an1 in an1_],
+        bool,
+    )

@@ -1,58 +1,109 @@
-from os import listdir, mkdir, walk
-from os.path import abspath, dirname, expanduser, isdir
-from re import sub
+from os import (
+    listdir,
+    mkdir,
+    walk,
+)
+from os.path import (
+    abspath,
+    dirname,
+    expanduser,
+    isdir,
+)
+from re import (
+    sub,
+)
 
 
-def clean(n):
+def clean(
+    na,
+):
 
-    c = sub(r"(?u)[^-\w.]", "_", n.strip().lower())
+    nacl = sub(
+        r"(?u)[^-\w.]",
+        "_",
+        na.strip().lower(),
+    )
 
-    print("{} => {}".format(n, c))
+    print(
+        "{} => {}".format(
+            na,
+            nacl,
+        )
+    )
 
-    return c
-
-
-def get_absolute(p):
-
-    return abspath(expanduser(p))
-
-
-def list_directory(d):
-
-    return ["{}{}".format(d, n) for n in listdir(d) if n[0] != "."]
-
-
-def get_child_(d):
-
-    p_ = []
-
-    for d, d_, f_ in walk(d):
-
-        for n in d_:
-
-            p_.append("{}/{}/".format(d, n))
-
-        for n in f_:
-
-            p_.append("{}/{}".format(d, n))
-
-    return p_
+    return nacl
 
 
-def make(p):
+def get_absolute(
+    pa,
+):
 
-    d = dirname(p)
+    return abspath(expanduser(pa))
 
-    d_ = []
 
-    while d != "" and not isdir(d):
+def list(
+    di,
+):
 
-        d_.append(d)
+    return [
+        "{}{}".format(
+            di,
+            na,
+        )
+        for na in listdir(di)
+        if na[0] != "."
+    ]
 
-        d = dirname(d)
 
-    for d in d_[::-1]:
+def get_child(
+    di,
+):
 
-        mkdir(d)
+    pa_ = []
 
-        print("Made {}/".format(d))
+    for (
+        di,
+        di_,
+        fi_,
+    ) in walk(di):
+
+        for na in di_:
+
+            pa_.append(
+                "{}/{}/".format(
+                    di,
+                    na,
+                )
+            )
+
+        for n in fi_:
+
+            pa_.append(
+                "{}/{}".format(
+                    di,
+                    na,
+                )
+            )
+
+    return pa_
+
+
+def make(
+    pa,
+):
+
+    di = dirname(pa)
+
+    di_ = []
+
+    while di != "" and not isdir(di):
+
+        di_.append(di)
+
+        di = dirname(di)
+
+    for di in di_[::-1]:
+
+        mkdir(di)
+
+        print("Made {}/".format(di))

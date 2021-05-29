@@ -13,29 +13,45 @@ from numpy import (
     sort,
     unique,
 )
-from scipy.stats import rankdata
+from scipy.stats import (
+    rankdata,
+)
 
 
-def check_is_not_nan(nu__):
+def check_is_not_nan(
+    nu__,
+):
 
     return logical_not(isnan(nu__))
 
 
-def get_not_nan_unique(nu__):
+def get_not_nan_unique(
+    nu__,
+):
 
     return unique(nu__[check_is_not_nan(nu__)])
 
 
-def clip(nu__, st):
+def clip(
+    nu__,
+    st,
+):
 
     me = nu__.mean()
 
     st *= nu__.std()
 
-    return nu__.clip(me - st, me + st)
+    return nu__.clip(
+        me - st,
+        me + st,
+    )
 
 
-def normalize(nu__, me, ra="average"):
+def normalize(
+    nu__,
+    me,
+    ra="average",
+):
 
     if me == "-0-":
 
@@ -53,10 +69,16 @@ def normalize(nu__, me, ra="average"):
 
     elif me == "rank":
 
-        return rankdata(nu__, ra).reshape(nu__.shape)
+        return rankdata(
+            nu__,
+            ra,
+        ).reshape(nu__.shape)
 
 
-def shift_minimum(nu__, mi):
+def shift_minimum(
+    nu__,
+    mi,
+):
 
     if mi == "0<":
 
@@ -75,14 +97,28 @@ def shift_minimum(nu__, mi):
     return nu__ + mi - nu__.min()
 
 
-def log(nu__, ba=2):
+def log(
+    nu__,
+    ba=2,
+):
 
-    return {2: log2, "e": loge, 10: log10}[ba](nu__)
+    return {2: log2, "e": loge, 10: log10,}[
+        ba
+    ](nu__)
 
 
-def guess_type(nu__, ma=16):
+def guess_type(
+    nu__,
+    ma=16,
+):
 
-    if all(isinstance(nu, integer) for nu in nu__.ravel()):
+    if all(
+        isinstance(
+            nu,
+            integer,
+        )
+        for nu in nu__.ravel()
+    ):
 
         n_ca = unique(nu__).size
 
@@ -97,25 +133,43 @@ def guess_type(nu__, ma=16):
     return "continuous"
 
 
-def check_is_extreme(nu__, di, th_=(), n_ex=0, st=0.0):
+def check_is_extreme(
+    nu__,
+    di,
+    th_=(),
+    n_ex=0,
+    st=0.0,
+):
 
     nuno__ = nu__[check_is_not_nan(nu__)]
 
     if 0 < len(th_):
 
-        lo, hi = th_
+        (
+            lo,
+            hi,
+        ) = th_
 
     elif 0 < n_ex:
 
         if n_ex < 1:
 
-            lo = quantile(nuno__, n_ex)
+            lo = quantile(
+                nuno__,
+                n_ex,
+            )
 
-            hi = quantile(nuno__, 1 - n_ex)
+            hi = quantile(
+                nuno__,
+                1 - n_ex,
+            )
 
         else:
 
-            nuno__ = sort(nuno__, None)
+            nuno__ = sort(
+                nuno__,
+                None,
+            )
 
             lo = nuno__[n_ex - 1]
 
@@ -127,13 +181,16 @@ def check_is_extreme(nu__, di, th_=(), n_ex=0, st=0.0):
 
         st *= nuno__.std()
 
-        li = me - st
+        lo = me - st
 
-        ho = me + st
+        hi = me + st
 
     if di == "<>":
 
-        return logical_or(nu__ <= lo, hi <= nu__)
+        return logical_or(
+            nu__ <= lo,
+            hi <= nu__,
+        )
 
     elif di == "<":
 
@@ -152,7 +209,10 @@ def apply_on_1(nu__, fu, *ar_, up=False, **ke_):
 
     if up:
 
-        nu2__ = full(nu__.shape, nan)
+        nu2__ = full(
+            nu__.shape,
+            nan,
+        )
 
         nu2__[bo__] = re
 
@@ -163,7 +223,10 @@ def apply_on_1(nu__, fu, *ar_, up=False, **ke_):
 
 def apply_on_2(nu1__, nu2__, fu, *ar_, **ke_):
 
-    bo__ = logical_and(check_is_not_nan(nu1__), check_is_not_nan(nu2__))
+    bo__ = logical_and(
+        check_is_not_nan(nu1__),
+        check_is_not_nan(nu2__),
+    )
 
     return fu(nu1__[bo__], nu2__[bo__], *ar_, **ke_)
 
@@ -174,7 +237,13 @@ def apply_along_on_2(nu1_an_an, nu2_an_an, fu, *ar_, **ke_):
 
     n_ro2 = nu2_an_an.shape[0]
 
-    nu3_an_an = full([n_ro1, n_ro2], nan)
+    nu3_an_an = full(
+        [
+            n_ro1,
+            n_ro2,
+        ],
+        nan,
+    )
 
     for ie1 in range(n_ro1):
 
@@ -184,6 +253,9 @@ def apply_along_on_2(nu1_an_an, nu2_an_an, fu, *ar_, **ke_):
 
             nu2_ = nu2_an_an[ie2]
 
-            nu3_an_an[ie1, ie2] = fu(nu1_, nu2_, *ar_, **ke_)
+            nu3_an_an[
+                ie1,
+                ie2,
+            ] = fu(nu1_, nu2_, *ar_, **ke_)
 
     return nu3_an_an

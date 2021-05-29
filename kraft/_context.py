@@ -10,24 +10,46 @@ from numpy import (
     nan,
     nanmax,
 )
-from pandas import DataFrame, concat
-from statsmodels.sandbox.distributions.extras import ACSkewT_gen
+from pandas import (
+    DataFrame,
+    concat,
+)
+from statsmodels.sandbox.distributions.extras import (
+    ACSkewT_gen,
+)
 
-from .array import check_array_for_bad
-from .dict import merge
-from .information import compute_kld
-from .plot import plot_plotly
+from .array import (
+    check_array_for_bad,
+)
+from .dict import (
+    merge,
+)
+from .information import (
+    compute_kld,
+)
+from .plot import (
+    plot_plotly,
+)
 
 
 def compute_pdf_and_pdf_reference_context(
-    grid, pdf, pdf_reference, multiply_distance_from_reference_argmax
+    grid,
+    pdf,
+    pdf_reference,
+    multiply_distance_from_reference_argmax,
 ):
 
     center = pdf_reference.argmax()
 
-    left_kl = compute_kld(pdf[:center], pdf_reference[:center])
+    left_kl = compute_kld(
+        pdf[:center],
+        pdf_reference[:center],
+    )
 
-    right_kl = compute_kld(pdf[center:], pdf_reference[center:])
+    right_kl = compute_kld(
+        pdf[center:],
+        pdf_reference[center:],
+    )
 
     left_kl[left_kl == inf] = 0
 
@@ -41,7 +63,12 @@ def compute_pdf_and_pdf_reference_context(
 
     right_context *= right_kl.sum() / right_kl.size
 
-    context = concatenate((left_context, right_context))
+    context = concatenate(
+        (
+            left_context,
+            right_context,
+        )
+    )
 
     if multiply_distance_from_reference_argmax:
 
@@ -68,31 +95,53 @@ def compute_vector_context(
     global_shape=None,
 ):
 
-    is_good = ~check_array_for_bad(vector, raise_for_bad=False)
+    is_good = ~check_array_for_bad(
+        vector,
+        raise_for_bad=False,
+    )
 
     vector_good = vector[is_good]
 
     if any(
         parameter is None
-        for parameter in (n_data, location, scale, degree_of_freedom, shape)
+        for parameter in (
+            n_data,
+            location,
+            scale,
+            degree_of_freedom,
+            shape,
+        )
     ):
 
-        n_data, location, scale, degree_of_freedom, shape = fit_vector_to_skew_t_pdf(
+        (n_data, location, scale, degree_of_freedom, shape,) = fit_vector_to_skew_t_pdf(
             vector_good,
             fit_initial_location=fit_initial_location,
             fit_initial_scale=fit_initial_scale,
         )
 
-    grid = linspace(vector_good.min(), vector_good.max(), num=n_grid)
+    grid = linspace(
+        vector_good.min(),
+        vector_good.max(),
+        num=n_grid,
+    )
 
     skew_t_model = ACSkewT_gen()
 
-    pdf = skew_t_model.pdf(grid, degree_of_freedom, shape, loc=location, scale=scale)
+    pdf = skew_t_model.pdf(
+        grid,
+        degree_of_freedom,
+        shape,
+        loc=location,
+        scale=scale,
+    )
 
     shape_pdf_reference = minimum(
         pdf,
         skew_t_model.pdf(
-            make_reflecting_grid(grid, grid[pdf.argmax()]),
+            make_reflecting_grid(
+                grid,
+                grid[pdf.argmax()],
+            ),
             degree_of_freedom_for_tail_reduction,
             shape,
             loc=location,
@@ -101,7 +150,10 @@ def compute_vector_context(
     )
 
     shape_context = compute_pdf_and_pdf_reference_context(
-        grid, pdf, shape_pdf_reference, multiply_distance_from_reference_argmax
+        grid,
+        pdf,
+        shape_pdf_reference,
+        multiply_distance_from_reference_argmax,
     )
 
     if any(
@@ -134,19 +186,33 @@ def compute_vector_context(
         )
 
         location_context = compute_pdf_and_pdf_reference_context(
-            grid, pdf, location_pdf_reference, multiply_distance_from_reference_argmax
+            grid,
+            pdf,
+            location_pdf_reference,
+            multiply_distance_from_reference_argmax,
         )
 
         context = shape_context + location_context
 
-    context_like_array = full(vector.size, nan)
+    context_like_array = full(
+        vector.size,
+        nan,
+    )
 
     context_like_array[is_good] = context[
         [absolute(grid - value).argmin() for value in vector_good]
     ]
 
     return {
-        "fit": asarray((n_data, location, scale, degree_of_freedom, shape)),
+        "fit": asarray(
+            (
+                n_data,
+                location,
+                scale,
+                degree_of_freedom,
+                shape,
+            )
+        ),
         "grid": grid,
         "pdf": pdf,
         "shape_pdf_reference": shape_pdf_reference,
@@ -188,16 +254,24 @@ def make_context_matrix(
                     global_shape,
                 )
                 for dataframe_ in split_dataframe(
-                    dataframe, 0, min(dataframe.shape[0], n_job)
+                    dataframe,
+                    0,
+                    min(
+                        dataframe.shape[0],
+                        n_job,
+                    ),
                 )
             ),
             n_job,
-        )
+        ),
     )
 
     if tsv_file_path is not None:
 
-        context_matrix.to_csv(tsv_file_path, sep="\t")
+        context_matrix.to_csv(
+            tsv_file_path,
+            sep="\t",
+        )
 
     return context_matrix
 
@@ -214,11 +288,20 @@ def make_context_matrix_(
     global_shape,
 ):
 
-    context_matrix = full(dataframe.shape, nan)
+    context_matrix = full(
+        dataframe.shape,
+        nan,
+    )
 
     n = dataframe.shape[0]
 
-    for i, (index, series) in enumerate(dataframe.iterrows()):
+    for (
+        i,
+        (
+            index,
+            series,
+        ),
+    ) in enumerate(dataframe.iterrows()):
 
         if skew_t_pdf_fit_parameter is None:
 
@@ -233,7 +316,14 @@ def make_context_matrix_(
                 degree_of_freedom,
                 shape,
             ) = skew_t_pdf_fit_parameter.loc[
-                index, ["N Data", "Location", "Scale", "Degree of Freedom", "Shape"]
+                index,
+                [
+                    "N Data",
+                    "Location",
+                    "Scale",
+                    "Degree of Freedom",
+                    "Shape",
+                ],
             ]
 
         context_matrix[i] = compute_vector_context(
@@ -253,7 +343,9 @@ def make_context_matrix_(
         )["context_like_array"]
 
     return DataFrame(
-        data=context_matrix, index=dataframe.index, columns=dataframe.columns
+        data=context_matrix,
+        index=dataframe.index,
+        columns=dataframe.columns,
     )
 
 
@@ -269,21 +361,45 @@ def plot_context(
 
     if plot_rug:
 
-        yaxis_domain = (0, 0.1)
+        yaxis_domain = (
+            0,
+            0.1,
+        )
 
-        yaxis2_domain = (0.15, 1)
+        yaxis2_domain = (
+            0.15,
+            1,
+        )
 
     else:
 
-        yaxis_domain = (0, 0)
+        yaxis_domain = (
+            0,
+            0,
+        )
 
-        yaxis2_domain = (0, 1)
+        yaxis2_domain = (
+            0,
+            1,
+        )
 
     base = {
-        "title": {"x": 0.5, "text": series.name},
-        "yaxis": {"domain": yaxis_domain, "dtick": 1, "showticklabels": False},
+        "title": {
+            "x": 0.5,
+            "text": series.name,
+        },
+        "yaxis": {
+            "domain": yaxis_domain,
+            "dtick": 1,
+            "showticklabels": False,
+        },
         "yaxis2": {"domain": yaxis2_domain},
-        "legend": {"orientation": "h", "x": 0.5, "y": -0.2, "xanchor": "center"},
+        "legend": {
+            "orientation": "h",
+            "x": 0.5,
+            "y": -0.2,
+            "xanchor": "center",
+        },
         "annotations": [],
     }
 
@@ -293,13 +409,17 @@ def plot_context(
 
     else:
 
-        layout = merge(base, layout)
+        layout = merge(
+            base,
+            layout,
+        )
 
     context_dict = compute_vector_context(
-        series.to_numpy(), **compute_vector_context_keyword_arguments
+        series.to_numpy(),
+        **compute_vector_context_keyword_arguments,
     )
 
-    for i, (format_, fit_parameter) in enumerate(
+    for (i, (format_, fit_parameter,),) in enumerate(
         zip(
             (
                 "N = {:.0f}",
@@ -309,7 +429,7 @@ def plot_context(
                 "Shape = {:.2f}",
             ),
             context_dict["fit"],
-        )
+        ),
     ):
 
         layout["annotations"].append(
@@ -321,7 +441,7 @@ def plot_context(
                 "xanchor": "center",
                 "text": format_.format(fit_parameter),
                 "showarrow": False,
-            }
+            },
         )
 
     base = {
@@ -344,7 +464,11 @@ def plot_context(
         },
         merge(
             base,
-            {"name": "PDF", "y": context_dict["pdf"], "line": {"color": "#24e7c0"}},
+            {
+                "name": "PDF",
+                "y": context_dict["pdf"],
+                "line": {"color": "#24e7c0"},
+            },
         ),
     ]
 
@@ -359,9 +483,12 @@ def plot_context(
                 "y": (0,) * series.size,
                 "text": series.index,
                 "mode": "markers",
-                "marker": {"symbol": "line-ns-open", "color": "#20d9ba"},
+                "marker": {
+                    "symbol": "line-ns-open",
+                    "color": "#20d9ba",
+                },
                 "hoverinfo": "x+text",
-            }
+            },
         )
 
     if n_bin is not None:
@@ -388,7 +515,7 @@ def plot_context(
                 "y": shape_pdf_reference,
                 "line": {"color": "#9017e6"},
             },
-        )
+        ),
     )
 
     location_pdf_reference = context_dict["location_pdf_reference"]
@@ -405,7 +532,7 @@ def plot_context(
                     "y": location_pdf_reference,
                     "line": {"color": "#4e40d8"},
                 },
-            )
+            ),
         )
 
     context_abs = absolute(context_dict["context"])
@@ -420,9 +547,17 @@ def plot_context(
 
             context_abs *= pdf_max / context_abs_max
 
-    for name, indices, color in (
-        ("- Context", context_dict["context"] < 0, "#0088ff"),
-        ("+ Context", 0 < context_dict["context"], "#ff1968"),
+    for (name, indices, color,) in (
+        (
+            "- Context",
+            context_dict["context"] < 0,
+            "#0088ff",
+        ),
+        (
+            "+ Context",
+            0 < context_dict["context"],
+            "#ff1968",
+        ),
     ):
 
         data.append(
@@ -435,7 +570,13 @@ def plot_context(
                     "line": {"color": color},
                     "fill": "tozeroy",
                 },
-            )
+            ),
         )
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path)
+    plot_plotly(
+        {
+            "layout": layout,
+            "data": data,
+        },
+        html_file_path,
+    )

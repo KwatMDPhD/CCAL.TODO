@@ -1,40 +1,60 @@
-def summarize(d):
+def summarize(
+    di,
+):
 
-    print("{} k => {} unique value".format(len(d), len(set(d.values()))))
+    print(
+        "{} key => {} unique value".format(
+            len(di),
+            len(set(di.values())),
+        )
+    )
 
 
-def merge(d1, d2, function=None):
+def merge(
+    di1,
+    di2,
+    fu=None,
+):
 
-    d3 = {}
+    di3 = {}
 
-    for k in sorted(d1.keys() | d2.keys()):
+    for ke in sorted(di1.keys() | di2.keys()):
 
-        if k in d1 and k in d2:
+        if ke in di1 and ke in di2:
 
-            if function is None:
+            if fu is None:
 
-                v1 = d1[k]
+                va1 = di1[ke]
 
-                v2 = d2[k]
+                va2 = di2[ke]
 
-                if isinstance(v1, dict) and isinstance(v2, dict):
+                if isinstance(va1, dict,) and isinstance(
+                    va2,
+                    dict,
+                ):
 
-                    d3[k] = merge(v1, v2)
+                    di3[ke] = merge(
+                        va1,
+                        va2,
+                    )
 
                 else:
 
-                    d3[k] = v2
+                    di3[ke] = va2
 
             else:
 
-                d3[k] = function(d1[k], d2[k])
+                di3[ke] = fu(
+                    di1[ke],
+                    di2[ke],
+                )
 
-        elif k in d1:
+        elif ke in di1:
 
-            d3[k] = d1[k]
+            di3[ke] = di1[ke]
 
-        elif k in d2:
+        elif ke in di2:
 
-            d3[k] = d2[k]
+            di3[ke] = di2[ke]
 
-    return d3
+    return di3

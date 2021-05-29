@@ -1,12 +1,17 @@
-from subprocess import PIPE, run
+from subprocess import (
+    PIPE,
+    run as subprocess_run,
+)
 
 
-def command(c):
+def run(
+    co,
+):
 
-    print(c)
+    print(co)
 
-    return run(
-        c,
+    return subprocess_run(
+        co,
         shell=True,
         stdout=PIPE,
         stderr=PIPE,

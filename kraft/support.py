@@ -1,51 +1,51 @@
-from inspect import stack
+from inspect import (
+    stack,
+)
 
 
 def print_stack_state():
 
-    s = stack()[1]
+    st = stack()[1]
 
     print(
         "@{}({})".format(
-            s[3],
-            ", ".join("{}={}".format(k, v) for k, v in s[0].f_locals.items()),
-        )
+            st[3],
+            ", ".join(
+                "{}={}".format(
+                    va,
+                    an,
+                )
+                for va, an in st[0].f_locals.items()
+            ),
+        ),
     )
 
 
-def cast_builtin(o):
+def cast_builtin(
+    an,
+):
 
-    for b in [
+    for bu in [
         None,
         False,
         True,
     ]:
 
-        if o is b or o == str(b):
+        if an is bu or an == str(bu):
 
-            return b
+            return bu
 
-    for t in [int, float]:
+    for ty in [
+        int,
+        float,
+    ]:
 
         try:
 
-            return t(o)
+            return ty(an)
 
         except ValueError:
 
             pass
 
-    return o
-
-
-def check_is_iterable(an):
-
-    try:
-
-        iter(an)
-
-        return True
-
-    except:
-
-        return False
+    return an

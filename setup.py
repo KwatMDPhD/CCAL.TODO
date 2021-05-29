@@ -1,6 +1,10 @@
-from os import listdir
+from os import (
+    listdir,
+)
 
-from setuptools import setup
+from setuptools import (
+    setup,
+)
 
 n = "kraft"
 
@@ -24,5 +28,13 @@ setup(
         "requests",
     ),
     packages=(n,),
-    package_data={n: tuple("{}{}".format(d, n) for n in listdir(path=d))},
+    package_data={
+        n: tuple(
+            "{}{}".format(
+                d,
+                n,
+            )
+            for n in listdir(path=d)
+        )
+    },
 )

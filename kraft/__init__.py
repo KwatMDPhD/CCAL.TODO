@@ -1,31 +1,9 @@
-from . import (
-    CONSTANT,
-    array,
-    clustering,
-    dictionary,
-    function_heat_map,
-    gct,
-    geo,
-    geometry,
-    gff,
-    gmt,
-    gps_map,
-    grid,
-    information,
-    internet,
-    iterable,
-    json,
-    kernel_density,
-    matrix_factorization,
-    name_biology,
-    path,
-    pd,
-    plot,
-    point,
-    probability,
-    score_set,
-    shell,
-    significance,
-    string,
-    support,
-)
+from . import CONSTANT
+from . import any_
+from . import dictionary
+from . import number_
+from . import number__
+from . import path
+from . import shell
+from . import string
+from . import support

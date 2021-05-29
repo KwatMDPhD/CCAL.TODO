@@ -1,9 +1,16 @@
-from os.path import isfile
+from os.path import (
+    isfile,
+)
 
 import ravel
-from pandas import read_csv, value_counts
+from pandas import (
+    read_csv,
+    value_counts,
+)
 
-from .shell import command
+from .shell import (
+    command,
+)
 
 
 def get_variants_from_vcf_or_vcf_gz(
@@ -25,7 +32,7 @@ def get_variants_from_vcf_or_vcf_gz(
                 chromosome,
                 _1_indexed_inclusive_start_position,
                 _1_indexed_inclusive_end_position,
-            )
+            ),
         )
         .stdout.strip()
         .splitlines()
@@ -33,48 +40,90 @@ def get_variants_from_vcf_or_vcf_gz(
     )
 
 
-def get_vcf_genotype(ref, alt, gt):
+def get_vcf_genotype(
+    ref,
+    alt,
+    gt,
+):
 
-    genotypes = (ref, *alt.split(sep=","))
+    genotypes = (
+        ref,
+        *alt.split(sep=","),
+    )
 
-    return tuple(genotypes[int(i)] for i in gt.replace("/", "|").split(sep="|"))
+    return tuple(
+        genotypes[int(i)]
+        for i in gt.replace(
+            "/",
+            "|",
+        ).split(sep="|")
+    )
 
 
-def get_vcf_info_ann(info, key, n_ann=None):
+def get_vcf_info_ann(
+    info,
+    key,
+    n_ann=None,
+):
 
-    ann = get_vcf_info(info, "ANN")
+    ann = get_vcf_info(
+        info,
+        "ANN",
+    )
 
     if ann is not None:
 
         i = VCF_ANN_KEYS.index(key)
 
         return tuple(
-            ann_.split(sep="|", maxsplit=i + 1)[i]
-            for ann_ in ann.split(sep=",", maxsplit=n_ann + 1)[:n_ann]
+            ann_.split(
+                sep="|",
+                maxsplit=i + 1,
+            )[i]
+            for ann_ in ann.split(
+                sep=",",
+                maxsplit=n_ann + 1,
+            )[:n_ann]
         )
 
 
-def get_vcf_info(info, key):
+def get_vcf_info(
+    info,
+    key,
+):
 
     for info_ in info.split(sep=";"):
 
         if "=" in info_:
 
-            info_key, info_value = info_.split(sep="=", maxsplit=1)
+            (info_key, info_value,) = info_.split(
+                sep="=",
+                maxsplit=1,
+            )
 
             if info_key == key:
 
                 return info_value
 
 
-def get_vcf_sample_format(format_, key, sample):
+def get_vcf_sample_format(
+    format_,
+    key,
+    sample,
+):
 
     i = format_.split(sep=":").index(key)
 
-    return sample.split(sep=":", maxsplit=i + 1)[i]
+    return sample.split(
+        sep=":",
+        maxsplit=i + 1,
+    )[i]
 
 
-def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
+def make_variant_dict_from_vcf_row(
+    vcf_row,
+    n_info_ann=None,
+):
 
     variant_dict = {
         column: vcf_row[i]
@@ -87,14 +136,20 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
         if "=" in info:
 
-            info_field, info_value = info.split(sep="=", maxsplit=1)
+            (info_field, info_value,) = info.split(
+                sep="=",
+                maxsplit=1,
+            )
 
             if info_field == "ANN":
 
                 variant_dict["ANN"] = {}
 
-                for ann_index, ann in enumerate(
-                    info_value.split(sep=",", maxsplit=n_info_ann + 1)[:n_info_ann]
+                for (ann_index, ann,) in enumerate(
+                    info_value.split(
+                        sep=",",
+                        maxsplit=n_info_ann + 1,
+                    )[:n_info_ann],
                 ):
 
                     ann_values = ann.split(sep="|")
@@ -122,21 +177,39 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
     variant_dict["sample"] = {}
 
-    for sample_index, sample in enumerate(vcf_row[vcf_column_format_index + 1 :]):
+    for (
+        sample_index,
+        sample,
+    ) in enumerate(vcf_row[vcf_column_format_index + 1 :]):
 
         variant_dict["sample"][sample_index] = {
             format_field: sample_value
-            for format_field, sample_value in zip(format_fields, sample.split(sep=":"))
+            for format_field, sample_value in zip(
+                format_fields,
+                sample.split(sep=":"),
+            )
         }
 
     return variant_dict
 
 
-def make_variant_n_from_vcf_file_path(vcf_file_path, use_only_pass=True):
+def make_variant_n_from_vcf_file_path(
+    vcf_file_path,
+    use_only_pass=True,
+):
 
-    vcf = read_csv(vcf_file_path, sep="\t", comment="#", header=None, low_memory=False)
+    vcf = read_csv(
+        vcf_file_path,
+        sep="\t",
+        comment="#",
+        header=None,
+        low_memory=False,
+    )
 
-    filter_column = vcf.iloc[:, VCF_COLUMNS.index("FILTER")]
+    filter_column = vcf.iloc[
+        :,
+        VCF_COLUMNS.index("FILTER"),
+    ]
 
     if use_only_pass:
 
@@ -146,7 +219,14 @@ def make_variant_n_from_vcf_file_path(vcf_file_path, use_only_pass=True):
 
         vcf = vcf[is_pass]
 
-    variant_n = value_counts(ravel(vcf.apply(make_variant_n_from_vcf_row, axis=1)))
+    variant_n = value_counts(
+        ravel(
+            vcf.apply(
+                make_variant_n_from_vcf_row,
+                axis=1,
+            )
+        )
+    )
 
     variant_n.index.name = "Variant"
 
@@ -155,14 +235,26 @@ def make_variant_n_from_vcf_file_path(vcf_file_path, use_only_pass=True):
     return variant_n
 
 
-def make_variant_n_from_vcf_row(vcf_row):
+def make_variant_n_from_vcf_row(
+    vcf_row,
+):
 
     info = vcf_row[VCF_COLUMNS.index("INFO")]
 
     return set(
-        "{} ({})".format(gene_name, effect)
+        "{} ({})".format(
+            gene_name,
+            effect,
+        )
         for gene_name, effect in zip(
-            get_vcf_info_ann(info, "gene_name"), get_vcf_info_ann(info, "effect")
+            get_vcf_info_ann(
+                info,
+                "gene_name",
+            ),
+            get_vcf_info_ann(
+                info,
+                "effect",
+            ),
         )
     )
 
@@ -185,12 +277,30 @@ VCF_ANN_KEYS = (
     "distance_to_feature",
     "error",
 )
-VCF_COLUMNS = ("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT")
+VCF_COLUMNS = (
+    "CHROM",
+    "POS",
+    "ID",
+    "REF",
+    "ALT",
+    "QUAL",
+    "FILTER",
+    "INFO",
+    "FORMAT",
+)
 
 
-def count_gene_impacts_from_variant_dicts(variant_dicts, gene_name):
+def count_gene_impacts_from_variant_dicts(
+    variant_dicts,
+    gene_name,
+):
 
-    impact_counts = {"HIGH": 0, "MODERATE": 0, "LOW": 0, "MODIFIER": 0}
+    impact_counts = {
+        "HIGH": 0,
+        "MODERATE": 0,
+        "LOW": 0,
+        "MODIFIER": 0,
+    }
 
     for variant_dict in variant_dicts:
 
@@ -201,31 +311,51 @@ def count_gene_impacts_from_variant_dicts(variant_dicts, gene_name):
     return impact_counts
 
 
-def get_variant_start_and_end_positions(pos, ref, alt):
+def get_variant_start_and_end_positions(
+    pos,
+    ref,
+    alt,
+):
 
     if len(ref) == len(alt):
 
-        start_position, end_position = pos, pos + len(alt) - 1
+        (start_position, end_position,) = (
+            pos,
+            pos + len(alt) - 1,
+        )
 
     elif len(ref) < len(alt):
 
-        start_position, end_position = pos, pos + 1
+        (start_position, end_position,) = (
+            pos,
+            pos + 1,
+        )
 
     else:
 
-        start_position, end_position = pos + 1, pos + len(ref) - len(alt)
+        (start_position, end_position,) = (
+            pos + 1,
+            pos + len(ref) - len(alt),
+        )
 
-    return start_position, end_position
+    return (
+        start_position,
+        end_position,
+    )
 
 
-def update_variant_dict(variant_dict):
+def update_variant_dict(
+    variant_dict,
+):
 
     ref = variant_dict["REF"]
 
     alt = variant_dict["ALT"]
 
-    start_position, end_position = get_variant_start_and_end_positions(
-        int(variant_dict["POS"]), ref, alt
+    (start_position, end_position,) = get_variant_start_and_end_positions(
+        int(variant_dict["POS"]),
+        ref,
+        alt,
     )
 
     variant_dict["start_position"] = start_position
@@ -242,7 +372,11 @@ def update_variant_dict(variant_dict):
 
         if "GT" in sample_dict:
 
-            sample_dict["genotype"] = get_vcf_genotype(ref, alt, sample_dict["GT"])
+            sample_dict["genotype"] = get_vcf_genotype(
+                ref,
+                alt,
+                sample_dict["GT"],
+            )
 
         if "AD" in sample_dict and "DP" in sample_dict:
 

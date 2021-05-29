@@ -1,19 +1,31 @@
-from re import match, sub
+from re import (
+    match,
+    sub,
+)
 
 
-def title(s):
+def title(
+    st,
+):
 
-    t = ""
+    ti = ""
 
-    for isu, c in zip((c.isupper() for c in s), sub(r"_", " ", s.title())):
+    for (bo, ch,) in zip(
+        (ch.isupper() for ch in st),
+        sub(
+            r"_",
+            " ",
+            st.title(),
+        ),
+    ):
 
-        if isu:
+        if bo:
 
-            c = c.upper()
+            ch = ch.upper()
 
-        t += c
+        ti += ch
 
-    for w in [
+    for wo in [
         r" a ",
         r" an ",
         r" the ",
@@ -33,76 +45,101 @@ def title(s):
         r"'re",
     ]:
 
-        t = sub(w.title(), w, t)
+        ti = sub(
+            wo.title(),
+            wo,
+            ti,
+        )
 
-    return t
-
-
-def untitle(s):
-
-    return sub(r"[ -]", "_", s.lower())
-
-
-def check_is_version(s):
-
-    return bool(match(r"^(0\.|[1-9]+\.){2}(0\.|[1-9]+)$", s))
+    return ti
 
 
-def skip_quote_and_split(str_, separator=" "):
+def untitle(
+    st,
+):
 
-    splits = []
+    return sub(
+        r"[ -]",
+        "_",
+        st.lower(),
+    )
 
-    quote = ""
 
-    for split in str_.split(sep=separator):
+def check_is_version(
+    st,
+):
 
-        if '"' in split:
+    return bool(
+        match(
+            r"^(0\.|[1-9]+\.){2}(0\.|[1-9]+)$",
+            st,
+        )
+    )
 
-            if quote == "":
 
-                quote = split
+def split(
+    st,
+    se=" ",
+):
+
+    sp_ = []
+
+    qu = ""
+
+    for sp in st.split(se):
+
+        if '"' in sp or "'" in sp:
+
+            if qu == "":
+
+                qu = sp
 
             else:
 
-                quote += separator + split
+                qu += se + sp
 
-                splits.append(quote)
+                sp_.append(qu)
 
-                quote = ""
+                qu = ""
 
         else:
 
-            if quote == "":
+            if qu == "":
 
-                splits.append(split)
+                sp_.append(sp)
 
             else:
 
-                quote += split
+                qu += sp
 
-    if quote != "":
+    if qu != "":
 
-        splits.append(quote)
+        sp_.append(qu)
 
-    return splits
+    return sp_
 
 
-def make_unique(s_):
+def make_unique(
+    st_,
+):
 
-    u_ = []
+    un_ = []
 
-    for s in s_:
+    for st1 in st_:
 
-        o = s
+        st2 = st1
 
-        i = 2
+        ie = 2
 
-        while s in u_:
+        while st2 in un_:
 
-            s = "{}{}".format(o, i)
+            st2 = "{}{}".format(
+                st1,
+                ie,
+            )
 
-            i += 1
+            ie += 1
 
-        u_.append(s)
+        un_.append(st2)
 
-    return u_
+    return un_
