@@ -75,67 +75,67 @@ TYPE_COLORSCALE = {
 
 
 def _process_target(
-    ta_,
+    ta,
     ty,
     st,
 ):
 
     if ty == "continuous":
 
-        if 0 < ta_.std():
+        if 0 < ta.std():
 
-            ta_ = apply_on_1(ta_, normalize, "-0-", up=True,).clip(
+            ta = apply_on_1(ta, normalize, "-0-", up=True,).clip(
                 -st,
                 st,
             )
 
         return (
-            ta_,
+            ta,
             -st,
             st,
         )
 
     return (
-        ta_.copy(),
+        ta.copy(),
         None,
         None,
     )
 
 
-def _process_TODO(
-    nu_an_an,
+def _process_data(
+    da,
     ty,
     st,
 ):
 
-    nu_an_an = nu_an_an.copy()
+    da = da.copy()
 
     if ty == "continuous":
 
-        for ie in range(nu_an_an.shape[0]):
+        for ie in range(da.shape[0]):
 
-            nu_an_an[ie] = _process_target(
-                nu_an_an[ie],
+            da[ie] = _process_target(
+                da[ie],
                 ty,
                 st,
             )[0]
 
         return (
-            nu_an_an,
+            da,
             -st,
             st,
         )
 
     return (
-        nu_an_an,
+        da,
         None,
         None,
     )
 
 
-def _make_target_annotations(
-    la,
+def _make_target_annotation(
     y,
+    text,
 ):
 
     return [
@@ -143,7 +143,7 @@ def _make_target_annotations(
             "y": y,
             "x": 0,
             "xanchor": "right",
-            "text": "<b>{}</b>".format(la),
+            "text": "<b>{}</b>".format(text),
             **ANNOTATION,
         },
     ]
@@ -156,12 +156,12 @@ def _get_statistic_x(
     return 1.08 + ie / 6.4
 
 
-def _make_TODO_annotations(
-    la_,
-    nu_an_an,
+def _make_data_annotations(
     y,
-    he,
     ad,
+    he,
+    text_,
+    fu,
 ):
 
     annotations = []
@@ -188,14 +188,14 @@ def _make_TODO_annotations(
 
     y -= he
 
-    for ie1 in range(la_.size):
+    for ie1 in range(text_.size):
 
         annotations.append(
             {
                 "y": y,
                 "x": 0,
                 "xanchor": "right",
-                "text": la_[ie1],
+                "text": text_[ie1],
                 **ANNOTATION,
             },
         )
@@ -205,7 +205,7 @@ def _make_TODO_annotations(
             ma,
             pv,
             qv,
-        ) = nu_an_an[ie1]
+        ) = fu[ie1]
 
         for (ie2, text,) in enumerate(
             (
@@ -234,8 +234,8 @@ def _make_TODO_annotations(
 
 
 def make(
-    ta_,
-    nu_an_an,
+    ta,
+    da,
     fu,
     ac=True,
     n_jo=1,
@@ -244,44 +244,51 @@ def make(
     n_sh=10,
     pl=True,
     n_pl=8,
-    ty1="continuous",
-    ty2="continuous",
+    tyta="continuous",
+    tyda="continuous",
     st=nan,
     title="Function Heat Map",
     pa="",
 ):
 
-    ta_ = ta_.loc[ta_.index.intersection(nu_an_an.columns)]
+    #
+    la1_ = da.index.to_numpy()
+
+    #
+    ta = ta.loc[ta.index.intersection(da.columns)]
 
     if ac is not None:
 
-        ta_.sort_values(
+        ta.sort_values(
             ascending=ac,
             inplace=True,
         )
 
-    ta2_ = ta_.to_numpy()
+    la2_ = ta.index.to_numpy()
 
-    la2_ = ta_.index.to_numpy()
-
-    nu_an_an = nu_an_an.reindex(
+    da = da.reindex(
         labels=la2_,
         axis=1,
     )
 
-    nu2_an_an = nu_an_an.to_numpy()
+    #
+    si1 = la1_.size
 
+    si2 = la2_.size
+
+    #
+    taar = ta.to_numpy()
+
+    daar = da.to_numpy()
+
+    #
     if callable(fu):
-
-        (
-            si1,
-            si2,
-        ) = nu2_an_an.shape
 
         po = Pool(n_jo)
 
         seed(ra)
 
+        #
         print("Score ({})...".format(fu.__name__))
 
         sc_ = asarray(
@@ -289,19 +296,21 @@ def make(
                 apply_on_2,
                 (
                     [
-                        ta2_,
+                        taar,
                         ro,
                         fu,
                     ]
-                    for ro in nu2_an_an
+                    for ro in daar
                 ),
             ),
         )
 
+        #
         if 0 < n_sa:
 
             print("0.95 MoE ({} sample)...".format(n_sa))
 
+            #
             sc_ro_sa = full(
                 [
                     si1,
@@ -314,29 +323,32 @@ def make(
 
             for ie in range(n_sa):
 
+                #
                 ie_ = choice(
                     si2,
-                    size=n_ch,
-                    replace=False,
+                    n_ch,
+                    False,
                 )
 
-                ta3_ = ta2_[ie_]
+                taarra = taar[ie_]
 
+                #
                 sc_ro_sa[:, ie,] = po.starmap(
                     apply_on_2,
                     (
                         [
-                            ta3_,
+                            taarra,
                             ro,
                             fu,
                         ]
-                        for ro in nu2_an_an[
+                        for ro in daar[
                             :,
                             ie_,
                         ]
                     ),
                 )
 
+            #
             ma_ = asarray(
                 [
                     apply_on_1(
@@ -354,10 +366,12 @@ def make(
                 nan,
             )
 
+        #
         if 0 < n_sh:
 
             print("P-Value and Q-Value ({} shuffle)...".format(n_sh))
 
+            #
             sc_ro_sh = full(
                 [
                     si1,
@@ -366,24 +380,27 @@ def make(
                 nan,
             )
 
-            ta3_ = ta2_.copy()
+            taarra = taar.copy()
 
             for ie in range(n_sh):
 
-                shuffle(ta3_)
+                #
+                shuffle(taarra)
 
+                #
                 sc_ro_sh[:, ie,] = po.starmap(
                     apply_on_2,
                     (
                         [
-                            ta3_,
+                            taarra,
                             ro,
                             fu,
                         ]
-                        for ro in nu2_an_an
+                        for ro in daar
                     ),
                 )
 
+            #
             (pv_, qv_,) = get_p_value_q_value(
                 sc_,
                 sc_ro_sh.ravel(),
@@ -397,6 +414,7 @@ def make(
                 nan,
             )
 
+        #
         po.terminate()
 
         fu = DataFrame(
@@ -408,8 +426,8 @@ def make(
                     qv_,
                 ]
             ).T,
-            index=nu_an_an.index,
-            columns=[
+            la1_,
+            [
                 "Score",
                 "MoE",
                 "P-Value",
@@ -420,10 +438,11 @@ def make(
     else:
 
         fu = fu.loc[
-            nu_an_an.index,
+            la1_,
             :,
         ]
 
+    #
     fu.sort_values(
         "Score",
         ascending=False,
@@ -437,21 +456,24 @@ def make(
             sep="\t",
         )
 
-    nu_an_an = nu_an_an.loc[
-        fu.index,
-        :,
-    ]
-
+    #
     if pl:
 
-        la1_ = nu_an_an.index.to_numpy()
+        fuar = fu.to_numpy()
 
-        fu2 = fu.to_numpy()
+        la1_ = fu.index
 
-        if n_pl is not None and (n_pl / 2) < fu2.shape[0]:
+        da = da.loc[
+            la1_,
+            :,
+        ]
+
+        daar = da.to_numpy()
+
+        if n_pl is not None and (n_pl / 2) < si1:
 
             bo_ = check_is_extreme(
-                fu2[
+                fuar[
                     :,
                     0,
                 ],
@@ -459,51 +481,51 @@ def make(
                 n_ex=n_pl,
             )
 
-            fu2 = fu2[bo_]
+            fuar = fuar[bo_]
 
-            nu2_an_an = nu2_an_an[bo_]
+            daar = daar[bo_]
 
             la1_ = la1_[bo_]
 
-        (ta2_, mi1, ma1,) = _process_target(
-            ta2_,
-            ty1,
+        (tapl, mita, mata,) = _process_target(
+            taar,
+            tyta,
             st,
         )
 
-        (nu2_an_an, mi2, ma2,) = _process_TODO(
-            nu2_an_an,
-            ty2,
+        (dapl, mida, mada,) = _process_data(
+            daar,
+            tyda,
             st,
         )
 
-        if ty1 != "continuous":
+        if tyta != "continuous":
 
-            for (it, n_it,) in zip(
+            for (gr, si,) in zip(
                 *unique(
-                    ta2_,
+                    tapl,
                     return_counts=True,
                 )
             ):
 
-                if 2 < n_it:
+                if 2 < si:
 
-                    print("Clustering {}...".format(it))
+                    print("Clustering {}...".format(gr))
 
-                    ie_ = where(ta2_ == it)[0]
+                    ie_ = where(tapl == gr)[0]
 
-                    ie2_ = ie_[cluster(nu2_an_an.T[ie_])[0]]
+                    iecl_ = ie_[cluster(dapl.T[ie_])[0]]
 
-                    ta2_[ie_] = ta2_[ie2_]
+                    tapl[ie_] = tapl[iecl_]
 
-                    nu2_an_an[:, ie_,] = nu2_an_an[
+                    dapl[:, ie_,] = dapl[
                         :,
-                        ie2_,
+                        iecl_,
                     ]
 
-                    la2_[ie_] = la2_[ie2_]
+                    la2_[ie_] = la2_[iecl_]
 
-        n_ro = nu2_an_an.shape[0] + 2
+        n_ro = dapl.shape[0] + 2
 
         he = 1 / n_ro
 
@@ -514,13 +536,6 @@ def make(
                     24 * n_ro,
                 ),
                 "title": {"text": title},
-                "yaxis": {
-                    "domain": (
-                        0,
-                        1 - he * 2,
-                    ),
-                    "showticklabels": False,
-                },
                 "yaxis2": {
                     "domain": (
                         1 - he,
@@ -528,20 +543,27 @@ def make(
                     ),
                     "showticklabels": False,
                 },
-                "annotations": _make_target_annotations(
-                    ta_.name,
+                "yaxis": {
+                    "domain": (
+                        0,
+                        1 - he * 2,
+                    ),
+                    "showticklabels": False,
+                },
+                "annotations": _make_target_annotation(
+                    ta.name,
                     1 - he / 2,
                 ),
             },
             LAYOUT,
         )
 
-        layout["annotations"] += _make_TODO_annotations(
-            la1_,
-            fu2,
+        layout["annotations"] += _make_data_annotations(
             1 - he / 2 * 3,
-            he,
             True,
+            he,
+            la1_,
+            fuar,
         )
 
         if pa != "":
@@ -553,26 +575,26 @@ def make(
                 "data": [
                     {
                         "yaxis": "y2",
-                        "z": ta2_.reshape(
+                        "z": tapl.reshape(
                             [
                                 1,
                                 -1,
                             ]
                         ),
                         "x": la2_,
-                        "zmin": mi1,
-                        "zmax": ma1,
-                        "colorscale": TYPE_COLORSCALE[ty1],
+                        "zmin": mita,
+                        "zmax": mata,
+                        "colorscale": TYPE_COLORSCALE[tyta],
                         **HEATMAP,
                     },
                     {
                         "yaxis": "y",
-                        "z": nu2_an_an[::-1],
+                        "z": dapl[::-1],
                         "y": la1_[::-1],
                         "x": la2_,
-                        "zmin": mi2,
-                        "zmax": ma2,
-                        "colorscale": TYPE_COLORSCALE[ty2],
+                        "zmin": mida,
+                        "zmax": mada,
+                        "colorscale": TYPE_COLORSCALE[tyda],
                         **HEATMAP,
                     },
                 ],
@@ -585,46 +607,49 @@ def make(
 
 
 def summarize(
-    ta_,
-    TODO_,
+    ta,
+    bu_,
     it=True,
     ac=True,
-    ty1="continuous",
+    ty="continuous",
     st=nan,
     title="Function Heat Map Summary",
     pa="",
 ):
 
+    #
     if it:
 
-        for TODO in TODO_:
+        for bu in bu_:
 
-            ta_ = ta_.loc[ta_.index.intersection(TODO["TODO"].columns)]
+            ta = ta.loc[ta.index.intersection(bu["data"].columns)]
 
+    #
     if ac is not None:
 
-        ta_.sort_values(
+        ta.sort_values(
             ascending=ac,
             inplace=True,
         )
 
-    ta2_ = ta_.to_numpy()
+    #
+    la2_ = ta.index.to_numpy()
 
-    la2_ = ta_.index.to_numpy()
-
-    (ta2_, mi1, ma1,) = _process_target(
-        ta2_,
-        ty1,
+    #
+    (tapl, mita, mata,) = _process_target(
+        ta.to_numpy(),
+        ty,
         st,
     )
 
+    #
     n_ro = 1
 
     n_sp = 2
 
-    for TODO in TODO_:
+    for bu in bu_:
 
-        n_ro += TODO["TODO"].shape[0] + n_sp
+        n_ro += bu["data"].shape[0] + n_sp
 
     he = 1 / n_ro
 
@@ -635,17 +660,17 @@ def summarize(
                 24 * n_ro,
             ),
             "title": {"text": title},
-            "annotations": _make_target_annotations(
-                ta_.name,
+            "annotations": _make_target_annotation(
+                ta.name,
                 1 - he / 2,
             ),
         },
         LAYOUT,
     )
 
-    n_TO = len(TODO_)
+    n_bu = len(bu_)
 
-    yaxis = "yaxis{}".format(n_TO + 1)
+    yaxis = "yaxis{}".format(n_bu + 1)
 
     domain = (
         1 - he,
@@ -657,70 +682,65 @@ def summarize(
         "showticklabels": False,
     }
 
+    #
     data = [
         {
             "yaxis": yaxis.replace(
                 "axis",
                 "",
             ),
-            "z": ta2_.reshape(
+            "z": tapl.reshape(
                 [
                     1,
                     -1,
                 ]
             ),
             "x": la2_,
-            "zmin": mi1,
-            "zmax": ma1,
-            "colorscale": TYPE_COLORSCALE[ty1],
+            "zmin": mita,
+            "zmax": mata,
+            "colorscale": TYPE_COLORSCALE[ty],
             **HEATMAP,
         },
     ]
 
     for (
         ie,
-        TODO,
-    ) in enumerate(TODO_):
+        bu,
+    ) in enumerate(bu_):
 
-        nu_an_an = TODO["TODO"]
-
-        nu_an_an = nu_an_an.reindex(
+        da = bu["data"].reindex(
             labels=la2_,
             axis=1,
         )
 
-        fu2 = TODO["statistic"].loc[
-            nu_an_an.index,
+        fu = bu["statistic"].loc[
+            da.index,
             :,
         ]
 
-        fu2.sort_values(
+        fu.sort_values(
             "Score",
             ascending=False,
             inplace=True,
         )
 
-        nu_an_an = nu_an_an.loc[
-            fu2.index,
-            :,
-        ]
+        la1_ = fu.index.to_numpy()
 
-        nu2_an_an = nu_an_an.to_numpy()
-
-        la1_ = nu_an_an.index.to_numpy()
-
-        (nu2_an_an, mi2, ma2,) = _process_TODO(
-            nu2_an_an,
-            TODO["data_type"],
+        (dapl, mida, mada,) = _process_data(
+            da.loc[
+                la1_,
+                :,
+            ].to_numpy(),
+            bu["type"],
             st,
         )
 
-        yaxis = "yaxis{}".format(n_TO - ie)
+        yaxis = "yaxis{}".format(n_bu - ie)
 
         domain = (
             max(
                 0,
-                domain[0] - he * (n_sp + nu_an_an.shape[0]),
+                domain[0] - he * (n_sp + dapl.shape[0]),
             ),
             domain[0] - he * n_sp,
         )
@@ -736,12 +756,12 @@ def summarize(
                     "axis",
                     "",
                 ),
-                "z": nu2_an_an[::-1],
+                "z": dapl[::-1],
                 "y": la1_[::-1],
                 "x": la2_,
-                "zmin": mi2,
-                "zmax": ma2,
-                "colorscale": TYPE_COLORSCALE[TODO["data_type"]],
+                "zmin": mida,
+                "zmax": mada,
+                "colorscale": TYPE_COLORSCALE[bu["type"]],
                 **HEATMAP,
             },
         )
@@ -753,17 +773,17 @@ def summarize(
                 "y": y,
                 "x": 0.5,
                 "xanchor": "center",
-                "text": "<b>{}</b>".format(TODO["name"]),
+                "text": "<b>{}</b>".format(bu["name"]),
                 **ANNOTATION,
             },
         )
 
-        layout["annotations"] += _make_TODO_annotations(
-            la1_,
-            fu2.to_numpy(),
+        layout["annotations"] += _make_data_annotations(
             y,
-            he,
             ie == 0,
+            he,
+            la1_,
+            fu.to_numpy(),
         )
 
     plot_plotly(
