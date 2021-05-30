@@ -1,20 +1,9 @@
-def summarize(
-    di,
-):
+def summarize(di):
 
-    print(
-        "{} key => {} unique value".format(
-            len(di),
-            len(set(di.values())),
-        )
-    )
+    print("{} key => {} unique value".format(len(di), len(set(di.values()))))
 
 
-def merge(
-    di1,
-    di2,
-    fu=None,
-):
+def merge(di1, di2, fu=None):
 
     di3 = {}
 
@@ -28,15 +17,9 @@ def merge(
 
                 va2 = di2[ke]
 
-                if isinstance(va1, dict,) and isinstance(
-                    va2,
-                    dict,
-                ):
+                if isinstance(va1, dict) and isinstance(va2, dict):
 
-                    di3[ke] = merge(
-                        va1,
-                        va2,
-                    )
+                    di3[ke] = merge(va1, va2)
 
                 else:
 
@@ -44,10 +27,7 @@ def merge(
 
             else:
 
-                di3[ke] = fu(
-                    di1[ke],
-                    di2[ke],
-                )
+                di3[ke] = fu(di1[ke], di2[ke])
 
         elif ke in di1:
 

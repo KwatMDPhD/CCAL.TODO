@@ -1,10 +1,6 @@
-from os.path import (
-    dirname,
-)
+from os.path import dirname
 
-from numpy import (
-    finfo,
-)
+from numpy import finfo
 
 DATA_DIRECTORY_PATH = "{}/data/".format(dirname(__file__))
 

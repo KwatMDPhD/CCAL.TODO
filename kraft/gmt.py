@@ -1,6 +1,4 @@
-def _read(
-    pa,
-):
+def _read(pa):
 
     se_ge = {}
 
@@ -15,9 +13,7 @@ def _read(
     return se_ge
 
 
-def read(
-    pa_,
-):
+def read(pa_):
 
     se_ge = {}
 

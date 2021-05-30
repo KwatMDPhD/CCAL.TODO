@@ -1,18 +1,8 @@
-from numpy import (
-    asarray,
-    diff,
-)
+from numpy import asarray, diff
 
 
-def check_is_sorted(
-    nu_,
-):
+def check_is_sorted(nu_):
 
-    di_ = diff(
-        asarray(
-            nu_,
-            float,
-        )
-    )
+    di_ = diff(asarray(nu_, float))
 
     return (di_ <= 0).all() or (0 <= di_).all()

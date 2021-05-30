@@ -1,96 +1,45 @@
-from os import (
-    listdir,
-    mkdir,
-    walk,
-)
-from os.path import (
-    abspath,
-    dirname,
-    expanduser,
-    isdir,
-)
-from re import (
-    sub,
-)
+from os import listdir, mkdir, walk
+from os.path import abspath, dirname, expanduser, isdir
+from re import sub
 
 
-def clean(
-    na,
-):
+def clean(na):
 
-    nacl = sub(
-        r"(?u)[^-\w.]",
-        "_",
-        na.strip().lower(),
-    )
+    nacl = sub(r"(?u)[^-\w.]", "_", na.strip().lower())
 
-    print(
-        "{} => {}".format(
-            na,
-            nacl,
-        )
-    )
+    print("{} => {}".format(na, nacl))
 
     return nacl
 
 
-def get_absolute(
-    pa,
-):
+def get_absolute(pa):
 
     return abspath(expanduser(pa))
 
 
-def list(
-    di,
-):
+def list(di):
 
-    return [
-        "{}{}".format(
-            di,
-            na,
-        )
-        for na in listdir(di)
-        if na[0] != "."
-    ]
+    return ["{}{}".format(di, na) for na in listdir(di) if na[0] != "."]
 
 
-def get_child(
-    di,
-):
+def get_child(di):
 
     pa_ = []
 
-    for (
-        di,
-        di_,
-        fi_,
-    ) in walk(di):
+    for di, di_, fi_ in walk(di):
 
         for na in di_:
 
-            pa_.append(
-                "{}/{}/".format(
-                    di,
-                    na,
-                )
-            )
+            pa_.append("{}/{}/".format(di, na))
 
         for n in fi_:
 
-            pa_.append(
-                "{}/{}".format(
-                    di,
-                    na,
-                )
-            )
+            pa_.append("{}/{}".format(di, na))
 
     return pa_
 
 
-def make(
-    pa,
-):
+def make(pa):
 
     di = dirname(pa)
 

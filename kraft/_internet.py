@@ -1,22 +1,10 @@
-from os import (
-    remove,
-)
-from os.path import (
-    exists,
-)
-from shutil import (
-    unpack_archive,
-)
-from urllib.parse import (
-    unquote,
-)
-from urllib.request import (
-    urlretrieve,
-)
+from os import remove
+from os.path import exists
+from shutil import unpack_archive
+from urllib.parse import unquote
+from urllib.request import urlretrieve
 
-from requests import (
-    get,
-)
+from requests import get
 
 
 def get_name(
@@ -26,21 +14,13 @@ def get_name(
     return unquote(url).split(sep="/")[-1]
 
 
-def download(
-    url,
-    directory_path,
-    name=None,
-    overwrite=True,
-):
+def download(url, directory_path, name=None, overwrite=True):
 
     if name is None:
 
         name = get_name(url)
 
-    file_path = "{}{}".format(
-        directory_path,
-        name,
-    )
+    file_path = "{}{}".format(directory_path, name)
 
     if exists(file_path):
 
@@ -48,50 +28,25 @@ def download(
 
     if not exists(file_path) or overwrite:
 
-        print(
-            "{} => {}...".format(
-                url,
-                file_path,
-            )
-        )
+        print("{} => {}...".format(url, file_path))
 
         if url[:3] == "ftp":
 
-            urlretrieve(
-                url,
-                file_path,
-            )
+            urlretrieve(url, file_path)
 
         else:
 
-            with open(
-                file_path,
-                mode="wb",
-            ) as io:
+            with open(file_path, mode="wb") as io:
 
-                io.write(
-                    get(
-                        url,
-                        allow_redirects=True,
-                    ).content
-                )
+                io.write(get(url, allow_redirects=True).content)
 
     return file_path
 
 
-def download_and_extract(
-    url,
-    directory_path,
-):
+def download_and_extract(url, directory_path):
 
-    compressed_file_path = download(
-        url,
-        directory_path,
-    )
+    compressed_file_path = download(url, directory_path)
 
-    unpack_archive(
-        compressed_file_path,
-        extract_dir=directory_path,
-    )
+    unpack_archive(compressed_file_path, extract_dir=directory_path)
 
     remove(compressed_file_path)

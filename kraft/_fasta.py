@@ -1,14 +1,8 @@
-from os.path import (
-    isfile,
-)
+from os.path import isfile
 
-from pandas import (
-    read_csv,
-)
+from pandas import read_csv
 
-from .support import (
-    command,
-)
+from .support import command
 
 
 def get_chromosome_size_from_fasta_gz(
@@ -19,10 +13,7 @@ def get_chromosome_size_from_fasta_gz(
         "{}.fai".format(fasta_gz_file_path),
         sep="\t",
         header=None,
-        usecols=(
-            0,
-            1,
-        ),
+        usecols=(0, 1),
         index_col=0,
         squeeze=True,
     ).to_dict()
@@ -47,8 +38,8 @@ def get_sequence_from_fasta_or_fasta_gz(
                 chromosome,
                 _1_indexed_inclusive_start_position,
                 _1_indexed_inclusive_end_position,
-            ),
+            )
         )
         .stdout.strip()
-        .splitlines[1:],
+        .splitlines[1:]
     )

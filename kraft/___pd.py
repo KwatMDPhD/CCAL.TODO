@@ -9,16 +9,8 @@ from numpy import (
     nan,
     unique,
 )
-from numpy.random import (
-    choice,
-    seed,
-)
-from pandas import (
-    DataFrame,
-    Index,
-    concat,
-    isna,
-)
+from numpy.random import choice, seed
+from pandas import DataFrame, Index, concat, isna
 
 from .array import (
     check_is_not_na,
@@ -28,19 +20,10 @@ from .array import (
     normalize,
     shift_minimum,
 )
-from .CONSTANT import (
-    RANDOM_SEED,
-)
-from .grid import (
-    make_gn,
-)
-from .plot import (
-    plot_heat_map,
-    plot_histogram,
-)
-from .support import (
-    cast_builtin,
-)
+from .CONSTANT import RANDOM_SEED
+from .grid import make_gn
+from .plot import plot_heat_map, plot_histogram
+from .support import cast_builtin
 
 # ==============================================================================
 # Series
@@ -63,32 +46,17 @@ def binarize(
 
             axis_0_index += 1
 
-    matrix = full(
-        (
-            len(value_to_axis_0_index),
-            sr.size,
-        ),
-        0,
-    )
+    matrix = full((len(value_to_axis_0_index), sr.size), 0)
 
-    for (
-        axis_1_index,
-        value,
-    ) in enumerate(sr):
+    for (axis_1_index, value) in enumerate(sr):
 
         if not isna(value):
 
-            matrix[
-                value_to_axis_0_index[value],
-                axis_1_index,
-            ] = 1
+            matrix[value_to_axis_0_index[value], axis_1_index] = 1
 
     return DataFrame(
         data=matrix,
-        index=Index(
-            data=value_to_axis_0_index,
-            name=sr.name,
-        ),
+        index=Index(data=value_to_axis_0_index, name=sr.name),
         columns=sr.index,
     )
 
@@ -104,10 +72,7 @@ def error_axes(
 
     for label_ in df.axes:
 
-        (label_, count_,) = unique(
-            label_.to_numpy(),
-            return_counts=True,
-        )
+        (label_, count_) = unique(label_.to_numpy(), return_counts=True)
 
         is_not_na_ = check_is_not_na(label_)
 
@@ -116,20 +81,11 @@ def error_axes(
         assert (count_ == 1).all()
 
 
-def peek(
-    df,
-    axis_0_axis_n=4,
-    axis_1_label_n=2,
-):
+def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
 
     print("-" * 80)
 
-    print(
-        df.iloc[
-            :axis_0_axis_n,
-            :axis_1_label_n,
-        ]
-    )
+    print(df.iloc[:axis_0_axis_n, :axis_1_label_n])
 
     print(df.shape)
 
@@ -140,10 +96,7 @@ def count_value(
     df,
 ):
 
-    for (
-        label,
-        value_,
-    ) in df.items():
+    for (label, value_) in df.items():
 
         print("-" * 80)
 
@@ -156,21 +109,13 @@ def count_value(
         print("-" * 80)
 
 
-def drop_axis_label(
-    df,
-    axis,
-    not_na_min_n=None,
-    not_na_unique_min_n=None,
-):
+def drop_axis_label(df, axis, not_na_min_n=None, not_na_unique_min_n=None):
 
     assert not_na_min_n is not None and not_na_unique_min_n is not None
 
     shape_before = df.shape
 
-    is_keep_ = full(
-        shape_before[axis],
-        True,
-    )
+    is_keep_ = full(shape_before[axis], True)
 
     if axis == 0:
 
@@ -189,10 +134,7 @@ def drop_axis_label(
             not_na_min_n = not_na_min_n * shape_before[apply_axis]
 
         is_keep_ &= apply_along_axis(
-            _check_has_enough_not_na,
-            apply_axis,
-            matrix,
-            not_na_min_n,
+            _check_has_enough_not_na, apply_axis, matrix, not_na_min_n
         )
 
     if not_na_unique_min_n is not None:
@@ -202,42 +144,23 @@ def drop_axis_label(
             not_na_unique_min_n = not_na_unique_min_n * df.shape[apply_axis]
 
         is_keep_ &= apply_along_axis(
-            _check_has_enough_not_na_unique,
-            apply_axis,
-            matrix,
-            not_na_unique_min_n,
+            _check_has_enough_not_na_unique, apply_axis, matrix, not_na_unique_min_n
         )
 
     if axis == 0:
 
-        df = df.loc[
-            is_keep_,
-            :,
-        ]
+        df = df.loc[is_keep_, :]
 
     elif axis == 1:
 
-        df = df.loc[
-            :,
-            is_keep_,
-        ]
+        df = df.loc[:, is_keep_]
 
-    print(
-        "{} => {}".format(
-            shape_before,
-            df.shape,
-        )
-    )
+    print("{} => {}".format(shape_before, df.shape))
 
     return df
 
 
-def drop_axes_label(
-    df,
-    axis=None,
-    not_na_min_n=None,
-    not_na_unique_min_n=None,
-):
+def drop_axes_label(df, axis=None, not_na_min_n=None, not_na_unique_min_n=None):
 
     shape_before = df.shape
 
@@ -250,10 +173,7 @@ def drop_axes_label(
     while True:
 
         df = drop_axis_label(
-            df,
-            axis,
-            not_na_min_n=not_na_min_n,
-            not_na_unique_min_n=not_na_unique_min_n,
+            df, axis, not_na_min_n=not_na_min_n, not_na_unique_min_n=not_na_unique_min_n
         )
 
         shape_after = df.shape
@@ -275,18 +195,9 @@ def drop_axes_label(
         can_return = True
 
 
-def sample(
-    df,
-    axis_0_label_n,
-    axis_1_label_n,
-    random_seed=RANDOM_SEED,
-    **kwarg_,
-):
+def sample(df, axis_0_label_n, axis_1_label_n, random_seed=RANDOM_SEED, **kwarg_):
 
-    (
-        axis_0_size,
-        axis_1_size,
-    ) = df.shape
+    (axis_0_size, axis_1_size) = df.shape
 
     seed(seed=random_seed)
 
@@ -296,11 +207,7 @@ def sample(
 
             axis_0_label_n = int(axis_0_label_n * axis_0_size)
 
-        axis_0_index_ = choice(
-            axis_0_size,
-            size=axis_0_label_n,
-            **kwarg_,
-        )
+        axis_0_index_ = choice(axis_0_size, size=axis_0_label_n, **kwarg_)
 
     if axis_1_label_n is not None:
 
@@ -308,11 +215,7 @@ def sample(
 
             axis_1_label_n = int(axis_1_label_n * axis_1_size)
 
-        axis_1_index_ = choice(
-            axis_1_size,
-            size=axis_1_label_n,
-            **kwarg_,
-        )
+        axis_1_index_ = choice(axis_1_size, size=axis_1_label_n, **kwarg_)
 
     matrix = df.to_numpy()
 
@@ -327,56 +230,29 @@ def sample(
     if axis_0_label_n is not None and axis_1_label_n is not None:
 
         return DataFrame(
-            data=matrix[
-                axis_0_index_,
-                axis_1_index_,
-            ],
-            index=Index(
-                data=axis_0_label_[axis_0_index_],
-                name=axis_0_name,
-            ),
-            columns=Index(
-                data=axis_1_label_[axis_1_index_],
-                name=axis_1_name,
-            ),
+            data=matrix[axis_0_index_, axis_1_index_],
+            index=Index(data=axis_0_label_[axis_0_index_], name=axis_0_name),
+            columns=Index(data=axis_1_label_[axis_1_index_], name=axis_1_name),
         )
 
     elif axis_0_label_n is not None:
 
         return DataFrame(
             data=matrix[axis_0_index_],
-            index=Index(
-                data=axis_0_label_[axis_0_index_],
-                name=axis_0_name,
-            ),
-            columns=Index(
-                data=axis_1_label_,
-                name=axis_1_name,
-            ),
+            index=Index(data=axis_0_label_[axis_0_index_], name=axis_0_name),
+            columns=Index(data=axis_1_label_, name=axis_1_name),
         )
 
     elif axis_1_label_n is not None:
 
         return DataFrame(
-            data=matrix[
-                :,
-                axis_1_index_,
-            ],
-            index=Index(
-                data=axis_0_label_,
-                name=axis_0_name,
-            ),
-            columns=Index(
-                data=axis_1_label_[axis_1_index_],
-                name=axis_1_name,
-            ),
+            data=matrix[:, axis_1_index_],
+            index=Index(data=axis_0_label_, name=axis_0_name),
+            columns=Index(data=axis_1_label_[axis_1_index_], name=axis_1_name),
         )
 
 
-def sync(
-    df_,
-    axis,
-):
+def sync(df_, axis):
 
     df_0 = df_[0]
 
@@ -388,75 +264,41 @@ def sync(
 
     label_ = asarray(sorted(label_))
 
-    return tuple(
-        df.reindex(
-            labels=label_,
-            axis=axis,
-        )
-        for df in df_
-    )
+    return tuple(df.reindex(labels=label_, axis=axis) for df in df_)
 
 
 def pivot(
-    axis_0_label_,
-    axis_1_label_,
-    value_,
-    axis_0_name,
-    axis_1_name,
-    function=None,
+    axis_0_label_, axis_1_label_, value_, axis_0_name, axis_1_name, function=None
 ):
 
     axis_0_label_to_index = map_integer(axis_0_label_)[0]
 
     axis_1_label_to_index = map_integer(axis_1_label_)[0]
 
-    matrix = full(
-        (
-            len(axis_0_label_to_index),
-            len(axis_1_label_to_index),
-        ),
-        nan,
-    )
+    matrix = full((len(axis_0_label_to_index), len(axis_1_label_to_index)), nan)
 
-    for (axis_0_label, axis_1_label, value,) in zip(
-        axis_0_label_,
-        axis_1_label_,
-        value_,
+    for (axis_0_label, axis_1_label, value) in zip(
+        axis_0_label_, axis_1_label_, value_
     ):
 
         axis_0_index = axis_0_label_to_index[axis_0_label]
 
         axis_1_index = axis_1_label_to_index[axis_1_label]
 
-        value_now = matrix[
-            axis_0_index,
-            axis_1_index,
-        ]
+        value_now = matrix[axis_0_index, axis_1_index]
 
         if isnan(value_now) or function is None:
 
-            matrix[
-                axis_0_index,
-                axis_1_index,
-            ] = value
+            matrix[axis_0_index, axis_1_index] = value
 
         else:
 
-            matrix[axis_0_index, axis_1_index,] = function(
-                value_now,
-                value,
-            )
+            matrix[axis_0_index, axis_1_index] = function(value_now, value)
 
     return DataFrame(
         data=matrix,
-        index=Index(
-            data=axis_0_label_to_index,
-            name=axis_0_name,
-        ),
-        columns=Index(
-            data=axis_1_label_to_index,
-            name=axis_1_name,
-        ),
+        index=Index(data=axis_0_label_to_index, name=axis_0_name),
+        columns=Index(data=axis_1_label_to_index, name=axis_1_name),
     )
 
 
@@ -511,22 +353,10 @@ def summarize(
         if plot:
 
             plot_histogram(
-                (
-                    is_nan_matrix.sum(axis=1),
-                    is_nan_matrix.sum(axis=0),
-                ),
-                (
-                    axis_0_label_,
-                    axis_1_label_,
-                ),
-                (
-                    axis_0_name,
-                    axis_1_name,
-                ),
-                layout={
-                    "title": title,
-                    "xaxis": {"title": {"text": "N NaN"}},
-                },
+                (is_nan_matrix.sum(axis=1), is_nan_matrix.sum(axis=0)),
+                (axis_0_label_, axis_1_label_),
+                (axis_0_name, axis_1_name),
+                layout={"title": title, "xaxis": {"title": {"text": "N NaN"}}},
             )
 
     is_not_nan_matrix = logical_not(is_nan_matrix)
@@ -545,17 +375,11 @@ def summarize(
 
         label_ = asarray(
             tuple(
-                "{}_{}".format(
-                    label_0,
-                    label_1,
-                )
-                for label_0, label_1 in make_gn(
-                    (
-                        axis_0_label_,
-                        axis_1_label_,
-                    )
-                )[is_not_nan_matrix.ravel()]
-            ),
+                "{}_{}".format(label_0, label_1)
+                for label_0, label_1 in make_gn((axis_0_label_, axis_1_label_))[
+                    is_not_nan_matrix.ravel()
+                ]
+            )
         )
 
         if histogram_max_size < matrix_not_nan.size:
@@ -564,16 +388,9 @@ def summarize(
 
             index_ = concatenate(
                 (
-                    choice(
-                        matrix_not_nan.size,
-                        size=histogram_max_size,
-                        replace=False,
-                    ),
-                    (
-                        matrix_not_nan.argmin(),
-                        matrix_not_nan.argmax(),
-                    ),
-                ),
+                    choice(matrix_not_nan.size, size=histogram_max_size, replace=False),
+                    (matrix_not_nan.argmin(), matrix_not_nan.argmax()),
+                )
             )
 
             matrix_not_nan = matrix_not_nan[index_]
@@ -584,35 +401,14 @@ def summarize(
             (matrix_not_nan,),
             (label_,),
             ("All",),
-            layout={
-                "title": title,
-                "xaxis": {"title": {"text": "(Not-NaN) Number"}},
-            },
+            layout={"title": title, "xaxis": {"title": {"text": "(Not-NaN) Number"}}},
         )
 
         plot_histogram(
-            (
-                median(
-                    matrix,
-                    axis=1,
-                ),
-                median(
-                    matrix,
-                    axis=0,
-                ),
-            ),
-            (
-                axis_0_label_,
-                axis_1_label_,
-            ),
-            (
-                axis_0_name,
-                axis_1_name,
-            ),
-            layout={
-                "title": title,
-                "xaxis": {"title": {"text": "(Not-NaN) Median"}},
-            },
+            (median(matrix, axis=1), median(matrix, axis=0)),
+            (axis_0_label_, axis_1_label_),
+            (axis_0_name, axis_1_name),
+            layout={"title": title, "xaxis": {"title": {"text": "(Not-NaN) Median"}}},
         )
 
 
@@ -637,20 +433,13 @@ def collapse(
 # ==============================================================================
 
 
-def separate_type(
-    feature_x_sample,
-    drop_constant=True,
-    prefix_feature=True,
-):
+def separate_type(feature_x_sample, drop_constant=True, prefix_feature=True):
 
     continuous_row_ = []
 
     binary_x_sample_ = []
 
-    for (
-        _,
-        row,
-    ) in feature_x_sample.iterrows():
+    for (_, row) in feature_x_sample.iterrows():
 
         try:
 
@@ -707,24 +496,15 @@ def separate_type(
 
         binary_x_sample = None
 
-    return (
-        continuous_x_sample,
-        binary_x_sample,
-    )
+    return (continuous_x_sample, binary_x_sample)
 
 
-def _check_has_enough_not_na(
-    vector,
-    not_na_min_n,
-):
+def _check_has_enough_not_na(vector, not_na_min_n):
 
     return not_na_min_n <= check_is_not_na(vector).sum()
 
 
-def _check_has_enough_not_na_unique(
-    vector,
-    not_na_unique_min_n,
-):
+def _check_has_enough_not_na_unique(vector, not_na_unique_min_n):
 
     return not_na_unique_min_n <= unique(vector[check_is_not_na(vector)]).size
 
@@ -748,42 +528,21 @@ def process(
 
     if 0 < len(drop_feature_):
 
-        print(
-            "Dropping {}: {}...".format(
-                feature_x_sample.index.name,
-                drop_feature_,
-            )
-        )
+        print("Dropping {}: {}...".format(feature_x_sample.index.name, drop_feature_))
 
-        feature_x_sample = feature_x_sample.drop(
-            labels=drop_feature_,
-            errors="ignore",
-        )
+        feature_x_sample = feature_x_sample.drop(labels=drop_feature_, errors="ignore")
 
-        summarize(
-            feature_x_sample,
-            **kwarg_,
-        )
+        summarize(feature_x_sample, **kwarg_)
 
     if 0 < len(drop_sample_):
 
-        print(
-            "Dropping {}: {}...".format(
-                feature_x_sample.columns.name,
-                drop_sample_,
-            )
-        )
+        print("Dropping {}: {}...".format(feature_x_sample.columns.name, drop_sample_))
 
         feature_x_sample = feature_x_sample.drop(
-            labels=drop_sample_,
-            axis=1,
-            errors="ignore",
+            labels=drop_sample_, axis=1, errors="ignore"
         )
 
-        summarize(
-            feature_x_sample,
-            **kwarg_,
-        )
+        summarize(feature_x_sample, **kwarg_)
 
     if nanize is not None:
 
@@ -794,15 +553,10 @@ def process(
         matrix[matrix <= nanize] = nan
 
         feature_x_sample = DataFrame(
-            data=matrix,
-            index=feature_x_sample.index,
-            columns=feature_x_sample.columns,
+            data=matrix, index=feature_x_sample.index, columns=feature_x_sample.columns
         )
 
-        summarize(
-            feature_x_sample,
-            **kwarg_,
-        )
+        summarize(feature_x_sample, **kwarg_)
 
     if drop_not_na_min_n is not None or drop_not_na_unique_min_n is not None:
 
@@ -827,85 +581,48 @@ def process(
 
         if shape != feature_x_sample.shape:
 
-            summarize(
-                feature_x_sample,
-                **kwarg_,
-            )
+            summarize(feature_x_sample, **kwarg_)
 
     if log_base is not None:
 
         print(
-            "Logging (log_min={}, log_base={})...".format(
-                log_shift_minimum,
-                log_base,
-            ),
+            "Logging (log_min={}, log_base={})...".format(log_shift_minimum, log_base)
         )
 
         matrix = feature_x_sample.to_numpy()
 
         if log_shift_minimum is not None:
 
-            matrix = shift_minimum(
-                matrix,
-                log_shift_minimum,
-            )
+            matrix = shift_minimum(matrix, log_shift_minimum)
 
         feature_x_sample = DataFrame(
-            data=log(
-                matrix,
-                base=log_base,
-            ),
+            data=log(matrix, base=log_base),
             index=feature_x_sample.index,
             columns=feature_x_sample.columns,
         )
 
-        summarize(
-            feature_x_sample,
-            **kwarg_,
-        )
+        summarize(feature_x_sample, **kwarg_)
 
     if normalize_method is not None:
 
-        print(
-            "Axis-{} {} normalizing...".format(
-                normalize_axis,
-                normalize_method,
-            )
-        )
+        print("Axis-{} {} normalizing...".format(normalize_axis, normalize_method))
 
         feature_x_sample = DataFrame(
             data=apply_along_axis(
-                normalize,
-                normalize_axis,
-                feature_x_sample.to_numpy(),
-                normalize_method,
+                normalize, normalize_axis, feature_x_sample.to_numpy(), normalize_method
             ),
             index=feature_x_sample.index,
             columns=feature_x_sample.columns,
         )
 
-        summarize(
-            feature_x_sample,
-            **kwarg_,
-        )
+        summarize(feature_x_sample, **kwarg_)
 
     if clip_min is not None or clip_max is not None:
 
-        print(
-            "Clipping |{} - {}|...".format(
-                clip_min,
-                clip_max,
-            )
-        )
+        print("Clipping |{} - {}|...".format(clip_min, clip_max))
 
-        feature_x_sample = feature_x_sample.clip(
-            lower=clip_min,
-            upper=clip_max,
-        )
+        feature_x_sample = feature_x_sample.clip(lower=clip_min, upper=clip_max)
 
-        summarize(
-            feature_x_sample,
-            **kwarg_,
-        )
+        summarize(feature_x_sample, **kwarg_)
 
     return feature_x_sample

@@ -1,23 +1,11 @@
-from re import (
-    match,
-    sub,
-)
+from re import match, sub
 
 
-def title(
-    st,
-):
+def title(st):
 
     ti = ""
 
-    for (bo, ch,) in zip(
-        (ch.isupper() for ch in st),
-        sub(
-            r"_",
-            " ",
-            st.title(),
-        ),
-    ):
+    for bo, ch in zip((ch.isupper() for ch in st), sub(r"_", " ", st.title())):
 
         if bo:
 
@@ -45,42 +33,22 @@ def title(
         r"'re",
     ]:
 
-        ti = sub(
-            wo.title(),
-            wo,
-            ti,
-        )
+        ti = sub(wo.title(), wo, ti)
 
     return ti
 
 
-def untitle(
-    st,
-):
+def untitle(st):
 
-    return sub(
-        r"[ -]",
-        "_",
-        st.lower(),
-    )
+    return sub(r"[ -]", "_", st.lower())
 
 
-def check_is_version(
-    st,
-):
+def check_is_version(st):
 
-    return bool(
-        match(
-            r"^(0\.|[1-9]+\.){2}(0\.|[1-9]+)$",
-            st,
-        )
-    )
+    return bool(match(r"^(0\.|[1-9]+\.){2}(0\.|[1-9]+)$", st))
 
 
-def split(
-    st,
-    se=" ",
-):
+def split(st, se=" "):
 
     sp_ = []
 
@@ -119,9 +87,7 @@ def split(
     return sp_
 
 
-def make_unique(
-    st_,
-):
+def make_unique(st_):
 
     un_ = []
 
@@ -133,10 +99,7 @@ def make_unique(
 
         while st2 in un_:
 
-            st2 = "{}{}".format(
-                st1,
-                ie,
-            )
+            st2 = "{}{}".format(st1, ie)
 
             ie += 1
 

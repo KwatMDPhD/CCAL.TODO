@@ -1,6 +1,4 @@
-from inspect import (
-    stack,
-)
+from inspect import stack
 
 
 def print_stack_state():
@@ -10,38 +8,20 @@ def print_stack_state():
     print(
         "@{}({})".format(
             st[3],
-            ", ".join(
-                "{}={}".format(
-                    va,
-                    an,
-                )
-                for (
-                    va,
-                    an,
-                ) in st[0].f_locals.items()
-            ),
-        ),
+            ", ".join("{}={}".format(va, an) for va, an in st[0].f_locals.items()),
+        )
     )
 
 
-def cast_builtin(
-    an,
-):
+def cast_builtin(an):
 
-    for bu in [
-        None,
-        False,
-        True,
-    ]:
+    for bu in [None, False, True]:
 
         if an is bu or an == str(bu):
 
             return bu
 
-    for ty in [
-        int,
-        float,
-    ]:
+    for ty in [int, float]:
 
         try:
 

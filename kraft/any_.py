@@ -1,11 +1,7 @@
-from numpy import (
-    asarray,
-)
+from numpy import asarray
 
 
-def check_is_iterable(
-    an_,
-):
+def check_is_iterable(an_):
 
     try:
 
@@ -18,14 +14,7 @@ def check_is_iterable(
         return False
 
 
-def flatten(
-    an_,
-    ty_=(
-        tuple,
-        list,
-        set,
-    ),
-):
+def flatten(an_, ty_=(tuple, list, set)):
 
     an_ = list(an_)
 
@@ -33,10 +22,7 @@ def flatten(
 
     while ie < len(an_):
 
-        while isinstance(
-            an_[ie],
-            ty_,
-        ):
+        while isinstance(an_[ie], ty_):
 
             if len(an_[ie]) == 0:
 
@@ -55,9 +41,7 @@ def flatten(
     return an_
 
 
-def map_integer(
-    an_,
-):
+def map_integer(an_):
 
     an_it = {}
 
@@ -75,20 +59,11 @@ def map_integer(
 
             it += 1
 
-    return (
-        an_it,
-        it_an,
-    )
+    return an_it, it_an
 
 
-def check_is_in(
-    an1_,
-    an2_,
-):
+def check_is_in(an1_, an2_):
 
     an2_no = {an2: None for an2 in an2_}
 
-    return asarray(
-        [an1 in an2_no for an1 in an1_],
-        bool,
-    )
+    return asarray([an1 in an2_no for an1 in an1_], bool)

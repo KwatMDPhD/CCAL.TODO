@@ -1,6 +1,4 @@
-from scipy.spatial import (
-    Delaunay,
-)
+from scipy.spatial import Delaunay
 
 # TODO: refactor
 
@@ -15,11 +13,7 @@ def triangulation(
 
     triangulation = Delaunay(point_x_dimension)
 
-    for (
-        index_0,
-        index_1,
-        index_2,
-    ) in triangulation.simplices:
+    for (index_0, index_1, index_2) in triangulation.simplices:
 
         point_0 = triangulation.points[index_0]
 
@@ -43,10 +37,7 @@ def triangulation(
 
         _1.append(None)
 
-    return (
-        _0,
-        _1,
-    )
+    return (_0, _1)
 
 
 def convex_hull(
@@ -59,10 +50,7 @@ def convex_hull(
 
     triangulation = Delaunay(point_x_dimension)
 
-    for (
-        index_0,
-        index_1,
-    ) in triangulation.convex_hull:
+    for (index_0, index_1) in triangulation.convex_hull:
 
         point_0 = triangulation.points[index_0]
 
@@ -80,7 +68,4 @@ def convex_hull(
 
         _1.append(None)
 
-    return (
-        _0,
-        _1,
-    )
+    return (_0, _1)

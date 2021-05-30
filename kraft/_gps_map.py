@@ -1,41 +1,15 @@
-from gzip import (
-    open as gzip_open,
-)
-from pickle import (
-    dump,
-    load,
-)
+from gzip import open as gzip_open
+from pickle import dump, load
 
-from numpy import (
-    full,
-    nan,
-    unique,
-)
-from scipy.spatial import (
-    Delaunay,
-)
+from numpy import full, nan, unique
+from scipy.spatial import Delaunay
 
-from .CONSTANT import (
-    RANDOM_SEED,
-)
-from .grid import (
-    make_g1,
-)
-from .kernel_density import (
-    get_bandwidth,
-)
-from .plot import (
-    CATEGORICAL_COLORSCALE,
-    plot_heat_map,
-)
-from .point import (
-    map_point,
-    plot_node_point,
-    pull_point,
-)
-from .probability import (
-    get_probability,
-)
+from .CONSTANT import RANDOM_SEED
+from .grid import make_g1
+from .kernel_density import get_bandwidth
+from .plot import CATEGORICAL_COLORSCALE, plot_heat_map
+from .point import map_point, plot_node_point, pull_point
+from .probability import get_probability
 
 
 class GPSMap:
@@ -55,11 +29,7 @@ class GPSMap:
 
         self.node_ = node_
 
-        self.node_x_dimension = map_point(
-            node_x_node,
-            2,
-            random_seed=random_seed,
-        )
+        self.node_x_dimension = map_point(node_x_node, 2, random_seed=random_seed)
 
         self.point_name = point_name
 
@@ -67,10 +37,7 @@ class GPSMap:
 
         self.point_x_node = point_x_node
 
-        self.point_x_dimension = pull_point(
-            self.node_x_dimension,
-            self.point_x_node,
-        )
+        self.point_x_dimension = pull_point(self.node_x_dimension, self.point_x_node)
 
         self.node_marker_size = node_marker_size
 
@@ -102,12 +69,7 @@ class GPSMap:
             **kwarg_,
         )
 
-    def set_group(
-        self,
-        group_,
-        group_colorscale=CATEGORICAL_COLORSCALE,
-        grid_n=128,
-    ):
+    def set_group(self, group_, group_colorscale=CATEGORICAL_COLORSCALE, grid_n=128):
 
         if group_ == "closest_node":
 
@@ -121,29 +83,18 @@ class GPSMap:
 
         # TODO: refactor
 
-        mask = full(
-            shape,
-            nan,
-        )
+        mask = full(shape, nan)
 
         triangulation = Delaunay(self.node_x_dimension)
 
-        self._1d_grid = make_g1(
-            0,
-            1,
-            1e-3,
-            grid_n,
-        )
+        self._1d_grid = make_g1(0, 1, 1e-3, grid_n)
 
         for index_0 in range(grid_n):
 
             for index_1 in range(grid_n):
 
-                mask[index_0, index_1,] = triangulation.find_simplex(
-                    (
-                        self._1d_grid[index_0],
-                        self._1d_grid[index_1],
-                    ),
+                mask[index_0, index_1] = triangulation.find_simplex(
+                    (self._1d_grid[index_0], self._1d_grid[index_1])
                 )
 
         group_to_nd_probability_vector = {}
@@ -161,27 +112,15 @@ class GPSMap:
                 _1d_grid_=_1d_grid_,
             )[1].reshape(shape)
 
-        self.nd_probability_vector = full(
-            shape,
-            nan,
-        )
+        self.nd_probability_vector = full(shape, nan)
 
-        self.nd_group_vector = full(
-            shape,
-            nan,
-        )
+        self.nd_group_vector = full(shape, nan)
 
         for index_0 in range(grid_n):
 
             for index_1 in range(grid_n):
 
-                if (
-                    mask[
-                        index_0,
-                        index_1,
-                    ]
-                    != -1
-                ):
+                if mask[index_0, index_1] != -1:
 
                     best_probability = 0
 
@@ -192,10 +131,7 @@ class GPSMap:
                         nd_probability_vector,
                     ) in group_to_nd_probability_vector.items():
 
-                        probability = nd_probability_vector[
-                            index_0,
-                            index_1,
-                        ]
+                        probability = nd_probability_vector[index_0, index_1]
 
                         if best_probability < probability:
 
@@ -203,15 +139,9 @@ class GPSMap:
 
                             best_group = group
 
-                    self.nd_probability_vector[
-                        index_0,
-                        index_1,
-                    ] = best_probability
+                    self.nd_probability_vector[index_0, index_1] = best_probability
 
-                    self.nd_group_vector[
-                        index_0,
-                        index_1,
-                    ] = best_group
+                    self.nd_group_vector[index_0, index_1] = best_group
 
         plot_heat_map(
             self.point_x_node.T,
@@ -232,10 +162,7 @@ class GPSMap:
             self.node_x_dimension,
             new_point_name,
             new_point_,
-            pull_point(
-                self.node_x_dimension,
-                new_point_x_node,
-            ),
+            pull_point(self.node_x_dimension, new_point_x_node),
             group_=None,
             group_colorscale=self.group_colorscale,
             _1d_grid=self._1d_grid,
@@ -255,17 +182,8 @@ def read(
         return load(io)
 
 
-def write(
-    file_path,
-    gps_map,
-):
+def write(file_path, gps_map):
 
-    with gzip_open(
-        file_path,
-        mode="wb",
-    ) as io:
+    with gzip_open(file_path, mode="wb") as io:
 
-        dump(
-            gps_map,
-            io,
-        )
+        dump(gps_map, io)

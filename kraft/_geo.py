@@ -11,7 +11,9 @@ from .pd import collapse, peek, separate_type
 from .support import cast_builtin
 
 
-def _parse_block(block):
+def _parse_block(
+    block,
+):
 
     dict_table = block.split(sep="_table_begin\n", maxsplit=1)
 
@@ -19,7 +21,7 @@ def _parse_block(block):
 
     for line in dict_table[0].splitlines()[:-1]:
 
-        key, value = line[1:].split(sep=" = ", maxsplit=1)
+        (key, value) = line[1:].split(sep=" = ", maxsplit=1)
 
         if key in dict:
 
@@ -58,7 +60,9 @@ def _name_feature(feature_, platform, platform_table):
 
         label = "Gene Symbol"
 
-        def function(name):
+        def function(
+            name,
+        ):
 
             if name != "":
 
@@ -68,7 +72,9 @@ def _name_feature(feature_, platform, platform_table):
 
         label = "UCSC_RefGene_Name"
 
-        def function(name):
+        def function(
+            name,
+        ):
 
             return name.split(sep=";", maxsplit=1)[0]
 
@@ -76,7 +82,9 @@ def _name_feature(feature_, platform, platform_table):
 
         label = "gene_assignment"
 
-        def function(name):
+        def function(
+            name,
+        ):
 
             if isinstance(name, str) and name not in ("", "---"):
 
@@ -86,7 +94,9 @@ def _name_feature(feature_, platform, platform_table):
 
         label = "Associated Gene"
 
-        def function(name):
+        def function(
+            name,
+        ):
 
             return name.split(sep=" // ", maxsplit=1)[0]
 
@@ -137,20 +147,24 @@ def _name_feature(feature_, platform, platform_table):
         return asarray(tuple(feature_to_name.get(feature) for feature in feature_))
 
 
-def _get_prefix(row):
+def _get_prefix(
+    row,
+):
 
     return tuple(
         set(
             value.split(sep=": ", maxsplit=1)[0]
             for value in row
             if isinstance(value, str)
-        ),
+        )
     )
 
 
-def _update_with_suffix(array_2d):
+def _update_with_suffix(
+    array_2d,
+):
 
-    axis_0_size, axis_1_size = array_2d.shape
+    (axis_0_size, axis_1_size) = array_2d.shape
 
     for index_0 in range(axis_0_size):
 
@@ -161,11 +175,13 @@ def _update_with_suffix(array_2d):
             if isinstance(value, str):
 
                 array_2d[index_0, index_1] = cast_builtin(
-                    value.split(sep=": ", maxsplit=1)[1],
+                    value.split(sep=": ", maxsplit=1)[1]
                 )
 
 
-def _focus(feature_x_sample):
+def _focus(
+    feature_x_sample,
+):
 
     feature_x_sample = feature_x_sample.loc[
         (
@@ -182,8 +198,7 @@ def _focus(feature_x_sample):
         _update_with_suffix(feature_x_sample.to_numpy())
 
         feature_x_sample.index = Index(
-            data=(prefix_[0] for prefix_ in prefix__),
-            name=feature_x_sample.index.name,
+            data=(prefix_[0] for prefix_ in prefix__), name=feature_x_sample.index.name
         )
 
     return feature_x_sample
@@ -193,8 +208,7 @@ def get_gse(gse_id, directory_path, **kwarg_):
 
     file_path = download(
         "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
-            gse_id[:-3],
-            gse_id,
+            gse_id[:-3], gse_id
         ),
         directory_path,
         **kwarg_
@@ -206,7 +220,7 @@ def get_gse(gse_id, directory_path, **kwarg_):
 
     for block in open(file_path, mode="rt", errors="replace").read().split(sep="\n^"):
 
-        header, block = block.split(sep="\n", maxsplit=1)
+        (header, block) = block.split(sep="\n", maxsplit=1)
 
         block_type = header.split(sep=" = ", maxsplit=1)[0]
 
@@ -255,10 +269,7 @@ def get_gse(gse_id, directory_path, **kwarg_):
 
     feature_x_sample.index.name = "Feature"
 
-    _x_sample_ = (
-        feature_x_sample,
-        *separate_type(_focus(feature_x_sample)),
-    )
+    _x_sample_ = (feature_x_sample, *separate_type(_focus(feature_x_sample)))
 
     for _x_sample in _x_sample_:
 
@@ -266,7 +277,7 @@ def get_gse(gse_id, directory_path, **kwarg_):
 
             peek(_x_sample)
 
-    for platform, dict in platform_.items():
+    for (platform, dict) in platform_.items():
 
         data = dict.pop("data")
 

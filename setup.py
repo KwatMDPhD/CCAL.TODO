@@ -1,20 +1,16 @@
-from os import (
-    listdir,
-)
+from os import listdir
 
-from setuptools import (
-    setup,
-)
+from setuptools import setup
 
-n = "kraft"
+na = "kraft"
 
-d = "{}/data/".format(n)
+pa = "{}/data/".format(na)
 
 setup(
-    name=n,
+    name=na,
     version="0.1.0",
     python_requires=">=3.6,<3.9",
-    install_requires=(
+    install_requires=[
         "numpy",
         "pandas",
         "xlrd",
@@ -26,15 +22,7 @@ setup(
         "plotly",
         "click",
         "requests",
-    ),
-    packages=(n,),
-    package_data={
-        n: tuple(
-            "{}{}".format(
-                d,
-                n,
-            )
-            for n in listdir(path=d)
-        )
-    },
+    ],
+    packages=[na],
+    package_data={na: ["{}{}".format(pa, na) for na in listdir(pa) if na[0] != "."]},
 )

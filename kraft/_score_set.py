@@ -1,26 +1,11 @@
-from multiprocessing import (
-    Pool,
-)
+from multiprocessing import Pool
 
-from numpy import (
-    asarray,
-    nan,
-    where,
-)
-from pandas import (
-    DataFrame,
-    Series,
-)
+from numpy import asarray, nan, where
+from pandas import DataFrame, Series
 
-from .array import (
-    normalize,
-)
-from .information import (
-    get_jsd,
-)
-from .plot import (
-    plot_plotly,
-)
+from .array import normalize
+from .information import get_jsd
+from .plot import plot_plotly
 
 
 def score_sample_and_set(
@@ -73,18 +58,10 @@ def score_sample_and_set(
                 {
                     "layout": {"title": {"text": "Probability"}},
                     "data": [
-                        {
-                            "name": "Hit",
-                            "y": h_1_p,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": m_1_p,
-                            "mode": "lines",
-                        },
+                        {"name": "Hit", "y": h_1_p, "mode": "lines"},
+                        {"name": "Miss", "y": m_1_p, "mode": "lines"},
                     ],
-                },
+                }
             )
 
         h_1_p_rc = h_1_p[::-1].cumsum()[::-1]
@@ -97,18 +74,10 @@ def score_sample_and_set(
                 {
                     "layout": {"title": {"text": "< Cumulative Probability"}},
                     "data": [
-                        {
-                            "name": "Hit",
-                            "y": h_1_p_rc,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": m_1_p_rc,
-                            "mode": "lines",
-                        },
+                        {"name": "Hit", "y": h_1_p_rc, "mode": "lines"},
+                        {"name": "Miss", "y": m_1_p_rc, "mode": "lines"},
                     ],
-                },
+                }
             )
 
         r_h = h_1_p_rc
@@ -137,23 +106,11 @@ def score_sample_and_set(
                 {
                     "layout": {"title": {"text": "Magnitude"}},
                     "data": [
-                        {
-                            "name": "Hit",
-                            "y": h_a_p,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": m_a_p,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "All",
-                            "y": a_p,
-                            "mode": "lines",
-                        },
+                        {"name": "Hit", "y": h_a_p, "mode": "lines"},
+                        {"name": "Miss", "y": m_a_p, "mode": "lines"},
+                        {"name": "All", "y": a_p, "mode": "lines"},
                     ],
-                },
+                }
             )
 
         add = 1e-8
@@ -176,59 +133,27 @@ def score_sample_and_set(
                 {
                     "layout": {"title": {"text": "Cumulative Probability >"}},
                     "data": [
-                        {
-                            "name": "Hit",
-                            "y": h_a_p_lc,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": m_a_p_lc,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "All",
-                            "y": a_p_lc,
-                            "mode": "lines",
-                        },
+                        {"name": "Hit", "y": h_a_p_lc, "mode": "lines"},
+                        {"name": "Miss", "y": m_a_p_lc, "mode": "lines"},
+                        {"name": "All", "y": a_p_lc, "mode": "lines"},
                     ],
-                },
+                }
             )
 
             plot_plotly(
                 {
                     "layout": {"title": {"text": "< Cumulative Probability"}},
                     "data": [
-                        {
-                            "name": "Hit",
-                            "y": h_a_p_rc,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": m_a_p_rc,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "All",
-                            "y": a_p_rc,
-                            "mode": "lines",
-                        },
+                        {"name": "Hit", "y": h_a_p_rc, "mode": "lines"},
+                        {"name": "Miss", "y": m_a_p_rc, "mode": "lines"},
+                        {"name": "All", "y": a_p_rc, "mode": "lines"},
                     ],
-                },
+                }
             )
 
-        (l_h, l_m, l,) = get_jsd(
-            h_a_p_lc,
-            m_a_p_lc,
-            reference_vector=a_p_lc,
-        )
+        (l_h, l_m, l) = get_jsd(h_a_p_lc, m_a_p_lc, reference_vector=a_p_lc)
 
-        (r_h, r_m, r,) = get_jsd(
-            h_a_p_rc,
-            m_a_p_rc,
-            reference_vector=a_p_rc,
-        )
+        (r_h, r_m, r) = get_jsd(h_a_p_rc, m_a_p_rc, reference_vector=a_p_rc)
 
         s = r - l
 
@@ -236,11 +161,7 @@ def score_sample_and_set(
 
         opacity = 0.32
 
-        base = {
-            "name": "Signal",
-            "mode": "lines",
-            "marker": {"color": "#ff1968"},
-        }
+        base = {"name": "Signal", "mode": "lines", "marker": {"color": "#ff1968"}}
 
         if method == "pk":
 
@@ -248,48 +169,22 @@ def score_sample_and_set(
                 {
                     "layout": {"title": {"text": "Signal >"}},
                     "data": [
-                        {
-                            "name": "Hit",
-                            "y": l_h,
-                            "opacity": opacity,
-                            "mode": "lines",
-                        },
-                        {
-                            "name": "Miss",
-                            "y": l_m,
-                            "opacity": opacity,
-                            "mode": "lines",
-                        },
-                        {
-                            "y": l,
-                            **base,
-                        },
+                        {"name": "Hit", "y": l_h, "opacity": opacity, "mode": "lines"},
+                        {"name": "Miss", "y": l_m, "opacity": opacity, "mode": "lines"},
+                        {"y": l, **base},
                     ],
-                },
+                }
             )
 
         plot_plotly(
             {
                 "layout": {"title": {"text": "< Signal"}},
                 "data": [
-                    {
-                        "name": "Hit",
-                        "y": r_h,
-                        "opacity": opacity,
-                        "mode": "lines",
-                    },
-                    {
-                        "name": "Miss",
-                        "y": r_m,
-                        "opacity": opacity,
-                        "mode": "lines",
-                    },
-                    {
-                        "y": r,
-                        **base,
-                    },
+                    {"name": "Hit", "y": r_h, "opacity": opacity, "mode": "lines"},
+                    {"name": "Miss", "y": r_m, "opacity": opacity, "mode": "lines"},
+                    {"y": r, **base},
                 ],
-            },
+            }
         )
 
     score = s.sum() / s.size
@@ -300,27 +195,12 @@ def score_sample_and_set(
 
         layout = {
             "title": {
-                "text": "{}<br>Score (method={}) = {:.2f}".format(
-                    title,
-                    method,
-                    score,
-                ),
+                "text": "{}<br>Score (method={}) = {:.2f}".format(title, method, score),
                 "x": 0.5,
             },
             "xaxis": {"anchor": "y"},
-            "yaxis": {
-                "domain": (
-                    0,
-                    y_fraction,
-                ),
-                "title": element_socre_name,
-            },
-            "yaxis2": {
-                "domain": (
-                    y_fraction + 0.08,
-                    1,
-                )
-            },
+            "yaxis": {"domain": (0, y_fraction), "title": element_socre_name},
+            "yaxis2": {"domain": (y_fraction + 0.08, 1)},
             "legend_orientation": "h",
             "legend": {"y": -0.24},
         }
@@ -333,10 +213,7 @@ def score_sample_and_set(
                 "y": element_scores.to_numpy(),
                 "text": element_scores.index.to_numpy(),
                 "mode": "lines",
-                "line": {
-                    "width": 0,
-                    "color": "#20d8ba",
-                },
+                "line": {"width": 0, "color": "#20d8ba"},
                 "fill": "tozeroy",
             },
             {
@@ -356,61 +233,33 @@ def score_sample_and_set(
             },
         ]
 
-        for (name, _1, color,) in (
-            (
-                "- Enrichment",
-                s < 0,
-                "#0088ff",
-            ),
-            (
-                "+ Enrichment",
-                0 < s,
-                "#ff1968",
-            ),
+        for (name, _1, color) in (
+            ("- Enrichment", s < 0, "#0088ff"),
+            ("+ Enrichment", 0 < s, "#ff1968"),
         ):
 
             data.append(
                 {
                     "name": name,
                     "yaxis": "y2",
-                    "y": where(
-                        _1,
-                        s,
-                        0,
-                    ),
+                    "y": where(_1, s, 0),
                     "mode": "lines",
-                    "line": {
-                        "width": 0,
-                        "color": color,
-                    },
+                    "line": {"width": 0, "color": color},
                     "fill": "tozeroy",
-                },
+                }
             )
 
-        plot_plotly(
-            {
-                "layout": layout,
-                "data": data,
-            },
-            file_path=file_path,
-        )
+        plot_plotly({"layout": layout, "data": data}, file_path=file_path)
 
     return score
 
 
-def _score_sample_and_sets(
-    element_scores,
-    set_to_elements,
-    method,
-):
+def _score_sample_and_sets(element_scores, set_to_elements, method):
 
     print(element_scores.name)
 
     element_scores = Series(
-        data=normalize(
-            element_scores.to_numpy(),
-            "-0-",
-        ),
+        data=normalize(element_scores.to_numpy(), "-0-"),
         index=element_scores.index,
         name=element_scores.name,
     ).sort_values()
@@ -428,11 +277,7 @@ def _score_sample_and_sets(
 
 
 def score_samples_and_sets(
-    element_x_sample,
-    set_to_elements,
-    method="ks",
-    n_job=1,
-    file_path=None,
+    element_x_sample, set_to_elements, method="ks", n_job=1, file_path=None
 ):
 
     pool = Pool(processes=n_job)
@@ -442,14 +287,10 @@ def score_samples_and_sets(
             pool.starmap(
                 _score_sample_and_sets,
                 (
-                    (
-                        scores,
-                        set_to_elements,
-                        method,
-                    )
+                    (scores, set_to_elements, method)
                     for _, scores in element_x_sample.items()
                 ),
-            ),
+            )
         ).T,
         index=set_to_elements.keys(),
         columns=element_x_sample.columns,
@@ -457,9 +298,6 @@ def score_samples_and_sets(
 
     if file_path is not None:
 
-        set_x_sample.to_csv(
-            file_path,
-            sep="\t",
-        )
+        set_x_sample.to_csv(file_path, sep="\t")
 
     return set_x_sample

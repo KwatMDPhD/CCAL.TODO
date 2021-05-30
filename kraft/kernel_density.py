@@ -1,37 +1,16 @@
-from KDEpy import (
-    FFTKDE,
-)
-from statsmodels.nonparametric.kernel_density import (
-    KDEMultivariate,
-)
+from KDEpy import FFTKDE
+from statsmodels.nonparametric.kernel_density import KDEMultivariate
 
-from .CONSTANT import (
-    FLOAT_RESOLUTION,
-)
-from .grid import (
-    make_1d_grid,
-    make_nd_grid,
-    plot as grid_plot,
-)
+from .CONSTANT import FLOAT_RESOLUTION
+from .grid import make_1d_grid, make_nd_grid, plot as grid_plot
 
 
-def get_bandwidth(
-    nu_,
-):
+def get_bandwidth(nu_):
 
-    return KDEMultivariate(
-        nu_,
-        "c",
-    ).bw[0]
+    return KDEMultivariate(nu_, "c").bw[0]
 
 
-def get_density(
-    nu_po_di,
-    ba_=(),
-    co__=(),
-    pl=True,
-    di_=(),
-):
+def get_density(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
 
     nu_di_po = nu_po_di.T
 
@@ -43,15 +22,7 @@ def get_density(
 
     if len(co__) != n_di:
 
-        co__ = [
-            make_1d_grid(
-                nu_.min(),
-                nu_.max(),
-                0.1,
-                8,
-            )
-            for nu_ in nu_di_po
-        ]
+        co__ = [make_1d_grid(nu_.min(), nu_.max(), 0.1, 8) for nu_ in nu_di_po]
 
     co_po_di = make_nd_grid(co__)
 
@@ -59,14 +30,6 @@ def get_density(
 
     if pl:
 
-        grid_plot(
-            co_po_di,
-            de_,
-            di_=di_,
-            nu="Density",
-        )
+        grid_plot(co_po_di, de_, di_=di_, nu="Density")
 
-    return (
-        co_po_di,
-        de_,
-    )
+    return co_po_di, de_

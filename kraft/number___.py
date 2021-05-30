@@ -13,45 +13,29 @@ from numpy import (
     sort,
     unique,
 )
-from scipy.stats import (
-    rankdata,
-)
+from scipy.stats import rankdata
 
 
-def check_is_not_nan(
-    nu___,
-):
+def check_is_not_nan(nu___):
 
     return logical_not(isnan(nu___))
 
 
-def get_not_nan_unique(
-    nu___,
-):
+def get_not_nan_unique(nu___):
 
     return unique(nu___[check_is_not_nan(nu___)])
 
 
-def clip(
-    nu___,
-    st,
-):
+def clip(nu___, st):
 
     me = nu___.mean()
 
     st *= nu___.std()
 
-    return nu___.clip(
-        me - st,
-        me + st,
-    )
+    return nu___.clip(me - st, me + st)
 
 
-def normalize(
-    nu___,
-    me,
-    ra="average",
-):
+def normalize(nu___, me, ra="average"):
 
     if me == "-0-":
 
@@ -69,16 +53,10 @@ def normalize(
 
     elif me == "rank":
 
-        return rankdata(
-            nu___,
-            ra,
-        ).reshape(nu___.shape)
+        return rankdata(nu___, ra).reshape(nu___.shape)
 
 
-def shift_minimum(
-    nu___,
-    mi,
-):
+def shift_minimum(nu___, mi):
 
     if mi == "0<":
 
@@ -97,28 +75,16 @@ def shift_minimum(
     return nu___ + mi - nu___.min()
 
 
-def log(
-    nu___,
-    ba=2,
-):
+def log(nu___, ba=2):
 
     return {2: log2, "e": loge, 10: log10,}[
         ba
     ](nu___)
 
 
-def guess_type(
-    nu___,
-    ma=16,
-):
+def guess_type(nu___, ma=16):
 
-    if all(
-        isinstance(
-            nu,
-            integer,
-        )
-        for nu in nu___.ravel()
-    ):
+    if all(isinstance(nu, integer) for nu in nu___.ravel()):
 
         n_ca = unique(nu___).size
 
@@ -133,43 +99,25 @@ def guess_type(
     return "continuous"
 
 
-def check_is_extreme(
-    nu___,
-    di,
-    th_=(),
-    n_ex=0,
-    st=0.0,
-):
+def check_is_extreme(nu___, di, th_=(), n_ex=0, st=0.0):
 
     nuno___ = nu___[check_is_not_nan(nu___)]
 
     if 0 < len(th_):
 
-        (
-            lo,
-            hi,
-        ) = th_
+        lo, hi = th_
 
     elif 0 < n_ex:
 
         if n_ex < 1:
 
-            lo = quantile(
-                nuno___,
-                n_ex,
-            )
+            lo = quantile(nuno___, n_ex)
 
-            hi = quantile(
-                nuno___,
-                1 - n_ex,
-            )
+            hi = quantile(nuno___, 1 - n_ex)
 
         else:
 
-            nuno___ = sort(
-                nuno___,
-                None,
-            )
+            nuno___ = sort(nuno___, None)
 
             lo = nuno___[n_ex - 1]
 
@@ -187,10 +135,7 @@ def check_is_extreme(
 
     if di == "<>":
 
-        return logical_or(
-            nu___ <= lo,
-            hi <= nu___,
-        )
+        return logical_or(nu___ <= lo, hi <= nu___)
 
     elif di == "<":
 
@@ -201,28 +146,15 @@ def check_is_extreme(
         return hi <= nu___
 
 
-def apply_on_1(
-    nu___,
-    fu,
-    *ar_,
-    up=False,
-    **ke_,
-):
+def apply_on_1(nu___, fu, *ar_, up=False, **ke_):
 
     bo___ = check_is_not_nan(nu___)
 
-    re = fu(
-        nu___[bo___],
-        *ar_,
-        **ke_,
-    )
+    re = fu(nu___[bo___], *ar_, **ke_)
 
     if up:
 
-        nu2___ = full(
-            nu___.shape,
-            nan,
-        )
+        nu2___ = full(nu___.shape, nan)
 
         nu2___[bo___] = re
 
@@ -231,46 +163,20 @@ def apply_on_1(
     return re
 
 
-def apply_on_2(
-    nu1___,
-    nu2___,
-    fu,
-    *ar_,
-    **ke_,
-):
+def apply_on_2(nu1___, nu2___, fu, *ar_, **ke_):
 
-    bo___ = logical_and(
-        check_is_not_nan(nu1___),
-        check_is_not_nan(nu2___),
-    )
+    bo___ = logical_and(check_is_not_nan(nu1___), check_is_not_nan(nu2___))
 
-    return fu(
-        nu1___[bo___],
-        nu2___[bo___],
-        *ar_,
-        **ke_,
-    )
+    return fu(nu1___[bo___], nu2___[bo___], *ar_, **ke_)
 
 
-def apply_along_on_2(
-    nu1_an_an,
-    nu2_an_an,
-    fu,
-    *ar_,
-    **ke_,
-):
+def apply_along_on_2(nu1_an_an, nu2_an_an, fu, *ar_, **ke_):
 
     n_ro1 = nu1_an_an.shape[0]
 
     n_ro2 = nu2_an_an.shape[0]
 
-    nu3_an_an = full(
-        [
-            n_ro1,
-            n_ro2,
-        ],
-        nan,
-    )
+    nu3_an_an = full([n_ro1, n_ro2], nan)
 
     for ie1 in range(n_ro1):
 
@@ -280,11 +186,6 @@ def apply_along_on_2(
 
             nu2_ = nu2_an_an[ie2]
 
-            nu3_an_an[ie1, ie2,] = fu(
-                nu1_,
-                nu2_,
-                *ar_,
-                **ke_,
-            )
+            nu3_an_an[ie1, ie2] = fu(nu1_, nu2_, *ar_, **ke_)
 
     return nu3_an_an
