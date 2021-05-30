@@ -15,7 +15,10 @@ def print_stack_state():
                     va,
                     an,
                 )
-                for va, an in st[0].f_locals.items()
+                for (
+                    va,
+                    an,
+                ) in st[0].f_locals.items()
             ),
         ),
     )

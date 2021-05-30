@@ -20,7 +20,7 @@ from plotly.io import (
 from .dictionary import (
     merge,
 )
-from .number__ import (
+from .number___ import (
     apply_on_1,
     normalize,
 )
@@ -67,11 +67,11 @@ def plot_plotly(
         figure,
     )
 
-    config = {"editable": True}
+    co = {"editable": True}
 
     show(
         figure,
-        config=config,
+        config=co,
     )
 
     if pa != "":
@@ -79,7 +79,7 @@ def plot_plotly(
         write_html(
             figure,
             pa,
-            config=config,
+            config=co,
         )
 
 
@@ -127,7 +127,7 @@ def get_color(
 def plot_point(
     an_po_pa,
     annotation_font_size=16,
-    title=None,
+    title="",
     pa="",
 ):
 
@@ -208,10 +208,10 @@ def _get_center_index(
 def plot_heat_map(
     nu_an_an,
     colorscale=CONTINUOUS_COLORSCALE,
-    gr1_=None,
-    gr2_=None,
-    colorscale1=None,
-    colorscale2=None,
+    gr1_=(),
+    gr2_=(),
+    colorscale1=CATEGORICAL_COLORSCALE,
+    colorscale2=CATEGORICAL_COLORSCALE,
     gr1_la=None,
     gr2_la=None,
     layout=None,
@@ -220,7 +220,7 @@ def plot_heat_map(
     pa="",
 ):
 
-    if gr1_ is not None:
+    if 0 < len(gr1_):
 
         ie_ = argsort(gr1_)
 
@@ -231,7 +231,7 @@ def plot_heat_map(
             :,
         ]
 
-    if gr2_ is not None:
+    if 0 < len(gr2_):
 
         ie_ = argsort(gr2_)
 
@@ -301,7 +301,7 @@ def plot_heat_map(
         },
     ]
 
-    if gr1_ is not None:
+    if 0 < len(gr1_):
 
         gr1_ = gr1_[::-1]
 
@@ -351,7 +351,7 @@ def plot_heat_map(
                 for gr in unique(gr1_)
             ]
 
-    if gr2_ is not None:
+    if 0 < len(gr2_):
 
         colorbar_x += 0.1
 
@@ -412,7 +412,7 @@ def plot_heat_map(
 def plot_bubble_map(
     si_an_an,
     co_an_an=None,
-    ma=32,
+    ma=24,
     colorscale=CONTINUOUS_COLORSCALE,
     layout=None,
     pa="",
@@ -505,7 +505,7 @@ def plot_bubble_map(
 
 
 def plot_histogram(
-    se_,
+    nu__,
     no=None,
     xbins_size=None,
     colorscale=CATEGORICAL_COLORSCALE,
@@ -513,15 +513,15 @@ def plot_histogram(
     pa="",
 ):
 
-    ru = all(se.size <= 1e3 for se in se_)
+    ru = all(nu_.size <= 1e3 for nu_ in nu__)
 
-    n_se = len(se_)
+    n_tr = len(nu__)
 
     if ru:
 
         he = 0.04
 
-        ma = n_se * he
+        ma = n_tr * he
 
         mi = ma + he
 
@@ -570,22 +570,22 @@ def plot_histogram(
 
     for (
         ie,
-        se,
-    ) in enumerate(se_):
+        nu_,
+    ) in enumerate(nu__):
 
         co = get_color(
             colorscale,
             ie
             / max(
                 1,
-                (n_se - 1),
+                (n_tr - 1),
             ),
         )
 
         trace = {
             "legendgroup": ie,
-            "name": se.name,
-            "x": se.to_numpy(),
+            "name": nu_.name,
+            "x": nu_.to_numpy(),
         }
 
         data.append(
@@ -604,8 +604,8 @@ def plot_histogram(
             data.append(
                 {
                     "showlegend": False,
-                    "y": [ie] * se.size,
-                    "text": se.index,
+                    "y": [ie] * nu_.size,
+                    "text": nu_.index,
                     "mode": "markers",
                     "marker": {
                         "symbol": "line-ns-open",

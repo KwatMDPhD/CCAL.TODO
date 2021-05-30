@@ -1,7 +1,9 @@
 from numpy import (
     absolute,
     apply_along_axis,
+    isnan,
     log2,
+    nan,
     product,
     s_,
     unique,
@@ -56,15 +58,15 @@ def get_probability(
 
 
 def _get_probability(
-    nu__,
+    nu___,
 ):
 
-    return nu__ / nu__.sum()
+    return nu___ / nu___.sum()
 
 
 def get_posterior_probability(
     nu_po_di,
-    ta=None,
+    ta=nan,
     ba_=(),
     co__=(),
     pl=True,
@@ -84,18 +86,18 @@ def get_posterior_probability(
         -1,
     ]
 
-    pr__ = pr_.reshape([co_.size for co_ in get_1d_grid(co_po_di)])
+    pr___ = pr_.reshape([co_.size for co_ in get_1d_grid(co_po_di)])
 
-    po__ = (
+    po___ = (
         apply_along_axis(
             _get_probability,
             -1,
-            pr__,
+            pr___,
         )
         * get_1d_grid_resolution(ta_)
     )
 
-    po_ = po__.reshape(co_po_di.shape[0])
+    po_ = po___.reshape(co_po_di.shape[0])
 
     if pl:
 
@@ -106,7 +108,7 @@ def get_posterior_probability(
             nu="Posterior Probability",
         )
 
-    if ta is None:
+    if isnan(ta):
 
         return (
             co_po_di,
@@ -148,51 +150,52 @@ def get_posterior_probability(
         )
 
 
+# TODO: refactor
 def plot_nomogram(
-    p_t0,
-    p_t1,
-    n_,
-    p_t0__,
-    p_t1__,
+    pr1,
+    pr2,
+    na_,
+    TODO1,
+    TODO2,
     pa="",
 ):
 
-    l = {
+    layout = {
         "title": {"text": "Nomogram"},
         "xaxis": {"title": {"text": "Log Odd Ratio"}},
         "yaxis": {
             "title": {"text": "Evidence"},
-            "tickvals": tuple(range(1 + len(n_))),
+            "tickvals": list(range(1 + len(na_))),
             "ticktext": (
                 "Prior",
-                *n_,
+                *na_,
             ),
         },
     }
 
-    t = {"showlegend": False}
+    trace = {"showlegend": False}
 
-    d = [
+    data = [
         {
             "x": (
                 0,
-                log2(p_t1 / p_t0),
+                log2(pr2 / pr1),
             ),
-            "y": (0,) * 2,
+            "y": [0] * 2,
             "marker": {"color": "#080808"},
-            **t,
+            **trace,
         },
     ]
 
-    for (i, (n, p_t0_, p_t1_,),) in enumerate(
+    for (ie, (text, p_t0_, p_t1_,),) in enumerate(
         zip(
-            n_,
-            p_t0__,
-            p_t1__,
+            na_,
+            TODO1,
+            TODO2,
         )
     ):
 
-        r_ = log2((p_t1_ / p_t0_) / (p_t1 / p_t0))
+        ra_ = log2((p_t1_ / p_t0_) / (pr2 / pr1))
 
         plot_plotly(
             {
@@ -207,28 +210,28 @@ def plot_nomogram(
                     },
                     {
                         "name": "Log Odd Ratio",
-                        "y": r_,
+                        "y": ra_,
                     },
                 ],
-                "layout": {"title": {"text": n}},
+                "layout": {"title": {"text": text}},
             },
         )
 
-        d.append(
+        data.append(
             {
                 "x": [
-                    r_.min(),
-                    r_.max(),
+                    ra_.min(),
+                    ra_.max(),
                 ],
-                "y": [1 + i] * 2,
-                **t,
+                "y": [1 + ie] * 2,
+                **trace,
             },
         )
 
     plot_plotly(
         {
-            "data": d,
-            "layout": l,
+            "data": data,
+            "layout": layout,
         },
         pa=pa,
     )

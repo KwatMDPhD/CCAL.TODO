@@ -12,15 +12,15 @@ from scipy.stats import (
     pearsonr,
 )
 
-from .array import (
-    normalize,
-)
 from .grid import (
-    get_g1_,
-    make_g1,
+    get_1d_grid,
+    make_1d_grid,
 )
 from .kernel_density import (
     get_bandwidth,
+)
+from .number___ import (
+    normalize,
 )
 from .probability import (
     get_probability,
@@ -126,16 +126,16 @@ def get_ic(
                 vector_1,
             )
         ).T,
-        plot=False,
-        bandwidth_=tuple(
+        pl=False,
+        ba_=[
             get_bandwidth(vector) * bandwidth_factor
             for vector in (
                 vector_0,
                 vector_1,
             )
-        ),
-        _1d_grid_=tuple(
-            make_g1(
+        ],
+        co__=[
+            make_1d_grid(
                 vector.min(),
                 vector.max(),
                 0.1,
@@ -145,13 +145,13 @@ def get_ic(
                 vector_0,
                 vector_1,
             )
-        ),
+        ],
     )
 
     (
         axis_0_grid,
         axis_1_grid,
-    ) = get_g1_(nd_grid)
+    ) = get_1d_grid(nd_grid)
 
     p01 = nd_probability_vector.reshape(
         (

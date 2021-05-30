@@ -5,6 +5,10 @@ from numpy import (
     meshgrid,
     unique,
 )
+from pandas import (
+    DataFrame,
+    Index,
+)
 
 from .plot import (
     plot_heat_map,
@@ -136,11 +140,17 @@ def plot(
     elif n_di == 2:
 
         plot_heat_map(
-            nu_po_di,
-            asarray(["{:.2e} *".format(co) for co in co__[0]]),
-            asarray(["* {:.2e}".format(co) for co in co__[1]]),
-            di_[0],
-            di_[1],
+            DataFrame(
+                nu_po_di,
+                index=Index(
+                    ("{:.2e} *".format(co) for co in co__[0]),
+                    name=di_[0],
+                ),
+                columns=Index(
+                    ("* {:.2e}".format(co) for co in co__[1]),
+                    name=di_[1],
+                ),
+            ),
             layout={"title": {"text": nu}},
             pa=pa,
         )

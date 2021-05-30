@@ -19,74 +19,74 @@ from scipy.stats import (
 
 
 def check_is_not_nan(
-    nu__,
+    nu___,
 ):
 
-    return logical_not(isnan(nu__))
+    return logical_not(isnan(nu___))
 
 
 def get_not_nan_unique(
-    nu__,
+    nu___,
 ):
 
-    return unique(nu__[check_is_not_nan(nu__)])
+    return unique(nu___[check_is_not_nan(nu___)])
 
 
 def clip(
-    nu__,
+    nu___,
     st,
 ):
 
-    me = nu__.mean()
+    me = nu___.mean()
 
-    st *= nu__.std()
+    st *= nu___.std()
 
-    return nu__.clip(
+    return nu___.clip(
         me - st,
         me + st,
     )
 
 
 def normalize(
-    nu__,
+    nu___,
     me,
     ra="average",
 ):
 
     if me == "-0-":
 
-        return (nu__ - nu__.mean()) / nu__.std()
+        return (nu___ - nu___.mean()) / nu___.std()
 
     elif me == "0-1":
 
-        mi = nu__.min()
+        mi = nu___.min()
 
-        return (nu__ - mi) / (nu__.max() - mi)
+        return (nu___ - mi) / (nu___.max() - mi)
 
     elif me == "sum":
 
-        return nu__ / nu__.sum()
+        return nu___ / nu___.sum()
 
     elif me == "rank":
 
         return rankdata(
-            nu__,
+            nu___,
             ra,
-        ).reshape(nu__.shape)
+        ).reshape(nu___.shape)
 
 
 def shift_minimum(
-    nu__,
+    nu___,
     mi,
 ):
 
     if mi == "0<":
 
-        bo__ = 0 < nu__
+        bo___ = 0 < nu___
 
-        if bo__.any():
+        if bo___.any():
 
-            mi = nu__[bo__].min()
+            mi = nu___[bo___].min()
 
         else:
 
@@ -94,21 +94,21 @@ def shift_minimum(
 
         print("Shifting the minimum to {}...".format(mi))
 
-    return nu__ + mi - nu__.min()
+    return nu___ + mi - nu___.min()
 
 
 def log(
-    nu__,
+    nu___,
     ba=2,
 ):
 
     return {2: log2, "e": loge, 10: log10,}[
         ba
-    ](nu__)
+    ](nu___)
 
 
 def guess_type(
-    nu__,
+    nu___,
     ma=16,
 ):
 
@@ -117,10 +117,10 @@ def guess_type(
             nu,
             integer,
         )
-        for nu in nu__.ravel()
+        for nu in nu___.ravel()
     ):
 
-        n_ca = unique(nu__).size
+        n_ca = unique(nu___).size
 
         if n_ca <= 2:
 
@@ -134,14 +134,14 @@ def guess_type(
 
 
 def check_is_extreme(
-    nu__,
+    nu___,
     di,
     th_=(),
     n_ex=0,
     st=0.0,
 ):
 
-    nuno__ = nu__[check_is_not_nan(nu__)]
+    nuno___ = nu___[check_is_not_nan(nu___)]
 
     if 0 < len(th_):
 
@@ -155,31 +155,31 @@ def check_is_extreme(
         if n_ex < 1:
 
             lo = quantile(
-                nuno__,
+                nuno___,
                 n_ex,
             )
 
             hi = quantile(
-                nuno__,
+                nuno___,
                 1 - n_ex,
             )
 
         else:
 
-            nuno__ = sort(
-                nuno__,
+            nuno___ = sort(
+                nuno___,
                 None,
             )
 
-            lo = nuno__[n_ex - 1]
+            lo = nuno___[n_ex - 1]
 
-            hi = nuno__[-n_ex]
+            hi = nuno___[-n_ex]
 
     elif 0 < st:
 
-        me = nuno__.mean()
+        me = nuno___.mean()
 
-        st *= nuno__.std()
+        st *= nuno___.std()
 
         lo = me - st
 
@@ -188,50 +188,77 @@ def check_is_extreme(
     if di == "<>":
 
         return logical_or(
-            nu__ <= lo,
-            hi <= nu__,
+            nu___ <= lo,
+            hi <= nu___,
         )
 
     elif di == "<":
 
-        return nu__ <= lo
+        return nu___ <= lo
 
     elif di == ">":
 
-        return hi <= nu__
+        return hi <= nu___
 
 
-def apply_on_1(nu__, fu, *ar_, up=False, **ke_):
+def apply_on_1(
+    nu___,
+    fu,
+    *ar_,
+    up=False,
+    **ke_,
+):
 
-    bo__ = check_is_not_nan(nu__)
+    bo___ = check_is_not_nan(nu___)
 
-    re = fu(nu__[bo__], *ar_, **ke_)
+    re = fu(
+        nu___[bo___],
+        *ar_,
+        **ke_,
+    )
 
     if up:
 
-        nu2__ = full(
-            nu__.shape,
+        nu2___ = full(
+            nu___.shape,
             nan,
         )
 
-        nu2__[bo__] = re
+        nu2___[bo___] = re
 
-        return nu2__
+        return nu2___
 
     return re
 
 
-def apply_on_2(nu1__, nu2__, fu, *ar_, **ke_):
+def apply_on_2(
+    nu1___,
+    nu2___,
+    fu,
+    *ar_,
+    **ke_,
+):
 
-    bo__ = logical_and(
-        check_is_not_nan(nu1__),
-        check_is_not_nan(nu2__),
+    bo___ = logical_and(
+        check_is_not_nan(nu1___),
+        check_is_not_nan(nu2___),
     )
 
-    return fu(nu1__[bo__], nu2__[bo__], *ar_, **ke_)
+    return fu(
+        nu1___[bo___],
+        nu2___[bo___],
+        *ar_,
+        **ke_,
+    )
 
 
-def apply_along_on_2(nu1_an_an, nu2_an_an, fu, *ar_, **ke_):
+def apply_along_on_2(
+    nu1_an_an,
+    nu2_an_an,
+    fu,
+    *ar_,
+    **ke_,
+):
 
     n_ro1 = nu1_an_an.shape[0]
 
@@ -253,9 +280,11 @@ def apply_along_on_2(nu1_an_an, nu2_an_an, fu, *ar_, **ke_):
 
             nu2_ = nu2_an_an[ie2]
 
-            nu3_an_an[
-                ie1,
-                ie2,
-            ] = fu(nu1_, nu2_, *ar_, **ke_)
+            nu3_an_an[ie1, ie2,] = fu(
+                nu1_,
+                nu2_,
+                *ar_,
+                **ke_,
+            )
 
     return nu3_an_an
