@@ -39,7 +39,10 @@ def reflect_1d_grid(
 
     co2_ = co_.copy()
 
-    for ie, co in enumerate(co_):
+    for (
+        ie,
+        co,
+    ) in enumerate(co_):
 
         if co < re:
 
@@ -66,7 +69,9 @@ def get_1d_grid(
     return [unique(co_) for co_ in co_po_di.T]
 
 
-def make_nd_grid(co__):
+def make_nd_grid(
+    co__,
+):
 
     return asarray([co_po_di.ravel() for co_po_di in meshgrid(*co__, indexing="ij")]).T
 
@@ -95,8 +100,8 @@ def plot(
     ) in enumerate(co__):
 
         print(
-            "Grid {}: size={} min={:.2e} max={:.2e}".format(
-                ie,
+            "Dimension {} grid: size={} min={:.2e} max={:.2e}".format(
+                ie + 1,
                 co_.size,
                 co_.min(),
                 co_.max(),

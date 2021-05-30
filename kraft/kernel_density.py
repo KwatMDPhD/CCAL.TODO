@@ -9,57 +9,64 @@ from .CONSTANT import (
     FLOAT_RESOLUTION,
 )
 from .grid import (
-    make_g1,
-    make_gn,
+    make_1d_grid,
+    make_nd_grid,
     plot as grid_plot,
 )
 
 
 def get_bandwidth(
-    v,
+    nu_,
 ):
 
     return KDEMultivariate(
-        v,
+        nu_,
         "c",
     ).bw[0]
 
 
-def get_density(pxd, bandwidth_=None, g1_=None, plot=True, **plot_k_):
+def get_density(
+    nu_po_di,
+    ba_=(),
+    co__=(),
+    pl=True,
+    di_=(),
+):
 
-    dxp = pxd.T
+    nu_di_po = nu_po_di.T
 
-    if bandwidth_ is None:
+    n_di = nu_di_po.shape[0]
 
-        bandwidth_ = [get_bandwidth(v) for v in dxp]
+    if len(ba_) != n_di:
 
-    if g1_ is None:
+        ba_ = [get_bandwidth(nu_) for nu_ in nu_di_po]
 
-        g1_ = [
-            make_g1(
-                v.min(),
-                v.max(),
+    if len(co__) != n_di:
+
+        co__ = [
+            make_1d_grid(
+                nu_.min(),
+                nu_.max(),
                 0.1,
                 8,
             )
-            for v in dxp
+            for nu_ in nu_di_po
         ]
 
-    gn = make_gn(g1_)
+    co_po_di = make_nd_grid(co__)
 
-    # TODO: consider setting the values whose magnitudes are less than the resolution to be 0
-    v = FFTKDE(bw=bandwidth_).fit(pxd).evaluate(gn).clip(FLOAT_RESOLUTION)
+    de_ = FFTKDE(bw=ba_).fit(nu_po_di).evaluate(co_po_di).clip(FLOAT_RESOLUTION)
 
-    if plot:
+    if pl:
 
         grid_plot(
-            gn,
-            v,
-            value_name="Density",
-            **plot_k_,
+            co_po_di,
+            de_,
+            di_=di_,
+            nu="Density",
         )
 
     return (
-        gn,
-        v,
+        co_po_di,
+        de_,
     )

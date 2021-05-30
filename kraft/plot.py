@@ -1,6 +1,7 @@
 from numpy import (
     arange,
     argsort,
+    isnan,
     meshgrid,
     nonzero,
     unique,
@@ -16,11 +17,12 @@ from plotly.io import (
     write_html,
 )
 
-from .number__ import (
-    normalize,
-)
 from .dictionary import (
     merge,
+)
+from .number__ import (
+    apply_on_1,
+    normalize,
 )
 
 CONTINUOUS_COLORSCALE = make_colorscale(
@@ -51,140 +53,205 @@ COLORBAR = {
 
 
 def plot_plotly(
-    fi,
+    figure,
     pa="",
 ):
 
-    fi = merge(
-        fi,
+    figure = merge(
         {
             "layout": {
                 "autosize": False,
                 "template": "plotly_white",
             }
         },
+        figure,
     )
 
-    co = {"editable": True}
+    config = {"editable": True}
 
     show(
-        fi,
-        config=co,
+        figure,
+        config=config,
     )
 
     if pa != "":
 
         write_html(
-            fi,
+            figure,
             pa,
-            config=co,
+            config=config,
         )
 
 
 def get_color(
     colorscale,
-    fraction,
+    fr,
 ):
 
-    for index in range(len(colorscale) - 1):
+    for ie in range(len(colorscale) - 1):
 
         (
-            low,
-            low_color,
-        ) = colorscale[index]
+            fr1,
+            co1,
+        ) = colorscale[ie]
 
         (
-            high,
-            high_color,
-        ) = colorscale[index + 1]
+            fr2,
+            co2,
+        ) = colorscale[ie + 1]
 
-        if low <= fraction <= high:
+        if fr1 <= fr <= fr2:
 
-            color = find_intermediate_color(
+            co = find_intermediate_color(
                 *convert_colors_to_same_type(
-                    (
-                        low_color,
-                        high_color,
-                    )
+                    [
+                        co1,
+                        co2,
+                    ]
                 )[0],
-                (fraction - low) / (high - low),
+                (fr - fr1) / (fr2 - fr1),
                 colortype="rgb",
             )
 
-            return "rgb{}".format(
-                tuple(
-                    int(float(intensity))
-                    for intensity in color[4:-1].split(
-                        sep=",",
-                        maxsplit=2,
+            return "rgb({},{},{})".format(
+                *(
+                    int(float(it))
+                    for it in co[4:-1].split(
+                        ",",
+                        2,
                     )
                 ),
             )
 
 
-def _get_center_index(
-    group_,
-    group,
+def plot_point(
+    an_po_pa,
+    annotation_font_size=16,
+    title=None,
+    pa="",
 ):
 
-    (first_index, last_index,) = nonzero(group_ == group)[0][
+    data = [
+        {
+            "name": "Point",
+            "y": an_po_pa.iloc[
+                :,
+                0,
+            ],
+            "x": an_po_pa.iloc[
+                :,
+                1,
+            ],
+            "text": an_po_pa.index,
+            "mode": "markers",
+            "marker": {
+                "size": an_po_pa["Size"],
+                "color": an_po_pa["Color"],
+                "opacity": an_po_pa["Opacity"],
+                "line": {"width": 0},
+            },
+        },
+    ]
+
+    annotations = []
+
+    for (text, (y, x,),) in (
+        an_po_pa.iloc[
+            :,
+            :2,
+        ]
+        .loc[an_po_pa["Annotate"]]
+        .iterrows()
+    ):
+
+        annotations.append(
+            {
+                "y": y,
+                "x": x,
+                "text": text,
+                "font": {"size": annotation_font_size},
+                "arrowhead": 2,
+                "arrowsize": 1,
+                "clicktoshow": "onoff",
+            },
+        )
+
+    plot_plotly(
+        {
+            "data": data,
+            "layout": {
+                "title": title,
+                "yaxis": {"title": an_po_pa.columns[0]},
+                "xaxis": {"title": an_po_pa.columns[1]},
+                "annotations": annotations,
+            },
+        },
+        pa=pa,
+    )
+
+
+def _get_center_index(
+    gr_,
+    gr,
+):
+
+    (ie1, ie2,) = nonzero(gr_ == gr)[0][
         [
             0,
             -1,
         ]
     ]
 
-    return first_index + (last_index - first_index) / 2
+    return ie1 + (ie2 - ie1) / 2
 
 
 def plot_heat_map(
-    matrix,
-    axis_0_label_,
-    axis_1_label_,
-    axis_0_name,
-    axis_1_name,
+    nu_an_an,
     colorscale=CONTINUOUS_COLORSCALE,
-    axis_0_group_=None,
-    axis_1_group_=None,
-    axis_0_group_colorscale=None,
-    axis_1_group_colorscale=None,
-    axis_0_group_to_name=None,
-    axis_1_group_to_name=None,
+    gr1_=None,
+    gr2_=None,
+    colorscale1=None,
+    colorscale2=None,
+    gr1_la=None,
+    gr2_la=None,
     layout=None,
-    axis_0_annotation=None,
-    axis_1_annotation=None,
+    annotation1=None,
+    annotation2=None,
     pa="",
 ):
 
-    if axis_0_group_ is not None:
+    if gr1_ is not None:
 
-        sort_index_ = argsort(axis_0_group_)
+        ie_ = argsort(gr1_)
 
-        axis_0_group_ = axis_0_group_[sort_index_]
+        gr1_ = gr1_[ie_]
 
-        matrix = matrix[sort_index_]
-
-        axis_0_label_ = axis_0_label_[sort_index_]
-
-    if axis_1_group_ is not None:
-
-        sort_index_ = argsort(axis_1_group_)
-
-        axis_1_group_ = axis_1_group_[sort_index_]
-
-        matrix = matrix[
+        nu_an_an = nu_an_an.iloc[
+            ie_,
             :,
-            sort_index_,
         ]
 
-        axis_1_label_ = axis_1_label_[sort_index_]
+    if gr2_ is not None:
+
+        ie_ = argsort(gr2_)
+
+        gr2_ = gr2_[ie_]
+
+        nu_an_an = nu_an_an.iloc[
+            :,
+            ie_,
+        ]
 
     domain = (
         0,
         0.95,
     )
 
-    group_axis = {
+    if layout is None:
+
+        layout = {}
+
+    axis = {
         "domain": (
             0.96,
             1,
@@ -195,45 +262,37 @@ def plot_heat_map(
         "showticklabels": False,
     }
 
-    base = {
-        "yaxis": {
-            "title": "{} (n={})".format(
-                axis_0_name,
-                axis_0_label_.size,
-            ),
-            "domain": domain,
+    layout = merge(
+        {
+            "yaxis": {
+                "title": "{} (n={})".format(
+                    nu_an_an.index.name,
+                    nu_an_an.shape[0],
+                ),
+                "domain": domain,
+            },
+            "xaxis": {
+                "title": "{} (n={})".format(
+                    nu_an_an.columns.name,
+                    nu_an_an.shape[1],
+                ),
+                "domain": domain,
+            },
+            "yaxis2": axis,
+            "xaxis2": axis,
+            "annotations": [],
         },
-        "xaxis": {
-            "title": "{} (n={})".format(
-                axis_1_name,
-                axis_1_label_.size,
-            ),
-            "domain": domain,
-        },
-        "yaxis2": group_axis,
-        "xaxis2": group_axis,
-        "annotations": [],
-    }
-
-    if layout is None:
-
-        layout = base
-
-    else:
-
-        layout = merge(
-            base,
-            layout,
-        )
+        layout,
+    )
 
     colorbar_x = 1.04
 
-    data_ = [
+    data = [
         {
             "type": "heatmap",
-            "z": matrix[::-1],
-            "y": axis_0_label_[::-1],
-            "x": axis_1_label_,
+            "z": nu_an_an.to_numpy()[::-1],
+            "y": nu_an_an.index.to_numpy()[::-1],
+            "x": nu_an_an.columns.to_numpy(),
             "colorscale": colorscale,
             "colorbar": {
                 **COLORBAR,
@@ -242,23 +301,23 @@ def plot_heat_map(
         },
     ]
 
-    if axis_0_group_ is not None:
+    if gr1_ is not None:
 
-        axis_0_group_ = axis_0_group_[::-1]
+        gr1_ = gr1_[::-1]
 
         colorbar_x += 0.1
 
-        data_.append(
+        data.append(
             {
                 "xaxis": "x2",
                 "type": "heatmap",
-                "z": axis_0_group_.reshape(
-                    (
+                "z": gr1_.reshape(
+                    [
                         -1,
                         1,
-                    )
+                    ]
                 ),
-                "colorscale": axis_0_group_colorscale,
+                "colorscale": colorscale1,
                 "colorbar": {
                     **COLORBAR,
                     "x": colorbar_x,
@@ -268,49 +327,45 @@ def plot_heat_map(
             },
         )
 
-        if axis_0_group_to_name is not None:
+        if gr1_la is not None:
 
-            base = {
-                "xref": "x2",
-                "x": 0,
-                "xanchor": "left",
-                "showarrow": False,
-            }
+            if annotation1 is None:
 
-            if axis_0_annotation is not None:
-
-                base = merge(
-                    base,
-                    axis_0_annotation,
-                )
+                annotation1 = {}
 
             layout["annotations"] += [
-                {
-                    "y": _get_center_index(
-                        axis_0_group_,
-                        group,
-                    ),
-                    "text": axis_0_group_to_name[group],
-                    **base,
-                }
-                for group in unique(axis_0_group_)
+                merge(
+                    {
+                        "xref": "x2",
+                        "x": 0,
+                        "xanchor": "left",
+                        "showarrow": False,
+                        "y": _get_center_index(
+                            gr1_,
+                            gr,
+                        ),
+                        "text": gr1_la[gr],
+                    },
+                    annotation1,
+                )
+                for gr in unique(gr1_)
             ]
 
-    if axis_1_group_ is not None:
+    if gr2_ is not None:
 
         colorbar_x += 0.1
 
-        data_.append(
+        data.append(
             {
                 "yaxis": "y2",
                 "type": "heatmap",
-                "z": axis_1_group_.reshape(
-                    (
+                "z": gr2_.reshape(
+                    [
                         1,
                         -1,
-                    )
+                    ]
                 ),
-                "colorscale": axis_1_group_colorscale,
+                "colorscale": colorscale2,
                 "colorbar": {
                     **COLORBAR,
                     "x": colorbar_x,
@@ -320,38 +375,34 @@ def plot_heat_map(
             },
         )
 
-        if axis_1_group_to_name is not None:
+        if gr2_la is not None:
 
-            base = {
-                "yref": "y2",
-                "y": 0,
-                "yanchor": "bottom",
-                "textangle": -90,
-                "showarrow": False,
-            }
+            if annotation2 is None:
 
-            if axis_1_annotation is not None:
-
-                base = merge(
-                    base,
-                    axis_1_annotation,
-                )
+                annotation2 = {}
 
             layout["annotations"] += [
-                {
-                    "x": _get_center_index(
-                        axis_1_group_,
-                        group,
-                    ),
-                    "text": axis_1_group_to_name[group],
-                    **base,
-                }
-                for group in unique(axis_1_group_)
+                merge(
+                    {
+                        "yref": "y2",
+                        "y": 0,
+                        "yanchor": "bottom",
+                        "textangle": -90,
+                        "showarrow": False,
+                        "x": _get_center_index(
+                            gr2_,
+                            gr,
+                        ),
+                        "text": gr2_la[gr],
+                    },
+                    annotation2,
+                )
+                for gr in unique(gr2_)
             ]
 
     plot_plotly(
         {
-            "data": data_,
+            "data": data,
             "layout": layout,
         },
         pa=pa,
@@ -359,89 +410,89 @@ def plot_heat_map(
 
 
 def plot_bubble_map(
-    size_matrix,
-    axis_0_label_,
-    axis_1_label_,
-    axis_0_name,
-    axis_1_name,
-    color_matrix=None,
-    max_size=32,
+    si_an_an,
+    co_an_an=None,
+    ma=32,
     colorscale=CONTINUOUS_COLORSCALE,
     layout=None,
     pa="",
 ):
 
     (
-        axis_0_size,
-        axis_1_size,
-    ) = size_matrix.shape
+        si1,
+        si2,
+    ) = si_an_an.shape
 
-    axis_0_grid = arange(axis_0_size)[::-1]
+    co1_ = arange(si1)[::-1]
 
-    axis_1_grid = arange(axis_1_size)
-
-    base = {
-        "height": max(
-            480,
-            axis_0_size * 2 * max_size,
-        ),
-        "width": max(
-            480,
-            axis_1_size * 2 * max_size,
-        ),
-        "yaxis": {
-            "title": "{} (n={})".format(
-                axis_0_name,
-                axis_0_size,
-            ),
-            "tickvals": axis_0_grid,
-            "ticktext": axis_0_label_,
-        },
-        "xaxis": {
-            "title": "{} (n={})".format(
-                axis_1_name,
-                axis_1_size,
-            ),
-            "tickvals": axis_1_grid,
-            "ticktext": axis_1_label_,
-        },
-    }
+    co2_ = arange(si2)
 
     if layout is None:
 
-        layout = base
+        layout = {}
 
-    else:
+    layout = merge(
+        {
+            "height": max(
+                480,
+                si1 * 2 * ma,
+            ),
+            "width": max(
+                480,
+                si2 * 2 * ma,
+            ),
+            "yaxis": {
+                "title": "{} (n={})".format(
+                    si_an_an.index.name,
+                    si1,
+                ),
+                "tickvals": co1_,
+                "ticktext": si_an_an.index,
+            },
+            "xaxis": {
+                "title": "{} (n={})".format(
+                    si_an_an.columns.name,
+                    si2,
+                ),
+                "tickvals": co2_,
+                "ticktext": si_an_an.columns,
+            },
+        },
+        layout,
+    )
 
-        layout = merge(
-            base,
-            layout,
-        )
+    si_an_an = si_an_an.to_numpy()
 
-    if color_matrix is None:
+    if co_an_an is None:
 
-        color_matrix = size_matrix
+        co_an_an = si_an_an
 
-    (axis_0_matrix, axis_1_matrix,) = meshgrid(
-        axis_0_grid,
-        axis_1_grid,
+    si2_an_an = apply_on_1(
+        si_an_an,
+        normalize,
+        "0-1",
+        up=True,
+    )
+
+    si2_an_an[isnan(si2_an_an)] = 0.5
+
+    (co1_an_an, co2_an_an,) = meshgrid(
+        co1_,
+        co2_,
+        indexing="ij",
     )
 
     plot_plotly(
         {
             "data": [
                 {
-                    "y": axis_0_matrix.ravel(),
-                    "x": axis_1_matrix.ravel(),
-                    "text": size_matrix.ravel(),
+                    "y": co1_an_an.ravel(),
+                    "x": co2_an_an.ravel(),
+                    "text": si_an_an.ravel(),
                     "mode": "markers",
                     "marker": {
-                        "size": normalize(
-                            size_matrix,
-                            "0-1",
-                        ).ravel()
-                        * max_size,
-                        "color": color_matrix.ravel(),
+                        "size": si2_an_an.ravel() * ma,
+                        "color": co_an_an.ravel(),
                         "colorscale": colorscale,
                         "colorbar": COLORBAR,
                     },
@@ -454,126 +505,114 @@ def plot_bubble_map(
 
 
 def plot_histogram(
-    vector_,
-    label__,
-    name_,
-    histnorm=None,
-    bin_size=None,
-    plot_rug=None,
+    se_,
+    no=None,
+    xbins_size=None,
     colorscale=CATEGORICAL_COLORSCALE,
     layout=None,
     pa="",
 ):
 
-    if plot_rug is None:
+    ru = all(se.size <= 1e3 for se in se_)
 
-        plot_rug = all(vector.size <= 1e3 for vector in vector_)
+    n_se = len(se_)
 
-    data_n = len(name_)
+    if ru:
 
-    if plot_rug:
+        he = 0.04
 
-        height = 0.04
+        ma = n_se * he
 
-        yaxis_max = data_n * height
-
-        yaxis2_min = yaxis_max + height
+        mi = ma + he
 
     else:
 
-        yaxis_max = 0
+        ma = 0
 
-        yaxis2_min = 0
+        mi = 0
 
-    if histnorm is None:
+    if no is None:
 
         yaxis2_title_text = "N"
 
     else:
 
-        yaxis2_title_text = histnorm.title()
-
-    base = {
-        "xaxis": {"anchor": "y"},
-        "yaxis2": {
-            "domain": (
-                yaxis2_min,
-                1,
-            ),
-            "title": {"text": yaxis2_title_text},
-        },
-        "yaxis": {
-            "domain": (
-                0,
-                yaxis_max,
-            ),
-            "zeroline": False,
-            "dtick": 1,
-            "showticklabels": False,
-        },
-    }
+        yaxis2_title_text = no.title()
 
     if layout is None:
 
-        layout = base
+        layout = {}
 
-    else:
-
-        layout = merge(
-            base,
-            layout,
-        )
+    layout = merge(
+        {
+            "xaxis": {"anchor": "y"},
+            "yaxis": {
+                "domain": (
+                    0,
+                    ma,
+                ),
+                "zeroline": False,
+                "dtick": 1,
+                "showticklabels": False,
+            },
+            "yaxis2": {
+                "domain": (
+                    mi,
+                    1,
+                ),
+                "title": {"text": yaxis2_title_text},
+            },
+        },
+        layout,
+    )
 
     data = []
 
-    for (index, (vector, label_, name,),) in enumerate(
-        zip(
-            vector_,
-            label__,
-            name_,
-        )
-    ):
+    for (
+        ie,
+        se,
+    ) in enumerate(se_):
 
-        color = get_color(
+        co = get_color(
             colorscale,
-            index
+            ie
             / max(
                 1,
-                (data_n - 1),
+                (n_se - 1),
             ),
         )
 
-        base = {
-            "legendgroup": index,
-            "name": name,
-            "x": vector,
+        trace = {
+            "legendgroup": ie,
+            "name": se.name,
+            "x": se.to_numpy(),
         }
 
         data.append(
             {
                 "yaxis": "y2",
                 "type": "histogram",
-                "histnorm": histnorm,
-                "xbins": {"size": bin_size},
-                "marker": {"color": color},
-                **base,
+                "histnorm": no,
+                "xbins": {"size": xbins_size},
+                "marker": {"color": co},
+                **trace,
             },
         )
 
-        if plot_rug:
+        if ru:
 
             data.append(
                 {
                     "showlegend": False,
-                    "y": (index,) * vector.size,
-                    "text": label_,
+                    "y": [ie] * se.size,
+                    "text": se.index,
                     "mode": "markers",
                     "marker": {
                         "symbol": "line-ns-open",
-                        "color": color,
+                        "color": co,
                     },
                     "hoverinfo": "x+text",
-                    **base,
+                    **trace,
                 },
             )
 
@@ -581,69 +620,6 @@ def plot_histogram(
         {
             "data": data,
             "layout": layout,
-        },
-        pa=pa,
-    )
-
-
-def plot_point(
-    p,
-    annotation_font_size=16,
-    title=None,
-    pa="",
-):
-
-    d_ = [
-        {
-            "type": "scatter",
-            "name": "Name",
-            "y": p.iloc[
-                :,
-                0,
-            ],
-            "x": p.iloc[
-                :,
-                1,
-            ],
-            "text": p.index,
-            "mode": "markers",
-            "marker": {
-                "size": p["Size"],
-                "color": p["Color"],
-                "opacity": p["Opacity"],
-                "line": {"width": 0},
-            },
-        },
-    ]
-
-    a_ = []
-
-    for (
-        n,
-        r,
-    ) in p.loc[p["Annotate"]].iterrows():
-
-        a_.append(
-            {
-                "y": r[0],
-                "x": r[1],
-                "text": n,
-                "font": {"size": annotation_font_size},
-                "arrowhead": 2,
-                "arrowsize": 1,
-                "clicktoshow": "onoff",
-            },
-        )
-
-    plot_plotly(
-        {
-            "data": d_,
-            "layout": {
-                "title": title,
-                "yaxis": {"title": p.columns[0]},
-                "xaxis": {"title": p.columns[1]},
-                "annotations": a_,
-            },
         },
         pa=pa,
     )
