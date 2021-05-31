@@ -1,10 +1,13 @@
 from . import (
     CONSTANT,
     any_,
+    cell_line,
     clustering,
+    da,
     dictionary,
     function_heat_map,
     gct,
+    gene,
     gmt,
     grid,
     information,

@@ -19,33 +19,33 @@ def cluster(
         nu_po_di,
         metric=di,
         method=li,
-        op=op,
+        optimal_ordering=op,
     )
 
     return leaves_list(link), fcluster(link, n_cl, criterion=cr)
 
 
-def _get_coclustering_distance(
-    gr_po_cl
-):
+def _get_coclustering_distance(cl_po_tr):
 
-    pa_ = asarray(triu_indices(gr_po_cl.shape[0], k=1)).T
+    pa_ = asarray(triu_indices(cl_po_tr.shape[0], k=1)).T
 
-    n_pa = pa_.size
+    n_pa = pa_.shape[0]
 
     di_ = full(n_pa, 0)
 
+    n_cl = cl_po_tr.shape[1]
+
     for iepa in range(n_pa):
 
-        gr_popa_cl = gr_po_cl[pa_[iepa]]
+        cl_popa_cl = cl_po_tr[pa_[iepa]]
 
         n_tr = 0
 
         n_co = 0
 
-        for iecl in range(gr_po_cl.shape[1]):
+        for iecl in range(n_cl):
 
-            cl1, cl2 = gr_popa_cl[:, iecl]
+            cl1, cl2 = cl_popa_cl[:, iecl]
 
             if not (isnan(cl1) or isnan(cl2)):
 
@@ -58,22 +58,20 @@ def _get_coclustering_distance(
     return squareform(di_)
 
 
-def cluster_clusterings(
-    nu_po_di, n_cl, n_cl=100, random_seed=RANDOM_SEED, **kwarg_
-):
+def cluster_consensus(nu_po_di, n_cl, n_tr=100, ra=RANDOM_SEED, **ke_):
 
-    point_n = nu_po_di.shape[0]
+    n_po = nu_po_di.shape[0]
 
-    sample_n = int(point_n * SAMPLE_FRACTION)
+    cl_po_tr = full([n_po, n_tr], nan)
 
-    gr_po_cl = full([point_n, n_cl], nan)
+    n_ch = int(n_po * SAMPLE_FRACTION)
 
-    seed(seed=random_seed)
+    seed(ra)
 
-    for index in range(n_cl):
+    for ie in range(n_tr):
 
-        index_ = choice(point_n, size=sample_n, replace=False)
+        ie_ = choice(n_po, n_ch, False)
 
-        gr_po_cl[index_, index] = cluster(nu_po_di[index_], n_cl=n_cl, **kwarg_)[1]
+        cl_po_tr[ie_, ie] = cluster(nu_po_di[ie_], n_cl=n_cl, **ke_)[1]
 
-    return cluster(_get_coclustering_distance(gr_po_cl), n_cl=n_cl, **kwarg_)
+    return cluster(_get_coclustering_distance(cl_po_tr), n_cl=n_cl, **ke_)

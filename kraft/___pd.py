@@ -30,9 +30,7 @@ from .support import cast_builtin
 # ==============================================================================
 
 
-def binarize(
-    sr,
-):
+def binarize(sr):
 
     value_to_axis_0_index = {}
 
@@ -66,9 +64,7 @@ def binarize(
 # ==============================================================================
 
 
-def error_axes(
-    df,
-):
+def error_axes(df):
 
     for label_ in df.axes:
 
@@ -92,9 +88,7 @@ def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
     print("-" * 80)
 
 
-def count_value(
-    df,
-):
+def count_value(df):
 
     for (label, value_) in df.items():
 
