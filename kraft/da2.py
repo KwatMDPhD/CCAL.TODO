@@ -64,18 +64,6 @@ def binarize(sr):
 # ==============================================================================
 
 
-def error_axes(df):
-
-    for label_ in df.axes:
-
-        (label_, count_) = unique(label_.to_numpy(), return_counts=True)
-
-        is_not_na_ = check_is_not_na(label_)
-
-        assert is_not_na_.all()
-
-        assert (count_ == 1).all()
-
 
 def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
 
@@ -88,105 +76,8 @@ def peek(df, axis_0_axis_n=4, axis_1_label_n=2):
     print("-" * 80)
 
 
-def count_value(df):
-
-    for (label, value_) in df.items():
-
-        print("-" * 80)
-
-        print(label)
-
-        value_n_ = value_.value_counts()
-
-        print(value_n_)
-
-        print("-" * 80)
 
 
-def drop_axis_label(df, axis, not_na_min_n=None, not_na_unique_min_n=None):
-
-    assert not_na_min_n is not None and not_na_unique_min_n is not None
-
-    shape_before = df.shape
-
-    is_keep_ = full(shape_before[axis], True)
-
-    if axis == 0:
-
-        apply_axis = 1
-
-    elif axis == 1:
-
-        apply_axis = 0
-
-    matrix = df.to_numpy()
-
-    if not_na_min_n is not None:
-
-        if not_na_min_n < 1:
-
-            not_na_min_n = not_na_min_n * shape_before[apply_axis]
-
-        is_keep_ &= apply_along_axis(
-            _check_has_enough_not_na, apply_axis, matrix, not_na_min_n
-        )
-
-    if not_na_unique_min_n is not None:
-
-        if not_na_unique_min_n < 1:
-
-            not_na_unique_min_n = not_na_unique_min_n * df.shape[apply_axis]
-
-        is_keep_ &= apply_along_axis(
-            _check_has_enough_not_na_unique, apply_axis, matrix, not_na_unique_min_n
-        )
-
-    if axis == 0:
-
-        df = df.loc[is_keep_, :]
-
-    elif axis == 1:
-
-        df = df.loc[:, is_keep_]
-
-    print("{} => {}".format(shape_before, df.shape))
-
-    return df
-
-
-def drop_axes_label(df, axis=None, not_na_min_n=None, not_na_unique_min_n=None):
-
-    shape_before = df.shape
-
-    if axis is None:
-
-        axis = int(shape_before[0] < shape_before[1])
-
-    can_return = False
-
-    while True:
-
-        df = drop_axis_label(
-            df, axis, not_na_min_n=not_na_min_n, not_na_unique_min_n=not_na_unique_min_n
-        )
-
-        shape_after = df.shape
-
-        if can_return and shape_before == shape_after:
-
-            return df
-
-        shape_before = shape_after
-
-        if axis == 0:
-
-            axis = 1
-
-        elif axis == 1:
-
-            axis = 0
-
-        can_return = True
 
 
 def sample(df, axis_0_label_n, axis_1_label_n, random_seed=RANDOM_SEED, **kwarg_):
