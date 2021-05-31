@@ -2,7 +2,7 @@ from numpy import asarray, full
 from pandas import read_csv, read_excel
 
 from .CONSTANT import DATA_DIRECTORY_PATH
-from .da import map_to_column
+from .table import map_to_column
 
 
 def _map_hgnc():

@@ -22,4 +22,5 @@ from . import (
     significance,
     string,
     support,
+    table,
 )
