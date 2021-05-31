@@ -14,7 +14,13 @@ def clean(na):
 
 def get_absolute(pa):
 
-    return abspath(expanduser(pa))
+    paab = abspath(expanduser(pa))
+
+    if pa[-1] == "/":
+
+        paab += "/"
+
+    return paab
 
 
 def list(di):
