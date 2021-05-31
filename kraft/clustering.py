@@ -7,75 +7,73 @@ from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 
 
 def cluster(
-    pxd,
-    distance_function="euclidean",
-    linkage_method="ward",
-    optimal_ordering=False,
-    n_cluster=0,
-    criterion="maxclust",
+    nu_po_di,
+    di="euclidean",
+    li="ward",
+    op=False,
+    n_cl=0,
+    cr="maxclust",
 ):
 
     link = linkage(
-        pxd,
-        metric=distance_function,
-        method=linkage_method,
-        optimal_ordering=optimal_ordering,
+        nu_po_di,
+        metric=di,
+        method=li,
+        op=op,
     )
 
-    return leaves_list(link), fcluster(link, n_cluster, criterion=criterion) - 1
+    return leaves_list(link), fcluster(link, n_cl, criterion=cr)
 
 
 def _get_coclustering_distance(
-    pxc,
+    gr_po_cl
 ):
 
-    pair_ = asarray(triu_indices(pxc.shape[0], k=1)).T
+    pa_ = asarray(triu_indices(gr_po_cl.shape[0], k=1)).T
 
-    n_pair = pair_.size
+    n_pa = pa_.size
 
-    clustering_n = pxc.shape[1]
+    di_ = full(n_pa, 0)
 
-    distance_ = full(n_pair, 0)
+    for iepa in range(n_pa):
 
-    for pair_index in range(n_pair):
+        gr_popa_cl = gr_po_cl[pa_[iepa]]
 
-        pair_x_clustering = pxc[pair_[pair_index]]
+        n_tr = 0
 
-        clustering_n = 0
+        n_co = 0
 
-        con_cluster = 0
+        for iecl in range(gr_po_cl.shape[1]):
 
-        for clustering_index in range(clustering_n):
+            cl1, cl2 = gr_popa_cl[:, iecl]
 
-            cluster_0, cluster_1 = pair_x_clustering[:, clustering_index]
+            if not (isnan(cl1) or isnan(cl2)):
 
-            if not (isnan(cluster_0) or isnan(cluster_1)):
+                n_tr += 1
 
-                clustering_n += 1
+                n_co += int(cl1 == cl2)
 
-                con_cluster += int(cluster_0 == cluster_1)
+        di_[iepa] = 1 - n_co / n_tr
 
-        distance_[pair_index] = 1 - con_cluster / clustering_n
-
-    return squareform(distance_)
+    return squareform(di_)
 
 
 def cluster_clusterings(
-    pxd, n_cluster, clustering_n=100, random_seed=RANDOM_SEED, **kwarg_
+    nu_po_di, n_cl, n_cl=100, random_seed=RANDOM_SEED, **kwarg_
 ):
 
-    point_n = pxd.shape[0]
+    point_n = nu_po_di.shape[0]
 
     sample_n = int(point_n * SAMPLE_FRACTION)
 
-    pxc = full([point_n, clustering_n], nan)
+    gr_po_cl = full([point_n, n_cl], nan)
 
     seed(seed=random_seed)
 
-    for index in range(clustering_n):
+    for index in range(n_cl):
 
         index_ = choice(point_n, size=sample_n, replace=False)
 
-        pxc[index_, index] = cluster(pxd[index_], n_cluster=n_cluster, **kwarg_)[1]
+        gr_po_cl[index_, index] = cluster(nu_po_di[index_], n_cl=n_cl, **kwarg_)[1]
 
-    return cluster(_get_coclustering_distance(pxc), n_cluster=n_cluster, **kwarg_)
+    return cluster(_get_coclustering_distance(gr_po_cl), n_cl=n_cl, **kwarg_)
