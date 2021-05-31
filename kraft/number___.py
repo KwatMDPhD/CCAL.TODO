@@ -1,6 +1,5 @@
 from numpy import (
     full,
-    integer,
     isnan,
     log as loge,
     log2,
@@ -84,7 +83,7 @@ def log(nu___, ba=2):
 
 def guess_type(nu___, ma=16):
 
-    if all(isinstance(nu, integer) for nu in nu___.ravel()):
+    if all(float(nu).is_integer() for nu in nu___.ravel()):
 
         n_ca = unique(nu___).size
 
