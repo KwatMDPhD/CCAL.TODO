@@ -170,22 +170,22 @@ def apply_on_2(nu1___, nu2___, fu, *ar_, **ke_):
     return fu(nu1___[bo___], nu2___[bo___], *ar_, **ke_)
 
 
-def apply_along_on_2(nu1_an_an, nu2_an_an, fu, *ar_, **ke_):
+def apply_along_on_2(nu1___, nu2___, fu, *ar_, **ke_):
 
-    n_ro1 = nu1_an_an.shape[0]
+    n_ro1 = nu1___.shape[0]
 
-    n_ro2 = nu2_an_an.shape[0]
+    n_ro2 = nu2___.shape[0]
 
-    nu3_an_an = full([n_ro1, n_ro2], nan)
+    nu3___ = full([n_ro1, n_ro2], nan)
 
     for ie1 in range(n_ro1):
 
-        nu1_ = nu1_an_an[ie1]
+        nu1_ = nu1___[ie1]
 
         for ie2 in range(n_ro2):
 
-            nu2_ = nu2_an_an[ie2]
+            nu2_ = nu2___[ie2]
 
-            nu3_an_an[ie1, ie2] = fu(nu1_, nu2_, *ar_, **ke_)
+            nu3___[ie1, ie2] = fu(nu1_, nu2_, *ar_, **ke_)
 
-    return nu3_an_an
+    return nu3___
