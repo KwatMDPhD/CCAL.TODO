@@ -148,7 +148,7 @@ def collapse(da):
 
 
 def process(
-    feature_x_sample,
+    nu_fe_sa,
     drop_feature_=(),
     drop_sample_=(),
     nanize=None,
@@ -166,35 +166,33 @@ def process(
 
     if 0 < len(drop_feature_):
 
-        print("Dropping {}: {}...".format(feature_x_sample.index.name, drop_feature_))
+        print("Dropping {}: {}...".format(nu_fe_sa.index.name, drop_feature_))
 
-        feature_x_sample = feature_x_sample.drop(labels=drop_feature_, errors="ignore")
+        nu_fe_sa = nu_fe_sa.drop(labels=drop_feature_, errors="ignore")
 
-        summarize(feature_x_sample, **kwarg_)
+        summarize(nu_fe_sa, **kwarg_)
 
     if 0 < len(drop_sample_):
 
-        print("Dropping {}: {}...".format(feature_x_sample.columns.name, drop_sample_))
+        print("Dropping {}: {}...".format(nu_fe_sa.columns.name, drop_sample_))
 
-        feature_x_sample = feature_x_sample.drop(
-            labels=drop_sample_, axis=1, errors="ignore"
-        )
+        nu_fe_sa = nu_fe_sa.drop(labels=drop_sample_, axis=1, errors="ignore")
 
-        summarize(feature_x_sample, **kwarg_)
+        summarize(nu_fe_sa, **kwarg_)
 
     if nanize is not None:
 
         print("NaNizing <= {}...".format(nanize))
 
-        matrix = feature_x_sample.to_numpy()
+        matrix = nu_fe_sa.to_numpy()
 
         matrix[matrix <= nanize] = nan
 
-        feature_x_sample = DataFrame(
-            data=matrix, index=feature_x_sample.index, columns=feature_x_sample.columns
+        nu_fe_sa = DataFrame(
+            data=matrix, index=nu_fe_sa.index, columns=nu_fe_sa.columns
         )
 
-        summarize(feature_x_sample, **kwarg_)
+        summarize(nu_fe_sa, **kwarg_)
 
     if drop_not_na_min_n is not None or drop_not_na_unique_min_n is not None:
 
@@ -208,18 +206,18 @@ def process(
 
             drop_function = drop_axis_label
 
-        shape = feature_x_sample.shape
+        shape = nu_fe_sa.shape
 
-        feature_x_sample = drop_function(
-            feature_x_sample,
+        nu_fe_sa = drop_function(
+            nu_fe_sa,
             drop_axis,
             not_na_min_n=drop_not_na_min_n,
             not_na_unique_min_n=drop_not_na_unique_min_n,
         )
 
-        if shape != feature_x_sample.shape:
+        if shape != nu_fe_sa.shape:
 
-            summarize(feature_x_sample, **kwarg_)
+            summarize(nu_fe_sa, **kwarg_)
 
     if log_base is not None:
 
@@ -227,52 +225,52 @@ def process(
             "Logging (log_min={}, log_base={})...".format(log_shift_minimum, log_base)
         )
 
-        matrix = feature_x_sample.to_numpy()
+        matrix = nu_fe_sa.to_numpy()
 
         if log_shift_minimum is not None:
 
             matrix = shift_minimum(matrix, log_shift_minimum)
 
-        feature_x_sample = DataFrame(
+        nu_fe_sa = DataFrame(
             data=log(matrix, base=log_base),
-            index=feature_x_sample.index,
-            columns=feature_x_sample.columns,
+            index=nu_fe_sa.index,
+            columns=nu_fe_sa.columns,
         )
 
-        summarize(feature_x_sample, **kwarg_)
+        summarize(nu_fe_sa, **kwarg_)
 
     if normalize_method is not None:
 
         print("Axis-{} {} normalizing...".format(normalize_axis, normalize_method))
 
-        feature_x_sample = DataFrame(
+        nu_fe_sa = DataFrame(
             data=apply_along_axis(
-                normalize, normalize_axis, feature_x_sample.to_numpy(), normalize_method
+                normalize, normalize_axis, nu_fe_sa.to_numpy(), normalize_method
             ),
-            index=feature_x_sample.index,
-            columns=feature_x_sample.columns,
+            index=nu_fe_sa.index,
+            columns=nu_fe_sa.columns,
         )
 
-        summarize(feature_x_sample, **kwarg_)
+        summarize(nu_fe_sa, **kwarg_)
 
     if clip_min is not None or clip_max is not None:
 
         print("Clipping |{} - {}|...".format(clip_min, clip_max))
 
-        feature_x_sample = feature_x_sample.clip(lower=clip_min, upper=clip_max)
+        nu_fe_sa = nu_fe_sa.clip(lower=clip_min, upper=clip_max)
 
-        summarize(feature_x_sample, **kwarg_)
+        summarize(nu_fe_sa, **kwarg_)
 
-    return feature_x_sample
+    return nu_fe_sa
 
 
-def separate_type(feature_x_sample, drop_constant=True, prefix_feature=True):
+def separate_type(nu_fe_sa, drop_constant=True, prefix_feature=True):
 
     continuous_row_ = []
 
-    binary_x_sample_ = []
+    bi_in_sa_ = []
 
-    for (_, row) in feature_x_sample.iterrows():
+    for _, row in nu_fe_sa.iterrows():
 
         try:
 
@@ -290,43 +288,42 @@ def separate_type(feature_x_sample, drop_constant=True, prefix_feature=True):
 
         elif not (drop_constant and row.unique().size == 1):
 
-            binary_x_sample = binarize(row)
+            bi_in_sa = binarize(row)
 
             if prefix_feature:
 
-                label_template = "{}.{{}}".format(binary_x_sample.index.name)
+                label_template = "{}.{{}}".format(bi_in_sa.index.name)
 
             else:
 
                 label_template = "{}"
 
-            binary_x_sample.index = (
-                label_template.format(label)
-                for label in binary_x_sample.index.to_numpy()
+            bi_in_sa.index = (
+                label_template.format(label) for label in bi_in_sa.index.to_numpy()
             )
 
-            binary_x_sample_.append(binary_x_sample)
+            bi_in_sa_.append(bi_in_sa)
 
-    name_template = "{} ({{}})".format(feature_x_sample.index.name)
+    name_template = "{} ({{}})".format(nu_fe_sa.index.name)
 
     if 0 < len(continuous_row_):
 
-        continuous_x_sample = DataFrame(data=continuous_row_)
+        co_in_sa = DataFrame(data=continuous_row_)
 
-        continuous_x_sample.index.name = name_template.format("continuous")
-
-    else:
-
-        continuous_x_sample = None
-
-    if 0 < len(binary_x_sample_):
-
-        binary_x_sample = concat(binary_x_sample_)
-
-        binary_x_sample.index.name = name_template.format("binary")
+        co_in_sa.index.name = name_template.format("continuous")
 
     else:
 
-        binary_x_sample = None
+        co_in_sa = None
 
-    return (continuous_x_sample, binary_x_sample)
+    if 0 < len(bi_in_sa_):
+
+        bi_in_sa = concat(bi_in_sa_)
+
+        bi_in_sa.index.name = name_template.format("binary")
+
+    else:
+
+        bi_in_sa = None
+
+    return co_in_sa, bi_in_sa

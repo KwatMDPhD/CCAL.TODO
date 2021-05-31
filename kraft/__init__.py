@@ -18,6 +18,7 @@ from . import (
     path,
     plot,
     probability,
+    series,
     shell,
     significance,
     string,
