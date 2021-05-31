@@ -178,7 +178,7 @@ def make(
 
     la2_ = ta.index.to_numpy()
 
-    da = da.reindex(labels=la2_, axis=1)
+    da = da.loc[:, la2_]
 
     #
     si1 = la1_.size
@@ -460,7 +460,7 @@ def summarize(
 
     for ie, bu in enumerate(bu_):
 
-        da = bu["data"].reindex(labels=la2_, axis=1)
+        da = bu["data"].reindex(la2_, axis=1)
 
         fu = bu["statistic"].loc[da.index, :]
 
