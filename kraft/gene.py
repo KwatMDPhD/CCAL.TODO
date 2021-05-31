@@ -2,7 +2,7 @@ from numpy import asarray, full
 from pandas import read_csv, read_excel
 
 from .CONSTANT import DATA_DIRECTORY_PATH
-from .da import map_to_column
+from .table import map_to
 
 
 def _map_hgnc():
@@ -15,7 +15,7 @@ def _map_hgnc():
 
         return []
 
-    return map_to_column(
+    return map_to(
         read_csv(
             "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
             "\t",
@@ -45,7 +45,7 @@ def _map_hgnc():
 
 def _map_ens():
 
-    return map_to_column(
+    return map_to(
         read_csv("{}ens.tsv.gz".format(DATA_DIRECTORY_PATH), "\t"), "Gene name"
     )
 
