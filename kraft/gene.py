@@ -6,6 +6,7 @@ from .da import map_to_column
 
 
 def _map_hgnc():
+
     def pr(an):
 
         if isinstance(an, str):
