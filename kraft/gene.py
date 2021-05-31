@@ -6,7 +6,6 @@ from .table import map_to
 
 
 def _map_hgnc():
-
     def pr(an):
 
         if isinstance(an, str):
