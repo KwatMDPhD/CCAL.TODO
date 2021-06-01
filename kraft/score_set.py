@@ -3,7 +3,7 @@ from multiprocessing import Pool
 from numpy import asarray, nan, where
 from pandas import DataFrame, Series
 
-from .array import normalize
+from .object.array import normalize
 from .information import get_jsd
 from .plot import plot_plotly
 
@@ -20,7 +20,7 @@ def score_sample_and_set(
     annotation_text_font_size=8,
     annotation_text_width=160,
     annotation_text_yshift=32,
-    file_path=None,
+    pa=None,
 ):
 
     element_scores = element_scores.dropna()
@@ -249,7 +249,7 @@ def score_sample_and_set(
                 }
             )
 
-        plot_plotly({"layout": layout, "data": data}, file_path=file_path)
+        plot_plotly({"layout": layout, "data": data}, pa=pa)
 
     return score
 
@@ -277,10 +277,10 @@ def _score_sample_and_sets(element_scores, set_to_elements, method):
 
 
 def score_samples_and_sets(
-    element_x_sample, set_to_elements, method="ks", n_job=1, file_path=None
+    element_x_sample, set_to_elements, method="ks", n_jo=1, pa=None
 ):
 
-    pool = Pool(processes=n_job)
+    pool = Pool(processes=n_jo)
 
     set_x_sample = DataFrame(
         data=asarray(
@@ -296,8 +296,8 @@ def score_samples_and_sets(
         columns=element_x_sample.columns,
     )
 
-    if file_path is not None:
+    if pa is not None:
 
-        set_x_sample.to_csv(file_path, sep="\t")
+        set_x_sample.to_csv(pa, "\t")
 
     return set_x_sample
