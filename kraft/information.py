@@ -7,68 +7,68 @@ from .object.array import normalize
 from .probability import get_probability
 
 
-def get_entropy(nu_):
+def get_entropy(ve):
 
-    pr_ = nu_ / nu_.sum()
+    pr_ = ve / ve.sum()
 
     return -(pr_ * log(pr_)).sum()
 
 
-def get_kld(nu1_, nu2_):
+def get_kld(ve1, ve2):
 
-    return nu1_ * log(nu1_ / nu2_)
+    return ve1 * log(ve1 / ve2)
 
 
-def get_jsd(nu1_, nu2_, nu3_=None):
+def get_jsd(ve1, ve2, nu3_=None):
 
     if nu3_ is None:
 
-        nu3_ = (nu1_ + nu2_) / 2
+        nu3_ = (ve1 + ve2) / 2
 
-    kl1_ = get_kld(nu1_, nu3_)
+    kl1_ = get_kld(ve1, nu3_)
 
-    kl2_ = get_kld(nu2_, nu3_)
-
-    return kl1_, kl2_, kl1_ - kl2_
-
-
-def get_zd(nu1_, nu2_):
-
-    kl1_ = get_kld(nu1_, nu2_)
-
-    kl2_ = get_kld(nu2_, nu1_)
+    kl2_ = get_kld(ve2, nu3_)
 
     return kl1_, kl2_, kl1_ - kl2_
 
 
-def get_ic(nu1_, nu2_):
+def get_zd(ve1, ve2):
 
-    if 1 in [unique(nu1_).size, unique(nu2_).size]:
+    kl1_ = get_kld(ve1, ve2)
+
+    kl2_ = get_kld(ve2, ve1)
+
+    return kl1_, kl2_, kl1_ - kl2_
+
+
+def get_ic(ve1, ve2):
+
+    if 1 in [unique(ve1).size, unique(ve2).size]:
 
         return nan
 
-    nu1_ = normalize(nu1_, "-0-")
+    ve1 = normalize(ve1, "-0-")
 
-    nu2_ = normalize(nu2_, "-0-")
+    ve2 = normalize(ve2, "-0-")
 
-    pe = pearsonr(nu1_, nu2_)[0]
+    pe = pearsonr(ve1, ve2)[0]
 
     ex = 0.1
 
     n_co = 24
 
-    co1_ = make_1d_grid(nu1_.min(), nu1_.max(), ex, n_co)
+    co1_ = make_1d_grid(ve1.min(), ve1.max(), ex, n_co)
 
-    co2_ = make_1d_grid(nu2_.min(), nu2_.max(), ex, n_co)
+    co2_ = make_1d_grid(ve2.min(), ve2.max(), ex, n_co)
 
     fa = 1 - abs(pe) * 2 / 3
 
-    ba1 = get_bandwidth(nu1_) * fa
+    ba1 = get_bandwidth(ve1) * fa
 
-    ba2 = get_bandwidth(nu2_) * fa
+    ba2 = get_bandwidth(ve2) * fa
 
     pr_ = get_probability(
-        asarray([nu1_, nu2_]).T,
+        asarray([ve1, ve2]).T,
         ba_=[ba1, ba2],
         co__=[co1_, co2_],
         pl=False,
@@ -91,6 +91,6 @@ def get_ic(nu1_, nu2_):
     return sqrt(1 - exp(-2 * mu)) * sign(pe)
 
 
-def get_icd(nu1_, nu2_):
+def get_icd(ve1, ve2):
 
-    return (-get_ic(nu1_, nu2_) + 1) / 2
+    return (-get_ic(ve1, ve2) + 1) / 2
