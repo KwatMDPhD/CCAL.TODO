@@ -371,7 +371,7 @@ def plot_bubble_map(
 
 
 def plot_histogram(
-    nu__,
+    se_,
     no=None,
     xbins_size=None,
     colorscale=CATEGORICAL_COLORSCALE,
@@ -379,9 +379,9 @@ def plot_histogram(
     pa="",
 ):
 
-    ru = all(nu_.size <= 1e3 for nu_ in nu__)
+    ru = all(se.size <= 1e3 for se in se_)
 
-    n_tr = len(nu__)
+    n_tr = len(se_)
 
     if ru:
 
@@ -430,14 +430,14 @@ def plot_histogram(
 
     data = []
 
-    for ie, nu_ in enumerate(nu__):
+    for ie, se in enumerate(se_):
 
         co = get_color(colorscale, ie / max(1, (n_tr - 1)))
 
         trace = {
             "legendgroup": ie,
-            "name": nu_.name,
-            "x": nu_.to_numpy(),
+            "name": se.name,
+            "x": se.to_numpy(),
         }
 
         data.append(
@@ -460,8 +460,8 @@ def plot_histogram(
             data.append(
                 {
                     "showlegend": False,
-                    "y": [ie] * nu_.size,
-                    "text": nu_.index,
+                    "y": [ie] * se.size,
+                    "text": se.index,
                     "mode": "markers",
                     "marker": {
                         "symbol": "line-ns-open",
