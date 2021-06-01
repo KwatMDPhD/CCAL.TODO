@@ -3,10 +3,10 @@ from numpy.random import choice
 from pandas import DataFrame, Series, concat
 
 from .grid import make_nd_grid
-from .number___ import guess_type
+from .object.array import guess_type
+from .object.series import binarize
 from .plot import plot_heat_map, plot_histogram
-from .series import binarize
-from .support import cast_builtin
+from .python import cast_builtin
 
 
 def collapse(nu_fe_sa):

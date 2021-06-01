@@ -8,7 +8,7 @@ def _read(pa):
 
             sp_ = li.strip().split("\t")
 
-            se_ge[sp_[0]] = [ge for ge in sp_[2:] if ge != ""]
+            se_ge[sp_[0]] = [sp for sp in sp_[2:] if sp != ""]
 
     return se_ge
 

@@ -1,33 +1,23 @@
 from numpy import full
 from pandas import DataFrame, Index, notna
 
+from .iterable import map_integer
+
 
 def binarize(se):
 
-    anar_ = se.to_numpy()
+    an_it = map_integer(se.dropna())[0]
 
-    an_ie = {}
+    bi_an_la = full([len(an_it), se.size], 0)
 
-    ie = 0
-
-    for an in anar_:
-
-        if notna(an) and an not in an_ie:
-
-            an_ie[an] = ie
-
-            ie += 1
-
-    taar = full([len(an_ie), anar_.size], 0)
-
-    for ie2, an in enumerate(anar_):
+    for ie, an in enumerate(se.values):
 
         if notna(an):
 
-            taar[an_ie[an], ie2] = 1
+            bi_an_la[an_it[an] - 1, ie] = 1
 
     return DataFrame(
-        taar,
-        Index(an_ie, name=se.name),
+        bi_an_la,
+        Index(an_it, name=se.name),
         se.index,
     )

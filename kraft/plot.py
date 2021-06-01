@@ -7,8 +7,8 @@ from plotly.colors import (
 )
 from plotly.io import show, write_html
 
-from .dictionary import merge
-from .number___ import apply_on_1, normalize
+from .object.array import apply_on_1, normalize
+from .object.dictionary import merge
 
 CONTINUOUS_COLORSCALE = make_colorscale(["#0000ff", "#ffffff", "#ff0000"])
 

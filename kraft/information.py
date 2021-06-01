@@ -1,9 +1,9 @@
 from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
+from .density import get_bandwidth
 from .grid import make_1d_grid
-from .kernel_density import get_bandwidth
-from .number___ import normalize
+from .object.array import normalize
 from .probability import get_probability
 
 

@@ -4,10 +4,10 @@ from numpy import asarray, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .clustering import cluster
+from .cluster import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
-from .dictionary import merge
-from .number___ import apply_on_1, apply_on_2, check_is_extreme, normalize
+from .object.array import apply_on_1, apply_on_2, check_is_extreme, normalize
+from .object.dictionary import merge
 from .plot import (
     BINARY_COLORSCALE,
     CATEGORICAL_COLORSCALE,

@@ -91,18 +91,18 @@ def make_unique(st_):
 
     un_ = []
 
-    for st1 in st_:
+    for st in st_:
 
-        st2 = st1
+        stun = st
 
-        ie = 2
+        it = 2
 
-        while st2 in un_:
+        while stun in un_:
 
-            st2 = "{}{}".format(st1, ie)
+            stun = "{}{}".format(st, it)
 
-            ie += 1
+            it += 1
 
-        un_.append(st2)
+        un_.append(stun)
 
     return un_

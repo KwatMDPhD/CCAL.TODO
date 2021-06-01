@@ -1,7 +1,7 @@
 from numpy import absolute, apply_along_axis, isnan, log2, nan, product, s_, unique
 
+from .density import get_density
 from .grid import get_1d_grid, get_1d_grid_resolution, plot as grid_plot
-from .kernel_density import get_density
 from .plot import plot_plotly
 
 

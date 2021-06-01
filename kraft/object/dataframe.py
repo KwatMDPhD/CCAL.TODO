@@ -2,68 +2,62 @@ from numpy import apply_along_axis, full, nan, unique
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, notna
 
-from .any_ import map_integer
-from .CONSTANT import RANDOM_SEED
+from ..CONSTANT import RANDOM_SEED
+from .iterable import map_integer
 
 
-def error(ta):
+def error(da):
 
-    for ie, la_ in enumerate(ta.axes):
+    for ie, la_ in enumerate(da.axes):
 
-        assert not la_.isna().any(), "Dimension {} ({}) has Na.".format(
-            ie + 1, la_.name
-        )
+        ar_ = ie + 1, la_.name
 
-        assert not la_.has_duplicates, "Dimension {} ({}) is duplicated.".format(
-            ie + 1, la_.name
-        )
+        assert not la_.isna().any(), "Dimension {} ({}) has Na.".format(*ar_)
+
+        assert not la_.has_duplicates, "Dimension {} ({}) is duplicated.".format(*ar_)
 
 
-def count(ta):
+def count(da):
 
-    for la, se in ta.iteritems():
+    for la, se in da.iteritems():
 
-        print("-" * 80)
+        print()
 
         print(la)
 
-        an_co = se.value_counts()
+        print(se.value_counts())
 
-        print(an_co)
-
-        print("-" * 80)
+        print()
 
 
-def sync(ta_, ax):
+def sync(da_, ax):
 
-    ta1 = ta_[0]
+    la_ = da_[0].axes[ax]
 
-    la_ = ta1.axes[ax]
+    for da in da_[1:]:
 
-    for ta in ta_[1:]:
-
-        la_ = la_.intersection(ta.axes[ax])
+        la_ = la_.intersection(da.axes[ax])
 
     la_ = sorted(la_)
 
-    return [ta.reindex(la_, axis=ax) for ta in ta_]
+    return [da.reindex(la_, axis=ax) for da in da_]
 
 
-def _check_has_enough_not_na(un_, n_no):
+def _check_has_enough_not_na(ve, n_no):
 
-    return n_no <= notna(un_).sum()
-
-
-def _check_has_enough_not_na_unique(nu_, n_un):
-
-    return n_un <= unique(nu_[notna(nu_)]).size
+    return n_no <= notna(ve).sum()
 
 
-def drop(ta, ax, n_no=None, n_un=None):
+def _check_has_enough_not_na_unique(ve, n_un):
+
+    return n_un <= unique(ve[notna(ve)]).size
+
+
+def drop(da, ax, n_no=None, n_un=None):
 
     assert not (n_no is None and n_un is None)
 
-    sh = ta.shape
+    sh = da.shape
 
     bo_ = full(sh[ax], True)
 
@@ -75,7 +69,7 @@ def drop(ta, ax, n_no=None, n_un=None):
 
         axap = 0
 
-    taar = ta.to_numpy()
+    daar = da.values
 
     if n_no is not None:
 
@@ -83,7 +77,7 @@ def drop(ta, ax, n_no=None, n_un=None):
 
             n_no *= sh[axap]
 
-        bo_ &= apply_along_axis(_check_has_enough_not_na, axap, taar, n_no)
+        bo_ &= apply_along_axis(_check_has_enough_not_na, axap, daar, n_no)
 
     if n_un is not None:
 
@@ -91,24 +85,24 @@ def drop(ta, ax, n_no=None, n_un=None):
 
             n_un *= sh[axap]
 
-        bo_ &= apply_along_axis(_check_has_enough_not_na_unique, axap, taar, n_un)
+        bo_ &= apply_along_axis(_check_has_enough_not_na_unique, axap, daar, n_un)
 
     if ax == 0:
 
-        ta = ta.loc[bo_, :]
+        da = da.loc[bo_, :]
 
     elif ax == 1:
 
-        ta = ta.loc[:, bo_]
+        da = da.loc[:, bo_]
 
-    print("{} => {}".format(sh, ta.shape))
+    print("{} => {}".format(sh, da.shape))
 
-    return ta
+    return da
 
 
-def drop2(ta, ax=None, **ke):
+def drop_until(da, ax=None, **ke):
 
-    sh = ta.shape
+    sh = da.shape
 
     if ax is None:
 
@@ -118,13 +112,13 @@ def drop2(ta, ax=None, **ke):
 
     while True:
 
-        ta = drop(ta, ax, **ke)
+        da = drop(da, ax, **ke)
 
-        sh2 = ta.shape
+        sh2 = da.shape
 
         if re and sh == sh2:
 
-            return ta
+            return da
 
         sh = sh2
 
@@ -139,38 +133,38 @@ def drop2(ta, ax=None, **ke):
         re = True
 
 
-def sample(ta, sh, ra=RANDOM_SEED, **ke):
+def sample(da, sh, ra=RANDOM_SEED, **ke):
 
-    sh1, sh2 = ta.shape
+    si1, si2 = da.shape
 
-    n_sa1, n_sa2 = sh
+    sa1, sa2 = sh
 
     seed(ra)
 
-    if n_sa1 is not None:
+    if sa1 is not None:
 
-        if n_sa1 < 1:
+        if sa1 < 1:
 
-            n_sa1 = int(n_sa1 * sh1)
+            sa1 = int(sa1 * si1)
 
-        ta = ta.iloc[choice(sh1, n_sa1, **ke), :]
+        da = da.iloc[choice(si1, sa1, **ke), :]
 
-    if n_sa2 is not None:
+    if sa2 is not None:
 
-        if n_sa2 < 1:
+        if sa2 < 1:
 
-            n_sa2 = int(n_sa2 * sh2)
+            sa2 = int(sa2 * si2)
 
-        ta = ta.iloc[:, choice(sh2, n_sa2, **ke)]
+        da = da.iloc[:, choice(si2, sa2, **ke)]
 
-    return ta
+    return da
 
 
-def map_to(ta, la, fu=None):
+def map_to(da, la, fu=None):
 
     ke_va = {}
 
-    for ke_, va in zip(ta.to_numpy(), ta[la].to_numpy()):
+    for ke_, va in zip(da.values, da[la].values):
 
         for ke in ke_:
 
@@ -193,7 +187,7 @@ def pivot(la1_, la2_, an_, na1="Dimension 1", na2="Dimension 2", fu=None):
 
     la2_it = map_integer(la2_)[0]
 
-    taar = full([len(la1_it), len(la2_it)], nan)
+    an_la1_la2 = full([len(la1_it), len(la2_it)], nan)
 
     for la1, la2, an in zip(la1_, la2_, an_):
 
@@ -201,16 +195,16 @@ def pivot(la1_, la2_, an_, na1="Dimension 1", na2="Dimension 2", fu=None):
 
         ie2 = la2_it[la2] - 1
 
-        an0 = taar[ie1, ie2]
+        an0 = an_la1_la2[ie1, ie2]
 
         if notna(an0) and callable(fu):
 
             an = fu(an0, an)
 
-        taar[ie1, ie2] = an
+        an_la1_la2[ie1, ie2] = an
 
     return DataFrame(
-        taar,
+        an_la1_la2,
         Index(la1_it, name=na1),
         Index(la2_it, name=na2),
     )
