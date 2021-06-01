@@ -20,9 +20,9 @@ def get_probability(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
     return co_po_di, pr_
 
 
-def _get_probability(nu___):
+def _get_probability(ar):
 
-    return nu___ / nu___.sum()
+    return ar / ar.sum()
 
 
 def get_posterior_probability(nu_po_di, ta=nan, ba_=(), co__=(), pl=True, di_=()):
