@@ -3,8 +3,8 @@ from multiprocessing import Pool
 from numpy import asarray, nan, where
 from pandas import DataFrame, Series
 
-from .object.array import normalize
 from .information import get_jsd
+from .object.array import normalize
 from .plot import plot_plotly
 
 
@@ -17,10 +17,7 @@ def score_sample_and_set(
     plot=True,
     title="Score Set",
     element_socre_name="Element Score",
-    annotation_text_font_size=8,
-    annotation_text_width=160,
-    annotation_text_yshift=32,
-    pa=None,
+    pa="",
 ):
 
     element_scores = element_scores.dropna()
