@@ -296,6 +296,8 @@ def score_samples_and_sets(
         columns=element_x_sample.columns,
     )
 
+    set_x_sample.index.name = "Set"
+
     if pa is not None:
 
         set_x_sample.to_csv(pa, "\t")
