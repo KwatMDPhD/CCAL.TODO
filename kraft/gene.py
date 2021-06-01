@@ -114,7 +114,7 @@ def select(co_se=None):
 
         co_se = {"locus_group": ["protein-coding gene"]}
 
-    da = read_csv("{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), sep="\t")
+    da = read_csv("{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), "\t")
 
     ge_ = da.pop("symbol")
 
@@ -124,7 +124,7 @@ def select(co_se=None):
 
         print("Selecting by {}...".format(co))
 
-        bo_ &= asarray([isinstance(an, str) and an in se for an in da[co].to_numpy()])
+        bo_ &= asarray([isinstance(an, str) and an in se for an in da[co].values])
 
         print("{}/{}".format(bo_.sum(), bo_.size))
 

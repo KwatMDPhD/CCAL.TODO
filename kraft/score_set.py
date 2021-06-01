@@ -29,7 +29,7 @@ def score_sample_and_set(
     elements = {element: None for element in elements}
 
     h_1 = asarray(
-        tuple(element in elements for element in element_scores.index.to_numpy()),
+        tuple(element in elements for element in element_scores.index.values),
         dtype=float,
     )
 
@@ -39,7 +39,7 @@ def score_sample_and_set(
 
     m_1 = 1 - h_1
 
-    a = element_scores.abs().to_numpy()
+    a = element_scores.abs().values
 
     if method == "ks":
 
@@ -207,8 +207,8 @@ def score_sample_and_set(
         data = [
             {
                 "name": "Element Score ({})".format(element_scores.size),
-                "y": element_scores.to_numpy(),
-                "text": element_scores.index.to_numpy(),
+                "y": element_scores.values,
+                "text": element_scores.index.values,
                 "mode": "lines",
                 "line": {"width": 0, "color": "#20d8ba"},
                 "fill": "tozeroy",
@@ -218,7 +218,7 @@ def score_sample_and_set(
                 "yaxis": "y2",
                 "x": h_i,
                 "y": (0,) * h_i.size,
-                "text": element_scores.index.to_numpy()[h_i],
+                "text": element_scores.index.values[h_i],
                 "mode": "markers",
                 "marker": {
                     "symbol": "line-ns-open",
@@ -256,7 +256,7 @@ def _score_sample_and_sets(element_scores, set_to_elements, method):
     print(element_scores.name)
 
     element_scores = Series(
-        data=normalize(element_scores.to_numpy(), "-0-"),
+        data=normalize(element_scores.values, "-0-"),
         index=element_scores.index,
         name=element_scores.name,
     ).sort_values()
@@ -285,7 +285,7 @@ def score_samples_and_sets(
                 _score_sample_and_sets,
                 (
                     (scores, set_to_elements, method)
-                    for _, scores in element_x_sample.items()
+                    for _, scores in element_x_sample.iteritems()
                 ),
             )
         ).T,

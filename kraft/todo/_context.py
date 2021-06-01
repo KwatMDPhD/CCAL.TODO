@@ -197,7 +197,7 @@ def make_context_matrix(
 
     if tsv_file_path is not None:
 
-        context_matrix.to_csv(tsv_file_path, sep="\t")
+        context_matrix.to_csv(tsv_file_path, "\t")
 
     return context_matrix
 
@@ -237,7 +237,7 @@ def make_context_matrix_(
             ]
 
         context_matrix[i] = compute_vector_context(
-            series.to_numpy(),
+            series.values,
             n_data=n_data,
             location=location,
             scale=scale,
@@ -296,7 +296,7 @@ def plot_context(
         layout = merge(base, layout)
 
     context_dict = compute_vector_context(
-        series.to_numpy(), **compute_vector_context_keyword_arguments
+        series.values, **compute_vector_context_keyword_arguments
     )
 
     for (i, (format_, fit_parameter)) in enumerate(

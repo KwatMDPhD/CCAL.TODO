@@ -227,9 +227,9 @@ def plot(
 
 def solve_ax_b(a, b, method):
 
-    a_ = a.to_numpy()
+    a_ = a.values
 
-    b_ = b.to_numpy()
+    b_ = b.values
 
     if method == "pinv":
 
