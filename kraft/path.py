@@ -23,9 +23,9 @@ def get_absolute(pa):
     return paab
 
 
-def list(di):
+def list(pa):
 
-    return ["{}{}".format(di, na) for na in listdir(di) if na[0] != "."]
+    return ["{}{}".format(pa, na) for na in listdir(pa) if na[0] != "."]
 
 
 def get_child(di):
