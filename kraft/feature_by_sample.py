@@ -3,7 +3,8 @@ from numpy.random import choice
 from pandas import DataFrame, Series, concat
 
 from .grid import make_nd_grid
-from .object.array import guess_type
+from .object.array import guess_type, log, normalize, shift
+from .object.dataframe import drop, drop_until
 from .object.series import binarize
 from .plot import plot_heat_map, plot_histogram
 from .python import cast_builtin
@@ -25,7 +26,7 @@ def collapse(nu_fe_sa):
 def summarize(
     nu_fe_sa,
     pl=True,
-    title_text="Name",
+    title="Name",
     n_he=int(1e6),
     n_hi=int(1e3),
 ):
@@ -43,10 +44,6 @@ def summarize(
     na2 = nu_fe_sa.columns.name
 
     si = nuar_fe_sa.size
-
-    title = {
-        "text": title_text,
-    }
 
     if pl and si <= n_he:
 
@@ -75,9 +72,7 @@ def summarize(
                 layout={
                     "title": title,
                     "xaxis": {
-                        "title": {
-                            "text": "N NaN",
-                        },
+                        "title": "N NaN",
                     },
                 },
             )
@@ -92,9 +87,7 @@ def summarize(
             layout={
                 "title": title,
                 "xaxis": {
-                    "title": {
-                        "text": "(Not-NaN) Median",
-                    },
+                    "title": "(Not-NaN) Median",
                 },
             },
         )
@@ -142,9 +135,7 @@ def summarize(
             layout={
                 "title": title,
                 "xaxis": {
-                    "title": {
-                        "text": "(Not-NaN) Number",
-                    },
+                    "title": "(Not-NaN) Number",
                 },
             },
         )
@@ -155,13 +146,13 @@ def process(
     fe_=(),
     sa_=(),
     na=None,
-    axdo=None,
+    axdr=None,
     n_no=None,
     n_un=None,
-    ba=None,
+    lo=None,
     mish=None,
-    axno=None,
     me=None,
+    axno=None,
     mi=None,
     ma=None,
     **ke,
@@ -193,11 +184,11 @@ def process(
 
     if n_no is not None or n_un is not None:
 
-        print("Dropping...")
+        print("Dropping (axdr={}, n_no={}, n_un={})...".format(axdr, n_no, n_un))
 
-        if axdo is None:
+        if axdr is None:
 
-            dr = drop2
+            dr = drop_until
 
         else:
 
@@ -207,7 +198,7 @@ def process(
 
         nu_fe_sa = dr(
             nu_fe_sa,
-            axdo,
+            axdr,
             n_no=n_no,
             n_un=n_un,
         )
@@ -216,18 +207,18 @@ def process(
 
             summarize(nu_fe_sa, **ke)
 
-    if ba is not None:
+    if lo is not None:
 
-        print("Logging (mish={}, ba={})...".format(mish, ba))
+        print("Logging (mish={}, lo={})...".format(mish, lo))
 
         nuar_fe_sa = nu_fe_sa.values
 
         if mish is not None:
 
-            nuar_fe_sa = shift_minimum(nuar_fe_sa, mish)
+            nuar_fe_sa = shift(nuar_fe_sa, mish)
 
         nu_fe_sa = DataFrame(
-            log(nuar_fe_sa, ba=ba),
+            log(nuar_fe_sa, ba=lo),
             nu_fe_sa.index,
             nu_fe_sa.columns,
         )

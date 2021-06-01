@@ -399,11 +399,11 @@ def plot_histogram(
 
     if no is None:
 
-        yaxis2_title_text = "N"
+        yaxis2_title = "N"
 
     else:
 
-        yaxis2_title_text = no.title()
+        yaxis2_title = no.title()
 
     if layout is None:
 
@@ -422,9 +422,7 @@ def plot_histogram(
             },
             "yaxis2": {
                 "domain": [mi, 1],
-                "title": {
-                    "text": yaxis2_title_text,
-                },
+                "title": yaxis2_title,
             },
         },
         layout,
