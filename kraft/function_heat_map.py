@@ -339,7 +339,7 @@ def make(
                     "domain": [0, 1 - he * 2],
                     "showticklabels": False,
                 },
-                "annotations": _make_target_annotation(ta.name, 1 - he / 2),
+                "annotations": _make_target_annotation(1 - he / 2, ta.name),
             },
             LAYOUT,
         )
@@ -429,7 +429,7 @@ def summarize(
             "title": {
                 "text": title,
             },
-            "annotations": _make_target_annotation(ta.name, 1 - he / 2),
+            "annotations": _make_target_annotation(1 - he / 2, ta.name),
         },
         LAYOUT,
     )
