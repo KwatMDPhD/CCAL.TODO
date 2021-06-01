@@ -1,29 +1,25 @@
-from . import (
-    CONSTANT,
-    cell_line,
-    cluster,
-    density,
-    feature_by_sample,
-    function_heat_map,
-    gene,
-    grid,
-    information,
-    path,
-    plot,
-    probability,
-    python,
-    shell,
-    significance,
-)
-from .object import (
-    array,
-    dataframe,
-    dictionary,
-    gct,
-    gmt,
-    iterable,
-    json,
-    series,
-    string,
-    vector,
-)
+from . import CONSTANT
+from . import cell_line
+from . import cluster
+from . import density
+from . import feature_by_sample
+from . import function_heat_map
+from . import gene
+from . import grid
+from . import information
+from . import path
+from . import plot
+from . import probability
+from . import python
+from . import shell
+from . import significance
+from .object import array
+from .object import dataframe
+from .object import dictionary
+from .object import gct
+from .object import gmt
+from .object import iterable
+from .object import json
+from .object import series
+from .object import string
+from .object import vector
