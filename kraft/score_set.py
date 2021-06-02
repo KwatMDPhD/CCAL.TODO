@@ -148,9 +148,9 @@ def score_sample_and_set(
                 }
             )
 
-        (l_h, l_m, l) = get_jsd(h_a_p_lc, m_a_p_lc, reference_vector=a_p_lc)
+        l_h, l_m, l = get_jsd(h_a_p_lc, m_a_p_lc, nu3_=a_p_lc)
 
-        (r_h, r_m, r) = get_jsd(h_a_p_rc, m_a_p_rc, reference_vector=a_p_rc)
+        r_h, r_m, r = get_jsd(h_a_p_rc, m_a_p_rc, nu3_=a_p_rc)
 
         s = r - l
 
