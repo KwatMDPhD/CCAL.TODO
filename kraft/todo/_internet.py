@@ -11,7 +11,7 @@ def get_name(
     url,
 ):
 
-    return unquote(url).split(sep="/")[-1]
+    return unquote(url).split("/")[-1]
 
 
 def download(url, directory_path, name=None, overwrite=True):

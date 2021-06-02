@@ -18,7 +18,7 @@ def get_variants_from_vcf_or_vcf_gz(
         command("tabix {}".format(vcf_or_vcf_gz_file_path))
 
     return tuple(
-        tuple(vcf_row.split(sep="\t"))
+        tuple(vcf_row.split("\t"))
         for vcf_row in command(
             "tabix {} {}:{}-{}".format(
                 vcf_or_vcf_gz_file_path,
@@ -35,9 +35,9 @@ def get_variants_from_vcf_or_vcf_gz(
 
 def get_vcf_genotype(ref, alt, gt):
 
-    genotypes = (ref, *alt.split(sep=","))
+    genotypes = (ref, *alt.split(","))
 
-    return tuple(genotypes[int(i)] for i in gt.replace("/", "|").split(sep="|"))
+    return tuple(genotypes[int(i)] for i in gt.replace("/", "|").split("|"))
 
 
 def get_vcf_info_ann(info, key, n_ann=None):
@@ -49,18 +49,17 @@ def get_vcf_info_ann(info, key, n_ann=None):
         i = VCF_ANN_KEYS.index(key)
 
         return tuple(
-            ann_.split(sep="|", maxsplit=i + 1)[i]
-            for ann_ in ann.split(sep=",", maxsplit=n_ann + 1)[:n_ann]
+            ann_.split("|", i + 1)[i] for ann_ in ann.split(",", n_ann + 1)[:n_ann]
         )
 
 
 def get_vcf_info(info, key):
 
-    for info_ in info.split(sep=";"):
+    for info_ in info.split(";"):
 
         if "=" in info_:
 
-            (info_key, info_value) = info_.split(sep="=", maxsplit=1)
+            (info_key, info_value) = info_.split("=", 1)
 
             if info_key == key:
 
@@ -69,9 +68,9 @@ def get_vcf_info(info, key):
 
 def get_vcf_sample_format(format_, key, sample):
 
-    i = format_.split(sep=":").index(key)
+    i = format_.split(":").index(key)
 
-    return sample.split(sep=":", maxsplit=i + 1)[i]
+    return sample.split(":", i + 1)[i]
 
 
 def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
@@ -83,21 +82,21 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
     info_without_field = []
 
-    for info in vcf_row[VCF_COLUMNS.index("INFO")].split(sep=";"):
+    for info in vcf_row[VCF_COLUMNS.index("INFO")].split(";"):
 
         if "=" in info:
 
-            (info_field, info_value) = info.split(sep="=", maxsplit=1)
+            (info_field, info_value) = info.split("=", 1)
 
             if info_field == "ANN":
 
                 variant_dict["ANN"] = {}
 
                 for (ann_index, ann) in enumerate(
-                    info_value.split(sep=",", maxsplit=n_info_ann + 1)[:n_info_ann]
+                    info_value.split(",", n_info_ann + 1)[:n_info_ann]
                 ):
 
-                    ann_values = ann.split(sep="|")
+                    ann_values = ann.split("|")
 
                     variant_dict["ANN"][ann_index] = {
                         ann_field: ann_values[ann_field_index + 1]
@@ -118,7 +117,7 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
     vcf_column_format_index = VCF_COLUMNS.index("FORMAT")
 
-    format_fields = vcf_row[vcf_column_format_index].split(sep=":")
+    format_fields = vcf_row[vcf_column_format_index].split(":")
 
     variant_dict["sample"] = {}
 
@@ -126,7 +125,7 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
         variant_dict["sample"][sample_index] = {
             format_field: sample_value
-            for format_field, sample_value in zip(format_fields, sample.split(sep=":"))
+            for format_field, sample_value in zip(format_fields, sample.split(":"))
         }
 
     return variant_dict
@@ -134,7 +133,7 @@ def make_variant_dict_from_vcf_row(vcf_row, n_info_ann=None):
 
 def make_variant_n_from_vcf_file_path(vcf_file_path, use_only_pass=True):
 
-    vcf = read_csv(vcf_file_path, sep="\t", comment="#", header=None, low_memory=False)
+    vcf = read_csv(vcf_file_path, "\t", comment="#", header=None, low_memory=False)
 
     filter_column = vcf.iloc[:, VCF_COLUMNS.index("FILTER")]
 
@@ -239,7 +238,7 @@ def update_variant_dict(
     if "CAF" in variant_dict:
 
         variant_dict["population_allelic_frequencies"] = [
-            float(caf_) for caf_ in variant_dict["CAF"].split(sep=",")
+            float(caf_) for caf_ in variant_dict["CAF"].split(",")
         ]
 
     for sample_dict in variant_dict["sample"].values():
@@ -252,5 +251,5 @@ def update_variant_dict(
 
             sample_dict["allelic_frequency"] = [
                 int(ad_) / int(sample_dict["DP"])
-                for ad_ in sample_dict["AD"].split(sep=",")
+                for ad_ in sample_dict["AD"].split(",")
             ]

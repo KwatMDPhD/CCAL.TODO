@@ -15,13 +15,13 @@ def _parse_block(
     block,
 ):
 
-    dict_table = block.split(sep="_table_begin\n", maxsplit=1)
+    dict_table = block.split("_table_begin\n", 1)
 
     dict = {}
 
     for line in dict_table[0].splitlines()[:-1]:
 
-        (key, value) = line[1:].split(sep=" = ", maxsplit=1)
+        (key, value) = line[1:].split(" = ", 1)
 
         if key in dict:
 
@@ -39,7 +39,7 @@ def _parse_block(
 
     if len(dict_table) == 2:
 
-        row_ = tuple(line.split(sep="\t") for line in dict_table[1].splitlines()[:-1])
+        row_ = tuple(line.split("\t") for line in dict_table[1].splitlines()[:-1])
 
         dict["table"] = DataFrame(
             data=(row[1:] for row in row_[1:]),
@@ -66,7 +66,7 @@ def _name_feature(feature_, platform, platform_table):
 
             if name != "":
 
-                return name.split(sep=" /// ", maxsplit=1)[0]
+                return name.split(" /// ", 1)[0]
 
     elif platform in (13534,):
 
@@ -76,7 +76,7 @@ def _name_feature(feature_, platform, platform_table):
             name,
         ):
 
-            return name.split(sep=";", maxsplit=1)[0]
+            return name.split(";", 1)[0]
 
     elif platform in (5175, 11532):
 
@@ -88,7 +88,7 @@ def _name_feature(feature_, platform, platform_table):
 
             if isinstance(name, str) and name not in ("", "---"):
 
-                return name.split(sep=" // ", maxsplit=2)[1]
+                return name.split(" // ", 2)[1]
 
     elif platform in (2004, 2005, 3718, 3720):
 
@@ -98,7 +98,7 @@ def _name_feature(feature_, platform, platform_table):
             name,
         ):
 
-            return name.split(sep=" // ", maxsplit=1)[0]
+            return name.split(" // ", 1)[0]
 
     elif platform in (10558,):
 
@@ -118,7 +118,7 @@ def _name_feature(feature_, platform, platform_table):
 
         function = None
 
-    for _label in platform_table.columns.to_numpy():
+    for _label in platform_table.columns.values:
 
         if _label == label:
 
@@ -134,7 +134,7 @@ def _name_feature(feature_, platform, platform_table):
 
     else:
 
-        name_ = platform_table.loc[:, label].to_numpy()
+        name_ = platform_table.loc[:, label].values
 
         if callable(function):
 
@@ -152,11 +152,7 @@ def _get_prefix(
 ):
 
     return tuple(
-        set(
-            value.split(sep=": ", maxsplit=1)[0]
-            for value in row
-            if isinstance(value, str)
-        )
+        set(value.split(": ", 1)[0] for value in row if isinstance(value, str))
     )
 
 
@@ -174,9 +170,7 @@ def _update_with_suffix(
 
             if isinstance(value, str):
 
-                array_2d[index_0, index_1] = cast_builtin(
-                    value.split(sep=": ", maxsplit=1)[1]
-                )
+                array_2d[index_0, index_1] = cast_builtin(value.split(": ", 1)[1])
 
 
 def _focus(
@@ -186,16 +180,16 @@ def _focus(
     feature_x_sample = feature_x_sample.loc[
         (
             label[:22] == "Sample_characteristics"
-            for label in feature_x_sample.index.to_numpy()
+            for label in feature_x_sample.index.values
         ),
         :,
     ]
 
-    prefix__ = tuple(_get_prefix(row) for row in feature_x_sample.to_numpy())
+    prefix__ = tuple(_get_prefix(row) for row in feature_x_sample.values)
 
     if all(len(prefix_) == 1 for prefix_ in prefix__):
 
-        _update_with_suffix(feature_x_sample.to_numpy())
+        _update_with_suffix(feature_x_sample.values)
 
         feature_x_sample.index = Index(
             data=(prefix_[0] for prefix_ in prefix__), name=feature_x_sample.index.name
@@ -218,11 +212,11 @@ def get_gse(gse_id, directory_path, **kwarg_):
 
     sample_ = {}
 
-    for block in open(file_path, mode="rt", errors="replace").read().split(sep="\n^"):
+    for block in open(file_path, mode="rt", errors="replace").read().split("\n^"):
 
-        (header, block) = block.split(sep="\n", maxsplit=1)
+        (header, block) = block.split("\n", 1)
 
-        block_type = header.split(sep=" = ", maxsplit=1)[0]
+        block_type = header.split(" = ", 1)[0]
 
         if block_type in ("PLATFORM", "SAMPLE"):
 
@@ -285,7 +279,7 @@ def get_gse(gse_id, directory_path, **kwarg_):
 
             _x_sample = DataFrame(data=data).T
 
-            feature_ = _x_sample.index.to_numpy()
+            feature_ = _x_sample.index.values
 
             feature_ = _name_feature(feature_, platform, dict["table"])
 

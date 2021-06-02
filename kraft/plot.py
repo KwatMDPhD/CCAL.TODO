@@ -201,9 +201,9 @@ def plot_heat_map(
     data = [
         {
             "type": "heatmap",
-            "z": nu_an_an.to_numpy()[::-1],
-            "y": nu_an_an.index.to_numpy()[::-1],
-            "x": nu_an_an.columns.to_numpy(),
+            "z": nu_an_an.values[::-1],
+            "y": nu_an_an.index.values[::-1],
+            "x": nu_an_an.columns.values,
             "colorscale": colorscale,
             "colorbar": {
                 **COLORBAR,
@@ -336,7 +336,7 @@ def plot_bubble_map(
         layout,
     )
 
-    si_an_an = si_an_an.to_numpy()
+    si_an_an = si_an_an.values
 
     if co_an_an is None:
 
@@ -437,7 +437,7 @@ def plot_histogram(
         trace = {
             "legendgroup": ie,
             "name": se.name,
-            "x": se.to_numpy(),
+            "x": se.values,
         }
 
         data.append(

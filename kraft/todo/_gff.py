@@ -1,8 +1,8 @@
 def get_gff3_attribute(attributes, field):
 
-    for field_value in attributes.split(sep=";"):
+    for field_value in attributes.split(";"):
 
-        (field_, value) = field_value.split(sep="=", maxsplit=1)
+        (field_, value) = field_value.split("=", 1)
 
         if field_ == field:
 
@@ -14,7 +14,7 @@ from pandas import read_csv
 
 def read_gff3(gff3_or_gff3_gz_file_path, only_type_to_keep=None):
 
-    dataframe = read_csv(gff3_or_gff3_gz_file_path, sep="\t", comment="#")
+    dataframe = read_csv(gff3_or_gff3_gz_file_path, "\t", comment="#")
 
     dataframe.columns = (
         "seqid",

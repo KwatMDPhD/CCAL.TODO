@@ -167,7 +167,7 @@ def make(
 ):
 
     #
-    la1_ = da.index.to_numpy()
+    la1_ = da.index.values
 
     #
     ta = ta.loc[ta.index.intersection(da.columns)]
@@ -176,7 +176,7 @@ def make(
 
         ta.sort_values(ascending=ac, inplace=True)
 
-    la2_ = ta.index.to_numpy()
+    la2_ = ta.index.values
 
     da = da.loc[:, la2_]
 
@@ -186,9 +186,9 @@ def make(
     si2 = la2_.size
 
     #
-    taar = ta.to_numpy()
+    taar = ta.values
 
-    daar = da.to_numpy()
+    daar = da.values
 
     #
     if callable(fu):
@@ -276,18 +276,18 @@ def make(
 
     if pa != "":
 
-        fu.to_csv("{}statistic.tsv".format(pa), sep="\t")
+        fu.to_csv("{}statistic.tsv".format(pa), "\t")
 
     #
     if pl:
 
-        fuar = fu.to_numpy()
+        fuar = fu.values
 
         la1_ = fu.index
 
         da = da.loc[la1_, :]
 
-        daar = da.to_numpy()
+        daar = da.values
 
         if n_pl is not None and (n_pl / 2) < si1:
 
@@ -407,10 +407,10 @@ def summarize(
         ta.sort_values(ascending=ac, inplace=True)
 
     #
-    la2_ = ta.index.to_numpy()
+    la2_ = ta.index.values
 
     #
-    tapl, mita, mata = _process_target(ta.to_numpy(), ty, st)
+    tapl, mita, mata = _process_target(ta.values, ty, st)
 
     #
     n_ro = 1
@@ -466,9 +466,9 @@ def summarize(
 
         fu.sort_values("Score", ascending=False, inplace=True)
 
-        la1_ = fu.index.to_numpy()
+        la1_ = fu.index.values
 
-        dapl, mida, mada = _process_data(da.loc[la1_, :].to_numpy(), bu["type"], st)
+        dapl, mida, mada = _process_data(da.loc[la1_, :].values, bu["type"], st)
 
         yaxis = "yaxis{}".format(n_bu - ie)
 
@@ -507,9 +507,7 @@ def summarize(
             }
         )
 
-        layout["annotations"] += _make_data_annotations(
-            y, ie == 0, he, la1_, fu.to_numpy()
-        )
+        layout["annotations"] += _make_data_annotations(y, ie == 0, he, la1_, fu.values)
 
     plot_plotly(
         {
