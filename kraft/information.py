@@ -1,4 +1,4 @@
-from numpy import asarray, exp, log, nan, outer, sign, sqrt, unique
+from numpy import array, exp, log, nan, outer, sign, sqrt, unique
 from scipy.stats import pearsonr
 
 from .density import get_bandwidth
@@ -68,7 +68,7 @@ def get_ic(ve1, ve2):
     ba2 = get_bandwidth(ve2) * fa
 
     pr_ = get_probability(
-        asarray([ve1, ve2]).T,
+        array([ve1, ve2]).T,
         ba_=[ba1, ba2],
         co__=[co1_, co2_],
         pl=False,

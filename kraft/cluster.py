@@ -1,4 +1,4 @@
-from numpy import asarray, full, isnan, nan, triu_indices
+from numpy import array, full, isnan, nan, triu_indices
 from numpy.random import choice, seed
 from scipy.cluster.hierarchy import fcluster, leaves_list, linkage
 from scipy.spatial.distance import squareform
@@ -27,7 +27,7 @@ def cluster(
 
 def _get_coclustering_distance(cl_po_tr):
 
-    pa_ = asarray(triu_indices(cl_po_tr.shape[0], k=1)).T
+    pa_ = array(triu_indices(cl_po_tr.shape[0], k=1)).T
 
     n_pa = pa_.shape[0]
 

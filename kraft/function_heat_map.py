@@ -1,6 +1,6 @@
 from multiprocessing import Pool
 
-from numpy import asarray, full, nan, unique, where
+from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
@@ -93,6 +93,7 @@ def _make_target_annotation(y, text):
 def _get_statistic_x(ie):
 
     return 1.08 + ie / 6.4
+
 
 def trim(text):
 
@@ -212,7 +213,7 @@ def make(
         #
         print("Score ({})...".format(fu.__name__))
 
-        sc_ = asarray(po.starmap(apply_on_2, ([taar, ro, fu] for ro in daar)))
+        sc_ = array(po.starmap(apply_on_2, ([taar, ro, fu] for ro in daar)))
 
         #
         if 0 < n_sa:
@@ -237,7 +238,7 @@ def make(
                 )
 
             #
-            ma_ = asarray([apply_on_1(ro, get_margin_of_error) for ro in sc_ro_sa])
+            ma_ = array([apply_on_1(ro, get_margin_of_error) for ro in sc_ro_sa])
 
         else:
 
@@ -274,7 +275,7 @@ def make(
         po.terminate()
 
         fu = DataFrame(
-            asarray([sc_, ma_, pv_, qv_]).T,
+            array([sc_, ma_, pv_, qv_]).T,
             la1_,
             ["Score", "MoE", "P-Value", "Q-Value"],
         )

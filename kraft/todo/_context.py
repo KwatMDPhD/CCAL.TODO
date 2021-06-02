@@ -1,6 +1,6 @@
 from numpy import (
     absolute,
-    asarray,
+    array,
     concatenate,
     cumsum,
     full,
@@ -146,7 +146,7 @@ def compute_vector_context(
     ]
 
     return {
-        "fit": asarray((n_data, location, scale, degree_of_freedom, shape)),
+        "fit": array((n_data, location, scale, degree_of_freedom, shape)),
         "grid": grid,
         "pdf": pdf,
         "shape_pdf_reference": shape_pdf_reference,

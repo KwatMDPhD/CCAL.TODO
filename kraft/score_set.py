@@ -1,6 +1,6 @@
 from multiprocessing import Pool
 
-from numpy import asarray, nan, where
+from numpy import array, nan, where
 from pandas import DataFrame, Series
 
 from .information import get_jsd
@@ -28,7 +28,7 @@ def score_sample_and_set(
 
     elements = {element: None for element in elements}
 
-    h_1 = asarray(
+    h_1 = array(
         tuple(element in elements for element in element_scores.index.values),
         dtype=float,
     )
@@ -269,7 +269,7 @@ def _score_sample_and_sets(element_scores, set_to_elements, method):
             method=method,
             plot=False,
         )
-        for elements in asarray(tuple(set_to_elements.values()))
+        for elements in array(tuple(set_to_elements.values()))
     )
 
 
@@ -280,7 +280,7 @@ def score_samples_and_sets(
     pool = Pool(processes=n_jo)
 
     set_x_sample = DataFrame(
-        data=asarray(
+        data=array(
             pool.starmap(
                 _score_sample_and_sets,
                 (

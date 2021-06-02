@@ -1,4 +1,4 @@
-from numpy import asarray, diff, linspace, meshgrid, unique
+from numpy import array, diff, linspace, meshgrid, unique
 from pandas import DataFrame, Index
 
 from .plot import plot_heat_map, plot_plotly
@@ -44,7 +44,7 @@ def get_1d_grid(co_po_di):
 
 def make_nd_grid(co__):
 
-    return asarray([co_po_di.ravel() for co_po_di in meshgrid(*co__, indexing="ij")]).T
+    return array([co_po_di.ravel() for co_po_di in meshgrid(*co__, indexing="ij")]).T
 
 
 def plot(co_po_di, nu_, di_=(), nu="Number", pa=""):
