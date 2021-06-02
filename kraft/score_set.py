@@ -9,294 +9,221 @@ from .plot import plot_plotly
 
 
 def score_sample_and_set(
-    element_scores,
-    elements,
-    sort_element_scores=True,
-    method="ks",
-    plot_process=False,
-    plot=True,
+    sc_,
+    el_,
+    so=True,
+    me="classic",
+    pl=True,
     title="Score Set",
-    element_socre_name="Element Score",
+    el="Element Score",
     pa="",
 ):
 
-    element_scores = element_scores.dropna()
+    sc_ = sc_.dropna()
 
-    if sort_element_scores:
+    if so:
 
-        element_scores = element_scores.sort_values()
+        sc_ = sc_.sort_values()
 
-    elements = {element: None for element in elements}
+    el_no = {el: None for el in el_}
 
-    h_1 = array(
-        tuple(element in elements for element in element_scores.index.values),
+    boh_ = array(
+        [el in el_no for el in sc_.index.values],
         dtype=float,
     )
 
-    if h_1.sum() == 0:
+    if boh_.sum() == 0:
 
         return nan
 
-    m_1 = 1 - h_1
+    bom_ = 1 - boh_
 
-    a = element_scores.abs().values
+    scab_ = sc_.abs().values
 
-    if method == "ks":
+    if me == "classic":
 
-        h_1 *= a
+        boh_ *= scab_
 
-        h_1_p = h_1 / h_1.sum()
+        pdh_ = boh_ / boh_.sum()
 
-        m_1_p = m_1 / m_1.sum()
+        pdm_ = bom_ / bom_.sum()
 
-        if plot_process:
+        cdh_ = pdh_[::-1].cumsum()[::-1]
 
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "Probability"}},
-                    "data": [
-                        {"name": "Hit", "y": h_1_p, "mode": "lines"},
-                        {"name": "Miss", "y": m_1_p, "mode": "lines"},
-                    ],
-                }
-            )
+        cdm_ = pdm_[::-1].cumsum()[::-1]
 
-        h_1_p_rc = h_1_p[::-1].cumsum()[::-1]
+        enh_ = cdh_
 
-        m_1_p_rc = m_1_p[::-1].cumsum()[::-1]
+        enm_ = cdm_
 
-        if plot_process:
+        en_ = enh_ - enm_
 
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "< Cumulative Probability"}},
-                    "data": [
-                        {"name": "Hit", "y": h_1_p_rc, "mode": "lines"},
-                        {"name": "Miss", "y": m_1_p_rc, "mode": "lines"},
-                    ],
-                }
-            )
+    elif me == "new":
 
-        r_h = h_1_p_rc
+        amh_ = boh_ * scab_
 
-        r_m = m_1_p_rc
+        amm_ = bom_ * scab_
 
-        r = h_1_p_rc - m_1_p_rc
+        pdah_ = amh_ / amh_.sum()
 
-        s = r
+        pdam_ = amm_ / amm_.sum()
 
-    elif method == "pk":
-
-        h_a = h_1 * a
-
-        m_a = m_1 * a
-
-        h_a_p = h_a / h_a.sum()
-
-        m_a_p = m_a / m_a.sum()
-
-        a_p = a / a.sum()
-
-        if plot_process:
-
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "Magnitude"}},
-                    "data": [
-                        {"name": "Hit", "y": h_a_p, "mode": "lines"},
-                        {"name": "Miss", "y": m_a_p, "mode": "lines"},
-                        {"name": "All", "y": a_p, "mode": "lines"},
-                    ],
-                }
-            )
+        pda_ = scab_ / scab_.sum()
 
         add = 1e-8
 
-        h_a_p_lc = h_a_p.cumsum() + add
+        cdlah_ = pdah_.cumsum() + add
 
-        h_a_p_rc = h_a_p[::-1].cumsum()[::-1] + add
+        cdrah_ = pdah_[::-1].cumsum()[::-1] + add
 
-        m_a_p_lc = m_a_p.cumsum() + add
+        cdlam_ = pdam_.cumsum() + add
 
-        m_a_p_rc = m_a_p[::-1].cumsum()[::-1] + add
+        cdram_ = pdam_[::-1].cumsum()[::-1] + add
 
-        a_p_lc = a_p.cumsum() + add
+        cdla_ = pda_.cumsum() + add
 
-        a_p_rc = a_p[::-1].cumsum()[::-1] + add
+        cdra_ = pda_[::-1].cumsum()[::-1] + add
 
-        if plot_process:
-
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "Cumulative Probability >"}},
-                    "data": [
-                        {"name": "Hit", "y": h_a_p_lc, "mode": "lines"},
-                        {"name": "Miss", "y": m_a_p_lc, "mode": "lines"},
-                        {"name": "All", "y": a_p_lc, "mode": "lines"},
-                    ],
-                }
-            )
-
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "< Cumulative Probability"}},
-                    "data": [
-                        {"name": "Hit", "y": h_a_p_rc, "mode": "lines"},
-                        {"name": "Miss", "y": m_a_p_rc, "mode": "lines"},
-                        {"name": "All", "y": a_p_rc, "mode": "lines"},
-                    ],
-                }
-            )
-
-        l_h, l_m, l = get_jsd(h_a_p_lc, m_a_p_lc, nu3_=a_p_lc)
-
-        r_h, r_m, r = get_jsd(h_a_p_rc, m_a_p_rc, nu3_=a_p_rc)
-
-        s = r - l
-
-    if plot_process:
-
-        opacity = 0.32
-
-        base = {"name": "Signal", "mode": "lines", "marker": {"color": "#ff1968"}}
-
-        if method == "pk":
-
-            plot_plotly(
-                {
-                    "layout": {"title": {"text": "Signal >"}},
-                    "data": [
-                        {"name": "Hit", "y": l_h, "opacity": opacity, "mode": "lines"},
-                        {"name": "Miss", "y": l_m, "opacity": opacity, "mode": "lines"},
-                        {"y": l, **base},
-                    ],
-                }
-            )
-
-        plot_plotly(
-            {
-                "layout": {"title": {"text": "< Signal"}},
-                "data": [
-                    {"name": "Hit", "y": r_h, "opacity": opacity, "mode": "lines"},
-                    {"name": "Miss", "y": r_m, "opacity": opacity, "mode": "lines"},
-                    {"y": r, **base},
-                ],
-            }
+        en_ = (
+            get_jsd(cdlah_, cdlam_, nu3_=cdla_)[2]
+            - get_jsd(cdrah_, cdram_, nu3_=cdra_)[2]
         )
 
-    score = s.sum() / s.size
+    else:
 
-    if plot:
+        raise
 
-        y_fraction = 0.16
+    sesc = en_.sum() / en_.size
+
+    if pl:
+
+        fr = 0.16
 
         layout = {
             "title": {
-                "text": "{}<br>Score (method={}) = {:.2f}".format(title, method, score),
+                "text": "{}<br>Score (method={}) = {:.2f}".format(title, me, sesc),
                 "x": 0.5,
             },
-            "xaxis": {"anchor": "y"},
-            "yaxis": {"domain": (0, y_fraction), "title": element_socre_name},
-            "yaxis2": {"domain": (y_fraction + 0.08, 1)},
+            "xaxis": {
+                "anchor": "y",
+            },
+            "yaxis": {
+                "domain": [0, fr],
+                "title": el,
+            },
+            "yaxis2": {
+                "domain": [fr + 0.08, 1],
+            },
             "legend_orientation": "h",
-            "legend": {"y": -0.24},
+            "legend": {
+                "y": -0.24,
+            },
         }
 
-        h_i = where(h_1)[0]
+        ie_ = where(boh_)[0]
 
         data = [
             {
-                "name": "Element Score ({})".format(element_scores.size),
-                "y": element_scores.values,
-                "text": element_scores.index.values,
+                "name": "Element Score ({})".format(sc_.size),
+                "y": sc_.values,
+                "text": sc_.index.values,
                 "mode": "lines",
-                "line": {"width": 0, "color": "#20d8ba"},
+                "line": {
+                    "width": 0,
+                    "color": "#20d8ba",
+                },
                 "fill": "tozeroy",
             },
             {
-                "name": "Element ({})".format(h_i.size),
+                "name": "Element ({})".format(ie_.size),
                 "yaxis": "y2",
-                "x": h_i,
-                "y": (0,) * h_i.size,
-                "text": element_scores.index.values[h_i],
+                "x": ie_,
+                "y": [0] * ie_.size,
+                "text": sc_.index.values[ie_],
                 "mode": "markers",
                 "marker": {
                     "symbol": "line-ns-open",
                     "size": 8,
                     "color": "#2e211b",
-                    "line": {"width": 1.6},
+                    "line": {
+                        "width": 1.6,
+                    },
                 },
                 "hoverinfo": "x+text",
             },
         ]
 
-        for (name, _1, color) in (
-            ("- Enrichment", s < 0, "#0088ff"),
-            ("+ Enrichment", 0 < s, "#ff1968"),
-        ):
+        for name, ies_, color in [
+            ["- Enrichment", en_ < 0, "#0088ff"],
+            ["+ Enrichment", 0 < en_, "#ff1968"],
+        ]:
 
             data.append(
                 {
                     "name": name,
                     "yaxis": "y2",
-                    "y": where(_1, s, 0),
+                    "y": where(ies_, en_, 0),
                     "mode": "lines",
-                    "line": {"width": 0, "color": color},
+                    "line": {
+                        "width": 0,
+                        "color": color,
+                    },
                     "fill": "tozeroy",
                 }
             )
 
-        plot_plotly({"layout": layout, "data": data}, pa=pa)
+        plot_plotly(
+            {
+                "data": data,
+                "layout": layout,
+            },
+            pa=pa,
+        )
 
-    return score
+    return sesc
 
 
-def _score_sample_and_sets(element_scores, set_to_elements, method):
+def _score_sample_and_sets(sc_, se_el_, me):
 
-    print(element_scores.name)
+    print(sc_.name)
 
-    element_scores = Series(
-        data=normalize(element_scores.values, "-0-"),
-        index=element_scores.index,
-        name=element_scores.name,
+    sc_ = Series(
+        normalize(sc_.values, "-0-"),
+        sc_.index,
+        name=sc_.name,
     ).sort_values()
 
-    return tuple(
+    return [
         score_sample_and_set(
-            element_scores,
-            elements,
-            sort_element_scores=False,
-            method=method,
-            plot=False,
+            sc_,
+            el_,
+            so=False,
+            me=me,
+            pl=False,
         )
-        for elements in array(tuple(set_to_elements.values()))
-    )
+        for el_ in se_el_.values()
+    ]
 
 
-def score_samples_and_sets(
-    element_x_sample, set_to_elements, method="ks", n_jo=1, pa=None
-):
+def score_samples_and_sets(nu_el_sa, se_el_, me="ks", n_jo=1, pa=""):
 
-    pool = Pool(processes=n_jo)
+    po = Pool(n_jo)
 
-    set_x_sample = DataFrame(
-        data=array(
-            pool.starmap(
+    en_se_sa = DataFrame(
+        array(
+            po.starmap(
                 _score_sample_and_sets,
-                (
-                    (scores, set_to_elements, method)
-                    for _, scores in element_x_sample.iteritems()
-                ),
+                ([sc_, se_el_, me] for _, sc_ in nu_el_sa.iteritems()),
             )
         ).T,
-        index=set_to_elements.keys(),
-        columns=element_x_sample.columns,
+        se_el_.keys(),
+        nu_el_sa.columns,
     )
 
-    set_x_sample.index.name = "Set"
+    en_se_sa.index.name = "Set"
 
-    if pa is not None:
+    if pa != "":
 
-        set_x_sample.to_csv(pa, "\t")
+        en_se_sa.to_csv(pa, "\t")
 
-    return set_x_sample
+    return en_se_sa
