@@ -1,4 +1,4 @@
-from numpy import apply_along_axis, asarray, concatenate, isnan, logical_not, median
+from numpy import apply_along_axis, array, concatenate, isnan, logical_not, median
 from numpy.random import choice
 from pandas import DataFrame, Series, concat
 
@@ -106,7 +106,7 @@ def summarize(
 
     if pl:
 
-        la_ = asarray(
+        la_ = array(
             [
                 "{}_{}".format(*la_)
                 for la_ in make_nd_grid([la1_, la2_])[bo_fe_sa.ravel()]

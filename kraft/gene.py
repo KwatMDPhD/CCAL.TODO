@@ -1,4 +1,4 @@
-from numpy import asarray, full
+from numpy import array, full
 from pandas import read_csv, read_excel
 
 from .CONSTANT import DATA_DIRECTORY_PATH
@@ -91,7 +91,7 @@ def rename(na_):
 
     ge_ = [an_ge.get(na) for na in na_]
 
-    bo_ = asarray([ge is not None for ge in ge_])
+    bo_ = array([ge is not None for ge in ge_])
 
     n_to = bo_.size
 
@@ -124,7 +124,7 @@ def select(co_se=None):
 
         print("Selecting by {}...".format(co))
 
-        bo_ &= asarray([isinstance(an, str) and an in se for an in da[co].values])
+        bo_ &= array([isinstance(an, str) and an in se for an in da[co].values])
 
         print("{}/{}".format(bo_.sum(), bo_.size))
 

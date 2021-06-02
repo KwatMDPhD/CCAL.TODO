@@ -1,4 +1,4 @@
-from numpy import apply_along_axis, asarray, dot, full, nan, sum
+from numpy import apply_along_axis, array, dot, full, nan, sum
 from numpy.linalg import norm, pinv
 from numpy.random import random_sample, seed
 from pandas import DataFrame
@@ -38,7 +38,7 @@ def _update_h(v, w, h):
 
 def _is_tolerable(errors, tolerance):
 
-    (e_, e) = asarray(errors)[-2:]
+    (e_, e) = array(errors)[-2:]
 
     return ((e_ - e) / e_ < tolerance).all()
 
@@ -115,14 +115,14 @@ def factorize(
 
         ws = (w,)
 
-    return (ws, hs, asarray(errors).T)
+    return (ws, hs, array(errors).T)
 
 
 def make_factor_label_(
     r,
 ):
 
-    return asarray(tuple("Factor {}_{}".format(r, index) for index in range(r)))
+    return array(tuple("Factor {}_{}".format(r, index) for index in range(r)))
 
 
 def plot(

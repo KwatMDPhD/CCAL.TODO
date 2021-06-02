@@ -1,4 +1,4 @@
-from numpy import asarray, sqrt, where
+from numpy import array, sqrt, where
 from scipy.stats import norm
 from statsmodels.sandbox.stats.multicomp import multipletests
 
@@ -25,13 +25,13 @@ def get_p_value_q_value(nu_, ra_, di, mu="fdr_bh"):
 
     if "<" in di:
 
-        pl_ = asarray([get_p_value(nu, ra_, "<") for nu in nu_])
+        pl_ = array([get_p_value(nu, ra_, "<") for nu in nu_])
 
         ql_ = multipletests(pl_, method=mu)[1]
 
     if ">" in di:
 
-        pr_ = asarray([get_p_value(nu, ra_, ">") for nu in nu_])
+        pr_ = array([get_p_value(nu, ra_, ">") for nu in nu_])
 
         qr_ = multipletests(pr_, method=mu)[1]
 

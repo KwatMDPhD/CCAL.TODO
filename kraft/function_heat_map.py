@@ -1,6 +1,6 @@
 from multiprocessing import Pool
 
-from numpy import asarray, full, nan, unique, where
+from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
@@ -95,9 +95,22 @@ def _get_statistic_x(ie):
     return 1.08 + ie / 6.4
 
 
+def trim(text):
+
+    n_ch = 25
+
+    if n_ch < len(text):
+
+        text = "{}...".format(text[:n_ch])
+
+    return text
+
+
 def _make_data_annotations(y, ad, he, text_, fu):
 
     annotations = []
+
+    n_ch = 27
 
     if ad:
 
@@ -108,7 +121,7 @@ def _make_data_annotations(y, ad, he, text_, fu):
                     "y": y,
                     "x": _get_statistic_x(ie),
                     "xanchor": "center",
-                    "text": "<b>{}</b>".format(text),
+                    "text": "<b>{}</b>".format(trim(text)),
                     **ANNOTATION,
                 }
             )
@@ -122,7 +135,7 @@ def _make_data_annotations(y, ad, he, text_, fu):
                 "y": y,
                 "x": 0,
                 "xanchor": "right",
-                "text": text_[ie1],
+                "text": "{}".format(trim(text_[ie1])),
                 **ANNOTATION,
             }
         )
@@ -200,7 +213,7 @@ def make(
         #
         print("Score ({})...".format(fu.__name__))
 
-        sc_ = asarray(po.starmap(apply_on_2, ([taar, ro, fu] for ro in daar)))
+        sc_ = array(po.starmap(apply_on_2, ([taar, ro, fu] for ro in daar)))
 
         #
         if 0 < n_sa:
@@ -225,7 +238,7 @@ def make(
                 )
 
             #
-            ma_ = asarray([apply_on_1(ro, get_margin_of_error) for ro in sc_ro_sa])
+            ma_ = array([apply_on_1(ro, get_margin_of_error) for ro in sc_ro_sa])
 
         else:
 
@@ -262,7 +275,7 @@ def make(
         po.terminate()
 
         fu = DataFrame(
-            asarray([sc_, ma_, pv_, qv_]).T,
+            array([sc_, ma_, pv_, qv_]).T,
             la1_,
             ["Score", "MoE", "P-Value", "Q-Value"],
         )
@@ -289,7 +302,7 @@ def make(
 
         daar = da.values
 
-        if n_pl is not None and (n_pl / 2) < si1:
+        if n_pl is not None and n_pl < (si1 / 2):
 
             bo_ = check_is_extreme(fuar[:, 0], "<>", n_ex=n_pl)
 

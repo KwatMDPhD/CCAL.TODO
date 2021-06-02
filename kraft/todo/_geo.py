@@ -1,6 +1,6 @@
 from gzip import open
 
-from numpy import asarray
+from numpy import array
 from pandas import DataFrame, Index
 from pandas.api.types import is_numeric_dtype
 
@@ -138,13 +138,13 @@ def _name_feature(feature_, platform, platform_table):
 
         if callable(function):
 
-            name_ = asarray(tuple(function(name) for name in name_))
+            name_ = array(tuple(function(name) for name in name_))
 
         feature_to_name = dict(zip(feature_, name_))
 
         summarize(feature_to_name)
 
-        return asarray(tuple(feature_to_name.get(feature) for feature in feature_))
+        return array(tuple(feature_to_name.get(feature) for feature in feature_))
 
 
 def _get_prefix(
