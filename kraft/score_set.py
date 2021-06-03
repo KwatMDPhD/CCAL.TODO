@@ -205,7 +205,7 @@ def _score_sample_and_sets(sc_, se_el_, me):
     ]
 
 
-def score_samples_and_sets(nu_el_sa, se_el_, me="ks", n_jo=1, pa=""):
+def score_samples_and_sets(nu_el_sa, se_el_, me="classic", n_jo=1, pa=""):
 
     po = Pool(n_jo)
 

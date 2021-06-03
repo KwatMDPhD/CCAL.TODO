@@ -371,6 +371,7 @@ def make(
                     {
                         "yaxis": "y2",
                         "z": tapl.reshape([1, -1]),
+                        "text": taar.reshape([1, -1]),
                         "x": la2_,
                         "zmin": mita,
                         "zmax": mata,
@@ -380,6 +381,7 @@ def make(
                     {
                         "yaxis": "y",
                         "z": dapl[::-1],
+                        "text": daar[::-1],
                         "y": la1_[::-1],
                         "x": la2_,
                         "zmin": mida,
