@@ -1,30 +1,63 @@
 from numpy import array, full
-from pandas import isna, read_csv, read_excel
+from pandas import read_csv, read_excel
 
 from .CONSTANT import DATA_DIRECTORY_PATH
 from .object.dataframe import map_to
+from .object.iterable import flatten
 
 
-def _read_hgnc():
+def _read_hgnc(co_se):
 
-    return read_csv(
+    da = read_csv(
         "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
         "\t",
         low_memory=False,
     )
 
+    if co_se is not None:
+
+        ge_ = da.loc[:, "symbol"].values
+
+        bo_ = full(ge_.size, True)
+
+        for co, se in co_se.items():
+
+            print("Selecting by {}: {}...".format(co, ", ".join(se)))
+
+            bo_ &= array(
+                [isinstance(an, str) and an in se for an in da.loc[:, co].values]
+            )
+
+            print("{}/{}".format(bo_.sum(), bo_.size))
+
+        da = da.loc[bo_, :]
+
+    return da
+
+
+def _pr(an):
+
+    if isinstance(an, str):
+
+        return an.split("|")
+
+    return []
+
+
+def _pr1(an):
+
+    pr_ = _pr(an)
+
+    if 0 < len(pr_):
+
+        return pr_[0]
+
+    return None
+
 
 def _map_hgnc():
-    def pr(an):
-
-        if isinstance(an, str):
-
-            return an.split("|")
-
-        return []
-
     return map_to(
-        _read_hgnc().drop(
+        _read_hgnc(None).drop(
             [
                 "locus_group",
                 "locus_type",
@@ -43,7 +76,7 @@ def _map_hgnc():
             1,
         ),
         "symbol",
-        fu=pr,
+        fu=_pr,
     )
 
 
@@ -115,68 +148,47 @@ def rename(na_):
 
 def _map_family():
 
-    da = _read_hgnc()
+    da = _read_hgnc(None)
 
-    def simplify_family(fa):
-
-        if isna(fa):
-
-            return None
-
-        else:
-
-            return fa.split("|")[0]
-
-    return dict(zip(da["symbol"], (simplify_family(fa) for fa in da["gene_family"])))
+    return dict(zip(da.loc[:, "symbol"], (_pr1(fa) for fa in da.loc[:, "gene_family"])))
 
 
-def _list_bad(
-    fa_=("ribosom", "mitochondria", "small nuclear rna", "small nucleolar rna")
+def select(
+    co_se=None,
+    su_=(
+        "ribosom",
+        "mitochondria",
+        "small nucleolar rna",
+        "nadh:ubiquinone oxidoreductase",
+    ),
 ):
-
-    ge_ = []
-
-    for ge, fa in _map_family().items():
-
-        if fa is not None and any(su in fa.lower() for su in fa_):
-
-            ge_.append(ge)
-
-    ge_ = sorted(set(ge_))
-
-    print("{} bad genes.".format(len(ge_)))
-
-    return ge_
-
-
-def select(co_se=None, re=True):
 
     if co_se is None:
 
         co_se = {"locus_group": ["protein-coding gene"]}
 
-    da = _read_hgnc()
+    ge_ = _read_hgnc(co_se).loc[:, "symbol"].values
 
-    ge_ = da.pop("symbol").values
+    fa_ge_ = {}
 
-    bo_ = full(ge_.size, True)
+    for ge, fa in _map_family().items():
 
-    for co, se in co_se.items():
+        if fa is not None and any(su in fa.lower() for su in su_):
 
-        print("Selecting by {}: {}...".format(co, ", ".join(se)))
+            if fa in fa_ge_:
 
-        bo_ &= array([isinstance(an, str) and an in se for an in da[co].values])
+                fa_ge_[fa].append(ge)
 
-        print("{}/{}".format(bo_.sum(), bo_.size))
+            else:
 
-    if re:
+                fa_ge_[fa] = [ge]
 
-        print("Removing bad...")
+    print("Removing:")
 
-        ba_ = _list_bad()
+    for fa, ba_ in sorted(fa_ge_.items(), key=lambda pa: len(pa[1]), reverse=True):
 
-        bo_ &= array([ge not in ba_ for ge in ge_])
+        print("{}\t{}".format(len(ba_), fa))
 
-        print("{}/{}".format(bo_.sum(), bo_.size))
+    ba_ = flatten(fa_ge_.values())
 
-    return ge_[bo_]
+    return [ge for ge in ge_ if ge not in ba_]

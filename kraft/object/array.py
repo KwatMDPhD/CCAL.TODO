@@ -59,7 +59,11 @@ def normalize(ar, me, ra="average"):
 
 def shift(ar, mi):
 
-    if mi == "0<":
+    if mi == "+1":
+
+        return ar + 1
+
+    elif mi == "0<":
 
         arbo = 0 < ar
 
@@ -85,7 +89,7 @@ def log(ar, ba=2):
 
 def log_with_negative(ar):
 
-    return sign(ar) * log(absolute(ar) + 1)
+    return sign(ar) * log2(absolute(ar) + 1)
 
 
 def guess_type(ar, ma=16):
@@ -138,6 +142,10 @@ def check_is_extreme(ar, di, th_=(), n_ex=0, st=0.0):
         lo = me - st
 
         hi = me + st
+
+    else:
+
+        raise
 
     if di == "<>":
 
