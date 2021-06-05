@@ -1,8 +1,17 @@
 from numpy import array, full
-from pandas import read_csv, read_excel
+from pandas import isna, read_csv, read_excel
 
 from .CONSTANT import DATA_DIRECTORY_PATH
 from .object.dataframe import map_to
+
+
+def _read_hgnc():
+
+    return read_csv(
+        "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
+        "\t",
+        low_memory=False,
+    )
 
 
 def _map_hgnc():
@@ -15,11 +24,7 @@ def _map_hgnc():
         return []
 
     return map_to(
-        read_csv(
-            "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
-            "\t",
-            low_memory=False,
-        ).drop(
+        _read_hgnc().drop(
             [
                 "locus_group",
                 "locus_type",
@@ -108,23 +113,69 @@ def rename(na_):
         return ge_
 
 
-def select(co_se=None):
+def _map_family():
+
+    da = _read_hgnc()
+
+    def simplify_family(fa):
+
+        if isna(fa):
+
+            return None
+
+        else:
+
+            return fa.split("|")[0]
+
+    return dict(zip(da["symbol"], (simplify_family(fa) for fa in da["gene_family"])))
+
+
+def _list_bad(
+    fa_=("ribosom", "mitochondria", "small nuclear rna", "small nucleolar rna")
+):
+
+    ge_ = []
+
+    for ge, fa in _map_family().items():
+
+        if fa is not None and any(su in fa.lower() for su in fa_):
+
+            ge_.append(ge)
+
+    ge_ = sorted(set(ge_))
+
+    print("{} bad genes.".format(len(ge_)))
+
+    return ge_
+
+
+def select(co_se=None, re=True):
 
     if co_se is None:
 
         co_se = {"locus_group": ["protein-coding gene"]}
 
-    da = read_csv("{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH), "\t")
+    da = _read_hgnc()
 
-    ge_ = da.pop("symbol")
+    ge_ = da.pop("symbol").values
 
     bo_ = full(ge_.size, True)
 
     for co, se in co_se.items():
 
-        print("Selecting by {}...".format(co))
+        print("Selecting by {}: {}...".format(co, ", ".join(se)))
 
         bo_ &= array([isinstance(an, str) and an in se for an in da[co].values])
+
+        print("{}/{}".format(bo_.sum(), bo_.size))
+
+    if re:
+
+        print("Removing bad...")
+
+        ba_ = _list_bad()
+
+        bo_ &= array([ge not in ba_ for ge in ge_])
 
         print("{}/{}".format(bo_.sum(), bo_.size))
 

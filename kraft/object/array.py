@@ -1,4 +1,5 @@
 from numpy import (
+    absolute,
     full,
     isnan,
     log as loge,
@@ -9,6 +10,7 @@ from numpy import (
     logical_or,
     nan,
     quantile,
+    sign,
     sort,
     unique,
 )
@@ -79,6 +81,11 @@ def log(ar, ba=2):
     return {2: log2, "e": loge, 10: log10,}[
         ba
     ](ar)
+
+
+def log_with_negative(ar):
+
+    return sign(ar) * log(absolute(ar) + 1)
 
 
 def guess_type(ar, ma=16):
