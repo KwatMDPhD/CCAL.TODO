@@ -38,14 +38,14 @@ def get_child(di):
 
             pa_.append("{}/{}/".format(di, na))
 
-        for n in fi_:
+        for na in fi_:
 
             pa_.append("{}/{}".format(di, na))
 
-    return pa_
+    return sorted(pa_)
 
 
-def make(pa):
+def make(pa, pr):
 
     di = dirname(pa)
 
@@ -61,4 +61,6 @@ def make(pa):
 
         mkdir(di)
 
-        print("Made {}/".format(di))
+        if pr:
+
+            print("Made {}/".format(di))
