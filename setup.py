@@ -9,7 +9,7 @@ pa = "{}/data/".format(na)
 setup(
     name=na,
     version="0.1.0",
-    python_requires=">=3.6,<3.9",
+    python_requires=">=3.6.0",
     install_requires=[
         "numpy",
         "pandas",
