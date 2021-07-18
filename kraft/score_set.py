@@ -44,6 +44,8 @@ def score_sample_and_set(
 
         boh_ *= scab_
 
+        # TODO: power
+
         pdh_ = boh_ / boh_.sum()
 
         pdm_ = bom_ / bom_.sum()
@@ -93,7 +95,7 @@ def score_sample_and_set(
 
         raise
 
-    sesc = en_.sum() / en_.size
+    en = en_.sum() / en_.size
 
     if pl:
 
@@ -101,7 +103,7 @@ def score_sample_and_set(
 
         layout = {
             "title": {
-                "text": "{}<br>Score (method={}) = {:.2f}".format(title, me, sesc),
+                "text": "{}<br>Score (method={}) = {:.2f}".format(title, me, en),
                 "x": 0.5,
             },
             "xaxis": {
@@ -180,7 +182,7 @@ def score_sample_and_set(
             pa=pa,
         )
 
-    return sesc
+    return en
 
 
 def _score_sample_and_sets(sc_, se_el_, me):
