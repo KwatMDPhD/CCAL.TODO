@@ -106,3 +106,14 @@ def make_unique(st_):
         un_.append(stun)
 
     return un_
+
+
+def trim(text):
+
+    n_ch = 25
+
+    if n_ch < len(text):
+
+        text = "{}...".format(text[:n_ch])
+
+    return text

@@ -8,6 +8,7 @@ from .cluster import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 from .object.array import apply_on_1, apply_on_2, check_is_extreme, normalize
 from .object.dictionary import merge
+from .object.string import trim
 from .plot import (
     BINARY_COLORSCALE,
     CATEGORICAL_COLORSCALE,
@@ -93,17 +94,6 @@ def _make_target_annotation(y, text):
 def _get_statistic_x(ie):
 
     return 1.08 + ie / 6.4
-
-
-def trim(text):
-
-    n_ch = 25
-
-    if n_ch < len(text):
-
-        text = "{}...".format(text[:n_ch])
-
-    return text
 
 
 def _make_data_annotations(y, ad, he, text_, fu):
