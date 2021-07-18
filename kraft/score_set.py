@@ -189,6 +189,7 @@ def _score_sample_and_sets(sc_, se_el_, me):
 
     print(sc_.name)
 
+    # TODO: consider normalizing in the outer scope
     sc_ = Series(
         normalize(sc_.values, "-0-"),
         sc_.index,

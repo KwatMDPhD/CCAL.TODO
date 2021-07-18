@@ -1,6 +1,21 @@
+def _normalize_sample(input_dataset, sample_normalization):
+
+    return nu_ge_sa
+
+def _select_gene_sets(
+    gene_sets,
+    max_gene_set_size,
+    min_gene_set_size,
+):
+
+    return
+
+def _combine_up_dn(en_se_sa):
+
+    return en_se_sa
+
 def single_sample_gsea(
     input_dataset,
-    output_file,
     gene_sets,
     max_gene_set_size=500,
     min_gene_set_size=5,
@@ -8,19 +23,24 @@ def single_sample_gsea(
     weight_exponent=1,
     sample_normalization="z", # None, rank, log_rank, z, log
     combine_and_add_up_dn_entries=True,
+    output_file="",
 ):
 
-    # Normalize each sample
+    nu_ge_sa = _normalize_sample(input_dataset, sample_normalization)
 
-    # Select gene sets
+    se_el_ = _select_gene_sets(gene_sets, max_gene_set_size, min_gene_set_size)
 
-    # For each sample, score set
+    en_se_sa = score_samples_and_sets(nu_ge_sa, se_el_, me=enrichment_metric)
 
-    # Combine up and down scores
+    if combine_and_add_up_dn_entries:
 
-    # Save gene_set_x_sample.tsv
+        en_se_sa = _combine_up_dn(en_se_sa)
 
-    return
+    if output_file != "":
+
+        en_se_sa.to_csv(output_file, "\t")
+
+    return en_se_sa
 
 def gsea(
     input_dataset,
@@ -42,13 +62,13 @@ def gsea(
     random_seed=1729,
 ):
 
-    # Normalize each sample
+    nu_ge_sa = _normalize_sample(input_dataset, sample_normalization)
 
     # Rank
 
-    # Select gene sets
+    se_el_ = _select_gene_sets(gene_sets, max_gene_set_size, min_gene_set_size)
 
-    # Score set
+    en_ = _score_sample_and_sets(sc_, se_el_, enrichment_metric)
 
     # Get null scores
 
@@ -77,9 +97,9 @@ def prerank_gsea(
     random_seed=1729,
 ):
 
-    # Select gene sets
+    se_el_ = _select_gene_sets(gene_sets, max_gene_set_size, min_gene_set_size)
 
-    # Score set
+    en_ = _score_sample_and_sets(input_gene_scores, se_el_, enrichment_metric)
 
     # Get null scores
 
