@@ -2,6 +2,7 @@ def _normalize_sample(input_dataset, sample_normalization):
 
     return nu_ge_sa
 
+
 def _select_gene_sets(
     gene_sets,
     max_gene_set_size,
@@ -10,18 +11,20 @@ def _select_gene_sets(
 
     return
 
+
 def _combine_up_dn(en_se_sa):
 
     return en_se_sa
+
 
 def single_sample_gsea(
     input_dataset,
     gene_sets,
     max_gene_set_size=500,
     min_gene_set_size=5,
-    enrichment_metric="ks", # auc, js, ...
+    enrichment_metric="ks",  # auc, js, ...
     weight_exponent=1,
-    sample_normalization="z", # None, rank, log_rank, z, log
+    sample_normalization="z",  # None, rank, log_rank, z, log
     combine_and_add_up_dn_entries=True,
     output_file="",
 ):
@@ -42,6 +45,7 @@ def single_sample_gsea(
 
     return en_se_sa
 
+
 def gsea(
     input_dataset,
     phenotype_labels,
@@ -49,16 +53,16 @@ def gsea(
     gene_sets,
     max_gene_set_size=500,
     min_gene_set_size=5,
-    enrichment_metric="ks", # auc, js, ...
+    enrichment_metric="ks",  # auc, js, ...
     weight_exponent=1,
-    metric_for_ranking_genes="s2r", # t, tm, r, rm, d, dm, l, lm, p, c, ic,
-    gene_list_sorting_mode="real", # abs
-    permutaion_type="phenotype", # gene_set
+    metric_for_ranking_genes="s2r",  # t, tm, r, rm, d, dm, l, lm, p, c, ic,
+    gene_list_sorting_mode="real",  # abs
+    permutaion_type="phenotype",  # gene_set
     num_permutations=1000,
     num_of_top_gene_sets_for_plots=25,
     additional_gene_sets_for_plots=None,
     combine_and_add_up_dn_entries=True,
-    sample_normalization="z", # None, rank, log_rank, z, log
+    sample_normalization="z",  # None, rank, log_rank, z, log
     random_seed=1729,
 ):
 
@@ -80,15 +84,16 @@ def gsea(
 
     return
 
+
 def prerank_gsea(
     input_gene_scores,
     output_folder,
     gene_sets,
     max_gene_set_size=500,
     min_gene_set_size=5,
-    enrichment_metric="ks", # auc, js, ...
+    enrichment_metric="ks",  # auc, js, ...
     weight_exponent=1,
-    gene_list_sorting_mode="real", # abs
+    gene_list_sorting_mode="real",  # abs
     permutaion_type="phenotype",
     num_permutations=1000,
     num_of_top_gene_sets_for_plots=25,
