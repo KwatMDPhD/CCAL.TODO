@@ -12,7 +12,6 @@ from . import (
     plot,
     probability,
     python,
-    score_set,
     shell,
     significance,
 )

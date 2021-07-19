@@ -2,7 +2,7 @@ from os import listdir
 
 from setuptools import setup
 
-na = "kraft"
+na = "kwat"
 
 pa = "{}/data/".format(na)
 
