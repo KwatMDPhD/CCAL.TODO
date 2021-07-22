@@ -7,7 +7,7 @@ git lfs install
 ```
 
 ```sh
-python3 -m pip install git+https://github.com/KwatME/kraft.py
+python -m pip install git+https://github.com/KwatME/kwat.py
 ```
 
 ## Use
