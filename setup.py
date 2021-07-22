@@ -1,10 +1,6 @@
-from os import listdir
-
-from setuptools import setup
+from setuptools import find_packages, setup
 
 na = "kwat"
-
-pa = "{}/data/".format(na)
 
 setup(
     name=na,
@@ -24,6 +20,6 @@ setup(
         "click",
         "requests",
     ],
-    packages=[na],
-    package_data={na: ["{}{}".format(pa, na) for na in listdir(pa) if na[0] != "."]},
+    packages=find_packages(),
+    package_data={na: ["data/*"]},
 )
