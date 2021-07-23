@@ -4,11 +4,15 @@ from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
+from .array import (
+    apply as array_apply,
+    apply as array_array_apply,
+    check_is_extreme,
+    normalize,
+)
 from .cluster import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
-from .object.array import apply_on_1, apply_on_2, check_is_extreme, normalize
-from .object.dictionary import merge
-from .object.string import trim
+from .dictionary import merge
 from .plot import (
     BINARY_COLORSCALE,
     CATEGORICAL_COLORSCALE,
@@ -16,6 +20,7 @@ from .plot import (
     plot_plotly,
 )
 from .significance import get_margin_of_error, get_p_value_q_value
+from .string import trim
 
 HEATMAP = {
     "type": "heatmap",
@@ -56,7 +61,7 @@ def _process_target(ta, ty, st):
 
         if 0 < ta.std():
 
-            ta = apply_on_1(ta, normalize, "-0-", up=True).clip(-st, st)
+            ta = array_apply(ta, normalize, "-0-", up=True).clip(-st, st)
 
         return ta, -st, st
 
@@ -203,7 +208,7 @@ def make(
         #
         print("Score ({})...".format(fu.__name__))
 
-        sc_ = array(po.starmap(apply_on_2, ([taar, ro, fu] for ro in daar)))
+        sc_ = array(po.starmap(array_array_apply, ([taar, ro, fu] for ro in daar)))
 
         #
         if 0 < n_sa:
@@ -224,11 +229,11 @@ def make(
 
                 #
                 sc_ro_sa[:, ie] = po.starmap(
-                    apply_on_2, ([taarra, ro, fu] for ro in daar[:, ie_])
+                    array_array_apply, ([taarra, ro, fu] for ro in daar[:, ie_])
                 )
 
             #
-            ma_ = array([apply_on_1(ro, get_margin_of_error) for ro in sc_ro_sa])
+            ma_ = array([array_apply(ro, get_margin_of_error) for ro in sc_ro_sa])
 
         else:
 
@@ -251,7 +256,7 @@ def make(
 
                 #
                 sc_ro_sh[:, ie] = po.starmap(
-                    apply_on_2, ([taarra, ro, fu] for ro in daar)
+                    array_array_apply, ([taarra, ro, fu] for ro in daar)
                 )
 
             #

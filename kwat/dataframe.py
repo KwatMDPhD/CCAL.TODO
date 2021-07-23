@@ -2,7 +2,7 @@ from numpy import apply_along_axis, full, nan, unique
 from numpy.random import choice, seed
 from pandas import DataFrame, Index, notna
 
-from ..CONSTANT import RANDOM_SEED
+from .CONSTANT import RANDOM_SEED
 from .iterable import map_integer
 
 

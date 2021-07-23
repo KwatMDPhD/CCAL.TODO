@@ -5,7 +5,6 @@ from numpy import (
     log as loge,
     log2,
     log10,
-    logical_and,
     logical_not,
     logical_or,
     nan,
@@ -160,7 +159,7 @@ def check_is_extreme(ar, di, th_=(), n_ex=0, st=0.0):
         return hi <= ar
 
 
-def apply_on_1(ar, fu, *ar_, up=False, **ke_):
+def apply(ar, fu, *ar_, up=False, **ke_):
 
     arbo = check_is_not_nan(ar)
 
@@ -175,31 +174,3 @@ def apply_on_1(ar, fu, *ar_, up=False, **ke_):
         return ar2
 
     return re
-
-
-def apply_on_2(ar1, ar2, fu, *ar_, **ke_):
-
-    arbo = logical_and(check_is_not_nan(ar1), check_is_not_nan(ar2))
-
-    return fu(ar1[arbo], ar2[arbo], *ar_, **ke_)
-
-
-def apply_along_on_2(ar1, ar2, fu, *ar_, **ke_):
-
-    n_ro1 = ar1.shape[0]
-
-    n_ro2 = ar2.shape[0]
-
-    ar3 = full([n_ro1, n_ro2], nan)
-
-    for ie1 in range(n_ro1):
-
-        nu1_ = ar1[ie1]
-
-        for ie2 in range(n_ro2):
-
-            nu2_ = ar2[ie2]
-
-            ar3[ie1, ie2] = fu(nu1_, nu2_, *ar_, **ke_)
-
-    return ar3

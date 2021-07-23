@@ -21,19 +21,24 @@ def get_p_value(nu, ra_, di):
     return max(1, bo_.sum()) / ra_.size
 
 
-def get_p_value_q_value(nu_, ra_, di, mu="fdr_bh"):
+def get_q_value(pv_):
+
+    return multipletests(pv_)[1]
+
+
+def get_p_value_q_value(nu_, ra_, di):
 
     if "<" in di:
 
         pl_ = array([get_p_value(nu, ra_, "<") for nu in nu_])
 
-        ql_ = multipletests(pl_, method=mu)[1]
+        ql_ = get_q_value(pl_)
 
     if ">" in di:
 
         pr_ = array([get_p_value(nu, ra_, ">") for nu in nu_])
 
-        qr_ = multipletests(pr_, method=mu)[1]
+        qr_ = get_q_value(pr_)
 
     if di == "<":
 

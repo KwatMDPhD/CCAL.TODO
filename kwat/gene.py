@@ -2,8 +2,8 @@ from numpy import array, full
 from pandas import read_csv, read_excel
 
 from .CONSTANT import DATA_DIRECTORY_PATH
-from .object.dataframe import map_to
-from .object.iterable import flatten
+from .dataframe import map_to
+from .iterable import flatten
 
 
 def _read_hgnc(co_se):

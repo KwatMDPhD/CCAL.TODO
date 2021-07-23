@@ -2,12 +2,12 @@ from numpy import apply_along_axis, array, concatenate, isnan, logical_not, medi
 from numpy.random import choice
 from pandas import DataFrame, Series, concat
 
+from .array import guess_type, log, normalize, shift
+from .dataframe import drop, drop_until
 from .grid import make_nd_grid
-from .object.array import guess_type, log, normalize, shift
-from .object.dataframe import drop, drop_until
-from .object.series import binarize
 from .plot import plot_heat_map, plot_histogram
 from .python import cast_builtin
+from .series import binarize
 
 
 def collapse(nu_fe_sa):

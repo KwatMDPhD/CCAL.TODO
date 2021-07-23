@@ -7,8 +7,8 @@ from plotly.colors import (
 )
 from plotly.io import show, write_html
 
-from .object.array import apply_on_1, normalize
-from .object.dictionary import merge
+from .array import apply, normalize
+from .dictionary import merge
 
 CONTINUOUS_COLORSCALE = make_colorscale(["#0000ff", "#ffffff", "#ff0000"])
 
@@ -342,7 +342,7 @@ def plot_bubble_map(
 
         co_an_an = si_an_an
 
-    si2_an_an = apply_on_1(si_an_an, normalize, "0-1", up=True)
+    si2_an_an = apply(si_an_an, normalize, "0-1", up=True)
 
     si2_an_an[isnan(si2_an_an)] = 0.5
 
