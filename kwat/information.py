@@ -113,6 +113,8 @@ def get_signal_to_noise(ve0, ve1):
 
     if me0 == 0:
 
+        me0 = 1
+
         st0 = 0.2
 
     elif st0 < lo0:
@@ -120,6 +122,8 @@ def get_signal_to_noise(ve0, ve1):
         st0 = lo0
 
     if me1 == 0:
+
+        me1 = 1
 
         st1 = 0.2
 
