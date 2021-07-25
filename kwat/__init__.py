@@ -1,6 +1,7 @@
 from . import (
     CONSTANT,
     array,
+    array_array,
     cell_line,
     cluster,
     dataframe,

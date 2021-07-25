@@ -4,7 +4,7 @@ na = "kwat"
 
 setup(
     name=na,
-    version="0.2.0",
+    version="0.3.0",
     url="https://github.com/KwatME/kwat.py",
     python_requires=">=3.6.0",
     install_requires=[
