@@ -1,2 +1,1 @@
-from . import array
-from . import string
+from . import array, array_array, string

@@ -1,6 +1,5 @@
 from numpy import absolute, dot, median
 from numpy.linalg import norm
-from scipy.stats import pearsonr
 
 
 def get_mean_difference(ve0, ve1):
@@ -63,8 +62,3 @@ def get_signal_to_noise(ve0, ve1):
 def get_cosine_distance(ve0, ve1):
 
     return dot(ve0, ve1) / (norm(ve0) * norm(ve1))
-
-
-def get_pearson_correlation(ve0, ve1):
-
-    return pearsonr(ve0, ve1)[0]

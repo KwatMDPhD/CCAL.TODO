@@ -1,4 +1,5 @@
 from numpy import logical_or, quantile, sort
+
 from .check_is_not_nan import check_is_not_nan
 
 
