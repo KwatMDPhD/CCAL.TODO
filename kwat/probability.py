@@ -5,9 +5,9 @@ from .grid import get_1d_grid, get_1d_grid_resolution, plot as grid_plot
 from .plot import plot_plotly
 
 
-def get_probability(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
+def get_probability(nu_po_di, ba=None, co__=(), pl=True, di_=()):
 
-    co_po_di, de_ = get_density(nu_po_di, ba_=ba_, co__=co__, pl=pl, di_=di_)
+    co_po_di, de_ = get_density(nu_po_di, ba=ba, co__=co__, pl=pl, di_=di_)
 
     pr_ = de_ / (
         de_.sum() * product([get_1d_grid_resolution(co_) for co_ in co_po_di.T])
@@ -25,9 +25,9 @@ def _get_probability(ar):
     return ar / ar.sum()
 
 
-def get_posterior_probability(nu_po_di, ta=nan, ba_=(), co__=(), pl=True, di_=()):
+def get_posterior_probability(nu_po_di, ta=nan, ba=None, co__=(), pl=True, di_=()):
 
-    co_po_di, pr_ = get_probability(nu_po_di, ba_=ba_, co__=co__, pl=pl, di_=di_)
+    co_po_di, pr_ = get_probability(nu_po_di, ba=ba, co__=co__, pl=pl, di_=di_)
 
     ta_ = co_po_di[:, -1]
 

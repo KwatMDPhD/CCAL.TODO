@@ -10,15 +10,11 @@ def get_bandwidth(nu_):
     return KDEMultivariate(nu_, "c").bw[0]
 
 
-def get_density(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
+def get_density(nu_po_di, ba=None, co__=(), pl=True, di_=()):
 
     nu_di_po = nu_po_di.T
 
     n_di = nu_di_po.shape[0]
-
-    if len(ba_) != n_di:
-
-        ba_ = [get_bandwidth(nu_) for nu_ in nu_di_po]
 
     if len(co__) != n_di:
 
@@ -26,7 +22,7 @@ def get_density(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
 
     co_po_di = make_nd_grid(co__)
 
-    de_ = FFTKDE(bw=ba_).fit(nu_po_di).evaluate(co_po_di).clip(FLOAT_RESOLUTION)
+    de_ = FFTKDE(bw=ba).fit(nu_po_di).evaluate(co_po_di).clip(FLOAT_RESOLUTION)
 
     if pl:
 

@@ -61,16 +61,11 @@ def get_ic(ve1, ve2):
 
     co2_ = make_1d_grid(ve2.min(), ve2.max(), ex, n_co)
 
-    fa = 1 - abs(pe) * 2 / 3
-
-    ba1 = get_bandwidth(ve1) * fa
-
-    ba2 = get_bandwidth(ve2) * fa
-    print(ba1, ba2)
+    ba = min(get_bandwidth(ve1), get_bandwidth(ve2)) * (1 - abs(pe) * 2 / 3)
 
     pr_ = get_probability(
         array([ve1, ve2]).T,
-        ba_=[ba1, ba2],
+        ba=ba,
         co__=[co1_, co2_],
         pl=False,
     )[1]

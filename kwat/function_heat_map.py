@@ -4,15 +4,11 @@ from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from .array import (
-    apply as array_apply,
-    apply as array_array_apply,
-    check_is_extreme,
-    normalize,
-)
+from .array import apply as array_apply, check_is_extreme, normalize
 from .cluster import cluster
 from .CONSTANT import RANDOM_SEED, SAMPLE_FRACTION
 from .dictionary import merge
+from .function import ignore_nan_and_apply
 from .plot import (
     BINARY_COLORSCALE,
     CATEGORICAL_COLORSCALE,
@@ -208,7 +204,7 @@ def make(
         #
         print("Score ({})...".format(fu.__name__))
 
-        sc_ = array(po.starmap(array_array_apply, ([taar, ro, fu] for ro in daar)))
+        sc_ = array(po.starmap(ignore_nan_and_apply, ([taar, ro, fu] for ro in daar)))
 
         #
         if 0 < n_sa:
@@ -229,7 +225,7 @@ def make(
 
                 #
                 sc_ro_sa[:, ie] = po.starmap(
-                    array_array_apply, ([taarra, ro, fu] for ro in daar[:, ie_])
+                    ignore_nan_and_apply, ([taarra, ro, fu] for ro in daar[:, ie_])
                 )
 
             #
@@ -256,7 +252,7 @@ def make(
 
                 #
                 sc_ro_sh[:, ie] = po.starmap(
-                    array_array_apply, ([taarra, ro, fu] for ro in daar)
+                    ignore_nan_and_apply, ([taarra, ro, fu] for ro in daar)
                 )
 
             #

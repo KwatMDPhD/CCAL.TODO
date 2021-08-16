@@ -10,7 +10,7 @@ def _read_hgnc(co_se):
 
     da = read_csv(
         "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
-        "\t",
+        sep="\t",
         low_memory=False,
     )
 
@@ -73,7 +73,7 @@ def _map_hgnc():
                 "pubmed_id",
                 "lsdb",
             ],
-            1,
+            axis=1,
         ),
         "symbol",
         fu=_pr,
@@ -83,7 +83,7 @@ def _map_hgnc():
 def _map_ens():
 
     return map_to(
-        read_csv("{}ens.tsv.gz".format(DATA_DIRECTORY_PATH), "\t"), "Gene name"
+        read_csv("{}ens.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"), "Gene name"
     )
 
 

@@ -157,20 +157,3 @@ def check_is_extreme(ar, di, th_=(), n_ex=0, st=0.0):
     elif di == ">":
 
         return hi <= ar
-
-
-def apply(ar, fu, *ar_, up=False, **ke_):
-
-    arbo = check_is_not_nan(ar)
-
-    re = fu(ar[arbo], *ar_, **ke_)
-
-    if up:
-
-        ar2 = full(ar.shape, nan)
-
-        ar2[arbo] = re
-
-        return ar2
-
-    return re
