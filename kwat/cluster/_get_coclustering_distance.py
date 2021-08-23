@@ -10,19 +10,19 @@ def _get_coclustering_distance(cl_po_tr):
 
     di_ = full(n_pa, 0)
 
-    n_cl = cl_po_tr.shape[1]
+    n_tr = cl_po_tr.shape[1]
 
-    for iepa in range(n_pa):
+    for iep in range(n_pa):
 
-        cl_popa_cl = cl_po_tr[pa_[iepa]]
+        cl_pop_tr = cl_po_tr[pa_[iep]]
 
         n_tr = 0
 
         n_co = 0
 
-        for iecl in range(n_cl):
+        for iet in range(n_tr):
 
-            cl1, cl2 = cl_popa_cl[:, iecl]
+            cl1, cl2 = cl_pop_tr[:, iet]
 
             if not (isnan(cl1) or isnan(cl2)):
 
@@ -30,6 +30,6 @@ def _get_coclustering_distance(cl_po_tr):
 
                 n_co += int(cl1 == cl2)
 
-        di_[iepa] = 1 - n_co / n_tr
+        di_[iep] = 1 - n_co / n_tr
 
     return squareform(di_)
