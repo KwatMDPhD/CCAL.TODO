@@ -3,23 +3,19 @@ from ._map_broad import _map_broad
 
 def rename(na_):
 
-    na_ce = _map_broad()
+    na_re = _map_broad()
 
-    ce_ = []
+    re_ = []
 
     fa_ = []
 
     for na in na_:
 
-        nalo = na.lower()
+        re = na_re.get(na.lower())
 
-        if nalo in na_ce:
+        re_.append(re)
 
-            ce_.append(na_ce[nalo])
-
-        else:
-
-            ce_.append(None)
+        if re is None:
 
             fa_.append(na)
 
@@ -27,4 +23,4 @@ def rename(na_):
 
         print("Failed {}.".format(sorted(set(fa_))))
 
-    return ce_
+    return re_
