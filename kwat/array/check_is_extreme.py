@@ -5,7 +5,7 @@ from .check_is_not_nan import check_is_not_nan
 
 def check_is_extreme(ar, di, th_=(), n_ex=0, st=0.0):
 
-    arno = ar[check_is_not_nan(ar)]
+    arn = ar[check_is_not_nan(ar)]
 
     if 0 < len(th_):
 
@@ -15,23 +15,23 @@ def check_is_extreme(ar, di, th_=(), n_ex=0, st=0.0):
 
         if n_ex < 1:
 
-            lo = quantile(arno, n_ex)
+            lo = quantile(arn, n_ex)
 
-            hi = quantile(arno, 1 - n_ex)
+            hi = quantile(arn, 1 - n_ex)
 
         else:
 
-            arno = sort(arno, None)
+            arns = sort(arn, None)
 
-            lo = arno[n_ex - 1]
+            lo = arns[n_ex - 1]
 
-            hi = arno[-n_ex]
+            hi = arns[-n_ex]
 
     elif 0 < st:
 
-        me = arno.mean()
+        me = arn.mean()
 
-        st *= arno.std()
+        st *= arn.std()
 
         lo = me - st
 

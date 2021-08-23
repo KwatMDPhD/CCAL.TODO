@@ -19,4 +19,4 @@ def normalize(ar, me, ra="average"):
 
     elif me == "rank":
 
-        return rankdata(ar, ra).reshape(ar.shape)
+        return rankdata(ar, method=ra).reshape(ar.shape)

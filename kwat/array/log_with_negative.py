@@ -1,6 +1,8 @@
-from numpy import absolute, log2, sign
+from numpy import absolute, sign
+
+from .log import log
 
 
-def log_with_negative(ar):
+def log_with_negative(ar, *arg, **ke):
 
-    return sign(ar) * log2(absolute(ar) + 1)
+    return sign(ar) * log(absolute(ar) + 1, *arg, **ke)

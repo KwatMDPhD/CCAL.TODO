@@ -6,11 +6,11 @@ def shift(ar, mi):
 
     elif mi == "0<":
 
-        arbo = 0 < ar
+        arp = 0 < ar
 
-        if arbo.any():
+        if arp.any():
 
-            mi = ar[arbo].min()
+            mi = ar[arp].min()
 
         else:
 
