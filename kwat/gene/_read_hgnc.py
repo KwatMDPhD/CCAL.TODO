@@ -1,13 +1,13 @@
 from numpy import array, full
 from pandas import read_csv
 
-from ..constant import DATA_DIRECTORY_PATH
+from ..constant import DATA_DIRECTORY
 
 
 def _read_hgnc(co_se):
 
     da = read_csv(
-        "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
+        "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY),
         sep="\t",
         low_memory=False,
     )

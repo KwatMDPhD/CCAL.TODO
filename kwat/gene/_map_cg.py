@@ -1,6 +1,6 @@
 from pandas import read_csv, read_excel
 
-from ..constant import DATA_DIRECTORY_PATH
+from ..constant import DATA_DIRECTORY
 
 
 def _map_cg():
@@ -9,13 +9,13 @@ def _map_cg():
 
     for cg2_ge in [
         read_excel(
-            "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
+            "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY),
             usecols=[0, 10],
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
+            "{}HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY),
             skiprows=7,
             usecols=[0, 21],
             index_col=0,
@@ -23,7 +23,7 @@ def _map_cg():
         ),
         read_csv(
             "{}infinium-methylationepic-v-1-0-b5-manifest-file.csv.gz".format(
-                DATA_DIRECTORY_PATH
+                DATA_DIRECTORY
             ),
             skiprows=7,
             usecols=[0, 15],
