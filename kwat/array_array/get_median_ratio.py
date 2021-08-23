@@ -1,6 +1,6 @@
 from numpy import median
 
 
-def get_median_ratio(ve0, ve1):
+def get_median_ratio(ve1, ve2):
 
-    return median(ve1) / median(ve0)
+    return median(ve2) / median(ve1)

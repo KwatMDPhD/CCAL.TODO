@@ -1,6 +1,6 @@
 from scipy.stats import pearsonr
 
 
-def get_pearson_correlation(ve0, ve1):
+def get_pearson_correlation(ve1, ve2):
 
-    return pearsonr(ve0, ve1)[0]
+    return pearsonr(ve1, ve2)[0]

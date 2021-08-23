@@ -2,6 +2,6 @@ from numpy import dot
 from numpy.linalg import norm
 
 
-def get_cosine_distance(ve0, ve1):
+def get_cosine_distance(ve1, ve2):
 
-    return dot(ve0, ve1) / (norm(ve0) * norm(ve1))
+    return dot(ve1, ve2) / (norm(ve1) * norm(ve2))

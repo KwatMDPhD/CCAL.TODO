@@ -1,38 +1,40 @@
 from numpy import absolute
 
 
-def get_signal_to_noise(ve0, ve1):
-
-    me0 = ve0.mean()
+def get_signal_to_noise(ve1, ve2):
 
     me1 = ve1.mean()
 
-    st0 = ve0.std()
+    me2 = ve2.mean()
 
     st1 = ve1.std()
 
-    lo0 = 0.2 * absolute(me0)
+    st2 = ve2.std()
 
-    lo1 = 0.2 * absolute(me1)
+    fa = 0.2
 
-    if me0 == 0:
+    lo1 = absolute(me1) * fa
 
-        me0 = 1
-
-        st0 = 0.2
-
-    elif st0 < lo0:
-
-        st0 = lo0
+    lo2 = absolute(me2) * fa
 
     if me1 == 0:
 
         me1 = 1
 
-        st1 = 0.2
+        st1 = fa
 
     elif st1 < lo1:
 
         st1 = lo1
 
-    return (me1 - me0) / (st0 + st1)
+    if me2 == 0:
+
+        me2 = 1
+
+        st2 = fa
+
+    elif st2 < lo2:
+
+        st2 = lo2
+
+    return (me2 - me1) / (st1 + st2)
