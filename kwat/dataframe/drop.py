@@ -1,5 +1,8 @@
 from numpy import apply_along_axis, full
 
+from ._check_has_enough_not_na import _check_has_enough_not_na
+from ._check_has_enough_not_na_unique import _check_has_enough_not_na_unique
+
 
 def drop(da, ax, n_no=None, n_un=None):
 

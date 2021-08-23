@@ -1,6 +1,6 @@
 from numpy.random import choice, seed
 
-from .CONSTANT import RANDOM_SEED
+from ..constant import RANDOM_SEED
 
 
 def sample(da, sh, ra=RANDOM_SEED, **ke):

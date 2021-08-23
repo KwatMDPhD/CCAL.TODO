@@ -1,7 +1,7 @@
 from numpy import full, nan
 from pandas import DataFrame, Index, notna
 
-from .iterable import map_integer
+from ..iterable import map_integer
 
 
 def pivot(la1_, la2_, an_, na1="Dimension 1", na2="Dimension 2", fu=None):

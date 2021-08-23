@@ -1,3 +1,6 @@
+from .drop import drop
+
+
 def drop_until(da, ax=None, **ke):
 
     sh = da.shape
