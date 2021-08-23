@@ -1,7 +1,6 @@
 from os import remove
 from shutil import unpack_archive
 
-
 from .download import download
 
 
