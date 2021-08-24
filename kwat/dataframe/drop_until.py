@@ -3,11 +3,11 @@ from .drop import drop
 
 def drop_until(da, ax=None, **ke):
 
-    sh = da.shape
+    sh1 = da.shape
 
     if ax is None:
 
-        ax = int(sh[0] < sh[1])
+        ax = int(sh1[0] < sh1[1])
 
     re = False
 
@@ -17,11 +17,11 @@ def drop_until(da, ax=None, **ke):
 
         sh2 = da.shape
 
-        if re and sh == sh2:
+        if re and sh1 == sh2:
 
             return da
 
-        sh = sh2
+        sh1 = sh2
 
         if ax == 0:
 

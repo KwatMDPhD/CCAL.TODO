@@ -14,7 +14,7 @@ def cluster_consensus(nu_po_di, n_cl, n_tr=100, ra=RANDOM_SEED, **ke):
 
     n_sa = int(n_po * SAMPLE_FRACTION)
 
-    seed(ra)
+    seed(seed=ra)
 
     for ie in range(n_tr):
 

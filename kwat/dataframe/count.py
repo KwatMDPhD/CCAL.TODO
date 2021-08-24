@@ -1,10 +1,10 @@
 def count(da):
 
-    for la, se in da.iteritems():
+    for co, se in da.iteritems():
 
         print()
 
-        print(la)
+        print(co)
 
         print(se.value_counts())
 

@@ -67,7 +67,7 @@ def make(
 
         po = Pool(n_jo)
 
-        seed(ra)
+        seed(seed=ra)
 
         #
         print("Score ({})...".format(fu.__name__))

@@ -8,4 +8,4 @@ def sync(da_, ax):
 
     la_ = sorted(la_)
 
-    return [da.reindex(la_, axis=ax) for da in da_]
+    return [da.reindex(labels=la_, axis=ax) for da in da_]

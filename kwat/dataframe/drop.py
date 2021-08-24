@@ -1,12 +1,8 @@
-from numpy import apply_along_axis, full
-
-from ._check_has_enough_not_na import _check_has_enough_not_na
-from ._check_has_enough_not_na_unique import _check_has_enough_not_na_unique
+from numpy import apply_along_axis, full, unique
+from pandas import notna
 
 
 def drop(da, ax, n_no=None, n_un=None):
-
-    assert not (n_no is None and n_un is None)
 
     sh = da.shape
 
@@ -14,29 +10,41 @@ def drop(da, ax, n_no=None, n_un=None):
 
     if ax == 0:
 
-        axap = 1
+        axa = 1
 
     elif ax == 1:
 
-        axap = 0
+        axa = 0
 
-    daar = da.values
+    else:
+
+        raise
+
+    daa = da.values
+
+    def _check_has_enough_not_na(ve, n_no):
+
+        return n_no <= notna(ve).sum()
 
     if n_no is not None:
 
         if n_no < 1:
 
-            n_no *= sh[axap]
+            n_no *= sh[axa]
 
-        bo_ &= apply_along_axis(_check_has_enough_not_na, axap, daar, n_no)
+        bo_ &= apply_along_axis(_check_has_enough_not_na, axa, daa, n_no)
+
+    def _check_has_enough_not_na_unique(ve, n_un):
+
+        return n_un <= unique(ve[notna(ve)]).size
 
     if n_un is not None:
 
         if n_un < 1:
 
-            n_un *= sh[axap]
+            n_un *= sh[axa]
 
-        bo_ &= apply_along_axis(_check_has_enough_not_na_unique, axap, daar, n_un)
+        bo_ &= apply_along_axis(_check_has_enough_not_na_unique, axa, daa, n_un)
 
     if ax == 0:
 

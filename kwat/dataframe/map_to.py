@@ -1,19 +1,19 @@
-def map_to(da, la, fu=None):
+def map_to(da, co, fu=None):
 
-    ke_va = {}
+    ro_co = {}
 
-    for ke_, va in zip(da.values, da[la].values):
+    for ro, cov in zip(da.values, da.loc[:, co].values):
 
-        for ke in ke_:
+        for rov in ro:
 
             if fu is None:
 
-                ke_va[ke] = va
+                ro_co[rov] = cov
 
             else:
 
-                for ke in fu(ke):
+                for rovf in fu(rov):
 
-                    ke_va[ke] = va
+                    ro_co[rovf] = cov
 
-    return ke_va
+    return ro_co

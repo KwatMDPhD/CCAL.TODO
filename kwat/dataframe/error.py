@@ -1,9 +1,9 @@
 def error(da):
 
-    for ie, la_ in enumerate(da.axes):
+    for ax, la_ in enumerate(da.axes):
 
-        ar_ = ie + 1, la_.name
+        na = "Axis {} ({})".format(ax, la_.name)
 
-        assert not la_.isna().any(), "Dimension {} ({}) has Na.".format(*ar_)
+        assert not la_.isna().any(), "{} has Na.".format(na)
 
-        assert not la_.has_duplicates, "Dimension {} ({}) is duplicated.".format(*ar_)
+        assert not la_.has_duplicates, "{} is duplicated.".format(na)

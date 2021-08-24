@@ -9,13 +9,13 @@ def sample(da, sh, ra=RANDOM_SEED, **ke):
 
     sa1, sa2 = sh
 
-    seed(ra)
+    seed(seed=ra)
 
     if sa1 is not None:
 
         if sa1 < 1:
 
-            sa1 = int(sa1 * si1)
+            sa1 = int(si1 * sa1)
 
         da = da.iloc[choice(si1, sa1, **ke), :]
 
@@ -23,7 +23,7 @@ def sample(da, sh, ra=RANDOM_SEED, **ke):
 
         if sa2 < 1:
 
-            sa2 = int(sa2 * si2)
+            sa2 = int(si2 * sa2)
 
         da = da.iloc[:, choice(si2, sa2, **ke)]
 
