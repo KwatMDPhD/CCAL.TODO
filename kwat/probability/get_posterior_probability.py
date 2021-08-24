@@ -1,13 +1,13 @@
 from numpy import absolute, apply_along_axis, isnan, nan, s_, unique
 
-from ..grid import get_1d_grid, get_1d_grid_resolution, plot as grid_plot
+from ..grid import get_1d_grid, get_1d_grid_resolution, plot
 from ._get_probability import _get_probability
 from .get_probability import get_probability
 
 
-def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, di_=(), **ff):
+def get_posterior_probability(nu_po_di, ta=nan, ba_=(), co__=(), pl=True, di_=()):
 
-    co_po_di, pr_ = get_probability(nu_po_di, co__=co__, pl=pl, di_=di_, **ff)
+    co_po_di, pr_ = get_probability(nu_po_di, ba_=ba_, co__=co__, pl=pl, di_=di_)
 
     ta_ = co_po_di[:, -1]
 
@@ -19,33 +19,29 @@ def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, di_=(), **ff):
 
     if pl:
 
-        grid_plot(co_po_di, po_, di_=di_, nu="Posterior Probability")
+        plot(co_po_di, po_, nu="Posterior Probability", di_=di_)
 
     if isnan(ta):
 
         return co_po_di, po_
 
-    else:
+    co_ = unique(ta_)
 
-        taco_ = unique(ta_)
+    ie = absolute(co_ - ta).argmin()
 
-        ie = absolute(taco_ - ta).argmin()
+    ie_ = s_[ie :: co_.size]
 
-        ie_ = s_[ie :: taco_.size]
+    co_po_dit = co_po_di[ie_, :-1]
 
-        co_po_dino = co_po_di[ie_, :-1]
+    pot_ = po_[ie_]
 
-        pono_ = po_[ie_]
+    if pl:
 
-        if pl:
+        plot(
+            co_po_dit,
+            pot_,
+            nu="P({} = {:.2e} (~{}) | {})".format(di_[-1], co_[ie], ta, *di_[:-1]),
+            di_=di_[:-1],
+        )
 
-            grid_plot(
-                co_po_dino,
-                pono_,
-                di_=di_[:-1],
-                nu="P({} = {:.2e} (~{}) | {})".format(
-                    di_[-1], taco_[ie], ta, *di_[:-1]
-                ),
-            )
-
-        return co_po_dino, pono_
+    return co_po_dit, pot_

@@ -4,7 +4,7 @@ from ..plot import plot_heat_map, plot_plotly
 from .get_1d_grid import get_1d_grid
 
 
-def plot(co_po_di, nu_, di_=(), nu="Number", pa=""):
+def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
 
     n_di = co_po_di.shape[1]
 
@@ -32,19 +32,19 @@ def plot(co_po_di, nu_, di_=(), nu="Number", pa=""):
             {
                 "data": [
                     {
-                        "y": nu_po_di,
                         "x": co__[0],
+                        "y": nu_po_di,
                     }
                 ],
                 "layout": {
-                    "yaxis": {
-                        "title": {
-                            "text": nu,
-                        },
-                    },
                     "xaxis": {
                         "title": {
                             "text": di_[0],
+                        },
+                    },
+                    "yaxis": {
+                        "title": {
+                            "text": nu,
                         },
                     },
                 },
@@ -56,9 +56,9 @@ def plot(co_po_di, nu_, di_=(), nu="Number", pa=""):
 
         plot_heat_map(
             DataFrame(
-                nu_po_di,
-                Index(("{:.2e} *".format(co) for co in co__[0]), name=di_[0]),
-                Index(("* {:.2e}".format(co) for co in co__[1]), name=di_[1]),
+                data=nu_po_di,
+                index=Index(["{:.2e} *".format(co) for co in co__[0]], name=di_[0]),
+                columns=Index(["* {:.2e}".format(co) for co in co__[1]], name=di_[1]),
             ),
             layout={
                 "title": {

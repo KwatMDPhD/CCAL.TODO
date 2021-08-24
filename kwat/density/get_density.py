@@ -1,25 +1,33 @@
-from KDEpy import FFTKDE
+from KDEpy import TreeKDE
 
 from ..constant import FLOAT_RESOLUTION
-from ..grid import make_1d_grid, make_nd_grid, plot as grid_plot
+from ..grid import make_1d_grid, make_nd_grid, plot
+from .get_bandwidth import get_bandwidth
 
 
-def get_density(nu_po_di, co__=(), pl=True, di_=(), **ke):
+def get_density(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
 
-    nu_di_po = nu_po_di.T
+    n_po, n_di = nu_po_di.shape
 
-    n_di = nu_di_po.shape[0]
+    if len(ba_) != n_di:
+
+        ba_ = get_bandwidth(nu_po_di)
 
     if len(co__) != n_di:
 
-        co__ = [make_1d_grid(nu_.min(), nu_.max(), 0.1, 8) for nu_ in nu_di_po]
+        co__ = [make_1d_grid(nu_.min(), nu_.max(), 1 / 3, 8) for nu_ in nu_po_di.T]
 
     co_po_di = make_nd_grid(co__)
 
-    de_ = FFTKDE(**ke).fit(nu_po_di).evaluate(co_po_di).clip(FLOAT_RESOLUTION)
+    de_ = (
+        TreeKDE(bw=ba_ * n_po)
+        .fit(nu_po_di)
+        .evaluate(co_po_di)
+        .clip(min=FLOAT_RESOLUTION)
+    )
 
     if pl:
 
-        grid_plot(co_po_di, de_, di_=di_, nu="Density")
+        plot(co_po_di, de_, nu="Density", di_=di_)
 
     return co_po_di, de_
