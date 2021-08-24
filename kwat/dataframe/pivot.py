@@ -10,7 +10,7 @@ def pivot(la1_, la2_, an_, na1="Dimension 1", na2="Dimension 2", fu=None):
 
     la2_it = map_integer(la2_)[0]
 
-    an_la1_la2 = full((len(la1_it), len(la2_it)), nan)
+    an_la1_la2 = full([len(la1_it), len(la2_it)], nan)
 
     for la1, la2, an in zip(la1_, la2_, an_):
 

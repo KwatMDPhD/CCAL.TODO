@@ -10,7 +10,7 @@ def cluster_consensus(nu_po_di, n_cl, n_tr=100, ra=RANDOM_SEED, **ke):
 
     n_po = nu_po_di.shape[0]
 
-    cl_po_tr = full((n_po, n_tr), nan)
+    cl_po_tr = full([n_po, n_tr], nan)
 
     n_sa = int(n_po * SAMPLE_FRACTION)
 
