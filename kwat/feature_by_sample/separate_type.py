@@ -5,66 +5,66 @@ from ..python import cast_builtin
 from ..series import binarize
 
 
-def separate_type(nu_fe_sa, dr=True, pr=True):
+def separate_type(nu_fe_sa, pr=True):
 
-    co__ = []
+    se_ = []
 
-    bi_in_sa_ = []
+    bi_fe_sa_ = []
 
-    for _, nu_ in nu_fe_sa.iterrows():
+    for _, se in nu_fe_sa.iterrows():
 
-        if dr and nu_.unique().size == 1:
+        if se.unique().size == 1:
 
             continue
 
         try:
 
-            bo = guess_type(nu_.dropna().astype(float).values) == "continuous"
+            co = guess_type(se.dropna().astype(float).values) == "continuous"
 
         except ValueError:
 
-            bo = False
+            co = False
 
-        if bo:
+        if co:
 
-            co__.append(nu_.apply(cast_builtin))
+            se_.append(se.apply(cast_builtin))
 
         else:
 
-            bi_in_sa = binarize(nu_)
+            bi_fe_sa = binarize(se)
 
             if pr:
 
-                te = "{}.{{}}".format(bi_in_sa.index.name)
+                te = "{}.{{}}".format(bi_fe_sa.index.name)
 
             else:
 
                 te = "{}"
 
-            bi_in_sa.index = [te.format(la) for la in bi_in_sa.index]
+            bi_fe_sa.index = [te.format(fe) for fe in bi_fe_sa.index]
 
-            bi_in_sa_.append(bi_in_sa)
+            bi_fe_sa_.append(bi_fe_sa)
 
     te = "{} ({{}})".format(nu_fe_sa.index.name)
 
-    if 0 < len(co__):
+    if 0 < len(se_):
 
-        co_in_sa = DataFrame(co__)
+        co_fe_sa = DataFrame(data=se_)
 
-        co_in_sa.index.name = te.format("continuous")
-
-    else:
-
-        co_in_sa = None
-
-    if 0 < len(bi_in_sa_):
-
-        bi_in_sa = concat(bi_in_sa_)
-
-        bi_in_sa.index.name = te.format("binary")
+        co_fe_sa.index.name = te.format("continuous")
 
     else:
 
-        bi_in_sa = None
+        co_fe_sa = None
 
-    return co_in_sa, bi_in_sa
+    if 0 < len(bi_fe_sa_):
+
+        bi_fe_sa = concat(bi_fe_sa_)
+
+        bi_fe_sa.index.name = te.format("binary")
+
+    else:
+
+        bi_fe_sa = None
+
+    return co_fe_sa, bi_fe_sa

@@ -1,8 +1,9 @@
-from numpy import apply_along_axis
+from numpy import apply_along_axis, nan
 from pandas import DataFrame
 
 from ..array import log, normalize, shift
 from ..dataframe import drop, drop_until
+from .summarize import summarize
 
 
 def process(
@@ -10,31 +11,33 @@ def process(
     fe_=(),
     sa_=(),
     na=None,
-    axdr=None,
+    axd=None,
     n_no=None,
     n_un=None,
     lo=None,
-    mish=None,
-    me=None,
-    axno=None,
+    sh=None,
+    no=None,
+    axn=None,
     mi=None,
     ma=None,
     **ke,
 ):
 
+    te = "Dropping {}: {}..."
+
     if 0 < len(fe_):
 
-        print("Dropping {}: {}...".format(nu_fe_sa.index.name, fe_))
+        print(te.format(nu_fe_sa.index.name, fe_))
 
-        nu_fe_sa = nu_fe_sa.drop(fe_, errors="ignore")
+        nu_fe_sa = nu_fe_sa.drop(labels=fe_, errors="ignore")
 
         summarize(nu_fe_sa, **ke)
 
     if 0 < len(sa_):
 
-        print("Dropping {}: {}...".format(nu_fe_sa.columns.name, sa_))
+        print(te.format(nu_fe_sa.columns.name, sa_))
 
-        nu_fe_sa = nu_fe_sa.drop(sa_, 1, errors="ignore")
+        nu_fe_sa = nu_fe_sa.drop(labels=sa_, axis=1, errors="ignore")
 
         summarize(nu_fe_sa, **ke)
 
@@ -48,9 +51,9 @@ def process(
 
     if n_no is not None or n_un is not None:
 
-        print("Dropping (axdr={}, n_no={}, n_un={})...".format(axdr, n_no, n_un))
+        print("Dropping (axd={}, n_no={}, n_un={})...".format(axd, n_no, n_un))
 
-        if axdr is None:
+        if axd is None:
 
             dr = drop_until
 
@@ -58,45 +61,45 @@ def process(
 
             dr = drop
 
-        sh = nu_fe_sa.shape
+        be = nu_fe_sa.shape
 
         nu_fe_sa = dr(
             nu_fe_sa,
-            axdr,
+            axd,
             n_no=n_no,
             n_un=n_un,
         )
 
-        if sh != nu_fe_sa.shape:
+        if be != nu_fe_sa.shape:
 
             summarize(nu_fe_sa, **ke)
 
     if lo is not None:
 
-        print("Logging (mish={}, lo={})...".format(mish, lo))
+        print("Logging (sh={}, lo={})...".format(sh, lo))
 
-        nuar_fe_sa = nu_fe_sa.values
+        nua_fe_sa = nu_fe_sa.values
 
-        if mish is not None:
+        if sh is not None:
 
-            nuar_fe_sa = shift(nuar_fe_sa, mish)
+            nua_fe_sa = shift(nua_fe_sa, sh)
 
         nu_fe_sa = DataFrame(
-            log(nuar_fe_sa, ba=lo),
-            nu_fe_sa.index,
-            nu_fe_sa.columns,
+            data=log(nua_fe_sa, ba=lo),
+            index=nu_fe_sa.index,
+            columns=nu_fe_sa.columns,
         )
 
         summarize(nu_fe_sa, **ke)
 
-    if me is not None:
+    if no is not None:
 
-        print("Axis-{} {} normalizing...".format(axno, me))
+        print("Axis-{} {} normalizing...".format(axn, no))
 
         nu_fe_sa = DataFrame(
-            apply_along_axis(normalize, axno, nu_fe_sa.values, me),
-            nu_fe_sa.index,
-            nu_fe_sa.columns,
+            data=apply_along_axis(normalize, axn, nu_fe_sa.values, no),
+            index=nu_fe_sa.index,
+            columns=nu_fe_sa.columns,
         )
 
         summarize(nu_fe_sa, **ke)
@@ -105,7 +108,7 @@ def process(
 
         print("Clipping |{} - {}|...".format(mi, ma))
 
-        nu_fe_sa = nu_fe_sa.clip(mi, ma)
+        nu_fe_sa = nu_fe_sa.clip(lower=mi, upper=ma)
 
         summarize(nu_fe_sa, **ke)
 
