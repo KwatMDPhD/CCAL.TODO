@@ -18,7 +18,7 @@ def get_ic(ve1, ve2):
 
     ve2 = normalize(ve2, "-0-")
 
-    ex = 0.1
+    ex = 1 / 3
 
     n_co = 24
 
@@ -28,13 +28,17 @@ def get_ic(ve1, ve2):
 
     pe = pearsonr(ve1, ve2)[0]
 
-    ba = min(get_bandwidth(ve1), get_bandwidth(ve2)) * (1 - abs(pe) * 2 / 3)
+    nu_di_di = array([ve1, ve2]).T
+
+    fa = 1 - abs(pe) * 2 / 3
+
+    ba_ = [ba * fa for ba in get_bandwidth(nu_di_di)]
 
     pr_ = get_probability(
-        array([ve1, ve2]).T,
+        nu_di_di,
+        ba_=ba_,
         co__=[co1_, co2_],
         pl=False,
-        bw=ba,
     )[1]
 
     pr_di_di = pr_.reshape([n_co] * 2)

@@ -3,6 +3,6 @@ from numpy import log
 
 def get_entropy(ve):
 
-    pr_ = ve / ve.sum()
+    pr = ve / ve.sum()
 
-    return -(pr_ * log(pr_)).sum()
+    return -(pr * log(pr)).sum()
