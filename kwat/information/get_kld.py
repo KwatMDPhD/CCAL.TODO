@@ -1,4 +1,4 @@
-from numpy import log
+from ..array import log
 
 
 def get_kld(ve1, ve2):

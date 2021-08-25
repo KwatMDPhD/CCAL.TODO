@@ -21,7 +21,7 @@ def check_is_extreme(ar, di, th_=(), n_ex=0, st=0.0):
 
         else:
 
-            arns = sort(arn, None)
+            arns = sort(arn, axis=None)
 
             lo = arns[n_ex - 1]
 

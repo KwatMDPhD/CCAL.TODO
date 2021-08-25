@@ -15,9 +15,9 @@ def compare_with_target(ta, ro_, fu, separate=False, n_jo=1):
 
         ap = ignore_nan_and_apply
 
-    po = Pool(n_jo)
+    po = Pool(processes=n_jo)
 
-    re_ = array(po.starmap(ap, ((ro, ta, fu) for ro in ro_)))
+    re_ = array(po.starmap(ap, ([ro, ta, fu] for ro in ro_)))
 
     po.terminate()
 

@@ -22,7 +22,7 @@ def get_density(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
     de_ = (
         TreeKDE(bw=ba_ * n_po)
         .fit(nu_po_di)
-        .evaluate(co_po_di)
+        .evaluate(grid_points=co_po_di)
         .clip(min=FLOAT_RESOLUTION)
     )
 

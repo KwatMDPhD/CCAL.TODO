@@ -9,4 +9,4 @@ def make_1d_grid(lo, hi, fr, n_co):
 
     hi += fr
 
-    return linspace(lo, hi, n_co)
+    return linspace(lo, hi, num=n_co)

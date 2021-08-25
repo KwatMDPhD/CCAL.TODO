@@ -4,4 +4,4 @@ def clip(ar, st):
 
     st *= ar.std()
 
-    return ar.clip(me - st, me + st)
+    return ar.clip(min=me - st, max=me + st)

@@ -1,11 +1,12 @@
 from os.path import abspath, expanduser
+from re import search
 
 
 def get_absolute(pa):
 
     paa = abspath(expanduser(pa))
 
-    if pa[-1] == "/":
+    if search(r"/$", pa):
 
         paa += "/"
 

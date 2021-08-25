@@ -57,8 +57,12 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
         plot_heat_map(
             DataFrame(
                 data=nu_po_di,
-                index=Index(["{:.2e} *".format(co) for co in co__[0]], name=di_[0]),
-                columns=Index(["* {:.2e}".format(co) for co in co__[1]], name=di_[1]),
+                index=Index(
+                    data=["{:.2e} *".format(co) for co in co__[0]], name=di_[0]
+                ),
+                columns=Index(
+                    data=["* {:.2e}".format(co) for co in co__[1]], name=di_[1]
+                ),
             ),
             layout={
                 "title": {

@@ -18,6 +18,6 @@ def binarize(se):
 
     return DataFrame(
         data=bi_an_ie,
-        index=Index(an_it, name=se.name),
+        index=Index(data=an_it, name=se.name),
         columns=se.index,
     )

@@ -1,4 +1,5 @@
 from os.path import exists
+from re import search
 from urllib.request import urlretrieve
 
 from requests import get
@@ -22,7 +23,7 @@ def download(ur, di, na=None, ov=True):
 
         print("{} => {}...".format(ur, pa))
 
-        if ur.startswith("ftp"):
+        if search(r"^ftp", ur):
 
             urlretrieve(ur, pa)
 

@@ -1,5 +1,4 @@
-from numpy import log2
-
+from ..array import log
 from ..plot import plot_plotly
 
 
@@ -31,7 +30,7 @@ def plot_nomogram(pr1, pr2, na_, TODO1, TODO2, pa=""):
 
     data = [
         {
-            "x": [0, log2(pr2 / pr1)],
+            "x": [0, log(pr2 / pr1)],
             "y": [0] * 2,
             "marker": {
                 "color": "#080808",
@@ -46,7 +45,7 @@ def plot_nomogram(pr1, pr2, na_, TODO1, TODO2, pa=""):
 
         po2_ = TODO2[ie]
 
-        ra_ = log2((po2_ / po1_) / (pr2 / pr1))
+        ra_ = log((po2_ / po1_) / (pr2 / pr1))
 
         plot_plotly(
             {

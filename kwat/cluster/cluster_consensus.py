@@ -18,7 +18,7 @@ def cluster_consensus(nu_po_di, n_cl, n_tr=100, ra=RANDOM_SEED, **ke):
 
     for ie in range(n_tr):
 
-        ie_ = choice(n_po, n_sa, False)
+        ie_ = choice(n_po, size=n_sa, replace=False)
 
         cl_po_tr[ie_, ie] = cluster(nu_po_di[ie_], n_cl=n_cl, **ke)[1]
 

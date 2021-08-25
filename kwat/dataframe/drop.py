@@ -8,7 +8,7 @@ def drop(da, ax, n_no=None, n_un=None):
 
     sh = da.shape
 
-    bo_ = full(sh[ax], True)
+    dr_ = full(sh[ax], True)
 
     if ax == 0:
 
@@ -30,7 +30,7 @@ def drop(da, ax, n_no=None, n_un=None):
 
             n_no *= sh[axa]
 
-        bo_ &= apply_along_axis(_check_has_enough_not_na, axa, daa, n_no)
+        dr_ &= apply_along_axis(_check_has_enough_not_na, axa, daa, n_no)
 
     if n_un is not None:
 
@@ -38,15 +38,15 @@ def drop(da, ax, n_no=None, n_un=None):
 
             n_un *= sh[axa]
 
-        bo_ &= apply_along_axis(_check_has_enough_not_na_unique, axa, daa, n_un)
+        dr_ &= apply_along_axis(_check_has_enough_not_na_unique, axa, daa, n_un)
 
     if ax == 0:
 
-        da = da.loc[bo_, :]
+        da = da.loc[dr_, :]
 
     elif ax == 1:
 
-        da = da.loc[:, bo_]
+        da = da.loc[:, dr_]
 
     print("{} => {}".format(sh, da.shape))
 

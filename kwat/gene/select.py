@@ -15,7 +15,9 @@ def select(
 
     if co_se is None:
 
-        co_se = {"locus_group": ["protein-coding gene"]}
+        co_se = {
+            "locus_group": ["protein-coding gene"],
+        }
 
     ge_ = _read_select_hgnc(co_se).loc[:, "symbol"].values
 
@@ -35,7 +37,7 @@ def select(
 
     print("Removing:")
 
-    for fa, ba_ in sorted(fa_ba_.items(), key=lambda ba_: len(ba_[1]), reverse=True):
+    for fa, ba_ in sorted(fa_ba_.items(), key=lambda pa: len(pa[1]), reverse=True):
 
         print("{}\t{}".format(len(ba_), fa))
 

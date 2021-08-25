@@ -10,11 +10,11 @@ def cluster(
     cr="maxclust",
 ):
 
-    link = linkage(
+    li = linkage(
         nu_po_di,
         metric=di,
         method=li,
         optimal_ordering=op,
     )
 
-    return leaves_list(link), fcluster(link, n_cl, criterion=cr)
+    return leaves_list(li), fcluster(li, n_cl, criterion=cr)

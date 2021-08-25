@@ -30,6 +30,6 @@ def pivot(la1_, la2_, an_, na1="Dimension 1", na2="Dimension 2", fu=None):
 
     return DataFrame(
         data=an_la1_la2,
-        index=Index(la1_it, name=na1),
-        columns=Index(la2_it, name=na2),
+        index=Index(data=la1_it, name=na1),
+        columns=Index(data=la2_it, name=na2),
     )

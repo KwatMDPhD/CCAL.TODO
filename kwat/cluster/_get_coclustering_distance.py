@@ -10,7 +10,7 @@ def _get_coclustering_distance(cl_po_tr):
 
     di_ = full(n_pa, 0)
 
-    n_tr = cl_po_tr.shape[1]
+    n_to = cl_po_tr.shape[1]
 
     for iep in range(n_pa):
 
@@ -20,7 +20,7 @@ def _get_coclustering_distance(cl_po_tr):
 
         n_co = 0
 
-        for iet in range(n_tr):
+        for iet in range(n_to):
 
             cl1, cl2 = cl_pop_tr[:, iet]
 
