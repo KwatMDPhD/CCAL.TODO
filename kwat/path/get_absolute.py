@@ -3,10 +3,10 @@ from os.path import abspath, expanduser
 
 def get_absolute(pa):
 
-    paab = abspath(expanduser(pa))
+    paa = abspath(expanduser(pa))
 
     if pa[-1] == "/":
 
-        paab += "/"
+        paa += "/"
 
-    return paab
+    return paa

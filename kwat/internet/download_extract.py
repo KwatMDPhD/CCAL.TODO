@@ -4,10 +4,10 @@ from shutil import unpack_archive
 from .download import download
 
 
-def download_extract(url, directory_path):
+def download_extract(ur, di):
 
-    compressed_file_path = download(url, directory_path)
+    pa = download(ur, di)
 
-    unpack_archive(compressed_file_path, extract_dir=directory_path)
+    unpack_archive(pa, extract_dir=di)
 
-    remove(compressed_file_path)
+    remove(pa)

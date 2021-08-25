@@ -1,8 +1,7 @@
+from os.path import basename
 from urllib.parse import unquote
 
 
-def get_name(
-    url,
-):
+def get_name(ur):
 
-    return unquote(url).split("/")[-1]
+    return basename(unquote(ur))

@@ -7,12 +7,14 @@ def get_child(di):
 
     for di, di_, fi_ in walk(di):
 
+        te = "{}/{{}}".format(di)
+
         for na in di_:
 
-            pa_.append("{}/{}/".format(di, na))
+            pa_.append(te.format(na) + "/")
 
         for na in fi_:
 
-            pa_.append("{}/{}".format(di, na))
+            pa_.append(te.format(na))
 
     return sorted(pa_)

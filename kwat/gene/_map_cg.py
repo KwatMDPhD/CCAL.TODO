@@ -5,7 +5,7 @@ from ..constant import DATA_DIRECTORY
 
 def _map_cg():
 
-    cg_ge = {}
+    cg1_ge = {}
 
     for cg2_ge in [
         read_excel(
@@ -32,8 +32,8 @@ def _map_cg():
         ),
     ]:
 
-        for cg, ge in cg2_ge.dropna().iteritems():
+        for cg2, ge in cg2_ge.dropna().iteritems():
 
-            cg_ge[cg] = ge.split(";", 1)[0]
+            cg1_ge[cg2] = ge.split(";", 1)[0]
 
-    return cg_ge
+    return cg1_ge

@@ -3,8 +3,8 @@ from re import sub
 
 def clean(na):
 
-    nacl = sub(r"(?u)[^-\w.]", "_", na.strip().lower())
+    nac = sub(r"(?u)[^-\w.]", "_", na.strip().lower())
 
-    print("{} => {}".format(na, nacl))
+    print("{} => {}".format(na, nac))
 
-    return nacl
+    return nac

@@ -6,30 +6,30 @@ from requests import get
 from .get_name import get_name
 
 
-def download(url, directory_path, name=None, overwrite=True):
+def download(ur, di, na=None, ov=True):
 
-    if name is None:
+    if na is None:
 
-        name = get_name(url)
+        na = get_name(ur)
 
-    file_path = "{}{}".format(directory_path, name)
+    pa = "{}{}".format(di, na)
 
-    if exists(file_path):
+    if exists(pa):
 
-        print("{} exists.".format(file_path))
+        print("{} exists.".format(pa))
 
-    if not exists(file_path) or overwrite:
+    if not exists(pa) or ov:
 
-        print("{} => {}...".format(url, file_path))
+        print("{} => {}...".format(ur, pa))
 
-        if url[:3] == "ftp":
+        if ur.startswith("ftp"):
 
-            urlretrieve(url, file_path)
+            urlretrieve(ur, pa)
 
         else:
 
-            with open(file_path, mode="wb") as io:
+            with open(pa, mode="wb") as io:
 
-                io.write(get(url, allow_redirects=True).content)
+                io.write(get(ur, allow_redirects=True).content)
 
-    return file_path
+    return pa
