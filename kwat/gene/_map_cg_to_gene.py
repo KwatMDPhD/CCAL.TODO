@@ -3,11 +3,11 @@ from pandas import read_csv, read_excel
 from ..constant import DATA_DIRECTORY
 
 
-def _map_cg():
+def _map_cg_to_gene():
 
-    cg1_ge = {}
+    cg_ge = {}
 
-    for cg2_ge in [
+    for cg_st in [
         read_excel(
             "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY),
             usecols=[0, 10],
@@ -32,8 +32,8 @@ def _map_cg():
         ),
     ]:
 
-        for cg2, ge in cg2_ge.dropna().iteritems():
+        for cg, st in cg_st.dropna().iteritems():
 
-            cg1_ge[cg2] = ge.split(";", 1)[0]
+            cg_ge[cg] = st.split(sep=";", maxsplit=1)[0]
 
-    return cg1_ge
+    return cg_ge

@@ -4,7 +4,7 @@ from pandas import read_csv
 from ..constant import DATA_DIRECTORY
 
 
-def _read_hgnc(co_se):
+def _read_select_hgnc(co_se):
 
     da = read_csv(
         "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY),
@@ -16,18 +16,18 @@ def _read_hgnc(co_se):
 
         ge_ = da.loc[:, "symbol"].values
 
-        bo_ = full(ge_.size, True)
+        se_ = full(ge_.size, True)
 
         for co, se in co_se.items():
 
             print("Selecting by {}: {}...".format(co, ", ".join(se)))
 
-            bo_ &= array(
+            se_ &= array(
                 [isinstance(an, str) and an in se for an in da.loc[:, co].values]
             )
 
-            print("{}/{}".format(bo_.sum(), bo_.size))
+            print("{}/{}".format(se_.sum(), se_.size))
 
-        da = da.loc[bo_, :]
+        da = da.loc[se_, :]
 
     return da

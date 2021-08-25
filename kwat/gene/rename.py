@@ -1,25 +1,25 @@
 from numpy import array
 
-from ._map_cg import _map_cg
-from ._map_ens import _map_ens
-from ._map_hgnc import _map_hgnc
+from ._map_cg_to_gene import _map_cg_to_gene
+from ._map_ens_to_gene import _map_ens_to_gene
+from ._map_hgnc_to_gene import _map_hgnc_to_gene
 
 
 def rename(na_):
 
-    an_ge = {**_map_hgnc(), **_map_ens(), **_map_cg()}
+    an_ge = {**_map_hgnc_to_gene(), **_map_ens_to_gene(), **_map_cg_to_gene()}
 
     ge_ = [an_ge.get(na) for na in na_]
 
-    bo_ = array([ge is not None for ge in ge_])
+    re_ = array([ge is not None for ge in ge_])
 
-    n_to = bo_.size
+    n_re = re_.sum()
 
-    n_ge = bo_.sum()
+    n_na = len(na_)
 
-    print("Named {}/{} ({:.2%})".format(n_ge, n_to, n_ge / n_to))
+    print("Renamed {}/{} ({:.2%})".format(n_re, n_na, n_re / n_na))
 
-    if n_ge == 0:
+    if n_re == 0:
 
         return na_
 

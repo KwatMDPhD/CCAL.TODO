@@ -4,7 +4,7 @@ from ..constant import DATA_DIRECTORY
 from ..dataframe import map_to
 
 
-def _map_ens():
+def _map_ens_to_gene():
 
     return map_to(
         read_csv("{}ens.tsv.gz".format(DATA_DIRECTORY), sep="\t"), "Gene name"

@@ -1,12 +1,12 @@
 from ..dataframe import map_to
-from ._pr import _pr
-from ._read_hgnc import _read_hgnc
+from ._read_select_hgnc import _read_select_hgnc
+from ._split import _split
 
 
-def _map_hgnc():
+def _map_hgnc_to_gene():
     return map_to(
-        _read_hgnc(None).drop(
-            [
+        _read_select_hgnc(None).drop(
+            labels=[
                 "locus_group",
                 "locus_type",
                 "status",
@@ -24,5 +24,5 @@ def _map_hgnc():
             axis=1,
         ),
         "symbol",
-        fu=_pr,
+        fu=_split,
     )
