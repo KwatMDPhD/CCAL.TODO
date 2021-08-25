@@ -4,7 +4,7 @@ def split(st, se=" "):
 
     qu = ""
 
-    for sp in st.split(se):
+    for sp in st.split(sep=se):
 
         if '"' in sp or "'" in sp:
 

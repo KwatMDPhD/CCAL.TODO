@@ -4,16 +4,16 @@ def make_unique(st_):
 
     for st in st_:
 
-        stun = st
+        un = st
 
         it = 2
 
-        while stun in un_:
+        while un in un_:
 
-            stun = "{}{}".format(st, it)
+            un = "{}{}".format(st, it)
 
             it += 1
 
-        un_.append(stun)
+        un_.append(un)
 
     return un_

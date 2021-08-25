@@ -7,7 +7,7 @@ def compare_with_other(ro1_, ro2_, fu):
 
     n_ro2 = ro2_.shape[0]
 
-    re_ = full((n_ro1, n_ro2), nan)
+    fu_ro1_ro2 = full([n_ro1, n_ro2], nan)
 
     for ie1 in range(n_ro1):
 
@@ -17,6 +17,6 @@ def compare_with_other(ro1_, ro2_, fu):
 
             ro2 = ro2_[ie2]
 
-            re_[ie1, ie2] = fu(ro1, ro2)
+            fu_ro1_ro2[ie1, ie2] = fu(ro1, ro2)
 
-    return re_
+    return fu_ro1_ro2
