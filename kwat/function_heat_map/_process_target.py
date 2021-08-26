@@ -1,4 +1,4 @@
-from ..array import apply as array_apply, normalize
+from ..array import apply, normalize
 
 
 def _process_target(ta, ty, st):
@@ -7,7 +7,7 @@ def _process_target(ta, ty, st):
 
         if 0 < ta.std():
 
-            ta = array_apply(ta, normalize, "-0-", up=True).clip(-st, st)
+            ta = apply(ta, normalize, "-0-", up=True).clip(min=-st, max=st)
 
         return ta, -st, st
 

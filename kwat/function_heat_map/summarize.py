@@ -1,3 +1,5 @@
+from re import sub
+
 from numpy import nan
 
 from ..dictionary import merge
@@ -36,10 +38,10 @@ def summarize(
         ta.sort_values(ascending=ac, inplace=True)
 
     #
-    la2_ = ta.index.values
+    co_ = ta.index.values
 
     #
-    tapl, mita, mata = _process_target(ta.values, ty, st)
+    taap, mit, mat = _process_target(ta.values, ty, st)
 
     #
     n_ro = 1
@@ -77,11 +79,11 @@ def summarize(
     #
     data = [
         {
-            "yaxis": yaxis.replace("axis", ""),
-            "z": tapl.reshape([1, -1]),
-            "x": la2_,
-            "zmin": mita,
-            "zmax": mata,
+            "yaxis": sub(r"axis", "", yaxis),
+            "z": taap.reshape([1, -1]),
+            "x": co_,
+            "zmin": mit,
+            "zmax": mat,
             "colorscale": TYPE_COLORSCALE[ty],
             **HEATMAP,
         }
@@ -89,20 +91,20 @@ def summarize(
 
     for ie, bu in enumerate(bu_):
 
-        da = bu["data"].reindex(la2_, axis=1)
+        da = bu["data"].reindex(labels=co_, axis=1)
 
         fu = bu["statistic"].loc[da.index, :]
 
         fu.sort_values("Score", ascending=False, inplace=True)
 
-        la1_ = fu.index.values
+        ro_ = fu.index.values
 
-        dapl, mida, mada = _process_data(da.loc[la1_, :].values, bu["type"], st)
+        daap, mid, mad = _process_data(da.loc[ro_, :].values, bu["type"], st)
 
         yaxis = "yaxis{}".format(n_bu - ie)
 
         domain = [
-            max(0, domain[0] - he * (n_sp + dapl.shape[0])),
+            max(0, domain[0] - he * (n_sp + daap.shape[0])),
             domain[0] - he * n_sp,
         ]
 
@@ -114,11 +116,11 @@ def summarize(
         data.append(
             {
                 "yaxis": yaxis.replace("axis", ""),
-                "z": dapl[::-1],
-                "y": la1_[::-1],
-                "x": la2_,
-                "zmin": mida,
-                "zmax": mada,
+                "z": daap[::-1],
+                "y": ro_[::-1],
+                "x": co_,
+                "zmin": mid,
+                "zmax": mad,
                 "colorscale": TYPE_COLORSCALE[bu["type"]],
                 **HEATMAP,
             }
@@ -136,7 +138,7 @@ def summarize(
             }
         )
 
-        layout["annotations"] += _make_data_annotations(y, ie == 0, he, la1_, fu.values)
+        layout["annotations"] += _make_data_annotations(y, ie == 0, he, ro_, fu.values)
 
     plot_plotly(
         {

@@ -4,7 +4,7 @@ from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from ..array import apply as array_apply, check_is_extreme
+from ..array import apply, check_is_extreme
 from ..cluster import cluster
 from ..constant import RANDOM_SEED, SAMPLE_FRACTION
 from ..dictionary import merge
@@ -31,169 +31,152 @@ def make(
     n_sh=10,
     pl=True,
     n_pl=8,
-    tyta="continuous",
-    tyda="continuous",
+    tyt="continuous",
+    tyd="continuous",
     st=nan,
     title="Function Heat Map",
     pa="",
 ):
 
-    #
-    la1_ = da.index.values
+    ro_ = da.index.values
 
-    #
     ta = ta.loc[ta.index.intersection(da.columns)]
 
     if ac is not None:
 
         ta.sort_values(ascending=ac, inplace=True)
 
-    la2_ = ta.index.values
+    co_ = ta.index.values
 
-    da = da.loc[:, la2_]
+    da = da.loc[:, co_]
 
-    #
-    si1 = la1_.size
+    n_ro = ro_.size
 
-    si2 = la2_.size
+    n_co = co_.size
 
-    #
-    taar = ta.values
+    taa = ta.values
 
-    daar = da.values
+    daa = da.values
 
-    #
     if callable(fu):
-
-        po = Pool(n_jo)
 
         seed(seed=ra)
 
-        #
+        po = Pool(processes=n_jo)
+
         print("Score ({})...".format(fu.__name__))
 
-        sc_ = array(po.starmap(ignore_nan_and_apply, ([taar, ro, fu] for ro in daar)))
+        sc_ = array(po.starmap(ignore_nan_and_apply, ([taa, ro, fu] for ro in daa)))
 
-        #
         if 0 < n_sa:
 
             print("0.95 MoE ({} sample)...".format(n_sa))
 
-            #
-            sc_ro_sa = full([si1, n_sa], nan)
+            sc_ro_sa = full([n_ro, n_sa], nan)
 
-            n_ch = int(si2 * SAMPLE_FRACTION)
+            n_ch = int(n_co * SAMPLE_FRACTION)
 
             for ie in range(n_sa):
 
-                #
-                ie_ = choice(si2, n_ch, False)
+                ie_ = choice(n_co, size=n_ch, replace=False)
 
-                taarra = taar[ie_]
+                taar = taa[ie_]
 
-                #
                 sc_ro_sa[:, ie] = po.starmap(
-                    ignore_nan_and_apply, ([taarra, ro, fu] for ro in daar[:, ie_])
+                    ignore_nan_and_apply, ([taar, ro, fu] for ro in daa[:, ie_])
                 )
 
-            #
-            ma_ = array([array_apply(ro, get_margin_of_error) for ro in sc_ro_sa])
+            ma_ = array([apply(ro, get_margin_of_error) for ro in sc_ro_sa])
 
         else:
 
             ma_ = full(sc_.size, nan)
 
-        #
         if 0 < n_sh:
 
             print("P-Value and Q-Value ({} shuffle)...".format(n_sh))
 
-            #
-            sc_ro_sh = full([si1, n_sh], nan)
+            sc_ro_sh = full([n_ro, n_sh], nan)
 
-            taarra = taar.copy()
+            taar = taa.copy()
 
             for ie in range(n_sh):
 
-                #
-                shuffle(taarra)
+                shuffle(taar)
 
-                #
                 sc_ro_sh[:, ie] = po.starmap(
-                    ignore_nan_and_apply, ([taarra, ro, fu] for ro in daar)
+                    ignore_nan_and_apply, ([taar, ro, fu] for ro in daa)
                 )
 
-            #
             pv_, qv_ = get_p_value_q_value(sc_, sc_ro_sh.ravel(), "<>")
 
         else:
 
-            pv_ = qv_ = full(sc_.size, nan)
+            pv_ = full(sc_.size, nan)
 
-        #
+            qv_ = pv_.copy()
+
         po.terminate()
 
         fu = DataFrame(
-            array([sc_, ma_, pv_, qv_]).T,
-            la1_,
-            ["Score", "MoE", "P-Value", "Q-Value"],
+            data=array([sc_, ma_, pv_, qv_]).T,
+            index=ro_,
+            columns=["Score", "MoE", "P-Value", "Q-Value"],
         )
 
     else:
 
-        fu = fu.loc[la1_, :]
+        fu = fu.loc[ro_, :]
 
-    #
     fu.sort_values("Score", ascending=False, inplace=True)
 
     if pa != "":
 
-        fu.to_csv("{}statistic.tsv".format(pa), "\t")
+        fu.to_csv(path_or_buf="{}statistic.tsv".format(pa), sep="\t")
 
-    #
     if pl:
 
-        fuar = fu.values
+        fua = fu.values
 
-        la1_ = fu.index
+        ro_ = fu.index
 
-        da = da.loc[la1_, :]
+        da = da.loc[ro_, :]
 
-        daar = da.values
+        daa = da.values
 
-        if n_pl is not None and n_pl < (si1 / 2):
+        if n_pl is not None and n_pl < (n_ro / 2):
 
-            bo_ = check_is_extreme(fuar[:, 0], "<>", n_ex=n_pl)
+            ex_ = check_is_extreme(fua[:, 0], "<>", n_ex=n_pl)
 
-            fuar = fuar[bo_]
+            fua = fua[ex_]
 
-            daar = daar[bo_]
+            daa = daa[ex_]
 
-            la1_ = la1_[bo_]
+            ro_ = ro_[ex_]
 
-        tapl, mita, mata = _process_target(taar, tyta, st)
+        taap, mit, mat = _process_target(taa, tyt, st)
 
-        dapl, mida, mada = _process_data(daar, tyda, st)
+        daap, mid, mad = _process_data(daa, tyd, st)
 
-        if tyta != "continuous":
+        if tyt != "continuous":
 
-            for gr, si in zip(*unique(tapl, return_counts=True)):
+            for gr, si in zip(*unique(taap, return_counts=True)):
 
                 if 2 < si:
 
                     print("Clustering {}...".format(gr))
 
-                    ie_ = where(tapl == gr)[0]
+                    ie_ = where(taap == gr)[0]
 
-                    iecl_ = ie_[cluster(dapl.T[ie_])[0]]
+                    iec_ = ie_[cluster(daap.T[ie_])[0]]
 
-                    tapl[ie_] = tapl[iecl_]
+                    taap[ie_] = taap[iec_]
 
-                    dapl[:, ie_] = dapl[:, iecl_]
+                    daap[:, ie_] = daap[:, iec_]
 
-                    la2_[ie_] = la2_[iecl_]
+                    co_[ie_] = co_[iec_]
 
-        n_ro = dapl.shape[0] + 2
+        n_ro = daap.shape[0] + 2
 
         he = 1 / n_ro
 
@@ -217,7 +200,7 @@ def make(
         )
 
         layout["annotations"] += _make_data_annotations(
-            1 - he / 2 * 3, True, he, la1_, fuar
+            1 - he / 2 * 3, True, he, ro_, fua
         )
 
         if pa != "":
@@ -229,23 +212,23 @@ def make(
                 "data": [
                     {
                         "yaxis": "y2",
-                        "z": tapl.reshape([1, -1]),
-                        "text": taar.reshape([1, -1]),
-                        "x": la2_,
-                        "zmin": mita,
-                        "zmax": mata,
-                        "colorscale": TYPE_COLORSCALE[tyta],
+                        "z": taap.reshape([1, -1]),
+                        "text": taa.reshape([1, -1]),
+                        "x": co_,
+                        "zmin": mit,
+                        "zmax": mat,
+                        "colorscale": TYPE_COLORSCALE[tyt],
                         **HEATMAP,
                     },
                     {
                         "yaxis": "y",
-                        "z": dapl[::-1],
-                        "text": daar[::-1],
-                        "y": la1_[::-1],
-                        "x": la2_,
-                        "zmin": mida,
-                        "zmax": mada,
-                        "colorscale": TYPE_COLORSCALE[tyda],
+                        "z": daap[::-1],
+                        "text": daa[::-1],
+                        "y": ro_[::-1],
+                        "x": co_,
+                        "zmin": mid,
+                        "zmax": mad,
+                        "colorscale": TYPE_COLORSCALE[tyd],
                         **HEATMAP,
                     },
                 ],

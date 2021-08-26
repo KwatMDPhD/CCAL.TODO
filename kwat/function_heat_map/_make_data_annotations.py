@@ -3,13 +3,13 @@ from ._get_statistic_x import _get_statistic_x
 from .ANNOTATION import ANNOTATION
 
 
-def _make_data_annotations(y, ad, he, text_, fu):
+def _make_data_annotations(y, la, he, text_, fu):
 
     annotations = []
 
     n_ch = 27
 
-    if ad:
+    if la:
 
         for ie, text in enumerate(["Score (\u0394)", "P-Value", "Q-Value"]):
 
@@ -18,7 +18,7 @@ def _make_data_annotations(y, ad, he, text_, fu):
                     "y": y,
                     "x": _get_statistic_x(ie),
                     "xanchor": "center",
-                    "text": "<b>{}</b>".format(trim(text)),
+                    "text": "<b>{}</b>".format(text),
                     **ANNOTATION,
                 }
             )
