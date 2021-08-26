@@ -5,9 +5,9 @@ from ._get_probability import _get_probability
 from .get_probability import get_probability
 
 
-def get_posterior_probability(nu_po_di, ta=nan, ba_=(), co__=(), pl=True, di_=()):
+def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, di_=(), **ke):
 
-    co_po_di, pr_ = get_probability(nu_po_di, ba_=ba_, co__=co__, pl=pl, di_=di_)
+    co_po_di, pr_ = get_probability(nu_po_di, co__=co__, pl=pl, di_=di_, **ke)
 
     ta_ = co_po_di[:, -1]
 

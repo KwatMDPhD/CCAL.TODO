@@ -1,22 +1,12 @@
-from KDEpy.bw_selection import improved_sheather_jones, silvermans_rule
+from KDEpy.bw_selection import _bw_methods
 
 
-def get_bandwidth(nu_po_di):
+def get_bandwidth(nu_po_di, me="ISJ"):
 
     ba_ = []
 
     for ie in range(nu_po_di.shape[1]):
 
-        nu_ = nu_po_di[:, [ie]]
-
-        try:
-
-            ba = improved_sheather_jones(nu_)
-
-        except ValueError as er:
-
-            ba = silvermans_rule(nu_)
-
-        ba_.append(ba)
+        ba_.append(_bw_methods[me](nu_po_di[:, [ie]]))
 
     return ba_

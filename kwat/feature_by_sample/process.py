@@ -23,6 +23,8 @@ def process(
     **ke,
 ):
 
+    summarize(nu_fe_sa, title="Original", **ke)
+
     te = "Dropping {}: {}..."
 
     if 0 < len(fe_):
@@ -31,7 +33,7 @@ def process(
 
         nu_fe_sa = nu_fe_sa.drop(labels=fe_, errors="ignore")
 
-        summarize(nu_fe_sa, **ke)
+        summarize(nu_fe_sa, title="Dropped features", **ke)
 
     if 0 < len(sa_):
 
@@ -39,7 +41,7 @@ def process(
 
         nu_fe_sa = nu_fe_sa.drop(labels=sa_, axis=1, errors="ignore")
 
-        summarize(nu_fe_sa, **ke)
+        summarize(nu_fe_sa, title="Dropped samples", **ke)
 
     if na is not None:
 
@@ -47,7 +49,7 @@ def process(
 
         nu_fe_sa[nu_fe_sa <= na] = nan
 
-        summarize(nu_fe_sa, **ke)
+        summarize(nu_fe_sa, title="NaNized", **ke)
 
     if n_no is not None or n_un is not None:
 
@@ -72,7 +74,7 @@ def process(
 
         if be != nu_fe_sa.shape:
 
-            summarize(nu_fe_sa, **ke)
+            summarize(nu_fe_sa, title="Dropped", **ke)
 
     if lo is not None:
 
@@ -84,13 +86,15 @@ def process(
 
             nua_fe_sa = shift(nua_fe_sa, sh)
 
+            summarize(nu_fe_sa, title="Shifted", **ke)
+
         nu_fe_sa = DataFrame(
             data=log(nua_fe_sa, ba=lo),
             index=nu_fe_sa.index,
             columns=nu_fe_sa.columns,
         )
 
-        summarize(nu_fe_sa, **ke)
+        summarize(nu_fe_sa, title="Logged", **ke)
 
     if no is not None:
 
@@ -102,7 +106,7 @@ def process(
             columns=nu_fe_sa.columns,
         )
 
-        summarize(nu_fe_sa, **ke)
+        summarize(nu_fe_sa, title="Normalized", **ke)
 
     if mi is not None or ma is not None:
 
@@ -110,6 +114,6 @@ def process(
 
         nu_fe_sa = nu_fe_sa.clip(lower=mi, upper=ma)
 
-        summarize(nu_fe_sa, **ke)
+        summarize(nu_fe_sa, title="Clipped", **ke)
 
     return nu_fe_sa

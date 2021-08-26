@@ -92,18 +92,18 @@ def get_gse(gs, *ar, **ke):
 
         if 0 < len(ro_):
 
-            an_fe_sa = DataFrame(data=ro_).T
+            nu_fe_sa = DataFrame(data=ro_).T
 
-            fe_ = an_fe_sa.index.values
+            fe_ = nu_fe_sa.index.values
 
             fe_ = _name_feature(fe_, pl, ke_va["table"])
 
-            an_fe_sa.index = Index(data=rename(fe_), name="Gene")
+            nu_fe_sa.index = Index(data=rename(fe_), name="Gene")
 
-            an_fe_sa = collapse(an_fe_sa)
+            nu_fe_sa = collapse(nu_fe_sa)
 
-            peek(an_fe_sa)
+            peek(nu_fe_sa)
 
-            an_fe_sa_.append(an_fe_sa)
+            an_fe_sa_.append(nu_fe_sa)
 
     return an_fe_sa_

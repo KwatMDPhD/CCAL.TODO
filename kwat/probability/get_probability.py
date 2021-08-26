@@ -4,9 +4,9 @@ from ..density import get_density
 from ..grid import get_1d_grid_resolution, plot
 
 
-def get_probability(nu_po_di, ba_=(), co__=(), pl=True, di_=()):
+def get_probability(nu_po_di, co__=(), pl=True, di_=(), **ke):
 
-    co_po_di, de_ = get_density(nu_po_di, ba_=ba_, co__=co__, pl=pl, di_=di_)
+    co_po_di, de_ = get_density(nu_po_di, co__=co__, pl=pl, di_=di_, **ke)
 
     pr_ = de_ / (
         de_.sum() * product([get_1d_grid_resolution(co_) for co_ in co_po_di.T])
