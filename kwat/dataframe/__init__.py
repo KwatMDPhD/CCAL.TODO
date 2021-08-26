@@ -5,6 +5,7 @@ from .drop import drop
 from .drop_until import drop_until
 from .error import error
 from .map_to import map_to
+from .peek import peek
 from .pivot import pivot
 from .sample import sample
 from .sync import sync
