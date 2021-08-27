@@ -1,4 +1,4 @@
-def count_gene_impacts_from_variant_dicts(vd_, ge):
+def _count_gene_impact(vd_, ge):
 
     im_co = {
         "HIGH": 0,

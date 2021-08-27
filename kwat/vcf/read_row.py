@@ -1,14 +1,15 @@
+from ._extend import _extend
 from .ANN_KEYS import ANN_KEYS
 from .COLUMNS import COLUMNS
 
 
-def make_variant_dict_from_vcf_row(ro, n_ioan=None):
+def read_row(se, n_ioan=None):
 
-    vd = {co: ro[ie] for ie, co in enumerate(COLUMNS[: COLUMNS.index("FILTER") + 1])}
+    vd = {co: se[ie] for ie, co in enumerate(COLUMNS[: COLUMNS.index("FILTER") + 1])}
 
     inno_ = []
 
-    for io in ro[COLUMNS.index("INFO")].split(sep=";"):
+    for io in se[COLUMNS.index("INFO")].split(sep=";"):
 
         if "=" in io:
 
@@ -35,20 +36,22 @@ def make_variant_dict_from_vcf_row(ro, n_ioan=None):
 
             inno_.append(io)
 
-    if len(inno_):
+    if 0 < len(inno_):
 
-        vd["inno_"] = ";".join(inno_)
+        vd["info_without_field"] = ";".join(inno_)
 
     iefo = COLUMNS.index("FORMAT")
 
-    fofi_ = ro[iefo].split(sep=":")
+    fofi_ = se[iefo].split(sep=":")
 
     vd["sample"] = {}
 
-    for iesa, sa in enumerate(ro[iefo + 1 :]):
+    for iesa, sa in enumerate(se[iefo + 1 :]):
 
         vd["sample"][iesa] = {
             fofi: sava for fofi, sava in zip(fofi_, sa.split(sep=":"))
         }
+
+    _extend(vd)
 
     return vd
