@@ -86,7 +86,15 @@ def process(
 
             nua_fe_sa = shift(nua_fe_sa, sh)
 
-            summarize(nu_fe_sa, title="Shifted", **ke)
+            summarize(
+                DataFrame(
+                    data=nua_fe_sa,
+                    index=nu_fe_sa.index,
+                    columns=nu_fe_sa.columns,
+                ),
+                title="Shifted",
+                **ke,
+            )
 
         nu_fe_sa = DataFrame(
             data=log(nua_fe_sa, ba=lo),

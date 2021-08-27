@@ -24,9 +24,15 @@ def drop(da, ax, n_no=None, n_un=None):
 
     daa = da.values
 
+    n_co = sh[1]
+
     if n_no is not None:
 
-        if n_no < 1:
+        if n_no == -1:
+
+            n_no = n_co
+
+        elif n_no < 1:
 
             n_no *= sh[axa]
 
@@ -34,7 +40,11 @@ def drop(da, ax, n_no=None, n_un=None):
 
     if n_un is not None:
 
-        if n_un < 1:
+        if n_un == -1:
+
+            n_un = n_co
+
+        elif n_un < 1:
 
             n_un *= sh[axa]
 
