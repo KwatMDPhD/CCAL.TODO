@@ -5,9 +5,9 @@ from numpy import array
 from ..function import ignore_nan_and_apply, separate_and_apply
 
 
-def compare_with_target(ta, ro_, fu, separate=False, n_jo=1):
+def compare_with_target(ta, ro_, fu, se=False, n_jo=1):
 
-    if separate:
+    if se:
 
         ap = separate_and_apply
 
@@ -17,8 +17,8 @@ def compare_with_target(ta, ro_, fu, separate=False, n_jo=1):
 
     po = Pool(processes=n_jo)
 
-    re_ = array(po.starmap(ap, ([ro, ta, fu] for ro in ro_)))
+    an_ = array(po.starmap(ap, ([ta, ro, fu] for ro in ro_)))
 
     po.terminate()
 
-    return re_
+    return an_

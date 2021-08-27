@@ -1,5 +1,3 @@
-from multiprocessing import Pool
-
 from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
@@ -8,8 +6,8 @@ from ..array import apply, check_is_extreme
 from ..cluster import cluster
 from ..constant import RANDOM_SEED, SAMPLE_FRACTION
 from ..dictionary import merge
-from ..function import ignore_nan_and_apply
 from ..plot import plot_plotly
+from ..row import compare_with_target
 from ..significance import get_margin_of_error, get_p_value_q_value
 from ._make_data_annotations import _make_data_annotations
 from ._make_target_annotation import _make_target_annotation
@@ -62,11 +60,9 @@ def make(
 
         seed(seed=ra)
 
-        po = Pool(processes=n_jo)
-
         print("Score ({})...".format(fu.__name__))
 
-        sc_ = array(po.starmap(ignore_nan_and_apply, ([taa, ro, fu] for ro in daa)))
+        sc_ = compare_with_target(taa, daa, fu, n_jo=n_jo)
 
         if 0 < n_sa:
 
@@ -80,10 +76,8 @@ def make(
 
                 ie_ = choice(n_co, size=n_ch, replace=False)
 
-                taar = taa[ie_]
-
-                sc_ro_sa[:, ie] = po.starmap(
-                    ignore_nan_and_apply, ([taar, ro, fu] for ro in daa[:, ie_])
+                sc_ro_sa[:, ie] = compare_with_target(
+                    taa[ie_], daa[:, ie_], fu, n_jo=n_jo
                 )
 
             ma_ = array([apply(ro, get_margin_of_error) for ro in sc_ro_sa])
@@ -98,15 +92,13 @@ def make(
 
             sc_ro_sh = full([n_ro, n_sh], nan)
 
-            taar = taa.copy()
+            taac = taa.copy()
 
             for ie in range(n_sh):
 
-                shuffle(taar)
+                shuffle(taac)
 
-                sc_ro_sh[:, ie] = po.starmap(
-                    ignore_nan_and_apply, ([taar, ro, fu] for ro in daa)
-                )
+                sc_ro_sh[:, ie] = compare_with_target(taac, daa, fu, n_jo=n_jo)
 
             pv_, qv_ = get_p_value_q_value(sc_, sc_ro_sh.ravel(), "<>")
 
@@ -115,8 +107,6 @@ def make(
             pv_ = full(sc_.size, nan)
 
             qv_ = pv_.copy()
-
-        po.terminate()
 
         fu = DataFrame(
             data=array([sc_, ma_, pv_, qv_]).T,

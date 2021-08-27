@@ -5,3 +5,4 @@ from .get_median_difference import get_median_difference
 from .get_median_ratio import get_median_ratio
 from .get_pearson_correlation import get_pearson_correlation
 from .get_signal_to_noise import get_signal_to_noise
+from .get_sum_difference import get_sum_difference

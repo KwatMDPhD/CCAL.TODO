@@ -1,6 +1,6 @@
 from numpy import where
 
 
-def separate_and_apply(ar, arb, fu):
+def separate_and_apply(bo_, ar, fu):
 
-    return fu(ar[where(arb == 0)[0]], ar[where(arb == 1)[0]])
+    return fu(ar[where(bo_ == 0)[0]], ar[where(bo_ == 1)[0]])
