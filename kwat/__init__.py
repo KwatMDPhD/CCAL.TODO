@@ -29,5 +29,6 @@ from . import (
     shell,
     significance,
     string,
+    vcf,
     vector,
 )
