@@ -23,6 +23,7 @@ from . import (
     path,
     plot,
     probability,
+    project,
     python,
     row,
     series,

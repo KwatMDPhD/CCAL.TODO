@@ -1,12 +1,11 @@
-from os.path import abspath, expanduser
-from re import search
+from os.path import abspath, expanduser, isdir
 
 
 def get_absolute(pa):
 
     paa = abspath(expanduser(pa))
 
-    if search(r"/$", pa):
+    if isdir(pa):
 
         paa += "/"
 

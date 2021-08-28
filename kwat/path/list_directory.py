@@ -3,7 +3,7 @@ from os.path import isdir
 from re import search
 
 
-def list(pa):
+def list_directory(pa):
 
     pa_ = []
 
