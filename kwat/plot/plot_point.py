@@ -1,19 +1,19 @@
 from .plot_plotly import plot_plotly
 
 
-def plot_point(an_po_pa, annotation_font_size=16, title="", pa=""):
+def plot_point(an_po_pa, title="", pa=""):
 
     data = [
         {
             "name": "Point",
             "y": an_po_pa.iloc[:, 0],
             "x": an_po_pa.iloc[:, 1],
-            "text": an_po_pa.index,
+            "text": an_po_pa.index.values,
             "mode": "markers",
             "marker": {
-                "size": an_po_pa["Size"],
-                "color": an_po_pa["Color"],
-                "opacity": an_po_pa["Opacity"],
+                "size": an_po_pa.loc[:, "Size"],
+                "color": an_po_pa.loc[:, "Color"],
+                "opacity": an_po_pa.loc[:, "Opacity"],
                 "line": {
                     "width": 0,
                 },
@@ -21,23 +21,29 @@ def plot_point(an_po_pa, annotation_font_size=16, title="", pa=""):
         }
     ]
 
+    co_ = an_po_pa.columns.values
+
     annotations = []
 
-    for text, co_ in an_po_pa.iloc[:, :2].loc[an_po_pa["Annotate"]].iterrows():
+    if "Annotate" in co_:
 
-        annotations.append(
-            {
-                "y": co_[0],
-                "x": co_[1],
-                "text": text,
-                "font": {
-                    "size": annotation_font_size,
-                },
-                "arrowhead": 2,
-                "arrowsize": 1,
-                "clicktoshow": "onoff",
-            }
-        )
+        for text, (y, x) in (
+            an_po_pa.iloc[:, :2].loc[an_po_pa.loc[:, "Annotate"], :].iterrows()
+        ):
+
+            annotations.append(
+                {
+                    "y": y,
+                    "x": x,
+                    "text": text,
+                    "font": {
+                        "size": 8,
+                    },
+                    "arrowhead": 2,
+                    "arrowsize": 1,
+                    "clicktoshow": "onoff",
+                }
+            )
 
     plot_plotly(
         {
@@ -45,10 +51,10 @@ def plot_point(an_po_pa, annotation_font_size=16, title="", pa=""):
             "layout": {
                 "title": title,
                 "yaxis": {
-                    "title": an_po_pa.columns[0],
+                    "title": co_[0],
                 },
                 "xaxis": {
-                    "title": an_po_pa.columns[1],
+                    "title": co_[1],
                 },
                 "annotations": annotations,
             },

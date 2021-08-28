@@ -1,13 +1,41 @@
+from numpy import arange
+from pandas import DataFrame
+
 from ..array import check_is_extreme
+from ..plot import plot_point
 
-def get_extreme(se, **ke):
 
-    ex_ = check_is_extreme(se.values, **ke)
+def get_extreme(se, di, pa, size=2, **ke):
 
-    la_ = se.index.values
+    se = se.dropna().sort_values()
 
-    for di in ["<", ">"]:
+    nu_ = se.values
 
-        la_[ex_, di]
+    las_ = se.index.values
 
-    return ex_
+    bo_ = check_is_extreme(nu_, di, **ke)
+
+    la_ = las_[bo_]
+
+    with open("{}.txt".format(pa), mode="w") as io:
+
+        io.write("\n".join(la_))
+
+    da = DataFrame(
+        data={
+            se.name: nu_,
+            "Rank": arange(nu_.size),
+            "Size": size,
+            "Color": "#ebf6f7",
+            "Opacity": 0.64,
+        },
+        index=las_,
+    )
+
+    da.loc[bo_, ["Size", "Color", "Opacity"]] = [
+        size * 2,
+        {"<": "#1f4788", ">": "#c3272b"}[di],
+        0.8,
+    ]
+
+    plot_point(da, title="Extreme", pa="{}.html".format(pa))
