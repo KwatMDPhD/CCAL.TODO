@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import isdir, splitext
+from os.path import isdir
 from re import search
 
 
