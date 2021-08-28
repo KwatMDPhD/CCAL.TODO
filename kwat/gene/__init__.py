@@ -1,5 +1,6 @@
 from ._map_cg_to_gene import _map_cg_to_gene
 from ._map_ens_to_gene import _map_ens_to_gene
+from ._map_ensmus_to_gene import _map_ensmus_to_gene
 from ._map_gene_to_family import _map_gene_to_family
 from ._map_hgnc_to_gene import _map_hgnc_to_gene
 from ._read_select_hgnc import _read_select_hgnc
