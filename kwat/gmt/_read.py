@@ -10,8 +10,14 @@ def _read(pa):
 
             ge_ = [sp for sp in sp_[2:] if sp != ""]
 
-            if 0 < len(ge_):
+            se = sp_[0]
 
-                se_ge_[sp_[0]] = ge_
+            if len(ge_) == 0:
+
+                print("{} has 0 genes.".format(se))
+
+            else:
+
+                se_ge_[se] = ge_
 
     return se_ge_

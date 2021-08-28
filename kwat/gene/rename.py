@@ -2,12 +2,18 @@ from numpy import array
 
 from ._map_cg_to_gene import _map_cg_to_gene
 from ._map_ens_to_gene import _map_ens_to_gene
+from ._map_ensmus_to_gene import _map_ensmus_to_gene
 from ._map_hgnc_to_gene import _map_hgnc_to_gene
 
 
 def rename(na_):
 
-    an_ge = {**_map_hgnc_to_gene(), **_map_ens_to_gene(), **_map_cg_to_gene()}
+    an_ge = {
+        **_map_hgnc_to_gene(),
+        **_map_ens_to_gene(),
+        **_map_cg_to_gene(),
+        **_map_ensmus_to_gene(),
+    }
 
     ge_ = [an_ge.get(na) for na in na_]
 

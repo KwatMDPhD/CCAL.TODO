@@ -1,22 +1,28 @@
 from os import listdir
-from os.path import isdir
+from os.path import isdir, splitext
 from re import search
 
 
-def list_directory(pa):
+def list_directory(pa, ig_=(r"^\.",), ke_=()):
 
     pa_ = []
 
     for na in sorted(listdir(path=pa)):
 
-        if search(r"^[^.]", na):
+        if 0 < len(ig_) and any(search(ig, na) for ig in ig_):
 
-            pan = "{}{}".format(pa, na)
+            continue
 
-            if isdir(pan):
+        if 0 < len(ke_) and not any(search(ke, na) for ke in ke_):
 
-                pan += "/"
+            continue
 
-            pa_.append(pan)
+        paa = "{}{}".format(pa, na)
+
+        if isdir(paa):
+
+            paa += "/"
+
+        pa_.append(paa)
 
     return pa_
