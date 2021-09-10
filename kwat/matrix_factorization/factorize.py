@@ -2,7 +2,7 @@ from numpy import array, sum
 from numpy.linalg import norm
 from numpy.random import random_sample, seed
 
-from .CONSTANT import random_seed
+from ..constant import random_seed
 
 
 def factorize(

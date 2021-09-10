@@ -1,6 +1,6 @@
 from sklearn.decomposition import NMF
 
-from .CONSTANT import random_seed
+from ..constant import random_seed
 
 
 def factorize_with_nmf(
