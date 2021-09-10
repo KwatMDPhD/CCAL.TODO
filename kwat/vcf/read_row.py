@@ -1,15 +1,15 @@
 from ._extend import _extend
-from .ANN_KEYS import ANN_KEYS
-from .COLUMNS import COLUMNS
+from .ann_keys import ann_keys
+from .columns import columns
 
 
 def read_row(se, n_ioan=None):
 
-    vd = {co: se[ie] for ie, co in enumerate(COLUMNS[: COLUMNS.index("FILTER") + 1])}
+    vd = {co: se[ie] for ie, co in enumerate(columns[: columns.index("FILTER") + 1])}
 
     inno_ = []
 
-    for io in se[COLUMNS.index("INFO")].split(sep=";"):
+    for io in se[columns.index("INFO")].split(sep=";"):
 
         if "=" in io:
 
@@ -25,7 +25,7 @@ def read_row(se, n_ioan=None):
 
                     vd["ANN"][iean] = {
                         anfi: anva_[ieanfi + 1]
-                        for ieanfi, anfi in enumerate(ANN_KEYS[1:])
+                        for ieanfi, anfi in enumerate(ann_keys[1:])
                     }
 
             else:
@@ -40,7 +40,7 @@ def read_row(se, n_ioan=None):
 
         vd["info_without_field"] = ";".join(inno_)
 
-    iefo = COLUMNS.index("FORMAT")
+    iefo = columns.index("FORMAT")
 
     fofi_ = se[iefo].split(sep=":")
 

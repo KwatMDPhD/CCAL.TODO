@@ -1,19 +1,19 @@
 from numpy import argsort, unique
 
 from ..dictionary import merge
-from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
-from .COLORBAR import COLORBAR
-from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
+from .categorical_colorscale import categorical_colorscale
+from .colorbar import colorbar
+from .continuous_colorscale import continuous_colorscale
 from .plot_plotly import plot_plotly
 
 
 def plot_heat_map(
     nu_an_an,
-    colorscale=CONTINUOUS_COLORSCALE,
+    colorscale=continuous_colorscale,
     gr1_=(),
     gr2_=(),
-    colorscale1=CATEGORICAL_COLORSCALE,
-    colorscale2=CATEGORICAL_COLORSCALE,
+    colorscale1=categorical_colorscale,
+    colorscale2=categorical_colorscale,
     gr1_la=None,
     gr2_la=None,
     layout=None,
@@ -79,7 +79,7 @@ def plot_heat_map(
             "x": nu_an_an.columns.values,
             "colorscale": colorscale,
             "colorbar": {
-                **COLORBAR,
+                **colorbar,
                 "x": colorbar_x,
             },
         }
@@ -98,7 +98,7 @@ def plot_heat_map(
                 "z": gr1_.reshape([-1, 1]),
                 "colorscale": colorscale1,
                 "colorbar": {
-                    **COLORBAR,
+                    **colorbar,
                     "x": colorbar_x,
                     "dtick": 1,
                 },
@@ -138,7 +138,7 @@ def plot_heat_map(
                 "z": gr2_.reshape([1, -1]),
                 "colorscale": colorscale2,
                 "colorbar": {
-                    **COLORBAR,
+                    **colorbar,
                     "x": colorbar_x,
                     "dtick": 1,
                 },

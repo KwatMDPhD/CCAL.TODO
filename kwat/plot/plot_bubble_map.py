@@ -2,13 +2,13 @@ from numpy import arange, isnan, meshgrid
 
 from ..array import apply, normalize
 from ..dictionary import merge
-from .COLORBAR import COLORBAR
-from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
+from .colorbar import colorbar
+from .continuous_colorscale import continuous_colorscale
 from .plot_plotly import plot_plotly
 
 
 def plot_bubble_map(
-    si_an_an, co_an_an=None, ma=24, colorscale=CONTINUOUS_COLORSCALE, layout=None, pa=""
+    si_an_an, co_an_an=None, ma=24, colorscale=continuous_colorscale, layout=None, pa=""
 ):
 
     si1, si2 = si_an_an.shape
@@ -63,7 +63,7 @@ def plot_bubble_map(
                         "size": si2_an_an.ravel() * ma,
                         "color": co_an_an.ravel(),
                         "colorscale": colorscale,
-                        "colorbar": COLORBAR,
+                        "colorbar": colorbar,
                     },
                 }
             ],

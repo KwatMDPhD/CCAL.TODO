@@ -1,5 +1,5 @@
 from ..string import trim
-from .ANNOTATION import ANNOTATION
+from .annotation import annotation
 
 
 def _make_target_annotation(y, text):
@@ -10,6 +10,6 @@ def _make_target_annotation(y, text):
             "x": 0,
             "xanchor": "right",
             "text": "<b>{}</b>".format(trim(text)),
-            **ANNOTATION,
+            **annotation,
         }
     ]

@@ -1,6 +1,6 @@
 from pandas import read_csv, read_excel
 
-from ..constant import DATA_DIRECTORY
+from ..constant import data_directory
 
 
 def _map_cg_to_gene():
@@ -9,21 +9,21 @@ def _map_cg_to_gene():
 
     for cg_st in [
         read_excel(
-            "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY),
+            "{}illumina_humanmethylation27_content.xlsx".format(data_directory),
             usecols=[0, 10],
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY),
+            "{}humanmethylation450_15017482_v1_2.csv.gz".format(data_directory),
             skiprows=7,
             usecols=[0, 21],
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}infinium-methylationepic-v-1-0-b5-manifest-file.csv.gz".format(
-                DATA_DIRECTORY
+            "{}infinium_methylationepic_v_1_0_b5_manifest_file.csv.gz".format(
+                data_directory
             ),
             skiprows=7,
             usecols=[0, 15],

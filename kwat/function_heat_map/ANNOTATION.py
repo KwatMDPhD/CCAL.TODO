@@ -1,4 +1,4 @@
-ANNOTATION = {
+annotation = {
     "xref": "paper",
     "yref": "paper",
     "yanchor": "middle",

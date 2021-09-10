@@ -4,7 +4,7 @@ from pandas import DataFrame
 
 from ..array import apply, check_is_extreme
 from ..cluster import cluster
-from ..constant import RANDOM_SEED, SAMPLE_FRACTION
+from ..constant import random_seed, sample_fraction
 from ..dictionary import merge
 from ..plot import plot_plotly
 from ..row import compare_with_target
@@ -13,9 +13,9 @@ from ._make_data_annotations import _make_data_annotations
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
-from .HEATMAP import HEATMAP
-from .LAYOUT import LAYOUT
-from .TYPE_COLORSCALE import TYPE_COLORSCALE
+from .heatmap import heatmap
+from .layout import layout
+from .type_colorscale import type_colorscale
 
 
 def make(
@@ -24,7 +24,7 @@ def make(
     fu,
     ac=True,
     n_jo=1,
-    ra=RANDOM_SEED,
+    ra=random_seed,
     n_sa=10,
     n_sh=10,
     pl=True,
@@ -70,7 +70,7 @@ def make(
 
             sc_ro_sa = full([n_ro, n_sa], nan)
 
-            n_ch = int(n_co * SAMPLE_FRACTION)
+            n_ch = int(n_co * sample_fraction)
 
             for ie in range(n_sa):
 
@@ -186,7 +186,7 @@ def make(
                 },
                 "annotations": _make_target_annotation(1 - he / 2, ta.name),
             },
-            LAYOUT,
+            layout,
         )
 
         layout["annotations"] += _make_data_annotations(
@@ -207,8 +207,8 @@ def make(
                         "x": co_,
                         "zmin": mit,
                         "zmax": mat,
-                        "colorscale": TYPE_COLORSCALE[tyt],
-                        **HEATMAP,
+                        "colorscale": type_colorscale[tyt],
+                        **heatmap,
                     },
                     {
                         "yaxis": "y",
@@ -218,8 +218,8 @@ def make(
                         "x": co_,
                         "zmin": mid,
                         "zmax": mad,
-                        "colorscale": TYPE_COLORSCALE[tyd],
-                        **HEATMAP,
+                        "colorscale": type_colorscale[tyd],
+                        **heatmap,
                     },
                 ],
                 "layout": layout,

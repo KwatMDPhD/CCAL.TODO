@@ -8,10 +8,10 @@ from ._make_data_annotations import _make_data_annotations
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
-from .ANNOTATION import ANNOTATION
-from .HEATMAP import HEATMAP
-from .LAYOUT import LAYOUT
-from .TYPE_COLORSCALE import TYPE_COLORSCALE
+from .annotation import annotation
+from .heatmap import heatmap
+from .layout import layout
+from .type_colorscale import type_colorscale
 
 
 def summarize(
@@ -62,7 +62,7 @@ def summarize(
             },
             "annotations": _make_target_annotation(1 - he / 2, ta.name),
         },
-        LAYOUT,
+        layout,
     )
 
     n_bu = len(bu_)
@@ -84,8 +84,8 @@ def summarize(
             "x": co_,
             "zmin": mit,
             "zmax": mat,
-            "colorscale": TYPE_COLORSCALE[ty],
-            **HEATMAP,
+            "colorscale": type_colorscale[ty],
+            **heatmap,
         }
     ]
 
@@ -121,8 +121,8 @@ def summarize(
                 "x": co_,
                 "zmin": mid,
                 "zmax": mad,
-                "colorscale": TYPE_COLORSCALE[bu["type"]],
-                **HEATMAP,
+                "colorscale": type_colorscale[bu["type"]],
+                **heatmap,
             }
         )
 
@@ -134,7 +134,7 @@ def summarize(
                 "x": 0.5,
                 "xanchor": "center",
                 "text": "<b>{}</b>".format(bu["name"]),
-                **ANNOTATION,
+                **annotation,
             }
         )
 

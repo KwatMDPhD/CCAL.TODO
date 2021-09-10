@@ -2,7 +2,7 @@ from numpy import apply_along_axis
 from pandas import value_counts
 
 from ..iterable import flatten
-from .COLUMNS import COLUMNS
+from .columns import columns
 from .list_variant import list_variant
 from .read import read
 
@@ -11,7 +11,7 @@ def count_variant(pa):
 
     da = read(pa)
 
-    fi = da.iloc[:, COLUMNS.index("FILTER")].values
+    fi = da.iloc[:, columns.index("FILTER")].values
 
     print(da.shape)
 

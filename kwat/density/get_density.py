@@ -1,6 +1,6 @@
 from KDEpy import FFTKDE, NaiveKDE, TreeKDE
 
-from ..constant import FLOAT_RESOLUTION
+from ..constant import float_resolution
 from ..grid import make_1d_grid, make_nd_grid, plot
 
 
@@ -20,7 +20,7 @@ def get_density(nu_po_di, me="fft", co__=(), pl=True, di_=(), **ke):
         ](**ke)
         .fit(nu_po_di)
         .evaluate(grid_points=co_po_di)
-        .clip(min=FLOAT_RESOLUTION)
+        .clip(min=float_resolution)
     )
 
     if pl:

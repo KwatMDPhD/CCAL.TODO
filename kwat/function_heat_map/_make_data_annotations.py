@@ -1,6 +1,6 @@
 from ..string import trim
 from ._get_statistic_x import _get_statistic_x
-from .ANNOTATION import ANNOTATION
+from .annotation import annotation
 
 
 def _make_data_annotations(y, la, he, text_, fu):
@@ -19,7 +19,7 @@ def _make_data_annotations(y, la, he, text_, fu):
                     "x": _get_statistic_x(ie),
                     "xanchor": "center",
                     "text": "<b>{}</b>".format(text),
-                    **ANNOTATION,
+                    **annotation,
                 }
             )
 
@@ -33,7 +33,7 @@ def _make_data_annotations(y, la, he, text_, fu):
                 "x": 0,
                 "xanchor": "right",
                 "text": "{}".format(trim(text_[ie1])),
-                **ANNOTATION,
+                **annotation,
             }
         )
 
@@ -49,7 +49,7 @@ def _make_data_annotations(y, la, he, text_, fu):
                     "x": _get_statistic_x(ie2),
                     "xanchor": "center",
                     "text": text,
-                    **ANNOTATION,
+                    **annotation,
                 }
             )
 

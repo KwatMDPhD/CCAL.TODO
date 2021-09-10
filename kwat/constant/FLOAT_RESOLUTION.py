@@ -1,3 +1,3 @@
 from numpy import finfo
 
-FLOAT_RESOLUTION = finfo(float).resolution
+float_resolution = finfo(float).resolution

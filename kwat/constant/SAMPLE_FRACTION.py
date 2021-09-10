@@ -1,1 +1,1 @@
-SAMPLE_FRACTION = 0.632
+sample_fraction = 0.632

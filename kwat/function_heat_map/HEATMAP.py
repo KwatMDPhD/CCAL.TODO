@@ -1,4 +1,4 @@
-HEATMAP = {
+heatmap = {
     "type": "heatmap",
     "showscale": False,
 }

@@ -1,10 +1,10 @@
 from ._get_info_ann import _get_info_ann
-from .COLUMNS import COLUMNS
+from .columns import columns
 
 
 def list_variant(se):
 
-    io = se[COLUMNS.index("INFO")]
+    io = se[columns.index("INFO")]
 
     return set(
         "{} ({})".format(ge, ef)

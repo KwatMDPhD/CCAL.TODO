@@ -1,4 +1,4 @@
-ANN_KEYS = [
+ann_keys = [
     "ALT",
     "effect",
     "impact",

@@ -57,6 +57,7 @@ def get_gse(gs, *ar, **ke):
                         ke_va.pop("table")
                         .loc[:, "VALUE"]
                         .replace("", None)
+                        .replace("null", None)
                         .apply(cast_builtin)
                     )
 

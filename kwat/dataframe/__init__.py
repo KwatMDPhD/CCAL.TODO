@@ -1,5 +1,3 @@
-from ._check_has_enough_not_na import _check_has_enough_not_na
-from ._check_has_enough_not_na_unique import _check_has_enough_not_na_unique
 from .count import count
 from .drop import drop
 from .drop_until import drop_until

@@ -1,4 +1,4 @@
-LAYOUT = {
+layout = {
     "width": 800,
     "margin": {
         "l": 200,

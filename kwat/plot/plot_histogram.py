@@ -1,5 +1,5 @@
 from ..dictionary import merge
-from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
+from .categorical_colorscale import categorical_colorscale
 from .get_color import get_color
 from .plot_plotly import plot_plotly
 
@@ -8,7 +8,7 @@ def plot_histogram(
     se_,
     no=None,
     xbins_size=None,
-    colorscale=CATEGORICAL_COLORSCALE,
+    colorscale=categorical_colorscale,
     layout=None,
     pa="",
 ):
