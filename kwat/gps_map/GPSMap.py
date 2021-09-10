@@ -1,4 +1,5 @@
-from numpy import full, nan, unique
+from numpy import full, mean, nan, unique
+from pandas import DataFrame, Index
 from scipy.spatial import Delaunay
 
 from ..constant import random_seed
@@ -14,7 +15,7 @@ class GPSMap:
         self,
         non,
         no_,
-        nu_no_no,
+        di_no_no,
         pon,
         po_,
         nu_po_no,
@@ -26,7 +27,7 @@ class GPSMap:
 
         self.no_ = no_
 
-        self.nu_no_di = map_point(nu_no_no, 2, ra=ra)
+        self.nu_no_di = map_point(di_no_no, 2, ra=ra)
 
         self.pon = pon
 
@@ -42,9 +43,9 @@ class GPSMap:
 
         self.co_ = None
 
-        self.pr_ = None
+        self.bap_ = None
 
-        self.go_ = None
+        self.bag_ = None
 
         self.grc = None
 
@@ -60,9 +61,9 @@ class GPSMap:
             gr_=self.gr_,
             grc=self.grc,
             co_=self.co_,
-            pr_=self.pr_,
-            go_=self.go_,
-            node_trace={
+            bap_=self.bap_,
+            bag_=self.bag_,
+            notrace={
                 "marker": {
                     "size": self.node_marker_size,
                 },
@@ -72,7 +73,7 @@ class GPSMap:
 
     def set_group(self, gr_, grc=categorical_colorscale, n_co=128):
 
-        if gr_ == "closest_node":
+        if isinstance(gr_, str) and gr_ == "closest_node":
 
             gr_ = self.nu_po_no.argmax(axis=1)
 
@@ -94,24 +95,24 @@ class GPSMap:
 
                 ma[ie1, ie2] = de.find_simplex([self.co_[ie1], self.co_[ie2]])
 
-        gr_pr_ = {}
+        gr_bap_ = {}
 
-        ba_ = [get_bandwidth(di) for di in self.nu_po_di.T]
+        ba = mean(get_bandwidth(self.nu_po_di, me="silverman"))
 
-        co_ = [self.co_] * 2
+        co__ = [self.co_] * 2
 
         for gr in unique(self.gr_):
 
-            gr_pr_[gr] = get_probability(
+            gr_bap_[gr] = get_probability(
                 self.nu_po_di[self.gr_ == gr],
-                plot=False,
-                ba_=ba_,
-                co_=co_,
+                co__=co__,
+                pl=False,
+                bw=ba,
             )[1].reshape(sh)
 
-        self.pr_ = full(sh, nan)
+        self.bap_ = full(sh, nan)
 
-        self.go_ = full(sh, nan)
+        self.bag_ = full(sh, nan)
 
         for ie1 in range(n_co):
 
@@ -123,9 +124,9 @@ class GPSMap:
 
                     grb = nan
 
-                    for gr, pr_ in gr_pr_.items():
+                    for gr, bap_ in gr_bap_.items():
 
-                        pr = pr_[ie1, ie2]
+                        pr = bap_[ie1, ie2]
 
                         if prb < pr:
 
@@ -133,18 +134,18 @@ class GPSMap:
 
                             grb = gr
 
-                    self.pr_[ie1, ie2] = prb
+                    self.bap_[ie1, ie2] = prb
 
-                    self.go_[ie1, ie2] = grb
+                    self.bag_[ie1, ie2] = grb
 
         plot_heat_map(
-            self.nu_po_no.T,
-            self.no_,
-            self.po_,
-            self.non,
-            self.pon,
-            axis_1_group_=self.gr_,
-            axis_1_group_colorscale=self.grc,
+            DataFrame(
+                data=self.nu_po_no.T,
+                index=Index(data=self.no_, name=self.non),
+                columns=Index(data=self.po_, name=self.pon),
+            ),
+            gr2_=self.gr_,
+            colorscale2=self.grc,
             layout={
                 "yaxis": {
                     "dtick": 1,
@@ -164,9 +165,9 @@ class GPSMap:
             gr_=None,
             grc=self.grc,
             co_=self.co_,
-            pr_=self.pr_,
-            go_=self.go_,
-            node_trace={
+            bap_=self.bap_,
+            bag_=self.bag_,
+            notrace={
                 "marker": {
                     "size": self.node_marker_size,
                 },

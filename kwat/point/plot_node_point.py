@@ -162,17 +162,10 @@ def plot_node_point(
 
         for gr in range(n_gr):
 
-            bapg_ = bap_.copy()
-
-            bapg_[bag_ != gr] = nan
-
-            # TODO
-            assert (bapg_ == where(bag_ == gr, bap_, nan)).all()
-
             data.append(
                 {
                     "type": "heatmap",
-                    "z": bapg_,
+                    "z": where(bag_ == gr, bap_, nan),
                     "y": co_,
                     "x": co_,
                     "colorscale": make_colorscale(["rgb(255, 255, 255)", gr_co[gr]]),
