@@ -21,6 +21,7 @@ from . import (
     internet,
     iterable,
     json,
+    matrix_factorization,
     path,
     plot,
     point,

@@ -2,7 +2,7 @@ from numpy import apply_along_axis
 
 from ..array import normalize
 from ..cluster import cluster
-from ..constant import golden_factor
+from ..constant import golden_ratio
 from ..plot import plot_heat_map, plot_plotly
 
 
@@ -18,7 +18,7 @@ def plot(
     directory_path=None,
 ):
 
-    axis_size = axis_factor_size * golden_factor
+    axis_size = axis_factor_size * golden_ratio
 
     factor_axis = {"dtick": 1}
 
