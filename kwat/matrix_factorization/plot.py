@@ -1,4 +1,5 @@
 from numpy import apply_along_axis
+from pandas import DataFrame, Index
 
 from ..array import normalize
 from ..cluster import cluster
@@ -10,22 +11,18 @@ from .make_factor_label import make_factor_label
 def plot(
     wm_,
     hm_,
-    ro__,
-    co__,
-    ron,
-    con,
-    er__,
+    er_ma_it=None,
     si=640,
     pa="",
 ):
 
-    fsi = si * golden_ratio
+    sig = si * golden_ratio
 
     faxis = {
         "dtick": 1,
     }
 
-    for iew, wm in enumerate(wm_):
+    for ie, wm in enumerate(wm_):
 
         wm = apply_along_axis(normalize, 1, wm[cluster(wm)[0], :], "-0-")
 
@@ -35,87 +32,89 @@ def plot(
 
         else:
 
-            pa2 = "{}w_{}.html".format(pa, iew)
+            pa2 = "{}w_{}.html".format(pa, ie)
 
         plot_heat_map(
-            wm,
-            ro__[iew],
-            make_factor_label(wm.shape[1]),
-            ron[iew],
-            "Factor",
+            DataFrame(
+                data=wm,
+                # index=Index(data=ro__[ie], name=ron[ie]),
+                columns=Index(data=make_factor_label(wm.shape[1]), name="Factor"),
+            ),
             layout={
-                "height": fsi,
+                "height": sig,
                 "width": si,
                 "title": {
-                    "text": "W {}".format(iew),
+                    "text": "W {}".format(ie),
                 },
                 "xaxis": faxis,
             },
             pa=pa2,
         )
 
-    for ieh, hm in enumerate(hm_):
+    for ie, hm in enumerate(hm_):
 
         hm = apply_along_axis(normalize, 0, hm[:, cluster(hm.T)[0]], "-0-")
 
         if pa == "":
 
-            pa2 = None
+            pa2 = pa
 
         else:
 
-            pa2 = "{}h_{}.html".format(pa, iew)
+            pa2 = "{}h_{}.html".format(pa, ie)
 
         plot_heat_map(
-            hm,
-            make_factor_label(hm.shape[0]),
-            co__[ieh],
-            "Factor",
-            con[ieh],
+            DataFrame(
+                data=hm,
+                index=Index(data=make_factor_label(hm.shape[0]), name="Factor"),
+                # columns=Index(data=co__[ie], name=con[ie]),
+            ),
             layout={
                 "height": si,
-                "width": fsi,
+                "width": sig,
                 "title": {
-                    "text": "H {}".format(ieh),
+                    "text": "H {}".format(ie),
                 },
                 "yaxis": faxis,
             },
             pa=pa2,
         )
 
-    if pa == "":
+    if er_ma_it is not None:
 
-        pa2 = None
+        if pa == "":
 
-    else:
+            pa2 = pa
 
-        pa2 = "{}error.html".format(pa)
+        else:
 
-    plot_plotly(
-        {
-            "data": [
-                {
-                    "name": index,
-                    "y": er_,
-                }
-                for index, er_ in enumerate(er__)
-            ],
-            "layout": {
-                "xaxis": {
-                    "title": "Iteration",
-                },
-                "yaxis": {
-                    "title": "Error",
-                },
-                "annotations": [
+            pa2 = "{}error.html".format(pa)
+
+        plot_plotly(
+            {
+                "data": [
                     {
-                        "x": er_.size - 1,
-                        "y": er_[-1],
-                        "text": "{:.2e}".format(er_[-1]),
+                        "name": ie,
+                        "y": er_,
                     }
-                    for er_ in er__
+                    for ie, er_ in enumerate(er_ma_it)
                 ],
+                "layout": {
+                    "xaxis": {
+                        "title": "Iteration",
+                    },
+                    "yaxis": {
+                        "title": "Error",
+                    },
+                    "annotations": [
+                        {
+                            "x": er_.size - 1,
+                            "y": er_[-1],
+                            "text": "{:.2e}".format(er_[-1]),
+                        }
+                        for er_ in er_ma_it
+                    ],
+                },
             },
-        },
-        pa=pa2,
-    )
+            pa=pa2,
+        )

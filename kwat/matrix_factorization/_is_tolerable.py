@@ -1,8 +1,8 @@
 from numpy import array
 
 
-def _is_tolerable(er_, to):
+def _is_tolerable(er_it_ma, to):
 
-    e_, e = array(er_)[-2:]
+    er2_, er1_ = array(er_it_ma)[-2:]
 
-    return ((e_ - e) / e_ < to).all()
+    return ((er2_ - er1_) / er2_ <= to).all()

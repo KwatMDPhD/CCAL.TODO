@@ -28,13 +28,13 @@ def factorize(
 
         we_ = [no / norm(ma) for ma in ma_]
 
-    if mo == "wm":
+    if mo == "w":
 
         wm_ = [random_sample(size=[ma.shape[0], re]) for ma in ma_]
 
         hm = random_sample(size=[re, ma_[0].shape[1]])
 
-        er_ = [[norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)]]
+        er_it_ma = [[norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)]]
 
         for iei in range(n_it):
 
@@ -46,21 +46,21 @@ def factorize(
 
             wm_ = [_update_w(ma_[ie], wm_[ie], hm) for ie in range(n_ma)]
 
-            er_.append([norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)])
+            er_it_ma.append([norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)])
 
-            if _is_tolerable(er_, to):
+            if _is_tolerable(er_it_ma, to):
 
                 break
 
         hm_ = [hm]
 
-    elif mo == "hm":
+    elif mo == "h":
 
         wm = random_sample(size=[ma_[0].shape[0], re])
 
         hm_ = [random_sample(size=[re, ma.shape[1]]) for ma in ma_]
 
-        er_ = [[norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)]]
+        er_it_ma = [[norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)]]
 
         for iei in range(n_it):
 
@@ -72,12 +72,12 @@ def factorize(
 
             hm_ = [_update_h(ma_[ie], wm, hm_[ie]) for ie in range(n_ma)]
 
-            er_.append([norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)])
+            er_it_ma.append([norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)])
 
-            if _is_tolerable(er_, to):
+            if _is_tolerable(er_it_ma, to):
 
                 break
 
         wm_ = [wm]
 
-    return wm_, hm_, array(er_).T
+    return wm_, hm_, array(er_it_ma).T
