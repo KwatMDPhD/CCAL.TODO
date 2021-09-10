@@ -1,3 +1,3 @@
-from .gps_map import gps_map
+from .GPSMap import GPSMap
 from .read import read
 from .write import write
