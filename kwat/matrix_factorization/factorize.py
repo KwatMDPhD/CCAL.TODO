@@ -3,78 +3,81 @@ from numpy.linalg import norm
 from numpy.random import random_sample, seed
 
 from ..constant import random_seed
+from ._is_tolerable import _is_tolerable
+from ._update_h import _update_h
+from ._update_w import _update_w
 
 
 def factorize(
-    vs,
-    mode,
-    r,
-    weights=None,
-    tolerance=1e-6,
-    n_iteration=int(1e3),
-    random_seed=random_seed,
+    ma_,
+    mo,
+    re,
+    we_=None,
+    to=1e-6,
+    n_it=int(1e3),
+    ra=random_seed,
 ):
 
-    n_v = len(vs)
+    n_ma = len(ma_)
 
-    seed(seed=random_seed)
+    seed(seed=ra)
 
-    v_0_norm = norm(vs[0])
+    no = norm(ma_[0])
 
-    if weights is None:
+    if we_ is None:
 
-        weights = tuple(v_0_norm / norm(v) for v in vs)
+        we_ = [no / norm(ma) for ma in ma_]
 
-    if mode == "ws":
+    if mo == "wm":
 
-        ws = tuple(random_sample(size=(v.shape[0], r)) for v in vs)
+        wm_ = [random_sample(size=[ma.shape[0], re]) for ma in ma_]
 
-        h = random_sample(size=(r, vs[0].shape[1]))
+        hm = random_sample(size=[re, ma_[0].shape[1]])
 
-        errors = [tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v))]
+        er_ = [[norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)]]
 
-        for _ in range(n_iteration):
+        for iei in range(n_it):
 
-            t = sum(tuple(weights[i] * ws[i].T @ vs[i] for i in range(n_v)), axis=0)
+            nu = sum([we_[ie] * wm_[ie].T @ ma_[ie] for ie in range(n_ma)], axis=0)
 
-            b = sum(tuple(weights[i] * ws[i].T @ ws[i] @ h for i in range(n_v)), axis=0)
+            de = sum([we_[ie] * wm_[ie].T @ wm_[ie] @ hm for ie in range(n_ma)], axis=0)
 
-            h *= t / b
+            hm *= nu / de
 
-            ws = tuple(_update_w(vs[i], ws[i], h) for i in range(n_v))
+            wm_ = [_update_w(ma_[ie], wm_[ie], hm) for ie in range(n_ma)]
 
-            errors.append(tuple(norm(vs[i] - ws[i] @ h) for i in range(n_v)))
+            er_.append([norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)])
 
-            if _is_tolerable(errors, tolerance):
-
-                break
-
-        hs = (h,)
-
-    elif mode == "hs":
-
-        w = random_sample(size=(vs[0].shape[0], r))
-
-        hs = tuple(random_sample(size=(r, v.shape[1])) for v in vs)
-
-        errors = [tuple(norm(vs[i] - w @ hs[i]) for i in range(n_v))]
-
-        for _ in range(n_iteration):
-
-            t = sum(tuple(weights[i] * vs[i] @ hs[i].T for i in range(n_v)), axis=0)
-
-            b = sum(tuple(weights[i] * w @ hs[i] @ hs[i].T for i in range(n_v)), axis=0)
-
-            w *= t / b
-
-            hs = tuple(_update_h(vs[i], w, hs[i]) for i in range(n_v))
-
-            errors.append(tuple(norm(vs[i] - w @ hs[i]) for i in range(n_v)))
-
-            if _is_tolerable(errors, tolerance):
+            if _is_tolerable(er_, to):
 
                 break
 
-        ws = (w,)
+        hm_ = [hm]
 
-    return (ws, hs, array(errors).T)
+    elif mo == "hm":
+
+        wm = random_sample(size=[ma_[0].shape[0], re])
+
+        hm_ = [random_sample(size=[re, ma.shape[1]]) for ma in ma_]
+
+        er_ = [[norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)]]
+
+        for iei in range(n_it):
+
+            nu = sum([we_[ie] * ma_[ie] @ hm_[ie].T for ie in range(n_ma)], axis=0)
+
+            de = sum([we_[ie] * wm @ hm_[ie] @ hm_[ie].T for ie in range(n_ma)], axis=0)
+
+            wm *= nu / de
+
+            hm_ = [_update_h(ma_[ie], wm, hm_[ie]) for ie in range(n_ma)]
+
+            er_.append([norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)])
+
+            if _is_tolerable(er_, to):
+
+                break
+
+        wm_ = [wm]
+
+    return wm_, hm_, array(er_).T

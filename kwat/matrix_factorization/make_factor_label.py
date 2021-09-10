@@ -1,6 +1,6 @@
 from numpy import array
 
 
-def make_factor_label(r):
+def make_factor_label(re):
 
-    return array(tuple("Factor {}_{}".format(r, index) for index in range(r)))
+    return array(["Factor {}_{}".format(re, ie) for ie in range(re)])

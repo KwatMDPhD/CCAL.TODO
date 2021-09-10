@@ -4,103 +4,118 @@ from ..array import normalize
 from ..cluster import cluster
 from ..constant import golden_ratio
 from ..plot import plot_heat_map, plot_plotly
+from .make_factor_label import make_factor_label
 
 
 def plot(
-    w_,
-    h_,
-    axis_0_label__,
-    axis_1_label__,
-    axis_0_name_,
-    axis_1_name_,
-    error__,
-    axis_factor_size=640,
-    directory_path=None,
+    wm_,
+    hm_,
+    ro__,
+    co__,
+    ron,
+    con,
+    er__,
+    si=640,
+    pa="",
 ):
 
-    axis_size = axis_factor_size * golden_ratio
+    fsi = si * golden_ratio
 
-    factor_axis = {"dtick": 1}
+    faxis = {
+        "dtick": 1,
+    }
 
-    for (w_index, w) in enumerate(w_):
+    for iew, wm in enumerate(wm_):
 
-        w = apply_along_axis(normalize, 1, w[cluster(w)[0], :], "-0-")
+        wm = apply_along_axis(normalize, 1, wm[cluster(wm)[0], :], "-0-")
 
-        if directory_path is None:
+        if pa == "":
 
-            file_path = None
-
-        else:
-
-            file_path = "{}w_{}.html".format(directory_path, w_index)
-
-        plot_heat_map(
-            w,
-            axis_0_label__[w_index],
-            make_factor_label_(w.shape[1]),
-            axis_0_name_[w_index],
-            "Factor",
-            layout={
-                "height": axis_size,
-                "width": axis_factor_size,
-                "title": {"text": "W {}".format(w_index)},
-                "xaxis": factor_axis,
-            },
-            file_path=file_path,
-        )
-
-    for (h_index, h) in enumerate(h_):
-
-        h = apply_along_axis(normalize, 0, h[:, cluster(h.T)[0]], "-0-")
-
-        if directory_path is None:
-
-            file_path = None
+            pa2 = pa
 
         else:
 
-            file_path = "{}h_{}.html".format(directory_path, w_index)
+            pa2 = "{}w_{}.html".format(pa, iew)
 
         plot_heat_map(
-            h,
-            make_factor_label_(h.shape[0]),
-            axis_1_label__[h_index],
+            wm,
+            ro__[iew],
+            make_factor_label(wm.shape[1]),
+            ron[iew],
             "Factor",
-            axis_1_name_[h_index],
             layout={
-                "height": axis_factor_size,
-                "width": axis_size,
-                "title": {"text": "H {}".format(h_index)},
-                "yaxis": factor_axis,
+                "height": fsi,
+                "width": si,
+                "title": {
+                    "text": "W {}".format(iew),
+                },
+                "xaxis": faxis,
             },
-            file_path=file_path,
+            pa=pa2,
         )
 
-    if directory_path is None:
+    for ieh, hm in enumerate(hm_):
 
-        file_path = None
+        hm = apply_along_axis(normalize, 0, hm[:, cluster(hm.T)[0]], "-0-")
+
+        if pa == "":
+
+            pa2 = None
+
+        else:
+
+            pa2 = "{}h_{}.html".format(pa, iew)
+
+        plot_heat_map(
+            hm,
+            make_factor_label(hm.shape[0]),
+            co__[ieh],
+            "Factor",
+            con[ieh],
+            layout={
+                "height": si,
+                "width": fsi,
+                "title": {
+                    "text": "H {}".format(ieh),
+                },
+                "yaxis": faxis,
+            },
+            pa=pa2,
+        )
+
+    if pa == "":
+
+        pa2 = None
 
     else:
 
-        file_path = "{}error.html".format(directory_path)
+        pa2 = "{}error.html".format(pa)
 
     plot_plotly(
         {
             "data": [
-                {"name": index, "y": error_} for index, error_ in enumerate(error__)
+                {
+                    "name": index,
+                    "y": er_,
+                }
+                for index, er_ in enumerate(er__)
             ],
             "layout": {
-                "xaxis": {"title": "Iteration"},
-                "yaxis": {"title": "Error"},
+                "xaxis": {
+                    "title": "Iteration",
+                },
+                "yaxis": {
+                    "title": "Error",
+                },
                 "annotations": [
                     {
-                        "x": error_.size - 1,
-                        "y": error_[-1],
-                        "text": "{:.2e}".format(error_[-1]),
+                        "x": er_.size - 1,
+                        "y": er_[-1],
+                        "text": "{:.2e}".format(er_[-1]),
                     }
-                    for error_ in error__
+                    for er_ in er__
                 ],
             },
         },
-        file_path=file_path,
+        pa=pa2,
     )

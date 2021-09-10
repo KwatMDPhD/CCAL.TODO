@@ -1,3 +1,3 @@
-def _update_h(v, w, h):
+def _update_h(ma, wm, hm):
 
-    return h * (w.T @ v) / (w.T @ w @ h)
+    return hm * (wm.T @ ma) / (wm.T @ wm @ hm)

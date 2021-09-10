@@ -4,22 +4,22 @@ from pandas import DataFrame
 from scipy.optimize import nnls
 
 
-def solve_ax_b(a, b, method):
+def solve_ax_b(daa, dab, me):
 
-    a_ = a.values
+    am = daa.values
 
-    b_ = b.values
+    bm = dab.values
 
-    if method == "pinv":
+    if me == "pinv":
 
-        x = dot(pinv(a_), b_)
+        xm = dot(pinv(am), bm)
 
-    elif method == "nnls":
+    elif me == "nnls":
 
-        x = full((a.shape[1], b.shape[1]), nan)
+        xm = full([daa.shape[1], dab.shape[1]], nan)
 
-        for i in range(b.shape[1]):
+        for ie in range(dab.shape[1]):
 
-            x[:, i] = nnls(a_, b_[:, i])[0]
+            xm[:, ie] = nnls(am, bm[:, ie])[0]
 
-    return DataFrame(data=x, index=a.columns, columns=b.columns)
+    return DataFrame(data=xm, index=daa.columns, columns=dab.columns)
