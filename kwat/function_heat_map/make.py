@@ -14,7 +14,6 @@ from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
 from .heatmap import heatmap
-from .layout import layout
 from .type_colorscale import type_colorscale
 
 
@@ -32,6 +31,7 @@ def make(
     tyt="continuous",
     tyd="continuous",
     st=nan,
+    layout=None,
     title="Function Heat Map",
     pa="",
 ):
@@ -170,9 +170,13 @@ def make(
 
         he = 1 / n_ro
 
+        if layout is None:
+
+            layout = {}
+
         layout = merge(
             {
-                "height": max(480, 24 * n_ro),
+                "height": max(640, 24 * n_ro),
                 "title": {
                     "text": title,
                 },

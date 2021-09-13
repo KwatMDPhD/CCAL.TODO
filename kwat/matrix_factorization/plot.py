@@ -1,11 +1,11 @@
 from numpy import apply_along_axis
-from pandas import DataFrame, Index
+from pandas import DataFrame
 
 from ..array import normalize
 from ..cluster import cluster
 from ..constant import golden_ratio
 from ..plot import plot_heat_map, plot_plotly
-from .make_factor_label import make_factor_label
+from .label_factor import label_factor
 
 
 def plot(
@@ -38,7 +38,7 @@ def plot(
             DataFrame(
                 data=wm,
                 # index=Index(data=ro__[ie], name=ron[ie]),
-                columns=Index(data=make_factor_label(wm.shape[1]), name="Factor"),
+                columns=label_factor(wm.shape[1]),
             ),
             layout={
                 "height": sig,
@@ -66,7 +66,7 @@ def plot(
         plot_heat_map(
             DataFrame(
                 data=hm,
-                index=Index(data=make_factor_label(hm.shape[0]), name="Factor"),
+                index=label_factor(hm.shape[0]),
                 # columns=Index(data=co__[ie], name=con[ie]),
             ),
             layout={

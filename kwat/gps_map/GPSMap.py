@@ -1,5 +1,4 @@
 from numpy import full, mean, nan, unique
-from pandas import DataFrame, Index
 from scipy.spatial import Delaunay
 
 from ..constant import random_seed
@@ -13,29 +12,17 @@ from ..probability import get_probability
 class GPSMap:
     def __init__(
         self,
-        non,
-        no_,
         di_no_no,
-        pon,
-        po_,
         nu_po_no,
         node_marker_size=24,
         ra=random_seed,
     ):
 
-        self.non = non
-
-        self.no_ = no_
-
         self.nu_no_di = map_point(di_no_no, 2, ra=ra)
-
-        self.pon = pon
-
-        self.po_ = po_
 
         self.nu_po_no = nu_po_no
 
-        self.nu_po_di = pull_point(self.nu_no_di, self.nu_po_no)
+        self.nu_po_di = pull_point(self.nu_no_di, self.nu_po_no.values)
 
         self.node_marker_size = node_marker_size
 
@@ -52,12 +39,12 @@ class GPSMap:
     def plot(self, **ke_va):
 
         plot_node_point(
-            self.non,
-            self.no_,
             self.nu_no_di,
-            self.pon,
-            self.po_,
             self.nu_po_di,
+            self.nu_po_no.columns.name,
+            self.nu_po_no.columns.values,
+            self.nu_po_no.index.name,
+            self.nu_po_no.index.values,
             gr_=self.gr_,
             grc=self.grc,
             co_=self.co_,
@@ -75,7 +62,7 @@ class GPSMap:
 
         if isinstance(gr_, str) and gr_ == "closest_node":
 
-            gr_ = self.nu_po_no.argmax(axis=1)
+            gr_ = self.nu_po_no.values.argmax(axis=1)
 
         self.gr_ = gr_
 
@@ -139,11 +126,7 @@ class GPSMap:
                     self.bag_[ie1, ie2] = grb
 
         plot_heat_map(
-            DataFrame(
-                data=self.nu_po_no.T,
-                index=Index(data=self.no_, name=self.non),
-                columns=Index(data=self.po_, name=self.pon),
-            ),
+            self.nu_po_no.T,
             gr2_=self.gr_,
             colorscale2=self.grc,
             layout={
@@ -156,12 +139,12 @@ class GPSMap:
     def predict(self, nap, po_, nu_po_no, **ke_va):
 
         plot_node_point(
-            self.non,
-            self.no_,
             self.nu_no_di,
-            nap,
-            po_,
-            pull_point(self.nu_no_di, nu_po_no),
+            pull_point(self.nu_no_di, nu_po_no.values),
+            self.nu_po_no.columns.name,
+            self.nu_po_no.columns.values,
+            nu_po_no.index.name,
+            nu_po_no.index.values,
             gr_=None,
             grc=self.grc,
             co_=self.co_,

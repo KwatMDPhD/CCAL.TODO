@@ -56,7 +56,7 @@ def summarize(
 
     layout = merge(
         {
-            "height": max(480, 24 * n_ro),
+            "height": max(640, 24 * n_ro),
             "title": {
                 "text": title,
             },

@@ -99,7 +99,7 @@ def get_gse(gs, *ar, **ke):
 
             fe_ = _name_feature(fe_, pl, ke_va["table"])
 
-            nu_fe_sa.index = Index(data=rename(fe_), name="Gene")
+            nu_fe_sa.index = Index(data=rename(fe_)[0], name="Gene")
 
             nu_fe_sa = collapse(nu_fe_sa)
 

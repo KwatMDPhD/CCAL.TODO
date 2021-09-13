@@ -14,12 +14,12 @@ from ..plot import (
 
 
 def plot_node_point(
+    nu_no_di,
+    nu_po_di,
     non,
     no_,
-    nu_no_di,
     pon,
     po_,
-    nu_po_di,
     sh=True,
     notrace=None,
     potrace=None,
@@ -181,9 +181,6 @@ def plot_node_point(
     potrace = merge(
         {
             "name": pon,
-            "y": nu_po_di[:, 0],
-            "x": nu_po_di[:, 1],
-            "text": po_,
             "mode": "markers",
             "marker": {
                 "size": 16,
@@ -231,6 +228,9 @@ def plot_node_point(
             merge(
                 potrace,
                 {
+                    "y": nu_po_di[:, 0],
+                    "x": nu_po_di[:, 1],
+                    "text": po_,
                     "marker": {
                         "color": sc_,
                         "colorscale": scc,
@@ -272,7 +272,16 @@ def plot_node_point(
 
     else:
 
-        data.append(potrace)
+        data.append(
+            merge(
+                potrace,
+                {
+                    "y": nu_po_di[:, 0],
+                    "x": nu_po_di[:, 1],
+                    "text": po_,
+                },
+            )
+        )
 
     for po in poh_:
 
