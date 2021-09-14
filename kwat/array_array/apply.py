@@ -3,8 +3,8 @@ from numpy import logical_and
 from ..array import check_not_nan
 
 
-def apply(ar1, ar2, fu):
+def apply(nu1___, nu2___, fu):
 
-    arn = logical_and(check_not_nan(ar1), check_not_nan(ar2))
+    go___ = logical_and(check_not_nan(nu1___), check_not_nan(nu2___))
 
-    return fu(ar1[arn], ar2[arn])
+    return fu(nu1___[go___], nu2___[go___])
