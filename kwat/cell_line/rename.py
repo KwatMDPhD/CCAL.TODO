@@ -1,36 +1,18 @@
 from pandas import read_csv
 
 from ..constant import DATA_DIRECTORY_PATH
-from ..dictionary import clean
+from ..dictionary import clean, rename as dictionary_rename
 
 
-def rename(na_):
+def rename(na_, **ke_va):
 
-    na_re = clean(
-        read_csv(
-            "{}cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
-            sep="\t",
-            index_col=0,
-            squeeze=True,
-        ).to_dict()
-    )
+    na_ = [na.lower() for na in na_]
 
-    re_ = []
+    na_re = read_csv(
+        "{}cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
+        sep="\t",
+        index_col=0,
+        squeeze=True,
+    ).to_dict()
 
-    fa_ = []
-
-    for na in na_:
-
-        re = na_re.get(na.lower())
-
-        re_.append(re)
-
-        if re is None:
-
-            fa_.append(na)
-
-    if 0 < len(fa_):
-
-        print("Failed {}.".format(sorted(set(fa_))))
-
-    return re_
+    return dictionary_rename(na_, clean(na_re), **ke_va)

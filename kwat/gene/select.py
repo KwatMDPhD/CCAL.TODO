@@ -1,32 +1,11 @@
 from ..iterable import flatten
 from ._read import _read
-from ._split import _split
+from .map_gene_to_family import map_gene_to_family
 
 
-def _split_get_first(an):
+def _get_value_size(pa):
 
-    sp_ = _split(an)
-
-    if 0 < len(sp_):
-
-        return sp_[0]
-
-    return None
-
-
-def _map_gene_to_family():
-
-    da = _read(None)
-
-    return dict(
-        zip(
-            da.loc[:, "symbol"],
-            (_split_get_first(fa) for fa in da.loc[:, "gene_family"]),
-        )
-    )
-
-
-from ._read import _read
+    return len(pa[1])
 
 
 def select(
@@ -49,7 +28,7 @@ def select(
 
     fa_ba_ = {}
 
-    for ge, fa in _map_gene_to_family().items():
+    for ge, fa in map_gene_to_family().items():
 
         if fa is not None and any(ba in fa.lower() for ba in ba_):
 
@@ -63,7 +42,7 @@ def select(
 
     print("Removing:")
 
-    for fa, ba_ in sorted(fa_ba_.items(), key=lambda pa: len(pa[1]), reverse=True):
+    for fa, ba_ in sorted(fa_ba_.items(), key=_get_value_size, reverse=True):
 
         print("{}\t{}".format(len(ba_), fa))
 

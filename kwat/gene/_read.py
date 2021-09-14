@@ -12,7 +12,11 @@ def _read(co_se):
         low_memory=False,
     )
 
-    if co_se is not None:
+    if co_se is None:
+
+        return da
+
+    else:
 
         ge_ = da.loc[:, "symbol"].values
 
@@ -20,14 +24,10 @@ def _read(co_se):
 
         for co, se in co_se.items():
 
-            print("Selecting by {}: {}...".format(co, ", ".join(se)))
+            print("Selecting by {}: {}".format(co, se))
 
-            se_ &= array(
-                [isinstance(an, str) and an in se for an in da.loc[:, co].values]
-            )
+            se_ &= array([an in se for an in da.loc[:, co].values])
 
             print("{}/{}".format(se_.sum(), se_.size))
 
-        da = da.loc[se_, :]
-
-    return da
+        return da.loc[se_, :]

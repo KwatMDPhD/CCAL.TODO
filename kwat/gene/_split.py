@@ -4,4 +4,6 @@ def _split(an):
 
         return an.split(sep="|")
 
-    return []
+    else:
+
+        return []
