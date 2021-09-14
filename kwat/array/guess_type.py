@@ -1,18 +1,20 @@
 from numpy import unique
 
 
-def guess_type(ar, ma=16):
+def guess_type(nu___, n_ca=16):
 
-    if all(float(nu).is_integer() for nu in ar.ravel()):
+    if all(float(nu).is_integer() for nu in nu___.ravel()):
 
-        n_ca = unique(ar).size
+        n_un = unique(nu___).size
 
-        if n_ca <= 2:
+        if n_un <= 2:
 
             return "binary"
 
-        elif n_ca <= ma:
+        elif n_un <= n_ca:
 
             return "categorical"
 
-    return "continuous"
+    else:
+
+        return "continuous"

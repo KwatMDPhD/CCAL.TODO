@@ -3,9 +3,9 @@ from numpy import logical_or, quantile, sort
 from .check_not_nan import check_not_nan
 
 
-def check_extreme(ar, di, th_=(), n_ex=0, st=0.0):
+def check_extreme(nu___, di, th_=(), n_ex=0, st=0.0):
 
-    arn = ar[check_not_nan(ar)]
+    nug___ = nu___[check_not_nan(nu___)]
 
     if 0 < len(th_):
 
@@ -15,40 +15,40 @@ def check_extreme(ar, di, th_=(), n_ex=0, st=0.0):
 
         if n_ex < 1:
 
-            lo = quantile(arn, n_ex)
+            lo = quantile(nug___, n_ex)
 
-            hi = quantile(arn, 1 - n_ex)
+            hi = quantile(nug___, 1 - n_ex)
 
         else:
 
-            arns = sort(arn, axis=None)
+            nug_ = sort(nug___, axis=None)
 
-            lo = arns[n_ex - 1]
+            lo = nug_[n_ex - 1]
 
-            hi = arns[-n_ex]
+            hi = nug_[-n_ex]
 
     elif 0 < st:
 
-        me = arn.mean()
+        me = nug___.mean()
 
-        st *= arn.std()
+        st *= nug___.std()
 
         lo = me - st
 
         hi = me + st
 
-    else:
+    lo___ = nu___ <= lo
 
-        raise
+    hi___ = hi <= nu___
 
     if di == "<>":
 
-        return logical_or(ar <= lo, hi <= ar)
+        return logical_or(lo___, hi___)
 
     elif di == "<":
 
-        return ar <= lo
+        return lo___
 
     elif di == ">":
 
-        return hi <= ar
+        return hi___

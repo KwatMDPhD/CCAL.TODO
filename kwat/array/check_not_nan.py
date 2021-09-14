@@ -1,6 +1,6 @@
 from numpy import isnan, logical_not
 
 
-def check_not_nan(ar):
+def check_not_nan(nu___):
 
-    return logical_not(isnan(ar))
+    return logical_not(isnan(nu___))

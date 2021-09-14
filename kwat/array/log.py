@@ -3,7 +3,7 @@ from numpy import absolute, log as loge, log2, log10, sign
 from .shift import shift
 
 
-def log(ar, mi=None, ba=2):
+def log(nu___, ba=2, ab=False, sh=None):
 
     lo = {
         2: log2,
@@ -11,14 +11,14 @@ def log(ar, mi=None, ba=2):
         10: log10,
     }[ba]
 
-    if mi is not None:
+    if ab:
 
-        if mi < 0:
+        return sign(nu___) * lo(shift(absolute(nu___), "1<"))
 
-            return sign(ar) * lo(shift(absolute(ar), "0<"))
+    elif sh is not None:
 
-        else:
+        return lo(shift(nu___, sh))
 
-            ar = shift(ar, mi)
+    else:
 
-    return lo(ar)
+        return lo(nu___)

@@ -1,21 +1,17 @@
-def shift(ar, mi):
+def shift(nu___, sh):
 
-    if mi == "+1":
+    if sh == "+1":
 
-        return ar + 1
+        return nu___ + 1
 
-    elif mi == "0<":
+    if isinstance(sh, str) and sh.endswith("<"):
 
-        arp = 0 < ar
+        fl = float(sh[:-1])
 
-        if arp.any():
+        ab___ = fl < nu___
 
-            mi = ar[arp].min()
+        sh = nu___[ab___].min()
 
-        else:
+        print("Shifting the minimum to {}...".format(sh))
 
-            mi = 1
-
-        print("Shifting the minimum to {}...".format(mi))
-
-    return ar + mi - ar.min()
+    return nu___ + sh - nu___.min()

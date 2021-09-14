@@ -1,7 +1,7 @@
-def clip(ar, st):
+def clip(nu___, st):
 
-    me = ar.mean()
+    me = nu___.mean()
 
-    st *= ar.std()
+    st *= nu___.std()
 
-    return ar.clip(min=me - st, max=me + st)
+    return nu___.clip(min=me - st, max=me + st)

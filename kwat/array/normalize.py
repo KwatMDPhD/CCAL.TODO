@@ -1,22 +1,22 @@
 from scipy.stats import rankdata
 
 
-def normalize(ar, me, ra="average"):
+def normalize(nu___, me, ra="average"):
 
     if me == "-0-":
 
-        return (ar - ar.mean()) / ar.std()
+        return (nu___ - nu___.mean()) / nu___.std()
 
     elif me == "0-1":
 
-        mi = ar.min()
+        mi = nu___.min()
 
-        return (ar - mi) / (ar.max() - mi)
+        return (nu___ - mi) / (nu___.max() - mi)
 
     elif me == "sum":
 
-        return ar / ar.sum()
+        return nu___ / nu___.sum()
 
     elif me == "rank":
 
-        return rankdata(ar, method=ra).reshape(ar.shape)
+        return rankdata(nu___, method=ra).reshape(nu___.shape)

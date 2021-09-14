@@ -3,18 +3,20 @@ from numpy import full, nan
 from .check_not_nan import check_not_nan
 
 
-def apply(ar, fu, *arg, up=False, **ke):
+def apply(nu___, fu, *ar_, up=False, **ke_va):
 
-    arn = check_not_nan(ar)
+    go___ = check_not_nan(nu___)
 
-    re = fu(ar[arn], *arg, **ke)
+    nu = fu(nu___[go___], *ar_, **ke_va)
 
     if up:
 
-        arr = full(ar.shape, nan)
+        nu2___ = full(nu___.shape, nan)
 
-        arr[arn] = re
+        nu2___[go___] = nu
 
-        return arr
+        return nu2___
 
-    return re
+    else:
+
+        return nu
