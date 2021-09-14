@@ -1,15 +1,68 @@
-from ._extend import _extend
-from .ann_keys import ann_keys
-from .columns import columns
+def _get_variant_start_and_end(po, re, al):
+
+    if len(re) == len(al):
+
+        st = po
+
+        en = po + len(al) - 1
+
+    elif len(re) < len(al):
+
+        st = po
+
+        en = po + 1
+
+    else:
+
+        st = po + 1
+
+        en = po + len(re) - len(al)
+
+    return st, en
+
+
+def _extend(vd):
+
+    re = vd["REF"]
+
+    al = vd["ALT"]
+
+    st, en = _get_variant_start_and_end(int(vd["POS"]), re, al)
+
+    vd["start_position"] = st
+
+    vd["end_position"] = en
+
+    if "CAF" in vd:
+
+        vd["population_allelic_frequencies"] = [
+            float(ca) for ca in vd["CAF"].split(sep=",")
+        ]
+
+    for sa in vd["sample"].values():
+
+        if "GT" in sa:
+
+            sa["genotype"] = _get_genotype(re, al, sa["GT"])
+
+        if "AD" in sa and "DP" in sa:
+
+            sa["allelic_frequency"] = [
+                int(ad) / int(sa["DP"]) for ad in sa["AD"].split(sep=",")
+            ]
+
+
+from .ANN_KEY import ANN_KEY
+from .COLUMN import COLUMN
 
 
 def read_row(se, n_ioan=None):
 
-    vd = {co: se[ie] for ie, co in enumerate(columns[: columns.index("FILTER") + 1])}
+    vd = {co: se[ie] for ie, co in enumerate(COLUMN[: COLUMN.index("FILTER") + 1])}
 
     inno_ = []
 
-    for io in se[columns.index("INFO")].split(sep=";"):
+    for io in se[COLUMN.index("INFO")].split(sep=";"):
 
         if "=" in io:
 
@@ -25,7 +78,7 @@ def read_row(se, n_ioan=None):
 
                     vd["ANN"][iean] = {
                         anfi: anva_[ieanfi + 1]
-                        for ieanfi, anfi in enumerate(ann_keys[1:])
+                        for ieanfi, anfi in enumerate(ANN_KEY[1:])
                     }
 
             else:
@@ -40,7 +93,7 @@ def read_row(se, n_ioan=None):
 
         vd["info_without_field"] = ";".join(inno_)
 
-    iefo = columns.index("FORMAT")
+    iefo = COLUMN.index("FORMAT")
 
     fofi_ = se[iefo].split(sep=":")
 

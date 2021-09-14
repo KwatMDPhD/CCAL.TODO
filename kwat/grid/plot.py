@@ -36,7 +36,7 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
                         "y": nu_po_di,
                     }
                 ],
-                "layout": {
+                "LAYOUT_TEMPLATE": {
                     "xaxis": {
                         "title": {
                             "text": di_[0],
@@ -60,11 +60,11 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
                 index=Index(
                     data=["{:.2e} *".format(co) for co in co__[0]], name=di_[0]
                 ),
-                columns=Index(
+                COLUMNS=Index(
                     data=["* {:.2e}".format(co) for co in co__[1]], name=di_[1]
                 ),
             ),
-            layout={
+            LAYOUT_TEMPLATE={
                 "title": {
                     "text": nu,
                 },

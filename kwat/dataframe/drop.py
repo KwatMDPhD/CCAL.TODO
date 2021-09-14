@@ -1,7 +1,15 @@
-from numpy import apply_along_axis, full
+from numpy import apply_along_axis, full, unique
+from pandas import notna
 
-from ._check_has_enough_not_na import _check_has_enough_not_na
-from ._check_has_enough_not_na_unique import _check_has_enough_not_na_unique
+
+def _check_has_enough_not_na(ve, n_no):
+
+    return n_no <= notna(ve).sum()
+
+
+def _check_has_enough_not_na_unique(ve, n_un):
+
+    return n_un <= unique(ve[notna(ve)]).size
 
 
 def drop(da, ax, n_no=None, n_un=None):

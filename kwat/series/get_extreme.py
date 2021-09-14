@@ -1,7 +1,7 @@
 from numpy import arange
 from pandas import DataFrame
 
-from ..array import check_is_extreme
+from ..array import check_extreme
 from ..plot import plot_point
 
 
@@ -13,7 +13,7 @@ def get_extreme(se, di, pa, size=2, **ke):
 
     las_ = se.index.values
 
-    bo_ = check_is_extreme(nu_, di, **ke)
+    bo_ = check_extreme(nu_, di, **ke)
 
     la_ = las_[bo_]
 

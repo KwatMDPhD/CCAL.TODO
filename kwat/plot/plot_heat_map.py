@@ -1,24 +1,31 @@
-from numpy import argsort, unique
+from numpy import argsort, nonzero, unique
 
 from ..dictionary import merge
-from .categorical_colorscale import categorical_colorscale
-from .colorbar import colorbar
-from .continuous_colorscale import continuous_colorscale
+from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
+from .COLORBAR_TEMPLATE import COLORBAR_TEMPLATE
+from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
 from .plot_plotly import plot_plotly
+
+
+def _get_center_index(gr_, gr):
+
+    ie1, ie2 = nonzero(gr_ == gr)[0][[0, -1]]
+
+    return ie1 + (ie2 - ie1) / 2
 
 
 def plot_heat_map(
     nu_an_an,
-    colorscale=continuous_colorscale,
+    colorscale=CONTINUOUS_COLORSCALE,
     gr1_=(),
     gr2_=(),
-    colorscale1=categorical_colorscale,
-    colorscale2=categorical_colorscale,
+    colorscale1=CATEGORICAL_COLORSCALE,
+    colorscale2=CATEGORICAL_COLORSCALE,
     gr1_la=None,
     gr2_la=None,
-    layout=None,
-    annotation1=None,
-    annotation2=None,
+    LAYOUT_TEMPLATE=None,
+    ANNOTATION_TEMPLATE1=None,
+    ANNOTATION_TEMPLATE2=None,
     pa="",
 ):
 
@@ -40,9 +47,9 @@ def plot_heat_map(
 
     domain = [0, 0.95]
 
-    if layout is None:
+    if LAYOUT_TEMPLATE is None:
 
-        layout = {}
+        LAYOUT_TEMPLATE = {}
 
     axis = {
         "domain": [0.96, 1],
@@ -52,34 +59,34 @@ def plot_heat_map(
         "showticklabels": False,
     }
 
-    layout = merge(
+    LAYOUT_TEMPLATE = merge(
         {
             "yaxis": {
                 "title": "{} (n={})".format(nu_an_an.index.name, nu_an_an.shape[0]),
                 "domain": domain,
             },
             "xaxis": {
-                "title": "{} (n={})".format(nu_an_an.columns.name, nu_an_an.shape[1]),
+                "title": "{} (n={})".format(nu_an_an.COLUMNS.name, nu_an_an.shape[1]),
                 "domain": domain,
             },
             "yaxis2": axis,
             "xaxis2": axis,
-            "annotations": [],
+            "ANNOTATION_TEMPLATEs": [],
         },
-        layout,
+        LAYOUT_TEMPLATE,
     )
 
     colorbar_x = 1.04
 
     data = [
         {
-            "type": "heatmap",
+            "type": "HEATMAP_TEMPLATE",
             "z": nu_an_an.values[::-1],
             "y": nu_an_an.index.values[::-1],
-            "x": nu_an_an.columns.values,
+            "x": nu_an_an.COLUMNS.values,
             "colorscale": colorscale,
             "colorbar": {
-                **colorbar,
+                **COLORBAR_TEMPLATE,
                 "x": colorbar_x,
             },
         }
@@ -94,11 +101,11 @@ def plot_heat_map(
         data.append(
             {
                 "xaxis": "x2",
-                "type": "heatmap",
+                "type": "HEATMAP_TEMPLATE",
                 "z": gr1_.reshape([-1, 1]),
                 "colorscale": colorscale1,
                 "colorbar": {
-                    **colorbar,
+                    **COLORBAR_TEMPLATE,
                     "x": colorbar_x,
                     "dtick": 1,
                 },
@@ -108,11 +115,11 @@ def plot_heat_map(
 
         if gr1_la is not None:
 
-            if annotation1 is None:
+            if ANNOTATION_TEMPLATE1 is None:
 
-                annotation1 = {}
+                ANNOTATION_TEMPLATE1 = {}
 
-            layout["annotations"] += [
+            LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += [
                 merge(
                     {
                         "xref": "x2",
@@ -122,7 +129,7 @@ def plot_heat_map(
                         "y": _get_center_index(gr1_, gr),
                         "text": gr1_la[gr],
                     },
-                    annotation1,
+                    ANNOTATION_TEMPLATE1,
                 )
                 for gr in unique(gr1_)
             ]
@@ -134,11 +141,11 @@ def plot_heat_map(
         data.append(
             {
                 "yaxis": "y2",
-                "type": "heatmap",
+                "type": "HEATMAP_TEMPLATE",
                 "z": gr2_.reshape([1, -1]),
                 "colorscale": colorscale2,
                 "colorbar": {
-                    **colorbar,
+                    **COLORBAR_TEMPLATE,
                     "x": colorbar_x,
                     "dtick": 1,
                 },
@@ -148,11 +155,11 @@ def plot_heat_map(
 
         if gr2_la is not None:
 
-            if annotation2 is None:
+            if ANNOTATION_TEMPLATE2 is None:
 
-                annotation2 = {}
+                ANNOTATION_TEMPLATE2 = {}
 
-            layout["annotations"] += [
+            LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += [
                 merge(
                     {
                         "yref": "y2",
@@ -163,7 +170,7 @@ def plot_heat_map(
                         "x": _get_center_index(gr2_, gr),
                         "text": gr2_la[gr],
                     },
-                    annotation2,
+                    ANNOTATION_TEMPLATE2,
                 )
                 for gr in unique(gr2_)
             ]
@@ -171,7 +178,7 @@ def plot_heat_map(
     plot_plotly(
         {
             "data": data,
-            "layout": layout,
+            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
         },
         pa=pa,
     )

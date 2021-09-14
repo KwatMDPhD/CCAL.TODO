@@ -1,8 +1,12 @@
 from numpy import absolute, apply_along_axis, isnan, nan, s_, unique
 
 from ..grid import get_1d_grid, get_1d_grid_resolution, plot
-from ._get_probability import _get_probability
 from .get_probability import get_probability
+
+
+def _get_probability(ar):
+
+    return ar / ar.sum()
 
 
 def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, di_=(), **ke):

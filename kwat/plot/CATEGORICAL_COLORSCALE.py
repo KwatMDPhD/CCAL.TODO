@@ -1,3 +1,3 @@
 from plotly.colors import make_colorscale, qualitative
 
-categorical_colorscale = make_colorscale(qualitative.Plotly)
+CATEGORICAL_COLORSCALE = make_colorscale(qualitative.Plotly)

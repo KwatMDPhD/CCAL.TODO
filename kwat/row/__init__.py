@@ -1,2 +1,0 @@
-from .compare_with_other import compare_with_other
-from .compare_with_target import compare_with_target

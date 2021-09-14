@@ -2,10 +2,24 @@ from numpy import array, sum
 from numpy.linalg import norm
 from numpy.random import random_sample, seed
 
-from ..constant import random_seed
-from ._is_tolerable import _is_tolerable
-from ._update_h import _update_h
-from ._update_w import _update_w
+from ..constant import RANDOM_SEED
+
+
+def _update_w(ma, wm, hm):
+
+    return wm * (ma @ hm.T) / (wm @ hm @ hm.T)
+
+
+def _update_h(ma, wm, hm):
+
+    return hm * (wm.T @ ma) / (wm.T @ wm @ hm)
+
+
+def _is_tolerable(er_it_ma, to):
+
+    er2_, er1_ = array(er_it_ma)[-2:]
+
+    return ((er2_ - er1_) / er2_ <= to).all()
 
 
 def factorize(
@@ -15,7 +29,7 @@ def factorize(
     we_=None,
     to=1e-6,
     n_it=int(1e3),
-    ra=random_seed,
+    ra=RANDOM_SEED,
 ):
 
     n_ma = len(ma_)

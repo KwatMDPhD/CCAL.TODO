@@ -1,10 +1,18 @@
-def count(da):
+def count(da, ax=0):
 
-    for co, se in da.iteritems():
+    if ax == 0:
+
+        it_ = da.iteritems()
+
+    elif ax == 1:
+
+        it_ = da.iterrows()
+
+    for la, se in it_:
 
         print()
 
-        print(co)
+        print(la)
 
         print(se.value_counts())
 

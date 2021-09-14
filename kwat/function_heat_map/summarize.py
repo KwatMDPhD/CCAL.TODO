@@ -4,14 +4,14 @@ from numpy import nan
 
 from ..dictionary import merge
 from ..plot import plot_plotly
-from ._make_data_annotations import _make_data_annotations
+from ._make_data_annotation import _make_data_annotation
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
-from .annotation import annotation
-from .heatmap import heatmap
-from .layout import layout
-from .type_colorscale import type_colorscale
+from .ANNOTATION_TEMPLATE import ANNOTATION_TEMPLATE
+from .HEATMAP_TEMPLATE import HEATMAP_TEMPLATE
+from .LAYOUT_TEMPLATE import LAYOUT_TEMPLATE
+from .TYPE_COLORSCALE import TYPE_COLORSCALE
 
 
 def summarize(
@@ -30,7 +30,7 @@ def summarize(
 
         for bu in bu_:
 
-            ta = ta.loc[ta.index.intersection(bu["data"].columns)]
+            ta = ta.loc[ta.index.intersection(bu["data"].COLUMNS)]
 
     #
     if ac is not None:
@@ -54,15 +54,15 @@ def summarize(
 
     he = 1 / n_ro
 
-    layout = merge(
+    LAYOUT_TEMPLATE = merge(
         {
             "height": max(640, 24 * n_ro),
             "title": {
                 "text": title,
             },
-            "annotations": _make_target_annotation(1 - he / 2, ta.name),
+            "ANNOTATION_TEMPLATEs": _make_target_annotation(1 - he / 2, ta.name),
         },
-        layout,
+        LAYOUT_TEMPLATE,
     )
 
     n_bu = len(bu_)
@@ -71,7 +71,7 @@ def summarize(
 
     domain = [1 - he, 1]
 
-    layout[yaxis] = {
+    LAYOUT_TEMPLATE[yaxis] = {
         "domain": domain,
         "showticklabels": False,
     }
@@ -84,8 +84,8 @@ def summarize(
             "x": co_,
             "zmin": mit,
             "zmax": mat,
-            "colorscale": type_colorscale[ty],
-            **heatmap,
+            "colorscale": TYPE_COLORSCALE[ty],
+            **HEATMAP_TEMPLATE,
         }
     ]
 
@@ -108,7 +108,7 @@ def summarize(
             domain[0] - he * n_sp,
         ]
 
-        layout[yaxis] = {
+        LAYOUT_TEMPLATE[yaxis] = {
             "domain": domain,
             "showticklabels": False,
         }
@@ -121,29 +121,31 @@ def summarize(
                 "x": co_,
                 "zmin": mid,
                 "zmax": mad,
-                "colorscale": type_colorscale[bu["type"]],
-                **heatmap,
+                "colorscale": TYPE_COLORSCALE[bu["type"]],
+                **HEATMAP_TEMPLATE,
             }
         )
 
         y = domain[1] + he / 2
 
-        layout["annotations"].append(
+        LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"].append(
             {
                 "y": y,
                 "x": 0.5,
                 "xanchor": "center",
                 "text": "<b>{}</b>".format(bu["name"]),
-                **annotation,
+                **ANNOTATION_TEMPLATE,
             }
         )
 
-        layout["annotations"] += _make_data_annotations(y, ie == 0, he, ro_, fu.values)
+        LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += _make_data_annotation(
+            y, ie == 0, he, ro_, fu.values
+        )
 
     plot_plotly(
         {
             "data": data,
-            "layout": layout,
+            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
         },
         pa=pa,
     )

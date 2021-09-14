@@ -1,11 +1,11 @@
 from numpy import full, mean, nan, unique
 from scipy.spatial import Delaunay
 
-from ..constant import random_seed
+from ..constant import RANDOM_SEED
 from ..density import get_bandwidth
 from ..grid import make_1d_grid
-from ..plot import categorical_colorscale, plot_heat_map
-from ..point import map_point, plot_node_point, pull_point
+from ..plot import CATEGORICAL_COLORSCALE, plot_heat_map
+from ..point import plot, pull, scale
 from ..probability import get_probability
 
 
@@ -15,14 +15,14 @@ class GPSMap:
         di_no_no,
         nu_po_no,
         node_marker_size=24,
-        ra=random_seed,
+        ra=RANDOM_SEED,
     ):
 
-        self.nu_no_di = map_point(di_no_no, 2, ra=ra)
+        self.nu_no_di = scale(di_no_no, 2, ra=ra)
 
         self.nu_po_no = nu_po_no
 
-        self.nu_po_di = pull_point(self.nu_no_di, self.nu_po_no.values)
+        self.nu_po_di = pull(self.nu_no_di, self.nu_po_no.values)
 
         self.node_marker_size = node_marker_size
 
@@ -38,11 +38,11 @@ class GPSMap:
 
     def plot(self, **ke_va):
 
-        plot_node_point(
+        plot(
             self.nu_no_di,
             self.nu_po_di,
-            self.nu_po_no.columns.name,
-            self.nu_po_no.columns.values,
+            self.nu_po_no.COLUMNS.name,
+            self.nu_po_no.COLUMNS.values,
             self.nu_po_no.index.name,
             self.nu_po_no.index.values,
             gr_=self.gr_,
@@ -58,7 +58,7 @@ class GPSMap:
             **ke_va,
         )
 
-    def set_group(self, gr_, grc=categorical_colorscale, n_co=128):
+    def set_group(self, gr_, grc=CATEGORICAL_COLORSCALE, n_co=128):
 
         if isinstance(gr_, str) and gr_ == "closest_node":
 
@@ -129,7 +129,7 @@ class GPSMap:
             self.nu_po_no.T,
             gr2_=self.gr_,
             colorscale2=self.grc,
-            layout={
+            LAYOUT_TEMPLATE={
                 "yaxis": {
                     "dtick": 1,
                 },
@@ -138,11 +138,11 @@ class GPSMap:
 
     def predict(self, nap, po_, nu_po_no, **ke_va):
 
-        plot_node_point(
+        plot(
             self.nu_no_di,
-            pull_point(self.nu_no_di, nu_po_no.values),
-            self.nu_po_no.columns.name,
-            self.nu_po_no.columns.values,
+            pull(self.nu_no_di, nu_po_no.values),
+            self.nu_po_no.COLUMNS.name,
+            self.nu_po_no.COLUMNS.values,
             nu_po_no.index.name,
             nu_po_no.index.values,
             gr_=None,

@@ -1,7 +1,7 @@
-from ..plot import binary_colorscale, categorical_colorscale, continuous_colorscale
+from ..plot import BINARY_COLORSCALE, CATEGORICAL_COLORSCALE, CONTINUOUS_COLORSCALE
 
-type_colorscale = {
-    "continuous": continuous_colorscale,
-    "categorical": categorical_colorscale,
-    "binary": binary_colorscale,
+TYPE_COLORSCALE = {
+    "continuous": CONTINUOUS_COLORSCALE,
+    "categorical": CATEGORICAL_COLORSCALE,
+    "binary": BINARY_COLORSCALE,
 }

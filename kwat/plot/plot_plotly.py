@@ -7,7 +7,7 @@ def plot_plotly(figure, pa=""):
 
     figure = merge(
         {
-            "layout": {
+            "LAYOUT_TEMPLATE": {
                 "autosize": False,
                 "template": "plotly_white",
             },

@@ -21,9 +21,9 @@ def plot_point(an_po_pa, title="", pa=""):
         }
     ]
 
-    co_ = an_po_pa.columns.values
+    co_ = an_po_pa.COLUMNS.values
 
-    annotations = []
+    ANNOTATION_TEMPLATEs = []
 
     if "Annotate" in co_:
 
@@ -31,7 +31,7 @@ def plot_point(an_po_pa, title="", pa=""):
             an_po_pa.iloc[:, :2].loc[an_po_pa.loc[:, "Annotate"], :].iterrows()
         ):
 
-            annotations.append(
+            ANNOTATION_TEMPLATEs.append(
                 {
                     "y": y,
                     "x": x,
@@ -48,7 +48,7 @@ def plot_point(an_po_pa, title="", pa=""):
     plot_plotly(
         {
             "data": data,
-            "layout": {
+            "LAYOUT_TEMPLATE": {
                 "title": title,
                 "yaxis": {
                     "title": co_[0],
@@ -56,7 +56,7 @@ def plot_point(an_po_pa, title="", pa=""):
                 "xaxis": {
                     "title": co_[1],
                 },
-                "annotations": annotations,
+                "ANNOTATION_TEMPLATEs": ANNOTATION_TEMPLATEs,
             },
         },
         pa=pa,

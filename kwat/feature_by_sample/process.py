@@ -2,7 +2,7 @@ from numpy import apply_along_axis, nan
 from pandas import DataFrame
 
 from ..array import log, normalize, shift
-from ..dataframe import drop, drop_until
+from ..dataframe import drop, drop_while
 from .summarize import summarize
 
 
@@ -37,7 +37,7 @@ def process(
 
     if 0 < len(sa_):
 
-        print(te.format(nu_fe_sa.columns.name, sa_))
+        print(te.format(nu_fe_sa.COLUMNS.name, sa_))
 
         nu_fe_sa = nu_fe_sa.drop(labels=sa_, axis=1, errors="ignore")
 
@@ -57,7 +57,7 @@ def process(
 
         if axd is None:
 
-            dr = drop_until
+            dr = drop_while
 
         else:
 
@@ -89,7 +89,7 @@ def process(
         nu_fe_sa = DataFrame(
             data=log(nua_fe_sa, ba=lo),
             index=nu_fe_sa.index,
-            columns=nu_fe_sa.columns,
+            COLUMNS=nu_fe_sa.COLUMNS,
         )
 
         summarize(nu_fe_sa, title="Logged", **ke)
@@ -101,7 +101,7 @@ def process(
         nu_fe_sa = DataFrame(
             data=apply_along_axis(normalize, axn, nu_fe_sa.values, no),
             index=nu_fe_sa.index,
-            columns=nu_fe_sa.columns,
+            COLUMNS=nu_fe_sa.COLUMNS,
         )
 
         summarize(nu_fe_sa, title="Normalized", **ke)

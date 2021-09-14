@@ -1,9 +1,9 @@
 from numpy.random import choice, seed
 
-from ..constant import random_seed
+from ..constant import RANDOM_SEED
 
 
-def sample(da, sh, ra=random_seed, **ke):
+def sample(da, sh, ra=RANDOM_SEED, **ke):
 
     si1, si2 = da.shape
 

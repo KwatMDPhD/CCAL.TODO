@@ -1,6 +1,32 @@
 from ..iterable import flatten
-from ._map_gene_to_family import _map_gene_to_family
-from ._read_select_hgnc import _read_select_hgnc
+from ._read import _read
+from ._split import _split
+
+
+def _split_get_first(an):
+
+    sp_ = _split(an)
+
+    if 0 < len(sp_):
+
+        return sp_[0]
+
+    return None
+
+
+def _map_gene_to_family():
+
+    da = _read(None)
+
+    return dict(
+        zip(
+            da.loc[:, "symbol"],
+            (_split_get_first(fa) for fa in da.loc[:, "gene_family"]),
+        )
+    )
+
+
+from ._read import _read
 
 
 def select(
@@ -19,7 +45,7 @@ def select(
             "locus_group": ["protein-coding gene"],
         }
 
-    ge_ = _read_select_hgnc(co_se).loc[:, "symbol"].values
+    ge_ = _read(co_se).loc[:, "symbol"].values
 
     fa_ba_ = {}
 

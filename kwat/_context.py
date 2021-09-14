@@ -253,7 +253,7 @@ def make_context_matrix_(
         )["context_like_array"]
 
     return DataFrame(
-        data=context_matrix, index=dataframe.index, columns=dataframe.columns
+        data=context_matrix, index=dataframe.index, COLUMNS=dataframe.COLUMNS
     )
 
 
@@ -262,7 +262,7 @@ def plot_context(
     y_max_is_pdf_max=False,
     n_bin=None,
     plot_rug=True,
-    layout=None,
+    LAYOUT_TEMPLATE=None,
     html_file_path=None,
     **compute_vector_context_keyword_arguments,
 ):
@@ -284,16 +284,16 @@ def plot_context(
         "yaxis": {"domain": yaxis_domain, "dtick": 1, "showticklabels": False},
         "yaxis2": {"domain": yaxis2_domain},
         "legend": {"orientation": "h", "x": 0.5, "y": -0.2, "xanchor": "center"},
-        "annotations": [],
+        "ANNOTATION_TEMPLATEs": [],
     }
 
-    if layout is None:
+    if LAYOUT_TEMPLATE is None:
 
-        layout = base
+        LAYOUT_TEMPLATE = base
 
     else:
 
-        layout = merge(base, layout)
+        LAYOUT_TEMPLATE = merge(base, LAYOUT_TEMPLATE)
 
     context_dict = compute_vector_context(
         series.values, **compute_vector_context_keyword_arguments
@@ -312,7 +312,7 @@ def plot_context(
         )
     ):
 
-        layout["annotations"].append(
+        LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"].append(
             {
                 "xref": "paper",
                 "yref": "paper",
@@ -438,4 +438,4 @@ def plot_context(
             )
         )
 
-    plot_plotly({"layout": layout, "data": data}, html_file_path)
+    plot_plotly({"LAYOUT_TEMPLATE": LAYOUT_TEMPLATE, "data": data}, html_file_path)

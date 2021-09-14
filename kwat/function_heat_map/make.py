@@ -2,19 +2,19 @@ from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
 
-from ..array import apply, check_is_extreme
+from ..array import apply, check_extreme
 from ..cluster import cluster
-from ..constant import random_seed, sample_fraction
+from ..constant import RANDOM_SEED, SAMPLE_FRACTION
 from ..dictionary import merge
 from ..plot import plot_plotly
-from ..row import compare_with_target
+from ..row import apply_with_vector
 from ..significance import get_margin_of_error, get_p_value_q_value
-from ._make_data_annotations import _make_data_annotations
+from ._make_data_annotation import _make_data_annotation
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
-from .heatmap import heatmap
-from .type_colorscale import type_colorscale
+from .HEATMAP_TEMPLATE import HEATMAP_TEMPLATE
+from .TYPE_COLORSCALE import TYPE_COLORSCALE
 
 
 def make(
@@ -23,7 +23,7 @@ def make(
     fu,
     ac=True,
     n_jo=1,
-    ra=random_seed,
+    ra=RANDOM_SEED,
     n_sa=10,
     n_sh=10,
     pl=True,
@@ -31,14 +31,14 @@ def make(
     tyt="continuous",
     tyd="continuous",
     st=nan,
-    layout=None,
+    LAYOUT_TEMPLATE=None,
     title="Function Heat Map",
     pa="",
 ):
 
     ro_ = da.index.values
 
-    ta = ta.loc[ta.index.intersection(da.columns)]
+    ta = ta.loc[ta.index.intersection(da.COLUMNS)]
 
     if ac is not None:
 
@@ -62,7 +62,7 @@ def make(
 
         print("Score ({})...".format(fu.__name__))
 
-        sc_ = compare_with_target(taa, daa, fu, n_jo=n_jo)
+        sc_ = apply_with_vector(taa, daa, fu, n_jo=n_jo)
 
         if 0 < n_sa:
 
@@ -70,13 +70,13 @@ def make(
 
             sc_ro_sa = full([n_ro, n_sa], nan)
 
-            n_ch = int(n_co * sample_fraction)
+            n_ch = int(n_co * SAMPLE_FRACTION)
 
             for ie in range(n_sa):
 
                 ie_ = choice(n_co, size=n_ch, replace=False)
 
-                sc_ro_sa[:, ie] = compare_with_target(
+                sc_ro_sa[:, ie] = apply_with_vector(
                     taa[ie_], daa[:, ie_], fu, n_jo=n_jo
                 )
 
@@ -98,7 +98,7 @@ def make(
 
                 shuffle(taac)
 
-                sc_ro_sh[:, ie] = compare_with_target(taac, daa, fu, n_jo=n_jo)
+                sc_ro_sh[:, ie] = apply_with_vector(taac, daa, fu, n_jo=n_jo)
 
             pv_, qv_ = get_p_value_q_value(sc_, sc_ro_sh.ravel(), "<>")
 
@@ -111,7 +111,7 @@ def make(
         fu = DataFrame(
             data=array([sc_, ma_, pv_, qv_]).T,
             index=ro_,
-            columns=["Score", "MoE", "P-Value", "Q-Value"],
+            COLUMNS=["Score", "MoE", "P-Value", "Q-Value"],
         )
 
     else:
@@ -136,7 +136,7 @@ def make(
 
         if n_pl is not None and n_pl < (n_ro / 2):
 
-            ex_ = check_is_extreme(fua[:, 0], "<>", n_ex=n_pl)
+            ex_ = check_extreme(fua[:, 0], "<>", n_ex=n_pl)
 
             fua = fua[ex_]
 
@@ -170,11 +170,11 @@ def make(
 
         he = 1 / n_ro
 
-        if layout is None:
+        if LAYOUT_TEMPLATE is None:
 
-            layout = {}
+            LAYOUT_TEMPLATE = {}
 
-        layout = merge(
+        LAYOUT_TEMPLATE = merge(
             {
                 "height": max(640, 24 * n_ro),
                 "title": {
@@ -188,12 +188,12 @@ def make(
                     "domain": [0, 1 - he * 2],
                     "showticklabels": False,
                 },
-                "annotations": _make_target_annotation(1 - he / 2, ta.name),
+                "ANNOTATION_TEMPLATEs": _make_target_annotation(1 - he / 2, ta.name),
             },
-            layout,
+            LAYOUT_TEMPLATE,
         )
 
-        layout["annotations"] += _make_data_annotations(
+        LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += _make_data_annotation(
             1 - he / 2 * 3, True, he, ro_, fua
         )
 
@@ -211,8 +211,8 @@ def make(
                         "x": co_,
                         "zmin": mit,
                         "zmax": mat,
-                        "colorscale": type_colorscale[tyt],
-                        **heatmap,
+                        "colorscale": TYPE_COLORSCALE[tyt],
+                        **HEATMAP_TEMPLATE,
                     },
                     {
                         "yaxis": "y",
@@ -222,11 +222,11 @@ def make(
                         "x": co_,
                         "zmin": mid,
                         "zmax": mad,
-                        "colorscale": type_colorscale[tyd],
-                        **heatmap,
+                        "colorscale": TYPE_COLORSCALE[tyd],
+                        **HEATMAP_TEMPLATE,
                     },
                 ],
-                "layout": layout,
+                "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
             },
             pa=pa,
         )

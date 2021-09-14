@@ -1,1 +1,1 @@
-random_seed = 20121020
+RANDOM_SEED = 20121020

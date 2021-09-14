@@ -2,13 +2,18 @@ from numpy import arange, isnan, meshgrid
 
 from ..array import apply, normalize
 from ..dictionary import merge
-from .colorbar import colorbar
-from .continuous_colorscale import continuous_colorscale
+from .COLORBAR_TEMPLATE import COLORBAR_TEMPLATE
+from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
 from .plot_plotly import plot_plotly
 
 
 def plot_bubble_map(
-    si_an_an, co_an_an=None, ma=24, colorscale=continuous_colorscale, layout=None, pa=""
+    si_an_an,
+    co_an_an=None,
+    ma=24,
+    colorscale=CONTINUOUS_COLORSCALE,
+    LAYOUT_TEMPLATE=None,
+    pa="",
 ):
 
     si1, si2 = si_an_an.shape
@@ -17,11 +22,11 @@ def plot_bubble_map(
 
     co2_ = arange(si2)
 
-    if layout is None:
+    if LAYOUT_TEMPLATE is None:
 
-        layout = {}
+        LAYOUT_TEMPLATE = {}
 
-    layout = merge(
+    LAYOUT_TEMPLATE = merge(
         {
             "height": max(480, si1 * 2 * ma),
             "width": max(480, si2 * 2 * ma),
@@ -31,12 +36,12 @@ def plot_bubble_map(
                 "ticktext": si_an_an.index,
             },
             "xaxis": {
-                "title": "{} (n={})".format(si_an_an.columns.name, si2),
+                "title": "{} (n={})".format(si_an_an.COLUMNS.name, si2),
                 "tickvals": co2_,
-                "ticktext": si_an_an.columns,
+                "ticktext": si_an_an.COLUMNS,
             },
         },
-        layout,
+        LAYOUT_TEMPLATE,
     )
 
     si_an_an = si_an_an.values
@@ -63,11 +68,11 @@ def plot_bubble_map(
                         "size": si2_an_an.ravel() * ma,
                         "color": co_an_an.ravel(),
                         "colorscale": colorscale,
-                        "colorbar": colorbar,
+                        "colorbar": COLORBAR_TEMPLATE,
                     },
                 }
             ],
-            "layout": layout,
+            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
         },
         pa=pa,
     )

@@ -1,5 +1,5 @@
 from ..dictionary import merge
-from .categorical_colorscale import categorical_colorscale
+from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
 from .get_color import get_color
 from .plot_plotly import plot_plotly
 
@@ -8,8 +8,8 @@ def plot_histogram(
     se_,
     no=None,
     xbins_size=None,
-    colorscale=categorical_colorscale,
-    layout=None,
+    colorscale=CATEGORICAL_COLORSCALE,
+    LAYOUT_TEMPLATE=None,
     pa="",
 ):
 
@@ -39,11 +39,11 @@ def plot_histogram(
 
         yaxis2_title = no.title()
 
-    if layout is None:
+    if LAYOUT_TEMPLATE is None:
 
-        layout = {}
+        LAYOUT_TEMPLATE = {}
 
-    layout = merge(
+    LAYOUT_TEMPLATE = merge(
         {
             "xaxis": {
                 "anchor": "y",
@@ -59,7 +59,7 @@ def plot_histogram(
                 "title": yaxis2_title,
             },
         },
-        layout,
+        LAYOUT_TEMPLATE,
     )
 
     data = []
@@ -109,7 +109,7 @@ def plot_histogram(
     plot_plotly(
         {
             "data": data,
-            "layout": layout,
+            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
         },
         pa=pa,
     )

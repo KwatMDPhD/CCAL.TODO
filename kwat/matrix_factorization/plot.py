@@ -1,11 +1,17 @@
 from numpy import apply_along_axis
-from pandas import DataFrame
+from pandas import DataFrame, Index
 
 from ..array import normalize
 from ..cluster import cluster
-from ..constant import golden_ratio
+from ..constant import GOLDEN_RATIO
 from ..plot import plot_heat_map, plot_plotly
-from .label_factor import label_factor
+
+
+def make_factor_label(re):
+
+    na = "Factor"
+
+    return Index(data=("{} {}_{}".format(na, re, ie) for ie in range(re)), name=na)
 
 
 def plot(
@@ -16,7 +22,7 @@ def plot(
     pa="",
 ):
 
-    sig = si * golden_ratio
+    sig = si * GOLDEN_RATIO
 
     faxis = {
         "dtick": 1,
@@ -38,9 +44,9 @@ def plot(
             DataFrame(
                 data=wm,
                 # index=Index(data=ro__[ie], name=ron[ie]),
-                columns=label_factor(wm.shape[1]),
+                COLUMNS=make_factor_label(wm.shape[1]),
             ),
-            layout={
+            LAYOUT_TEMPLATE={
                 "height": sig,
                 "width": si,
                 "title": {
@@ -66,10 +72,10 @@ def plot(
         plot_heat_map(
             DataFrame(
                 data=hm,
-                index=label_factor(hm.shape[0]),
-                # columns=Index(data=co__[ie], name=con[ie]),
+                index=make_factor_label(hm.shape[0]),
+                # COLUMNS=Index(data=co__[ie], name=con[ie]),
             ),
-            layout={
+            LAYOUT_TEMPLATE={
                 "height": si,
                 "width": sig,
                 "title": {
@@ -99,14 +105,14 @@ def plot(
                     }
                     for ie, er_ in enumerate(er_ma_it)
                 ],
-                "layout": {
+                "LAYOUT_TEMPLATE": {
                     "xaxis": {
                         "title": "Iteration",
                     },
                     "yaxis": {
                         "title": "Error",
                     },
-                    "annotations": [
+                    "ANNOTATION_TEMPLATEs": [
                         {
                             "x": er_.size - 1,
                             "y": er_[-1],

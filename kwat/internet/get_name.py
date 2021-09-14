@@ -1,6 +1,6 @@
 from urllib.parse import unquote
 
 
-def get_name(url):
+def get_name(ur):
 
-    return unquote(url).split(sep="/")[-1]
+    return unquote(ur).split(sep="/")[-1]

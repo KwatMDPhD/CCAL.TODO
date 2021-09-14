@@ -1,3 +1,3 @@
 from os.path import dirname
 
-data_directory = "{}/data/".format(dirname(dirname(__file__)))
+DATA_DIRECTORY_PATH = "{}/data/".format(dirname(dirname(__file__)))

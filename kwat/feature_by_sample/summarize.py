@@ -20,11 +20,11 @@ def summarize(
 
     ro_ = nu_fe_sa.index.values
 
-    co_ = nu_fe_sa.columns.values
+    co_ = nu_fe_sa.COLUMNS.values
 
     nar = nu_fe_sa.index.name
 
-    nac = nu_fe_sa.columns.name
+    nac = nu_fe_sa.COLUMNS.name
 
     si = nua_fe_sa.size
 
@@ -32,7 +32,7 @@ def summarize(
 
         plot_heat_map(
             nu_fe_sa,
-            layout={
+            LAYOUT_TEMPLATE={
                 "title": title,
             },
         )
@@ -52,7 +52,7 @@ def summarize(
                     Series(data=na_fe_sa.sum(axis=1), index=ro_, name=nar),
                     Series(data=na_fe_sa.sum(axis=0), index=co_, name=nac),
                 ],
-                layout={
+                LAYOUT_TEMPLATE={
                     "title": title,
                     "xaxis": {
                         "title": "N NaN",
@@ -67,7 +67,7 @@ def summarize(
                 Series(data=nanmedian(nua_fe_sa, axis=1), index=ro_, name=nar),
                 Series(data=nanmedian(nua_fe_sa, axis=0), index=co_, name=nac),
             ],
-            layout={
+            LAYOUT_TEMPLATE={
                 "title": title,
                 "xaxis": {
                     "title": "(Not-NaN) Median",
@@ -112,7 +112,7 @@ def summarize(
             [
                 Series(no_, la_, name="All"),
             ],
-            layout={
+            LAYOUT_TEMPLATE={
                 "title": title,
                 "xaxis": {
                     "title": "(Not-NaN) Number",

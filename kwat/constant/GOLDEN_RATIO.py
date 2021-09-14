@@ -1,1 +1,1 @@
-golden_ratio = 1.618
+GOLDEN_RATIO = 1.618
