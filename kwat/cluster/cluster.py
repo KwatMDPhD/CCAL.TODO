@@ -6,7 +6,7 @@ def cluster(
     di="euclidean",
     li="ward",
     op=False,
-    n_cl=0,
+    n_gr=0,
     cr="maxclust",
 ):
 
@@ -17,4 +17,4 @@ def cluster(
         optimal_ordering=op,
     )
 
-    return leaves_list(li), fcluster(li, n_cl, criterion=cr)
+    return leaves_list(li), fcluster(li, n_gr, criterion=cr)
