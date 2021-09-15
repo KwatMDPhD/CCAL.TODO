@@ -5,11 +5,11 @@ def rename(na_, na_re, ke=True):
 
     n_na = len(na_)
 
-    re_ = full(n_na, "", dtype=object)
-
     n_su = 0
 
     fa_ = []
+
+    re_ = full(n_na, "", dtype=object)
 
     for ie, na in enumerate(na_):
 

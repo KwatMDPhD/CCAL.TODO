@@ -6,13 +6,15 @@ from ..dictionary import clean, rename as dictionary_rename
 
 def rename(na_, **ke_va):
 
-    na_ = [na.lower() for na in na_]
-
-    na_re = read_csv(
-        "{}cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
-        sep="\t",
-        index_col=0,
-        squeeze=True,
-    ).to_dict()
-
-    return dictionary_rename(na_, clean(na_re), **ke_va)
+    return dictionary_rename(
+        [na.lower() for na in na_],
+        clean(
+            read_csv(
+                "{}cell_line_name_rename.tsv.gz".format(DATA_DIRECTORY_PATH),
+                sep="\t",
+                index_col=0,
+                squeeze=True,
+            ).to_dict()
+        ),
+        **ke_va
+    )

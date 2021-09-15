@@ -5,17 +5,26 @@ from pandas import read_csv, read_excel
 from ..constant import DATA_DIRECTORY_PATH
 from ..dataframe import map_to
 from ..dictionary import clean, rename as dictionary_rename
+from ..string import split_and_get_first
 from ._read import _read
-from ._split import _split
+
+
+def _split(an):
+
+    if isinstance(an, str):
+
+        return an.split(sep="|")
+
+    else:
+
+        return []
 
 
 def rename(na_, **ke_va):
 
-    na_ = [na.split(sep=".", maxsplit=1)[0] for na in na_ if search(r"^ENS[TG]", na)]
-
     na_re = {}
 
-    for cg_st in [
+    for cg_re in [
         read_excel(
             "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
             usecols=[0, 10],
@@ -40,9 +49,9 @@ def rename(na_, **ke_va):
         ),
     ]:
 
-        for cg, st in cg_st.dropna().iteritems():
+        for cg, re in cg_re.dropna().iteritems():
 
-            na_re[cg] = st.split(sep=";", maxsplit=1)[0]
+            na_re[cg] = split_and_get_first(re, ";")
 
     na_re.update(
         map_to(
@@ -52,7 +61,7 @@ def rename(na_, **ke_va):
 
     na_re.update(
         map_to(
-            _read(None).drop(
+            _read({}).drop(
                 labels=[
                     "locus_group",
                     "locus_type",
@@ -75,4 +84,8 @@ def rename(na_, **ke_va):
         )
     )
 
-    return dictionary_rename(na_, clean(na_re), **ke_va)
+    return dictionary_rename(
+        [split_and_get_first(na, ".") for na in na_ if search(r"^ENS[TG]", na)],
+        clean(na_re),
+        **ke_va
+    )

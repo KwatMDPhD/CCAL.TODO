@@ -1,13 +1,11 @@
-def summarize(di, n_pr=8):
+def summarize(ke_va, n_pr=8):
 
-    print("{} keys and {} unique values:\n".format(len(di), len(set(di.values()))))
+    print(
+        "{} keys and {} unique values:\n".format(len(ke_va), len(set(ke_va.values())))
+    )
 
-    for ie, (ke, va) in enumerate(di.items()):
+    for ke, va in list(ke_va.items())[:n_pr]:
 
         print("{} => {}".format(ke, va))
 
-        if (ie + 1) == n_pr:
-
-            print("...")
-
-            break
+    print("...")

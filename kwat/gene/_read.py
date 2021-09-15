@@ -6,28 +6,20 @@ from ..constant import DATA_DIRECTORY_PATH
 
 def _read(co_se):
 
-    da = read_csv(
+    hg = read_csv(
         "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
         sep="\t",
         low_memory=False,
     )
 
-    if co_se is None:
+    se_ = full(hg.shape[0], True)
 
-        return da
+    for co, se in co_se.items():
 
-    else:
+        print("Selecting by {}: {}".format(co, se))
 
-        ge_ = da.loc[:, "symbol"].values
+        se_ &= array([an in se for an in hg.loc[:, co].values])
 
-        se_ = full(ge_.size, True)
+        print("{}/{}".format(se_.sum(), se_.size))
 
-        for co, se in co_se.items():
-
-            print("Selecting by {}: {}".format(co, se))
-
-            se_ &= array([an in se for an in da.loc[:, co].values])
-
-            print("{}/{}".format(se_.sum(), se_.size))
-
-        return da.loc[se_, :]
+    return hg.loc[se_, :]
