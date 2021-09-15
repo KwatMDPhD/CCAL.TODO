@@ -6,4 +6,4 @@ def error(da):
 
         assert not la_.isna().any(), "{} has Na.".format(na)
 
-        assert not la_.has_duplicates, "{} is duplicated.".format(na)
+        assert not la_.has_duplicates, "{} has duplicates.".format(na)

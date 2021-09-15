@@ -1,35 +1,31 @@
 from numpy import full, nan
-from pandas import DataFrame, Index, notna
+from pandas import DataFrame, Index
 
 from ..iterable import map_integer
 
 
-def pivot(la1_, la2_, an_, na1="Dimension 1", na2="Dimension 2", fu=None):
+def pivot(ro_, co_, an_, ron="Row Name", con="Column Name", fu=None):
 
-    la1_it = map_integer(la1_)[0]
+    ro_it = map_integer(ro_)[0]
 
-    la2_it = map_integer(la2_)[0]
+    co_it = map_integer(co_)[0]
 
-    an_la1_la2 = full([len(la1_it), len(la2_it)], nan)
+    an_ro_co = full([len(ro_it), len(co_it)], nan)
 
-    for la1, la2, an in zip(la1_, la2_, an_):
+    for ro, co, an in zip(ro_, co_, an_):
 
-        ie1 = la1_it[la1] - 1
+        ier = ro_it[ro] - 1
 
-        ie2 = la2_it[la2] - 1
+        iec = co_it[co] - 1
 
         if callable(fu):
 
-            anc = an_la1_la2[ie1, ie2]
+            an = fu(an_ro_co[ier, iec], an)
 
-            if notna(anc):
-
-                an = fu(anc, an)
-
-        an_la1_la2[ie1, ie2] = an
+        an_ro_co[ier, iec] = an
 
     return DataFrame(
-        data=an_la1_la2,
-        index=Index(data=la1_it, name=na1),
-        columns=Index(data=la2_it, name=na2),
+        data=an_ro_co,
+        index=Index(data=ro_it, name=ron),
+        columns=Index(data=co_it, name=con),
     )

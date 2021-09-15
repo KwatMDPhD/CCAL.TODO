@@ -3,28 +3,28 @@ from numpy.random import choice, seed
 from ..constant import RANDOM_SEED
 
 
-def sample(da, sh, ra=RANDOM_SEED, **ke):
+def sample(da, sh, ra=RANDOM_SEED, **ke_va):
 
-    si1, si2 = da.shape
+    n_ro, n_co = da.shape
 
-    sa1, sa2 = sh
+    n_ros, n_cos = sh
 
     seed(seed=ra)
 
-    if sa1 is not None:
+    if n_ros is not None:
 
-        if sa1 < 1:
+        if n_ros < 1:
 
-            sa1 = int(si1 * sa1)
+            n_ros = int(n_ro * n_ros)
 
-        da = da.iloc[choice(si1, size=sa1, **ke), :]
+        da = da.iloc[choice(n_ro, size=n_ros, **ke_va), :]
 
-    if sa2 is not None:
+    if n_cos is not None:
 
-        if sa2 < 1:
+        if n_cos < 1:
 
-            sa2 = int(si2 * sa2)
+            n_cos = int(n_co * n_cos)
 
-        da = da.iloc[:, choice(si2, size=sa2, **ke)]
+        da = da.iloc[:, choice(n_co, size=n_cos, **ke_va)]
 
     return da

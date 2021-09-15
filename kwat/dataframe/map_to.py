@@ -1,19 +1,19 @@
 def map_to(da, co, fu=None):
 
-    ro_co = {}
+    an_cov = {}
 
-    for ro, cov in zip(da.values, da.loc[:, co].values):
+    for an_, cov in zip(da.values, da.loc[:, co].values):
 
-        for rov in ro:
+        for an in an_:
 
             if fu is None:
 
-                ro_co[rov] = cov
+                an_cov[an] = cov
 
             else:
 
-                for rovf in fu(rov):
+                for anr in fu(an):
 
-                    ro_co[rovf] = cov
+                    an_cov[anr] = cov
 
-    return ro_co
+    return an_cov

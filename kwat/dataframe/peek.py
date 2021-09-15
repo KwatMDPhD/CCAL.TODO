@@ -1,4 +1,4 @@
-def peek(da, n_ro=4, n_co=2):
+def peek(da, n_ro=8, n_co=4):
 
     print("-" * 80)
 

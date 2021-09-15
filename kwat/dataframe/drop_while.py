@@ -1,7 +1,7 @@
 from .drop import drop
 
 
-def drop_while(da, ax=None, **ke):
+def drop_while(da, ax=None, **ke_va):
 
     sh1 = da.shape
 
@@ -13,7 +13,7 @@ def drop_while(da, ax=None, **ke):
 
     while True:
 
-        da = drop(da, ax, **ke)
+        da = drop(da, ax, **ke_va)
 
         sh2 = da.shape
 
@@ -31,4 +31,6 @@ def drop_while(da, ax=None, **ke):
 
             ax = 0
 
-        re = True
+        if not re:
+
+            re = True
