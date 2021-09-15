@@ -5,10 +5,4 @@ def get_bandwidth(nu_po_di, me="ISJ"):
 
     me = _bw_methods[me]
 
-    ba_ = []
-
-    for ie in range(nu_po_di.shape[1]):
-
-        ba_.append(me(nu_po_di[:, [ie]]))
-
-    return ba_
+    return [me(nu_.reshape([-1, 1])) for nu_ in nu_po_di.T]

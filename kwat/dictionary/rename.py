@@ -5,8 +5,6 @@ def rename(na_, na_re, ke=True):
 
     n_na = len(na_)
 
-    n_su = 0
-
     fa_ = []
 
     re_ = full(n_na, "", dtype=object)
@@ -14,8 +12,6 @@ def rename(na_, na_re, ke=True):
     for ie, na in enumerate(na_):
 
         if na in na_re:
-
-            n_su += 1
 
             re = na_re[na]
 
@@ -33,14 +29,10 @@ def rename(na_, na_re, ke=True):
 
         re_[ie] = re
 
+    n_su = n_na - len(fa_)
+
     fa_ = sort(unique(fa_))
 
-    n_fa = fa_.size
-
-    print(
-        "Renamed {} ({:.2%}) failed {} ({:.2%})".format(
-            n_su, n_su / n_na, n_fa, n_fa / n_na
-        )
-    )
+    print("Renamed {} ({:.2%}) (failed {})".format(n_su, n_su / n_na, fa_.size))
 
     return re_, fa_

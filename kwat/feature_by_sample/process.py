@@ -1,7 +1,7 @@
 from numpy import apply_along_axis, nan
 from pandas import DataFrame
 
-from ..array import log, normalize, shift
+from ..array import log, normalize
 from ..dataframe import drop, drop_while
 from .summarize import summarize
 
@@ -14,18 +14,18 @@ def process(
     axd=None,
     n_no=None,
     n_un=None,
-    lo=None,
+    ba=None,
     sh=None,
-    no=None,
+    me=None,
     axn=None,
     mi=None,
     ma=None,
-    **ke,
+    **ke_va,
 ):
 
-    summarize(nu_fe_sa, title="Original", **ke)
+    summarize(nu_fe_sa, title="Original", **ke_va)
 
-    te = "Dropping {}: {}..."
+    te = "Dropping {}: {}"
 
     if 0 < len(fe_):
 
@@ -33,27 +33,27 @@ def process(
 
         nu_fe_sa = nu_fe_sa.drop(labels=fe_, errors="ignore")
 
-        summarize(nu_fe_sa, title="Dropped features", **ke)
+        summarize(nu_fe_sa, title="Dropped features", **ke_va)
 
     if 0 < len(sa_):
 
-        print(te.format(nu_fe_sa.COLUMNS.name, sa_))
+        print(te.format(nu_fe_sa.columns.name, sa_))
 
         nu_fe_sa = nu_fe_sa.drop(labels=sa_, axis=1, errors="ignore")
 
-        summarize(nu_fe_sa, title="Dropped samples", **ke)
+        summarize(nu_fe_sa, title="Dropped samples", **ke_va)
 
     if na is not None:
 
-        print("NaNizing <= {}...".format(na))
+        print("NaNizing <= {}".format(na))
 
         nu_fe_sa[nu_fe_sa <= na] = nan
 
-        summarize(nu_fe_sa, title="NaNized", **ke)
+        summarize(nu_fe_sa, title="NaNized", **ke_va)
 
     if n_no is not None or n_un is not None:
 
-        print("Dropping (axd={}, n_no={}, n_un={})...".format(axd, n_no, n_un))
+        print("Dropping (axd={}, n_no={}, n_un={})".format(axd, n_no, n_un))
 
         if axd is None:
 
@@ -74,44 +74,38 @@ def process(
 
         if be != nu_fe_sa.shape:
 
-            summarize(nu_fe_sa, title="Dropped", **ke)
+            summarize(nu_fe_sa, title="Dropped", **ke_va)
 
-    if lo is not None:
+    if ba is not None:
 
-        print("Logging (sh={}, lo={})...".format(sh, lo))
-
-        nua_fe_sa = nu_fe_sa.values
-
-        if sh is not None:
-
-            nua_fe_sa = shift(nua_fe_sa, sh)
+        print("Logging (ba={}, sh={})...".format(ba, sh))
 
         nu_fe_sa = DataFrame(
-            data=log(nua_fe_sa, ba=lo),
+            data=log(nu_fe_sa.values, ba=ba, sh=sh),
             index=nu_fe_sa.index,
-            COLUMNS=nu_fe_sa.COLUMNS,
+            columns=nu_fe_sa.COLUMNS,
         )
 
-        summarize(nu_fe_sa, title="Logged", **ke)
+        summarize(nu_fe_sa, title="Logged", **ke_va)
 
-    if no is not None:
+    if me is not None:
 
-        print("Axis-{} {} normalizing...".format(axn, no))
+        print("Axis-{} {} normalizing".format(axn, me))
 
         nu_fe_sa = DataFrame(
-            data=apply_along_axis(normalize, axn, nu_fe_sa.values, no),
+            data=apply_along_axis(normalize, axn, nu_fe_sa.values, me),
             index=nu_fe_sa.index,
-            COLUMNS=nu_fe_sa.COLUMNS,
+            columns=nu_fe_sa.COLUMNS,
         )
 
-        summarize(nu_fe_sa, title="Normalized", **ke)
+        summarize(nu_fe_sa, title="Normalized", **ke_va)
 
     if mi is not None or ma is not None:
 
-        print("Clipping |{} - {}|...".format(mi, ma))
+        print("Clipping |{} - {}|".format(mi, ma))
 
         nu_fe_sa = nu_fe_sa.clip(lower=mi, upper=ma)
 
-        summarize(nu_fe_sa, title="Clipped", **ke)
+        summarize(nu_fe_sa, title="Clipped", **ke_va)
 
     return nu_fe_sa
