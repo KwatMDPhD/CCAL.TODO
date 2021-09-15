@@ -32,14 +32,14 @@ def rename(na_, **ke_va):
             squeeze=True,
         ),
         read_csv(
-            "{}humanmethylation450_15017482_v1_2.csv.gz".format(DATA_DIRECTORY_PATH),
+            "{}HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
             skiprows=7,
             usecols=[0, 21],
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}infinium_methylationepic_v_1_0_b5_manifest_file.csv.gz".format(
+            "{}infinium-methylationepic-v-1-0-b5-manifest-file.csv.gz".format(
                 DATA_DIRECTORY_PATH
             ),
             skiprows=7,
