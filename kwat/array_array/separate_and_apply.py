@@ -5,8 +5,8 @@ from .apply import apply
 
 def separate_and_apply(bi___, nu___, fu):
 
-    bo0___ = bi___ == 0
+    bi0___ = bi___ == 0
 
-    bo1___ = logical_not(bo0___)
+    bi1___ = logical_not(bi0___)
 
-    return apply(nu___[bo0___], nu___[bo1___], fu)
+    return apply(nu___[bi0___], nu___[bi1___], fu)
