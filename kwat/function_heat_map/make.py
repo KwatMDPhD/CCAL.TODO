@@ -6,9 +6,9 @@ from ..array import apply, check_extreme
 from ..cluster import cluster
 from ..constant import RANDOM_SEED, SAMPLE_FRACTION
 from ..dictionary import merge
+from ..matrix import apply_with_vector
 from ..plot import plot_plotly
-from ..row import apply_with_vector
-from ..significance import get_margin_of_error, get_p_value_q_value
+from ..significance import get_margin_of_error, get_p_value_and_q_value
 from ._make_data_annotation import _make_data_annotation
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
@@ -38,7 +38,7 @@ def make(
 
     ro_ = da.index.values
 
-    ta = ta.loc[ta.index.intersection(da.COLUMNS)]
+    ta = ta.loc[ta.index.intersection(da.columns)]
 
     if ac is not None:
 
@@ -52,23 +52,27 @@ def make(
 
     n_co = co_.size
 
-    taa = ta.values
+    tav = ta.values
 
-    daa = da.values
+    dav = da.values
 
     if callable(fu):
 
+        def _apply_with_vector(nu_, nu_ro_co):
+
+            return apply_with_vector(nu_, nu_ro_co, fu, n_jo=n_jo)
+
+        print("Computing score with {}".format(fu.__name__))
+
         seed(seed=ra)
 
-        print("Score ({})...".format(fu.__name__))
-
-        sc_ = apply_with_vector(taa, daa, fu, n_jo=n_jo)
+        sc_ = _apply_with_vector(tav, dav)
 
         if 0 < n_sa:
 
-            print("0.95 MoE ({} sample)...".format(n_sa))
+            print("Computing margin of error with {} sampling".format(n_sa))
 
-            sc_ro_sa = full([n_ro, n_sa], nan)
+            scs_ro_sa = full([n_ro, n_sa], nan)
 
             n_ch = int(n_co * SAMPLE_FRACTION)
 
@@ -76,11 +80,9 @@ def make(
 
                 ie_ = choice(n_co, size=n_ch, replace=False)
 
-                sc_ro_sa[:, ie] = apply_with_vector(
-                    taa[ie_], daa[:, ie_], fu, n_jo=n_jo
-                )
+                scs_ro_sa[:, ie] = _apply_with_vector(tav[ie_], dav[:, ie_])
 
-            ma_ = array([apply(ro, get_margin_of_error) for ro in sc_ro_sa])
+            ma_ = array([apply(scs_, get_margin_of_error) for scs_ in scs_ro_sa])
 
         else:
 
@@ -88,19 +90,19 @@ def make(
 
         if 0 < n_sh:
 
-            print("P-Value and Q-Value ({} shuffle)...".format(n_sh))
+            print("Computing p-value and q-value with {} shuffling".format(n_sh))
 
-            sc_ro_sh = full([n_ro, n_sh], nan)
+            scs_ro_sh = full([n_ro, n_sh], nan)
 
-            taac = taa.copy()
+            tavc = tav.copy()
 
             for ie in range(n_sh):
 
-                shuffle(taac)
+                shuffle(tavc)
 
-                sc_ro_sh[:, ie] = apply_with_vector(taac, daa, fu, n_jo=n_jo)
+                scs_ro_sh[:, ie] = _apply_with_vector(tavc, dav)
 
-            pv_, qv_ = get_p_value_q_value(sc_, sc_ro_sh.ravel(), "<>")
+            pv_, qv_ = get_p_value_and_q_value(sc_, scs_ro_sh.ravel(), "<>")
 
         else:
 
@@ -111,7 +113,7 @@ def make(
         fu = DataFrame(
             data=array([sc_, ma_, pv_, qv_]).T,
             index=ro_,
-            COLUMNS=["Score", "MoE", "P-Value", "Q-Value"],
+            columns=["Score", "Margin of Error", "P-Value", "Q-Value"],
         )
 
     else:
@@ -126,47 +128,47 @@ def make(
 
     if pl:
 
-        fua = fu.values
+        fuv = fu.values
 
         ro_ = fu.index
 
         da = da.loc[ro_, :]
 
-        daa = da.values
+        dav = da.values
 
-        if n_pl is not None and n_pl < (n_ro / 2):
+        if 0 < n_pl < (n_ro / 2):
 
-            ex_ = check_extreme(fua[:, 0], "<>", n_ex=n_pl)
+            ex_ = check_extreme(fuv[:, 0], "<>", n_ex=n_pl)
 
-            fua = fua[ex_]
+            fuv = fuv[ex_]
 
-            daa = daa[ex_]
+            dav = dav[ex_]
 
             ro_ = ro_[ex_]
 
-        taap, mit, mat = _process_target(taa, tyt, st)
+        tavp, mit, mat = _process_target(tav, tyt, st)
 
-        daap, mid, mad = _process_data(daa, tyd, st)
+        davp, mid, mad = _process_data(dav, tyd, st)
 
         if tyt != "continuous":
 
-            for gr, si in zip(*unique(taap, return_counts=True)):
+            for gr, n_me in array(unique(tavp, return_counts=True)).T:
 
-                if 2 < si:
+                if 2 < n_me:
 
-                    print("Clustering {}...".format(gr))
+                    print("Clustering {}".format(gr))
 
-                    ie_ = where(taap == gr)[0]
+                    ie_ = where(tavp == gr)[0]
 
-                    iec_ = ie_[cluster(daap.T[ie_])[0]]
+                    iec_ = ie_[cluster(davp.T[ie_])[0]]
 
-                    taap[ie_] = taap[iec_]
+                    tavp[ie_] = tavp[iec_]
 
-                    daap[:, ie_] = daap[:, iec_]
+                    davp[:, ie_] = davp[:, iec_]
 
                     co_[ie_] = co_[iec_]
 
-        n_ro = daap.shape[0] + 2
+        n_ro = davp.shape[0] + 2
 
         he = 1 / n_ro
 
@@ -188,45 +190,48 @@ def make(
                     "domain": [0, 1 - he * 2],
                     "showticklabels": False,
                 },
-                "ANNOTATION_TEMPLATEs": _make_target_annotation(1 - he / 2, ta.name),
+                "annotations": _make_target_annotation(1 - he / 2, ta.name),
             },
             LAYOUT_TEMPLATE,
         )
 
-        LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += _make_data_annotation(
-            1 - he / 2 * 3, True, he, ro_, fua
+        LAYOUT_TEMPLATE["annotations"] += _make_data_annotation(
+            1 - he / 2 * 3, True, he, ro_, fuv
         )
 
         if pa != "":
 
             pa = "{}function_heat_map.html".format(pa)
 
+        heatmap_template = {
+            "x": co_,
+            **HEATMAP_TEMPLATE,
+        }
+
         plot_plotly(
             {
                 "data": [
                     {
                         "yaxis": "y2",
-                        "z": taap.reshape([1, -1]),
-                        "text": taa.reshape([1, -1]),
-                        "x": co_,
+                        "z": tavp.reshape([1, -1]),
+                        "text": tav.reshape([1, -1]),
                         "zmin": mit,
                         "zmax": mat,
                         "colorscale": TYPE_COLORSCALE[tyt],
-                        **HEATMAP_TEMPLATE,
+                        **heatmap_template,
                     },
                     {
                         "yaxis": "y",
-                        "z": daap[::-1],
-                        "text": daa[::-1],
+                        "z": davp[::-1],
+                        "text": dav[::-1],
                         "y": ro_[::-1],
-                        "x": co_,
                         "zmin": mid,
                         "zmax": mad,
                         "colorscale": TYPE_COLORSCALE[tyd],
-                        **HEATMAP_TEMPLATE,
+                        **heatmap_template,
                     },
                 ],
-                "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
+                "layout": LAYOUT_TEMPLATE,
             },
             pa=pa,
         )

@@ -1,4 +1,4 @@
 HEATMAP_TEMPLATE = {
-    "type": "HEATMAP_TEMPLATE",
+    "type": "heatmap",
     "showscale": False,
 }
