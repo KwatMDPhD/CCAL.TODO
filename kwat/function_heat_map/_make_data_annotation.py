@@ -7,19 +7,17 @@ def _get_statistic_x(ie):
     return 1.08 + ie / 6.4
 
 
-def _make_data_annotation(y, la, he, text_, fu):
+def _make_data_annotation(yc, la, he, ro_, st):
 
-    ANNOTATION_TEMPLATEs = []
-
-    n_ch = 27
+    an_ = []
 
     if la:
 
         for ie, text in enumerate(["Score (\u0394)", "P-Value", "Q-Value"]):
 
-            ANNOTATION_TEMPLATEs.append(
+            an_.append(
                 {
-                    "y": y,
+                    "y": yc,
                     "x": _get_statistic_x(ie),
                     "xanchor": "center",
                     "text": "<b>{}</b>".format(text),
@@ -27,36 +25,36 @@ def _make_data_annotation(y, la, he, text_, fu):
                 }
             )
 
-    y -= he
+    yc -= he
 
-    for ie1 in range(text_.size):
+    for iey in range(ro_.size):
 
-        ANNOTATION_TEMPLATEs.append(
+        an_.append(
             {
-                "y": y,
+                "y": yc,
                 "x": 0,
                 "xanchor": "right",
-                "text": "{}".format(trim(text_[ie1])),
+                "text": "{}".format(trim(ro_[iey])),
                 **ANNOTATION_TEMPLATE,
             }
         )
 
-        sc, ma, pv, qv = fu[ie1]
+        sc, ma, pv, qv = st[iey]
 
-        for ie2, text in enumerate(
+        for iex, text in enumerate(
             ["{:.2f} ({:.2f})".format(sc, ma), "{:.2e}".format(pv), "{:.2e}".format(qv)]
         ):
 
-            ANNOTATION_TEMPLATEs.append(
+            an_.append(
                 {
-                    "y": y,
-                    "x": _get_statistic_x(ie2),
+                    "y": yc,
+                    "x": _get_statistic_x(iex),
                     "xanchor": "center",
                     "text": text,
                     **ANNOTATION_TEMPLATE,
                 }
             )
 
-        y -= he
+        yc -= he
 
-    return ANNOTATION_TEMPLATEs
+    return an_
