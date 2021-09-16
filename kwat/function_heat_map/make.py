@@ -14,6 +14,7 @@ from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
 from .HEATMAP_TEMPLATE import HEATMAP_TEMPLATE
+from .LAYOUT_TEMPLATE import LAYOUT_TEMPLATE
 from .TYPE_COLORSCALE import TYPE_COLORSCALE
 
 
@@ -31,8 +32,7 @@ def make(
     tyt="continuous",
     tyd="continuous",
     st=nan,
-    LAYOUT_TEMPLATE=None,
-    title="Function Heat Map",
+    layout=None,
     pa="",
 ):
 
@@ -172,30 +172,33 @@ def make(
 
         he = 1 / n_ro
 
-        if LAYOUT_TEMPLATE is None:
+        if layout is None:
 
-            LAYOUT_TEMPLATE = {}
+            layout = {}
 
-        LAYOUT_TEMPLATE = merge(
-            {
-                "height": max(640, 24 * n_ro),
-                "title": {
-                    "text": title,
+        layout = merge(
+            merge(
+                {
+                    "height": max(640, 24 * n_ro),
+                    "title": {
+                        "text": "Function Heat Map",
+                    },
+                    "yaxis2": {
+                        "domain": [1 - he, 1],
+                        "showticklabels": False,
+                    },
+                    "yaxis": {
+                        "domain": [0, 1 - he * 2],
+                        "showticklabels": False,
+                    },
+                    "annotations": _make_target_annotation(1 - he / 2, ta.name),
                 },
-                "yaxis2": {
-                    "domain": [1 - he, 1],
-                    "showticklabels": False,
-                },
-                "yaxis": {
-                    "domain": [0, 1 - he * 2],
-                    "showticklabels": False,
-                },
-                "annotations": _make_target_annotation(1 - he / 2, ta.name),
-            },
-            LAYOUT_TEMPLATE,
+                LAYOUT_TEMPLATE,
+            ),
+            layout,
         )
 
-        LAYOUT_TEMPLATE["annotations"] += _make_data_annotation(
+        layout["annotations"] += _make_data_annotation(
             1 - he / 2 * 3, True, he, ro_, fuv
         )
 
@@ -231,7 +234,7 @@ def make(
                         **heatmap_template,
                     },
                 ],
-                "layout": LAYOUT_TEMPLATE,
+                "layout": layout,
             },
             pa=pa,
         )
