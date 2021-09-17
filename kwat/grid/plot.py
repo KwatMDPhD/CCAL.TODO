@@ -14,8 +14,6 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
 
     co__ = get_1d_grid(co_po_di)
 
-    nu_po_di = nu_.reshape([co_.size for co_ in co__])
-
     for ie, co_ in enumerate(co__):
 
         print(
@@ -24,7 +22,9 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
             )
         )
 
-    print("Number: min={:.2e} max={:.2e}".format(nu_po_di.min(), nu_po_di.max()))
+    print("Number: min={:.2e} max={:.2e}".format(nu_.min(), nu_.max()))
+
+    nu_po_di = nu_.reshape([co_.size for co_ in co__])
 
     if n_di == 1:
 
@@ -36,7 +36,7 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
                         "y": nu_po_di,
                     }
                 ],
-                "LAYOUT_TEMPLATE": {
+                "layout": {
                     "xaxis": {
                         "title": {
                             "text": di_[0],
@@ -60,11 +60,11 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
                 index=Index(
                     data=["{:.2e} *".format(co) for co in co__[0]], name=di_[0]
                 ),
-                COLUMNS=Index(
+                columns=Index(
                     data=["* {:.2e}".format(co) for co in co__[1]], name=di_[1]
                 ),
             ),
-            LAYOUT_TEMPLATE={
+            layout={
                 "title": {
                     "text": nu,
                 },

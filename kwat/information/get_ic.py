@@ -7,27 +7,27 @@ from ..probability import get_probability
 from .get_kld import get_kld
 
 
-def get_ic(ve1, ve2):
+def get_ic(nu1_, nu2_):
 
-    if 1 in [unique(ve1).size, unique(ve2).size]:
+    if 1 in [unique(nu1_).size, unique(nu2_).size]:
 
         return nan
 
-    ve1 = normalize(ve1, "-0-")
+    nu1_ = normalize(nu1_, "-0-")
 
-    ve2 = normalize(ve2, "-0-")
+    nu2_ = normalize(nu2_, "-0-")
 
     ex = 1 / 3
 
     n_co = 24
 
-    nu_di_di = array([ve1, ve2]).T
+    nu_di_di = array([nu1_, nu2_]).T
 
-    co1_ = make_1d_grid(ve1.min(), ve1.max(), ex, n_co)
+    co1_ = make_1d_grid(nu1_.min(), nu1_.max(), ex, n_co)
 
-    co2_ = make_1d_grid(ve2.min(), ve2.max(), ex, n_co)
+    co2_ = make_1d_grid(nu2_.min(), nu2_.max(), ex, n_co)
 
-    pe = pearsonr(ve1, ve2)[0]
+    pe = pearsonr(nu1_, nu2_)[0]
 
     fa = 1 - abs(pe) * 2 / 3
 

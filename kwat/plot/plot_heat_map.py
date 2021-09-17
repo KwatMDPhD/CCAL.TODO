@@ -23,7 +23,7 @@ def plot_heat_map(
     colorscale2=CATEGORICAL_COLORSCALE,
     gr1_la=None,
     gr2_la=None,
-    LAYOUT_TEMPLATE=None,
+    layout=None,
     ANNOTATION_TEMPLATE1=None,
     ANNOTATION_TEMPLATE2=None,
     pa="",
@@ -47,9 +47,9 @@ def plot_heat_map(
 
     domain = [0, 0.95]
 
-    if LAYOUT_TEMPLATE is None:
+    if layout is None:
 
-        LAYOUT_TEMPLATE = {}
+        layout = {}
 
     axis = {
         "domain": [0.96, 1],
@@ -59,7 +59,7 @@ def plot_heat_map(
         "showticklabels": False,
     }
 
-    LAYOUT_TEMPLATE = merge(
+    layout = merge(
         {
             "yaxis": {
                 "title": "{} (n={})".format(nu_an_an.index.name, nu_an_an.shape[0]),
@@ -73,7 +73,7 @@ def plot_heat_map(
             "xaxis2": axis,
             "ANNOTATION_TEMPLATEs": [],
         },
-        LAYOUT_TEMPLATE,
+        layout,
     )
 
     colorbar_x = 1.04
@@ -119,7 +119,7 @@ def plot_heat_map(
 
                 ANNOTATION_TEMPLATE1 = {}
 
-            LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += [
+            layout["ANNOTATION_TEMPLATEs"] += [
                 merge(
                     {
                         "xref": "x2",
@@ -159,7 +159,7 @@ def plot_heat_map(
 
                 ANNOTATION_TEMPLATE2 = {}
 
-            LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += [
+            layout["ANNOTATION_TEMPLATEs"] += [
                 merge(
                     {
                         "yref": "y2",
@@ -178,7 +178,7 @@ def plot_heat_map(
     plot_plotly(
         {
             "data": data,
-            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
+            "layout": layout,
         },
         pa=pa,
     )

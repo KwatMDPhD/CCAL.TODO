@@ -1,47 +1,38 @@
-from numpy import absolute, integer, isnan, median, nan, where
+from numpy import absolute, integer, isnan, nan, where
 from plotly.colors import make_colorscale
 
 from ..array import get_not_nan_unique
 from ..dictionary import merge
 from ..geometry import make_convex_hull, make_delaunay_triangulation
-from ..plot import (
-    CATEGORICAL_COLORSCALE,
-    COLORBAR_TEMPLATE,
-    CONTINUOUS_COLORSCALE,
-    get_color,
-    plot_plotly,
-)
+from ..plot import COLORBAR_TEMPLATE, CONTINUOUS_COLORSCALE, GROUP_COLOR, plot_plotly
 
 
 def plot(
     nu_no_di,
     nu_po_di,
-    non,
-    no_,
-    pon,
-    po_,
     sh=True,
-    notrace=None,
-    potrace=None,
+    ntrace=None,
+    ptrace=None,
     gr_=None,
-    grc=CATEGORICAL_COLORSCALE,
+    gr_co=GROUP_COLOR,
     co_=None,
     bap_=None,
     bag_=None,
-    scn=None,
-    sc_=None,
-    scc=CONTINUOUS_COLORSCALE,
-    scopacity=0.8,
-    scnopacity=0.08,
+    po_sc=None,
+    scolorscale=CONTINUOUS_COLORSCALE,
+    sopacity=0.8,
+    snopacity=0.08,
     poh_=(),
     pa="",
 ):
 
-    title = "{} {} and {} {}".format(no_.size, non, po_.size, pon)
+    title = "{} {} and {} {}".format(
+        nu_no_di.shape[0], nu_no_di.index.name, nu_po_di.shape[0], nu_po_di.index.name
+    )
 
-    if scn is not None:
+    if po_sc is not None:
 
-        title = "{}<br>{}".format(title, scn)
+        title = "{}<br>{}".format(title, po_sc.name)
 
     axis = {
         "showgrid": False,
@@ -50,7 +41,7 @@ def plot(
         "showticklabels": False,
     }
 
-    LAYOUT_TEMPLATE = {
+    layout = {
         "height": 880,
         "width": 880,
         "title": {
@@ -64,7 +55,7 @@ def plot(
         },
         "yaxis": axis,
         "xaxis": axis,
-        "ANNOTATION_TEMPLATEs": [],
+        "annotations": [],
     }
 
     data = []
@@ -86,18 +77,18 @@ def plot(
         }
     )
 
-    if notrace is None:
+    if ntrace is None:
 
-        notrace = {}
+        ntrace = {}
 
     data.append(
         merge(
             {
                 "legendgroup": "Node",
-                "name": non,
-                "y": nu_no_di[:, 0],
-                "x": nu_no_di[:, 1],
-                "text": no_,
+                "name": nu_no_di.index.name,
+                "y": nu_no_di.values[:, 0],
+                "x": nu_no_di.values[:, 1],
+                "text": nu_no_di.index.values,
                 "mode": "markers",
                 "marker": {
                     "size": 20,
@@ -109,7 +100,7 @@ def plot(
                 },
                 "hoverinfo": "text",
             },
-            notrace,
+            ntrace,
         )
     )
 
@@ -119,10 +110,10 @@ def plot(
 
         arrowcolor = "#ebf6f7"
 
-        LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"] += [
+        layout["annotations"] += [
             {
-                "y": co0,
-                "x": co1,
+                "y": co1,
+                "x": co2,
                 "text": "<b>{}</b>".format(no),
                 "font": {
                     "size": 16,
@@ -136,7 +127,7 @@ def plot(
                 "arrowwidth": arrowwidth,
                 "arrowcolor": arrowcolor,
             }
-            for no, (co0, co1) in zip(no_, nu_no_di)
+            for no, (co1, co2) in nu_no_di.iterrows()
         ]
 
     if bag_ is not None:
@@ -156,15 +147,15 @@ def plot(
             }
         )
 
-        n_gr = int(get_not_nan_unique(bag_).max() + 1)
+        gru_ = get_not_nan_unique(bag_)
 
-        gr_co = {gr: get_color(grc, gr / max(1, n_gr - 1)) for gr in range(n_gr)}
+        n_gr = gru_.size
 
-        for gr in range(n_gr):
+        for gr in gru_:
 
             data.append(
                 {
-                    "type": "HEATMAP_TEMPLATE",
+                    "type": "heatmap",
                     "z": where(bag_ == gr, bap_, nan),
                     "y": co_,
                     "x": co_,
@@ -174,13 +165,13 @@ def plot(
                 }
             )
 
-    if potrace is None:
+    if ptrace is None:
 
-        potrace = {}
+        ptrace = {}
 
-    potrace = merge(
+    ptrace = merge(
         {
-            "name": pon,
+            "name": nu_po_di.index.name,
             "mode": "markers",
             "marker": {
                 "size": 16,
@@ -192,18 +183,42 @@ def plot(
             },
             "hoverinfo": "text",
         },
-        potrace,
+        ptrace,
     )
 
-    if sc_ is not None:
+    if gr_ is not None:
+
+        for gr in range(gru_):
+
+            name = "Group {}".format(gr)
+
+            nu_po_di = nu_po_di.loc[gr_ == gr, :]
+
+            data.append(
+                merge(
+                    ptrace,
+                    {
+                        "legendgroup": name,
+                        "name": name,
+                        "y": nu_po_di.values[:, 0],
+                        "x": nu_po_di.values[:, 1],
+                        "text": nu_po_di.index.values,
+                        "marker": {
+                            "color": gr_co[gr],
+                        },
+                    },
+                )
+            )
+
+    elif po_sc is not None:
+
+        sc_ = po_sc.values
 
         ie_ = absolute(sc_).argsort()
 
         sc_ = sc_[ie_]
 
-        po_ = po_[ie_]
-
-        nu_po_di = nu_po_di[ie_]
+        nu_po_di = nu_po_di.iloc[ie_, :]
 
         scn_ = get_not_nan_unique(sc_)
 
@@ -216,81 +231,57 @@ def plot(
         else:
 
             tickvals = [
-                scn_.min(),
-                median(scn_),
-                scn_.mean(),
-                scn_.max(),
+                sc_.min(),
+                sc_.median(),
+                sc_.mean(),
+                sc_.max(),
             ]
 
-            ticktext = ["{:.2e}".format(nu) for nu in tickvals]
+            ticktext = ["{:.2e}".format(ti) for ti in tickvals]
 
         data.append(
             merge(
-                potrace,
+                ptrace,
                 {
-                    "y": nu_po_di[:, 0],
-                    "x": nu_po_di[:, 1],
-                    "text": po_,
+                    "y": nu_po_di.values[:, 0],
+                    "x": nu_po_di.values[:, 1],
+                    "text": nu_po_di.index.values,
                     "marker": {
                         "color": sc_,
-                        "colorscale": scc,
+                        "colorscale": scolorscale,
                         "colorbar": {
                             **COLORBAR_TEMPLATE,
                             "tickmode": "array",
                             "tickvals": tickvals,
                             "ticktext": ticktext,
                         },
-                        "opacity": where(isnan(sc_), scnopacity, scopacity),
+                        "opacity": where(isnan(sc_), snopacity, sopacity),
                     },
                 },
             )
         )
 
-    elif gr_ is not None:
-
-        for gr in range(n_gr):
-
-            name = "Group {}".format(gr)
-
-            is_ = gr_ == gr
-
-            data.append(
-                merge(
-                    potrace,
-                    {
-                        "legendgroup": name,
-                        "name": name,
-                        "y": nu_po_di[is_, 0],
-                        "x": nu_po_di[is_, 1],
-                        "text": po_[is_],
-                        "marker": {
-                            "color": gr_co[gr],
-                        },
-                    },
-                )
-            )
-
     else:
 
         data.append(
             merge(
-                potrace,
+                ptrace,
                 {
-                    "y": nu_po_di[:, 0],
-                    "x": nu_po_di[:, 1],
-                    "text": po_,
+                    "y": nu_po_di.values[:, 0],
+                    "x": nu_po_di.values[:, 1],
+                    "text": nu_po_di.index.values,
                 },
             )
         )
 
     for po in poh_:
 
-        co0, co1 = nu_po_di[po_ == po][0]
+        co1, co2 = nu_po_di.loc[po, :]
 
-        LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"].append(
+        layout["annotations"].append(
             {
-                "y": co0,
-                "x": co1,
+                "y": co1,
+                "x": co2,
                 "text": "<b>{}</b>".format(po),
                 "arrowhead": 2,
                 "arrowwidth": 2,
@@ -303,7 +294,7 @@ def plot(
     plot_plotly(
         {
             "data": data,
-            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
+            "layout": layout,
         },
         pa=pa,
     )
