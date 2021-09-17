@@ -179,14 +179,14 @@ def _parse_block(bl):
     return ke_va
 
 
-def get(gs, *ar_, **ke_va):
+def get(gs, *ar_, **ke_ar):
 
     pa = download(
         "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
             gs[:-3], gs
         ),
         *ar_,
-        **ke_va,
+        **ke_ar,
     )
 
     pl_ = {}

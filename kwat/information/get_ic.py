@@ -7,27 +7,27 @@ from ..probability import get_probability
 from .get_kld import get_kld
 
 
-def get_ic(nu1_, nu2_):
+def get_ic(ve1, ve2):
 
-    if 1 in [unique(nu1_).size, unique(nu2_).size]:
+    if 1 in [unique(ve1).size, unique(ve2).size]:
 
         return nan
 
-    nu1_ = normalize(nu1_, "-0-")
+    ve1 = normalize(ve1, "-0-")
 
-    nu2_ = normalize(nu2_, "-0-")
+    ve2 = normalize(ve2, "-0-")
 
     ex = 1 / 3
 
     n_co = 24
 
-    nu_po_di = array([nu1_, nu2_]).T
+    nu_po_di = array([ve1, ve2]).T
 
-    co1_ = make_1d_grid(nu1_.min(), nu1_.max(), ex, n_co)
+    co1_ = make_1d_grid(ve1.min(), ve1.max(), ex, n_co)
 
-    co2_ = make_1d_grid(nu2_.min(), nu2_.max(), ex, n_co)
+    co2_ = make_1d_grid(ve2.min(), ve2.max(), ex, n_co)
 
-    pe = pearsonr(nu1_, nu2_)[0]
+    pe = pearsonr(ve1, ve2)[0]
 
     fa = 1 - abs(pe) * 2 / 3
 
@@ -38,17 +38,17 @@ def get_ic(nu1_, nu2_):
         bw=fa,
     )[1]
 
-    pr_di_di = pr_.reshape([n_co] * 2)
+    pr_di1_di2 = pr_.reshape([n_co] * 2)
 
     re1 = co1_[1] - co1_[0]
 
     re2 = co2_[1] - co2_[0]
 
-    pr1 = pr_di_di.sum(axis=1) * re2
+    pr1_ = pr_di1_di2.sum(axis=1) * re2
 
-    pr2 = pr_di_di.sum(axis=0) * re1
+    pr2_ = pr_di1_di2.sum(axis=0) * re1
 
-    jo_ = outer(pr1, pr2).ravel()
+    jo_ = outer(pr1_, pr2_).ravel()
 
     mu = get_kld(pr_, jo_).sum() * re1 * re2
 

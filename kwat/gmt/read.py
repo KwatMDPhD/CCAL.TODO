@@ -25,10 +25,10 @@ def _read(pa):
 
 def read(pa_):
 
-    se_ge = {}
+    se_ge_ = {}
 
     for pa in pa_:
 
-        se_ge.update(_read(pa))
+        se_ge_.update(_read(pa))
 
-    return se_ge
+    return se_ge_

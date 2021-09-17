@@ -4,13 +4,13 @@ from ..plot import plot_heat_map, plot_plotly
 from .get_1d_grid import get_1d_grid
 
 
-def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
+def plot(co_po_di, ve, nu="Number", na_=(), pa=""):
 
     n_di = co_po_di.shape[1]
 
-    if len(di_) != n_di:
+    if len(na_) != n_di:
 
-        di_ = ["Dimension {}".format(ie) for ie in range(n_di)]
+        na_ = ["Dimension {}".format(ie) for ie in range(n_di)]
 
     co__ = get_1d_grid(co_po_di)
 
@@ -22,9 +22,9 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
             )
         )
 
-    print("Number: min={:.2e} max={:.2e}".format(nu_.min(), nu_.max()))
+    print("Number: min={:.2e} max={:.2e}".format(ve.min(), ve.max()))
 
-    nu_po_di = nu_.reshape([co_.size for co_ in co__])
+    nu_po_di = ve.reshape([co_.size for co_ in co__])
 
     if n_di == 1:
 
@@ -39,7 +39,7 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
                 "layout": {
                     "xaxis": {
                         "title": {
-                            "text": di_[0],
+                            "text": na_[0],
                         },
                     },
                     "yaxis": {
@@ -58,10 +58,10 @@ def plot(co_po_di, nu_, nu="Number", di_=(), pa=""):
             DataFrame(
                 data=nu_po_di,
                 index=Index(
-                    data=["{:.2e} *".format(co) for co in co__[0]], name=di_[0]
+                    data=["{:.2e} *".format(co) for co in co__[0]], name=na_[0]
                 ),
                 columns=Index(
-                    data=["* {:.2e}".format(co) for co in co__[1]], name=di_[1]
+                    data=["* {:.2e}".format(co) for co in co__[1]], name=na_[1]
                 ),
             ),
             layout={

@@ -17,8 +17,8 @@ def apply_with_vector(ve, ma, fu, se=False, n_jo=1):
 
     po = Pool(processes=n_jo)
 
-    an_ = array(po.starmap(ap, ([ve, ro, fu] for ro in ma)))
+    re_ = array(po.starmap(ap, ([ve, ro, fu] for ro in ma)))
 
     po.terminate()
 
-    return an_
+    return re_

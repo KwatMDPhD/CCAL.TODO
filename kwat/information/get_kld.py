@@ -1,6 +1,6 @@
 from ..array import log
 
 
-def get_kld(nu1_, nu2_):
+def get_kld(ve1, ve2):
 
-    return nu1_ * log(nu1_ / nu2_)
+    return ve1 * log(ve1 / ve2)

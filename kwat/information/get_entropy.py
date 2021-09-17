@@ -1,8 +1,8 @@
 from numpy import log
 
 
-def get_entropy(nu_):
+def get_entropy(ve):
 
-    pr_ = nu_ / nu_.sum()
+    pr_ = ve / ve.sum()
 
     return -(pr_ * log(pr_)).sum()

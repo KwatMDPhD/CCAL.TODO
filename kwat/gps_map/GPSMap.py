@@ -1,4 +1,5 @@
 from numpy import full, mean, nan, unique
+from pandas import DataFrame
 from scipy.spatial import Delaunay
 
 from ..constant import RANDOM_SEED
@@ -36,7 +37,7 @@ class GPSMap:
 
         self.gcolorscale = None
 
-    def plot(self, **ke_va):
+    def plot(self, **ke_ar):
 
         plot(
             DataFrame(
@@ -57,7 +58,7 @@ class GPSMap:
                     "size": self.node_marker_size,
                 },
             },
-            **ke_va,
+            **ke_ar,
         )
 
     def set_group(self, gr_, colorscale=CATEGORICAL_COLORSCALE, n_co=128):
@@ -131,14 +132,14 @@ class GPSMap:
             self.nu_po_no.T,
             gr2_=self.gr_,
             colorscale2=self.gcolorscale,
-            LAYOUT_TEMPLATE={
+            layout={
                 "yaxis": {
                     "dtick": 1,
                 },
             },
         )
 
-    def predict(self, nap, po_, nu_po_no, **ke_va):
+    def predict(self, nap, po_, nu_po_no, **ke_ar):
 
         plot(
             DataFrame(
@@ -156,5 +157,5 @@ class GPSMap:
                     "size": self.node_marker_size,
                 },
             },
-            **ke_va,
+            **ke_ar,
         )
