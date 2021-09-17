@@ -1,19 +1,28 @@
+from .check_bad import check_bad
+
+
 def cast(an):
 
-    for bu in [None, False, True]:
+    if check_bad(an):
 
-        if an is bu or an == str(bu):
+        return None
 
-            return bu
+    else:
 
-    for ty in [int, float]:
+        for bu in [False, True]:
 
-        try:
+            if an is bu or an == str(bu):
 
-            return ty(an)
+                return bu
 
-        except ValueError:
+        for ty in [int, float]:
 
-            pass
+            try:
 
-    return an
+                return ty(an)
+
+            except ValueError:
+
+                pass
+
+        return an

@@ -1,4 +1,4 @@
-COLUMNS = [
+COLUMN = [
     "CHROM",
     "POS",
     "ID",

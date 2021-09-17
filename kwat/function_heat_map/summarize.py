@@ -142,9 +142,7 @@ def summarize(
             }
         )
 
-        layout["ANNOTATION_TEMPLATEs"] += _make_data_annotation(
-            y, ie == 0, he, ro_, fu.values
-        )
+        layout["annotations"] += _make_data_annotation(y, ie == 0, he, ro_, fu.values)
 
     plot_plotly(
         {

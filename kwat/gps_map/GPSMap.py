@@ -34,23 +34,25 @@ class GPSMap:
 
         self.bag_ = None
 
-        self.grc = None
+        self.gcolorscale = None
 
     def plot(self, **ke_va):
 
         plot(
-            self.nu_no_di,
-            self.nu_po_di,
-            self.nu_po_no.COLUMNS.name,
-            self.nu_po_no.COLUMNS.values,
-            self.nu_po_no.index.name,
-            self.nu_po_no.index.values,
+            DataFrame(
+                data=self.nu_no_di,
+                index=self.nu_po_no.columns,
+            ),
+            DataFrame(
+                data=self.nu_po_di,
+                index=self.nu_po_no.index,
+            ),
             gr_=self.gr_,
-            grc=self.grc,
+            gcolorscale=self.gcolorscale,
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            notrace={
+            ntrace={
                 "marker": {
                     "size": self.node_marker_size,
                 },
@@ -58,7 +60,7 @@ class GPSMap:
             **ke_va,
         )
 
-    def set_group(self, gr_, grc=CATEGORICAL_COLORSCALE, n_co=128):
+    def set_group(self, gr_, colorscale=CATEGORICAL_COLORSCALE, n_co=128):
 
         if isinstance(gr_, str) and gr_ == "closest_node":
 
@@ -66,7 +68,7 @@ class GPSMap:
 
         self.gr_ = gr_
 
-        self.grc = grc
+        self.gcolorscale = colorscale
 
         sh = [n_co] * 2
 
@@ -128,7 +130,7 @@ class GPSMap:
         plot_heat_map(
             self.nu_po_no.T,
             gr2_=self.gr_,
-            colorscale2=self.grc,
+            colorscale2=self.gcolorscale,
             LAYOUT_TEMPLATE={
                 "yaxis": {
                     "dtick": 1,
@@ -139,18 +141,17 @@ class GPSMap:
     def predict(self, nap, po_, nu_po_no, **ke_va):
 
         plot(
-            self.nu_no_di,
-            pull(self.nu_no_di, nu_po_no.values),
-            self.nu_po_no.COLUMNS.name,
-            self.nu_po_no.COLUMNS.values,
-            nu_po_no.index.name,
-            nu_po_no.index.values,
+            DataFrame(
+                data=self.nu_no_di,
+                index=self.nu_po_no.columns,
+            ),
+            DataFrame(data=pull(self.nu_no_di, nu_po_no.values), index=nu_po_no.index),
             gr_=None,
-            grc=self.grc,
+            gcolorscale=self.gcolorscale,
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            notrace={
+            ntrace={
                 "marker": {
                     "size": self.node_marker_size,
                 },

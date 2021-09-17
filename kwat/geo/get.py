@@ -9,16 +9,12 @@ from ..feature_by_sample import collapse, separate
 from ..gene import rename
 from ..internet import download
 from ..python import cast
+from ..string import split_and_get
 
 
 def _get_prefix(an_):
 
-    return list(
-        set(an.split(sep=": ", maxsplit=1)[0] for an in an_ if isinstance(an, str))
-    )
-
-
-from ..python import cast
+    return list(set(split_and_get(an, ": ", 0) for an in an_ if isinstance(an, str)))
 
 
 def _update_with_suffix(an_fe_sa):
@@ -33,7 +29,7 @@ def _update_with_suffix(an_fe_sa):
 
             if isinstance(an, str):
 
-                an_fe_sa[ief, ies] = cast(an.split(sep=": ", maxsplit=1)[1])
+                an_fe_sa[ief, ies] = cast(split_and_get(an, ": ", 1))
 
 
 def _focus(an_fe_sa):
@@ -76,7 +72,7 @@ def _name_feature(fe_, pl, da):
 
         def fu(na):
 
-            return na.split(sep=";", maxsplit=1)[0]
+            return split_and_get(na, ";", 0)
 
     elif pl in [5175, 11532]:
 
@@ -86,7 +82,7 @@ def _name_feature(fe_, pl, da):
 
             if isinstance(na, str) and na not in ["", "---"]:
 
-                return na.split(sep=" // ", maxsplit=2)[1]
+                return split_and_get(na, " // ", 1)
 
     elif pl in [2004, 2005, 3718, 3720]:
 
@@ -94,7 +90,7 @@ def _name_feature(fe_, pl, da):
 
         def fu(na):
 
-            return na.split(sep=" // ", maxsplit=1)[0]
+            return split_and_get(na, " // ", 0)
 
     elif pl in [10558]:
 
@@ -118,7 +114,7 @@ def _name_feature(fe_, pl, da):
 
         return fe_
 
-    for co in da.COLUMNS.values:
+    for co in da.columns.values:
 
         if co == con:
 
@@ -149,12 +145,12 @@ def _parse_block(bl):
 
         ma, ta = bl.split(sep="_table_begin\n")
 
-        ro_ = [li.split(sep="\t") for li in ta.splitlines()[:-1]]
+        an__ = [li.split(sep="\t") for li in ta.splitlines()[:-1]]
 
         ke_va["table"] = DataFrame(
-            data=[row[1:] for row in ro_[1:]],
-            index=[row[0] for row in ro_[1:]],
-            COLUMNS=ro_[0][1:],
+            data=[an_[1:] for an_ in an__[1:]],
+            index=[an_[0] for an_ in an__[1:]],
+            columns=an__[0][1:],
         )
 
     else:
@@ -168,29 +164,29 @@ def _parse_block(bl):
 
         if ke in ke_va:
 
-            keo = ke
+            ie = 1
 
-            ie = 2
+            keo = ke
 
             while ke in ke_va:
 
-                ke = "{}_{}".format(keo, ie)
-
                 ie += 1
+
+                ke = "{}_{}".format(keo, ie)
 
         ke_va[ke] = va
 
     return ke_va
 
 
-def get(gs, *ar, **ke):
+def get(gs, *ar_, **ke_va):
 
     pa = download(
         "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
             gs[:-3], gs
         ),
-        *ar,
-        **ke,
+        *ar_,
+        **ke_va,
     )
 
     pl_ = {}
@@ -201,7 +197,7 @@ def get(gs, *ar, **ke):
 
         he, bl = bl.split(sep="\n", maxsplit=1)
 
-        ty = he.split(sep=" = ", maxsplit=1)[0]
+        ty = split_and_get(he, " = ", 0)
 
         if ty in ["PLATFORM", "SAMPLE"]:
 
@@ -213,7 +209,7 @@ def get(gs, *ar, **ke):
 
                 na = ke_va["Platform_geo_accession"]
 
-                ke_va["ro_"] = []
+                ke_va["an__"] = []
 
                 pl_[na] = ke_va
 
@@ -223,19 +219,13 @@ def get(gs, *ar, **ke):
 
                 if "table" in ke_va:
 
-                    an_ = (
-                        ke_va.pop("table")
-                        .loc[:, "VALUE"]
-                        .replace("", None)
-                        .replace("null", None)
-                        .apply(cast)
-                    )
+                    an_ = ke_va.pop("table").loc[:, "VALUE"].apply(cast)
 
                     if is_numeric_dtype(an_):
 
                         an_.name = na
 
-                        pl_[ke_va["Sample_platform_id"]]["ro_"].append(an_)
+                        pl_[ke_va["Sample_platform_id"]]["nu__"].append(an_)
 
                     else:
 
@@ -259,17 +249,18 @@ def get(gs, *ar, **ke):
 
     for pl, ke_va in pl_.items():
 
-        ro_ = ke_va.pop("ro_")
+        nu__ = ke_va.pop("nu__")
 
-        if 0 < len(ro_):
+        if 0 < len(nu__):
 
-            nu_fe_sa = DataFrame(data=ro_).T
+            nu_fe_sa = DataFrame(data=nu__).T
 
-            fe_ = nu_fe_sa.index.values
-
-            fe_ = _name_feature(fe_, pl, ke_va["table"])
-
-            nu_fe_sa.index = Index(data=rename(fe_)[0], name="Gene")
+            nu_fe_sa.index = Index(
+                data=rename(_name_feature(nu_fe_sa.index.values, pl, ke_va["table"]))[
+                    0
+                ],
+                name="Gene",
+            )
 
             nu_fe_sa = collapse(nu_fe_sa)
 

@@ -5,7 +5,7 @@ def check_bad(an):
 
     if isinstance(an, str):
 
-        return an.lower() in ["none", "na", "nan", "null"]
+        return an.lower() in ["", "none", "na", "nan", "null"]
 
     else:
 

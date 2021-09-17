@@ -5,7 +5,7 @@ from pandas import read_csv, read_excel
 from ..constant import DATA_DIRECTORY_PATH
 from ..dataframe import map_to
 from ..dictionary import clean, rename as dictionary_rename
-from ..string import split_and_get_first
+from ..string import split_and_get
 from ._read import _read
 
 
@@ -51,7 +51,7 @@ def rename(na_, **ke_va):
 
         for cg, re in cg_re.dropna().iteritems():
 
-            na_re[cg] = split_and_get_first(re, ";")
+            na_re[cg] = split_and_get(re, ";", 0)
 
     na_re.update(
         map_to(
@@ -85,7 +85,7 @@ def rename(na_, **ke_va):
     )
 
     return dictionary_rename(
-        [split_and_get_first(na, ".") for na in na_ if search(r"^ENS[TG]", na)],
+        [split_and_get(na, ".", 0) for na in na_ if search(r"^ENS[TG]", na)],
         clean(na_re),
         **ke_va
     )
