@@ -5,7 +5,7 @@ from numpy import array
 from ..array_array import apply, separate_and_apply
 
 
-def apply_with_vector(ta, ro_, fu, se=False, n_jo=1):
+def apply_with_vector(ve, ma, fu, se=False, n_jo=1):
 
     if se:
 
@@ -17,7 +17,7 @@ def apply_with_vector(ta, ro_, fu, se=False, n_jo=1):
 
     po = Pool(processes=n_jo)
 
-    an_ = array(po.starmap(ap, ([ta, ro, fu] for ro in ro_)))
+    an_ = array(po.starmap(ap, ([ve, ro, fu] for ro in ma)))
 
     po.terminate()
 
