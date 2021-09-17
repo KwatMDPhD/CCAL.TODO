@@ -1,6 +1,6 @@
 from .get_ic import get_ic
 
 
-def get_icd(ve1, ve2):
+def get_icd(nu1_, nu2_):
 
-    return (-get_ic(ve1, ve2) + 1) / 2
+    return (-get_ic(nu1_, nu2_) + 1) / 2

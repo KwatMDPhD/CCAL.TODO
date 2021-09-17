@@ -21,7 +21,7 @@ def get_ic(nu1_, nu2_):
 
     n_co = 24
 
-    nu_di_di = array([nu1_, nu2_]).T
+    nu_po_di = array([nu1_, nu2_]).T
 
     co1_ = make_1d_grid(nu1_.min(), nu1_.max(), ex, n_co)
 
@@ -32,7 +32,7 @@ def get_ic(nu1_, nu2_):
     fa = 1 - abs(pe) * 2 / 3
 
     pr_ = get_probability(
-        nu_di_di,
+        nu_po_di,
         co__=[co1_, co2_],
         pl=False,
         bw=fa,

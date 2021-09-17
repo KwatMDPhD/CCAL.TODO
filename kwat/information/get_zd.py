@@ -1,10 +1,10 @@
 from .get_kld import get_kld
 
 
-def get_zd(ve1, ve2):
+def get_zd(nu1_, nu2_):
 
-    kl1 = get_kld(ve1, ve2)
+    kl1_ = get_kld(nu1_, nu2_)
 
-    kl2 = get_kld(ve2, ve1)
+    kl2_ = get_kld(nu2_, nu1_)
 
-    return kl1, kl2, kl1 - kl2
+    return kl1_, kl2_, kl1_ - kl2_

@@ -7,13 +7,13 @@ from requests import get
 from .get_name import get_name
 
 
-def download(ur, di, na=None, ov=True):
+def download(ur, pa, na=None, ov=True):
 
     if na is None:
 
         na = get_name(ur)
 
-    pa = "{}{}".format(di, na)
+    pa = "{}{}".format(pa, na)
 
     if exists(pa):
 

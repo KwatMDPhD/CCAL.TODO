@@ -1,14 +1,14 @@
 from .get_kld import get_kld
 
 
-def get_jsd(ve1, ve2, ve3=None):
+def get_jsd(nu1_, nu2_, nu3_=None):
 
-    if ve3 is None:
+    if nu3_ is None:
 
-        ve3 = (ve1 + ve2) / 2
+        nu3_ = (nu1_ + nu2_) / 2
 
-    kl1 = get_kld(ve1, ve3)
+    kl1_ = get_kld(nu1_, nu3_)
 
-    kl2 = get_kld(ve2, ve3)
+    kl2_ = get_kld(nu2_, nu3_)
 
-    return kl1, kl2, kl1 - kl2
+    return kl1_, kl2_, kl1_ - kl2_
