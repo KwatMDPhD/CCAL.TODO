@@ -1,35 +1,35 @@
-def merge(ke_va1, ke_va2, fu=None):
+def merge(di1, di2, fu=None):
 
-    ke_va3 = {}
+    di3 = {}
 
-    for ke in sorted(ke_va1.keys() | ke_va2.keys()):
+    for ke in sorted(di1.keys() | di2.keys()):
 
-        if ke in ke_va1 and ke in ke_va2:
+        if ke in di1 and ke in di2:
 
             if fu is None:
 
-                va1 = ke_va1[ke]
+                va1 = di1[ke]
 
-                va2 = ke_va2[ke]
+                va2 = di2[ke]
 
                 if isinstance(va1, dict) and isinstance(va2, dict):
 
-                    ke_va3[ke] = merge(va1, va2)
+                    di3[ke] = merge(va1, va2)
 
                 else:
 
-                    ke_va3[ke] = va2
+                    di3[ke] = va2
 
             else:
 
-                ke_va3[ke] = fu(ke_va1[ke], ke_va2[ke])
+                di3[ke] = fu(di1[ke], di2[ke])
 
-        elif ke in ke_va1:
+        elif ke in di1:
 
-            ke_va3[ke] = ke_va1[ke]
+            di3[ke] = di1[ke]
 
-        elif ke in ke_va2:
+        elif ke in di2:
 
-            ke_va3[ke] = ke_va2[ke]
+            di3[ke] = di2[ke]
 
-    return ke_va3
+    return di3

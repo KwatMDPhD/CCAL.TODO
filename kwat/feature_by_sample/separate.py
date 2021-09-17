@@ -37,11 +37,7 @@ def separate(nu_fe_sa, pr=True):
 
                 te = "{}.{{}}".format(bi_fe_sa.index.name)
 
-            else:
-
-                te = "{}"
-
-            bi_fe_sa.index = [te.format(fe) for fe in bi_fe_sa.index]
+                bi_fe_sa.index = [te.format(fe) for fe in bi_fe_sa.index.values]
 
             bi_fe_sa_.append(bi_fe_sa)
 

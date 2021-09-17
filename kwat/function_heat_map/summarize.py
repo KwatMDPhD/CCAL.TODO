@@ -25,20 +25,6 @@ def summarize(
     pa="",
 ):
 
-    if it:
-
-        for bu in bu_:
-
-            ta = ta.loc[ta.index.intersection(bu["data"].columns)]
-
-    if ac is not None:
-
-        ta.sort_values(ascending=ac, inplace=True)
-
-    co_ = ta.index.values
-
-    tavp, mit, mat = _process_target(ta.values, ty, st)
-
     n_ro = 1
 
     n_sp = 2
@@ -78,10 +64,24 @@ def summarize(
         "showticklabels": False,
     }
 
+    if it:
+
+        for bu in bu_:
+
+            ta = ta.loc[ta.index.intersection(bu["data"].columns)]
+
+    if ac is not None:
+
+        ta.sort_values(ascending=ac, inplace=True)
+
+    co_ = ta.index.values
+
     heatmap_template = {
         "x": co_,
         **HEATMAP_TEMPLATE,
     }
+
+    tavp, mit, mat = _process_target(ta.values, ty, st)
 
     data = [
         {
@@ -96,20 +96,16 @@ def summarize(
 
     for ie, bu in enumerate(bu_):
 
-        da = bu["data"].reindex(labels=co_, axis=1)
-
         fu = bu["statistic"].loc[da.index, :]
 
         fu.sort_values("Score", ascending=False, inplace=True)
 
         ro_ = fu.index.values
 
-        davp, mid, mad = _process_data(da.loc[ro_, :].values, bu["type"], st)
-
         yaxis = "yaxis{}".format(n_bu - ie)
 
         domain = [
-            max(0, domain[0] - he * (n_sp + davp.shape[0])),
+            max(0, domain[0] - he * (n_sp + ro_.size)),
             domain[0] - he * n_sp,
         ]
 
@@ -117,6 +113,10 @@ def summarize(
             "domain": domain,
             "showticklabels": False,
         }
+
+        davp, mid, mad = _process_data(
+            bu["data"].loc[ro_, :].reindex(labels=co_, axis=1).values, bu["type"], st
+        )
 
         data.append(
             {

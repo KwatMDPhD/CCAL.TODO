@@ -2,14 +2,14 @@ from numpy import apply_along_axis, full, unique
 from pandas import notna
 
 
-def _check_has_enough_not_na(nu_, n_no):
+def _check_has_enough_not_na(ve, n_no):
 
-    return n_no <= notna(nu_).sum()
+    return n_no <= notna(ve).sum()
 
 
-def _check_has_enough_not_na_unique(nu_, n_un):
+def _check_has_enough_not_na_unique(ve, n_un):
 
-    return n_un <= unique(nu_[notna(nu_)]).size
+    return n_un <= unique(ve[notna(ve)]).size
 
 
 def drop(da, ax, n_no=None, n_un=None):

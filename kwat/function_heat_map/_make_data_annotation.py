@@ -2,36 +2,36 @@ from ..string import trim
 from .ANNOTATION_TEMPLATE import ANNOTATION_TEMPLATE
 
 
-def _get_statistic_x(ie):
+def _get_x(ie):
 
     return 1.08 + ie / 6.4
 
 
-def _make_data_annotation(yc, la, he, ro_, st):
+def _make_data_annotation(y, la, he, ro_, st):
 
-    an_ = []
+    annotations = []
 
     if la:
 
         for ie, text in enumerate(["Score (\u0394)", "P-Value", "Q-Value"]):
 
-            an_.append(
+            annotations.append(
                 {
-                    "y": yc,
-                    "x": _get_statistic_x(ie),
+                    "y": y,
+                    "x": _get_x(ie),
                     "xanchor": "center",
                     "text": "<b>{}</b>".format(text),
                     **ANNOTATION_TEMPLATE,
                 }
             )
 
-    yc -= he
+    y -= he
 
     for iey in range(ro_.size):
 
-        an_.append(
+        annotations.append(
             {
-                "y": yc,
+                "y": y,
                 "x": 0,
                 "xanchor": "right",
                 "text": "{}".format(trim(ro_[iey])),
@@ -45,16 +45,16 @@ def _make_data_annotation(yc, la, he, ro_, st):
             ["{:.2f} ({:.2f})".format(sc, ma), "{:.2e}".format(pv), "{:.2e}".format(qv)]
         ):
 
-            an_.append(
+            annotations.append(
                 {
-                    "y": yc,
-                    "x": _get_statistic_x(iex),
+                    "y": y,
+                    "x": _get_x(iex),
                     "xanchor": "center",
                     "text": text,
                     **ANNOTATION_TEMPLATE,
                 }
             )
 
-        yc -= he
+        y -= he
 
-    return an_
+    return annotations

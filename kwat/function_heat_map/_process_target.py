@@ -1,16 +1,16 @@
 from ..array import apply, normalize
 
 
-def _process_target(nu_, ty, st):
+def _process_target(tav, ty, st):
 
     if ty == "continuous":
 
-        if 0 < nu_.std():
+        if 0 < tav.std():
 
-            nu_ = apply(nu_, normalize, "-0-", up=True).clip(min=-st, max=st)
+            tav = apply(tav, normalize, "-0-", up=True).clip(min=-st, max=st)
 
-        return nu_, -st, st
+        return tav, -st, st
 
     else:
 
-        return nu_.copy(), None, None
+        return tav.copy(), None, None

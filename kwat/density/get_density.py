@@ -4,7 +4,7 @@ from ..constant import FLOAT_RESOLUTION
 from ..grid import make_1d_grid, make_nd_grid, plot
 
 
-def get_density(nu_po_di, co__=(), pl=True, di_=(), **ke_va):
+def get_density(nu_po_di, co__=(), pl=True, na_=(), **di):
 
     n_po, n_di = nu_po_di.shape
 
@@ -12,12 +12,12 @@ def get_density(nu_po_di, co__=(), pl=True, di_=(), **ke_va):
 
         print("Making coordinates")
 
-        co__ = [make_1d_grid(nu_.min(), nu_.max(), 1 / 3, 8) for nu_ in nu_po_di.T]
+        co__ = [make_1d_grid(ve.min(), ve.max(), 1 / 3, 8) for ve in nu_po_di.T]
 
     co_po_di = make_nd_grid(co__)
 
     de_ = (
-        FFTKDE(**ke_va)
+        FFTKDE(**di)
         .fit(nu_po_di)
         .evaluate(grid_points=co_po_di)
         .clip(min=FLOAT_RESOLUTION)
@@ -25,6 +25,6 @@ def get_density(nu_po_di, co__=(), pl=True, di_=(), **ke_va):
 
     if pl:
 
-        plot(co_po_di, de_, nu="Density", di_=di_)
+        plot(co_po_di, de_, nu="Density", na_=na_)
 
     return co_po_di, de_

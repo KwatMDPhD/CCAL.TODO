@@ -20,11 +20,11 @@ def summarize(
 
     ro_ = nu_fe_sa.index.values
 
-    co_ = nu_fe_sa.COLUMNS.values
+    ron = nu_fe_sa.index.name
 
-    nar = nu_fe_sa.index.name
+    co_ = nu_fe_sa.columns.values
 
-    nac = nu_fe_sa.COLUMNS.name
+    con = nu_fe_sa.columns.name
 
     si = nua_fe_sa.size
 
@@ -32,7 +32,7 @@ def summarize(
 
         plot_heat_map(
             nu_fe_sa,
-            LAYOUT_TEMPLATE={
+            layout={
                 "title": title,
             },
         )
@@ -49,10 +49,10 @@ def summarize(
 
             plot_histogram(
                 [
-                    Series(data=na_fe_sa.sum(axis=1), index=ro_, name=nar),
-                    Series(data=na_fe_sa.sum(axis=0), index=co_, name=nac),
+                    Series(data=na_fe_sa.sum(axis=1), index=ro_, name=ron),
+                    Series(data=na_fe_sa.sum(axis=0), index=co_, name=con),
                 ],
-                LAYOUT_TEMPLATE={
+                layout={
                     "title": title,
                     "xaxis": {
                         "title": "N NaN",
@@ -64,10 +64,10 @@ def summarize(
 
         plot_histogram(
             [
-                Series(data=nanmedian(nua_fe_sa, axis=1), index=ro_, name=nar),
-                Series(data=nanmedian(nua_fe_sa, axis=0), index=co_, name=nac),
+                Series(data=nanmedian(nua_fe_sa, axis=1), index=ro_, name=ron),
+                Series(data=nanmedian(nua_fe_sa, axis=0), index=co_, name=con),
             ],
-            LAYOUT_TEMPLATE={
+            layout={
                 "title": title,
                 "xaxis": {
                     "title": "(Not-NaN) Median",
@@ -75,22 +75,22 @@ def summarize(
             },
         )
 
-    no_fe_sa = logical_not(na_fe_sa)
+    go_fe_sa = logical_not(na_fe_sa)
 
-    no_ = nua_fe_sa[no_fe_sa]
+    go_ = nua_fe_sa[go_fe_sa]
 
-    print("(Not-NaN) min: {:.2e}".format(no_.min()))
+    print("(Not-NaN) min: {:.2e}".format(go_.min()))
 
-    print("(Not-NaN) median: {:.2e}".format(median(no_)))
+    print("(Not-NaN) median: {:.2e}".format(median(go_)))
 
-    print("(Not-NaN) mean: {:.2e}".format(no_.mean()))
+    print("(Not-NaN) mean: {:.2e}".format(go_.mean()))
 
-    print("(Not-NaN) max: {:.2e}".format(no_.max()))
+    print("(Not-NaN) max: {:.2e}".format(go_.max()))
 
     if pl:
 
         la_ = array(
-            ["{}_{}".format(*la_) for la_ in make_nd_grid([ro_, co_])[no_fe_sa.ravel()]]
+            ["{}_{}".format(*la_) for la_ in make_nd_grid([ro_, co_])[go_fe_sa.ravel()]]
         )
 
         if n_hi < si:
@@ -99,20 +99,20 @@ def summarize(
 
             ie_ = concatenate(
                 [
-                    choice(no_.size, n_hi, False),
-                    [no_.argmin(), no_.argmax()],
+                    choice(go_.size, n_hi, False),
+                    [go_.argmin(), go_.argmax()],
                 ]
             )
 
-            no_ = no_[ie_]
+            go_ = go_[ie_]
 
             la_ = la_[ie_]
 
         plot_histogram(
             [
-                Series(no_, la_, name="All"),
+                Series(data=go_, index=la_, name="All"),
             ],
-            LAYOUT_TEMPLATE={
+            layout={
                 "title": title,
                 "xaxis": {
                     "title": "(Not-NaN) Number",

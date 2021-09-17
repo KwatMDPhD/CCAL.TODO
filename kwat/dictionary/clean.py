@@ -1,12 +1,12 @@
 from ..python import check_bad
 
 
-def clean(ke_va):
+def clean(di):
 
-    print("Before: {}".format(len(ke_va)))
+    print("Before: {}".format(len(di)))
 
-    ke_vag = {ke: va for ke, va in ke_va.items() if not check_bad(va)}
+    dig = {ke: va for ke, va in di.items() if not check_bad(va)}
 
-    print("After: {}".format(len(ke_va)))
+    print("After: {}".format(len(di)))
 
-    return ke_vag
+    return dig
