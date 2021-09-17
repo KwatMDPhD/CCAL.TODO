@@ -4,7 +4,7 @@ from ..constant import DATA_DIRECTORY_PATH
 from ..dictionary import clean, rename as dictionary_rename
 
 
-def rename(na_, **di):
+def rename(na_, **ke_ar):
 
     return dictionary_rename(
         [na.lower() for na in na_],
@@ -16,5 +16,5 @@ def rename(na_, **di):
                 squeeze=True,
             ).to_dict()
         ),
-        **di,
+        **ke_ar,
     )

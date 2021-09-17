@@ -3,7 +3,7 @@ from numpy.random import choice, seed
 from ..constant import RANDOM_SEED
 
 
-def sample(da, sh, ra=RANDOM_SEED, **ke_va):
+def sample(da, sh, ra=RANDOM_SEED, **ke_ar):
 
     n_ro, n_co = da.shape
 
@@ -17,7 +17,7 @@ def sample(da, sh, ra=RANDOM_SEED, **ke_va):
 
             n_ros = int(n_ro * n_ros)
 
-        da = da.iloc[choice(n_ro, size=n_ros, **ke_va), :]
+        da = da.iloc[choice(n_ro, size=n_ros, **ke_ar), :]
 
     if n_cos is not None:
 
@@ -25,6 +25,6 @@ def sample(da, sh, ra=RANDOM_SEED, **ke_va):
 
             n_cos = int(n_co * n_cos)
 
-        da = da.iloc[:, choice(n_co, size=n_cos, **ke_va)]
+        da = da.iloc[:, choice(n_co, size=n_cos, **ke_ar)]
 
     return da

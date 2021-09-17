@@ -6,7 +6,7 @@ from .cluster import cluster
 from .get_coclustering_distance import get_coclustering_distance
 
 
-def cluster_consensus(nu_po_di, n_gr, n_tr=100, ra=RANDOM_SEED, **di):
+def cluster_consensus(nu_po_di, n_gr, n_tr=100, ra=RANDOM_SEED, **ke_ar):
 
     n_po = nu_po_di.shape[0]
 
@@ -20,6 +20,6 @@ def cluster_consensus(nu_po_di, n_gr, n_tr=100, ra=RANDOM_SEED, **di):
 
         iep_ = choice(n_po, size=n_sa, replace=False)
 
-        gr_po_tr[iep_, iet] = cluster(nu_po_di[iep_], n_gr=n_gr, **di)[1]
+        gr_po_tr[iep_, iet] = cluster(nu_po_di[iep_], n_gr=n_gr, **ke_ar)[1]
 
-    return cluster(get_coclustering_distance(gr_po_tr), n_gr=n_gr, **di)
+    return cluster(get_coclustering_distance(gr_po_tr), n_gr=n_gr, **ke_ar)

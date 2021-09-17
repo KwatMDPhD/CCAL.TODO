@@ -11,13 +11,13 @@ def make_factor_label(re):
 
     na = "Factor"
 
-    return Index(data=("{} {}_{}".format(na, re, ie) for ie in range(re)), name=na)
+    return Index(data=("{} {} {}".format(na, re, ie + 1) for ie in range(re)), name=na)
 
 
 def plot(
-    wm_,
-    hm_,
-    er_ma_it=None,
+    maw_,
+    mah_,
+    er_ie_it=None,
     si=640,
     pa="",
 ):
@@ -28,9 +28,9 @@ def plot(
         "dtick": 1,
     }
 
-    for ie, wm in enumerate(wm_):
+    for ie, maw in enumerate(maw_):
 
-        wm = apply_along_axis(normalize, 1, wm[cluster(wm)[0], :], "-0-")
+        maw = apply_along_axis(normalize, 1, maw[cluster(maw)[0], :], "-0-")
 
         if pa == "":
 
@@ -42,11 +42,11 @@ def plot(
 
         plot_heat_map(
             DataFrame(
-                data=wm,
+                data=maw,
                 # index=Index(data=ro__[ie], name=ron[ie]),
-                COLUMNS=make_factor_label(wm.shape[1]),
+                columns=make_factor_label(maw.shape[1]),
             ),
-            LAYOUT_TEMPLATE={
+            layout={
                 "height": sig,
                 "width": si,
                 "title": {
@@ -57,9 +57,9 @@ def plot(
             pa=pa2,
         )
 
-    for ie, hm in enumerate(hm_):
+    for ie, mah in enumerate(mah_):
 
-        hm = apply_along_axis(normalize, 0, hm[:, cluster(hm.T)[0]], "-0-")
+        mah = apply_along_axis(normalize, 0, mah[:, cluster(mah.T)[0]], "-0-")
 
         if pa == "":
 
@@ -71,11 +71,11 @@ def plot(
 
         plot_heat_map(
             DataFrame(
-                data=hm,
-                index=make_factor_label(hm.shape[0]),
-                # COLUMNS=Index(data=co__[ie], name=con[ie]),
+                data=mah,
+                index=make_factor_label(mah.shape[0]),
+                # columns=Index(data=co__[ie], name=con[ie]),
             ),
-            LAYOUT_TEMPLATE={
+            layout={
                 "height": si,
                 "width": sig,
                 "title": {
@@ -86,7 +86,7 @@ def plot(
             pa=pa2,
         )
 
-    if er_ma_it is not None:
+    if er_ie_it is not None:
 
         if pa == "":
 
@@ -103,22 +103,22 @@ def plot(
                         "name": ie,
                         "y": er_,
                     }
-                    for ie, er_ in enumerate(er_ma_it)
+                    for ie, er_ in enumerate(er_ie_it)
                 ],
-                "LAYOUT_TEMPLATE": {
+                "layout": {
                     "xaxis": {
                         "title": "Iteration",
                     },
                     "yaxis": {
                         "title": "Error",
                     },
-                    "ANNOTATION_TEMPLATEs": [
+                    "annotations": [
                         {
                             "x": er_.size - 1,
                             "y": er_[-1],
                             "text": "{:.2e}".format(er_[-1]),
                         }
-                        for er_ in er_ma_it
+                        for er_ in er_ie_it
                     ],
                 },
             },

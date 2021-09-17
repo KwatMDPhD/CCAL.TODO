@@ -5,26 +5,26 @@ from numpy.random import random_sample, seed
 from ..constant import RANDOM_SEED
 
 
-def _update_w(ma, wm, hm):
+def _update_w(ma, maw, mah):
 
-    return wm * (ma @ hm.T) / (wm @ hm @ hm.T)
-
-
-def _update_h(ma, wm, hm):
-
-    return hm * (wm.T @ ma) / (wm.T @ wm @ hm)
+    return maw * (ma @ mah.T) / (maw @ mah @ mah.T)
 
 
-def _is_tolerable(er_it_ma, to):
+def _update_h(ma, maw, mah):
 
-    er2_, er1_ = array(er_it_ma)[-2:]
+    return mah * (maw.T @ ma) / (maw.T @ maw @ mah)
+
+
+def _check_tolerable(er_it_ie, to):
+
+    er2_, er1_ = array(er_it_ie)[-2:]
 
     return ((er2_ - er1_) / er2_ <= to).all()
 
 
 def factorize(
     ma_,
-    mo,
+    me,
     re,
     we_=None,
     to=1e-6,
@@ -32,7 +32,7 @@ def factorize(
     ra=RANDOM_SEED,
 ):
 
-    n_ma = len(ma_)
+    n_ie = len(ma_)
 
     seed(seed=ra)
 
@@ -42,56 +42,60 @@ def factorize(
 
         we_ = [no / norm(ma) for ma in ma_]
 
-    if mo == "w":
+    if me == "w":
 
-        wm_ = [random_sample(size=[ma.shape[0], re]) for ma in ma_]
+        maw_ = [random_sample(size=[ma.shape[0], re]) for ma in ma_]
 
-        hm = random_sample(size=[re, ma_[0].shape[1]])
+        mah = random_sample(size=[re, ma_[0].shape[1]])
 
-        er_it_ma = [[norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)]]
-
-        for iei in range(n_it):
-
-            nu = sum([we_[ie] * wm_[ie].T @ ma_[ie] for ie in range(n_ma)], axis=0)
-
-            de = sum([we_[ie] * wm_[ie].T @ wm_[ie] @ hm for ie in range(n_ma)], axis=0)
-
-            hm *= nu / de
-
-            wm_ = [_update_w(ma_[ie], wm_[ie], hm) for ie in range(n_ma)]
-
-            er_it_ma.append([norm(ma_[ie] - wm_[ie] @ hm) for ie in range(n_ma)])
-
-            if _is_tolerable(er_it_ma, to):
-
-                break
-
-        hm_ = [hm]
-
-    elif mo == "h":
-
-        wm = random_sample(size=[ma_[0].shape[0], re])
-
-        hm_ = [random_sample(size=[re, ma.shape[1]]) for ma in ma_]
-
-        er_it_ma = [[norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)]]
+        er_it_ie = [[norm(ma_[ie] - maw_[ie] @ mah) for ie in range(n_ie)]]
 
         for iei in range(n_it):
 
-            nu = sum([we_[ie] * ma_[ie] @ hm_[ie].T for ie in range(n_ma)], axis=0)
+            nu = sum([we_[ie] * maw_[ie].T @ ma_[ie] for ie in range(n_ie)], axis=0)
 
-            de = sum([we_[ie] * wm @ hm_[ie] @ hm_[ie].T for ie in range(n_ma)], axis=0)
+            de = sum(
+                [we_[ie] * maw_[ie].T @ maw_[ie] @ mah for ie in range(n_ie)], axis=0
+            )
 
-            wm *= nu / de
+            mah *= nu / de
 
-            hm_ = [_update_h(ma_[ie], wm, hm_[ie]) for ie in range(n_ma)]
+            maw_ = [_update_w(ma_[ie], maw_[ie], mah) for ie in range(n_ie)]
 
-            er_it_ma.append([norm(ma_[ie] - wm @ hm_[ie]) for ie in range(n_ma)])
+            er_it_ie.append([norm(ma_[ie] - maw_[ie] @ mah) for ie in range(n_ie)])
 
-            if _is_tolerable(er_it_ma, to):
+            if _check_tolerable(er_it_ie, to):
 
                 break
 
-        wm_ = [wm]
+        mah_ = [mah]
 
-    return wm_, hm_, array(er_it_ma).T
+    elif me == "h":
+
+        maw = random_sample(size=[ma_[0].shape[0], re])
+
+        mah_ = [random_sample(size=[re, ma.shape[1]]) for ma in ma_]
+
+        er_it_ie = [[norm(ma_[ie] - maw @ mah_[ie]) for ie in range(n_ie)]]
+
+        for iei in range(n_it):
+
+            nu = sum([we_[ie] * ma_[ie] @ mah_[ie].T for ie in range(n_ie)], axis=0)
+
+            de = sum(
+                [we_[ie] * maw @ mah_[ie] @ mah_[ie].T for ie in range(n_ie)], axis=0
+            )
+
+            maw *= nu / de
+
+            mah_ = [_update_h(ma_[ie], maw, mah_[ie]) for ie in range(n_ie)]
+
+            er_it_ie.append([norm(ma_[ie] - maw @ mah_[ie]) for ie in range(n_ie)])
+
+            if _check_tolerable(er_it_ie, to):
+
+                break
+
+        maw_ = [maw]
+
+    return maw_, mah_, array(er_it_ie).T

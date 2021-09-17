@@ -6,20 +6,20 @@ from scipy.optimize import nnls
 
 def solve(daa, dab, me):
 
-    am = daa.values
+    maa = daa.values
 
-    bm = dab.values
+    mab = dab.values
 
     if me == "pinv":
 
-        xm = dot(pinv(am), bm)
+        mas = dot(pinv(maa), mab)
 
     elif me == "nnls":
 
-        xm = full([daa.shape[1], dab.shape[1]], nan)
+        mas = full([daa.shape[1], dab.shape[1]], nan)
 
         for ie in range(dab.shape[1]):
 
-            xm[:, ie] = nnls(am, bm[:, ie])[0]
+            mas[:, ie] = nnls(maa, mab[:, ie])[0]
 
-    return DataFrame(data=xm, index=daa.COLUMNS, COLUMNS=dab.COLUMNS)
+    return DataFrame(data=mas, index=daa.columns, columns=dab.columns)

@@ -4,7 +4,7 @@ from ..constant import FLOAT_RESOLUTION
 from ..grid import make_1d_grid, make_nd_grid, plot
 
 
-def get_density(nu_po_di, co__=(), pl=True, na_=(), **di):
+def get_density(nu_po_di, co__=(), pl=True, na_=(), **ke_ar):
 
     n_po, n_di = nu_po_di.shape
 
@@ -17,7 +17,7 @@ def get_density(nu_po_di, co__=(), pl=True, na_=(), **di):
     co_po_di = make_nd_grid(co__)
 
     de_ = (
-        FFTKDE(**di)
+        FFTKDE(**ke_ar)
         .fit(nu_po_di)
         .evaluate(grid_points=co_po_di)
         .clip(min=FLOAT_RESOLUTION)

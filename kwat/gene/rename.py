@@ -20,7 +20,7 @@ def _split(an):
         return []
 
 
-def rename(na_, **di):
+def rename(na_, **ke_ar):
 
     na_re = {}
 
@@ -87,5 +87,5 @@ def rename(na_, **di):
     return dictionary_rename(
         [split_and_get(na, ".", 0) for na in na_ if search(r"^ENS[TG]", na)],
         clean(na_re),
-        **di
+        **ke_ar
     )
