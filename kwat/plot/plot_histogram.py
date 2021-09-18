@@ -68,7 +68,7 @@ def plot_histogram(
 
         co = get_color(colorscale, ie, ex_=[0, n_se - 1])
 
-        di = {
+        trace = {
             "legendgroup": ie,
             "name": se.name,
             "x": se.values,
@@ -87,7 +87,7 @@ def plot_histogram(
                         "color": co,
                     },
                 },
-                di,
+                trace,
             )
         )
 
@@ -106,7 +106,7 @@ def plot_histogram(
                         },
                         "hoverinfo": "x+text",
                     },
-                    di,
+                    trace,
                 )
             )
 

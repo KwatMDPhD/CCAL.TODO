@@ -1,5 +1,4 @@
 from ..array import log
-from ..dictionary import merge
 from ..plot import plot_plotly
 
 
@@ -25,19 +24,19 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
         },
     }
 
-    di = {
+    trace = {
         "showlegend": False,
     }
 
-    data = [merge(di,
-        {
+    data = [
+        merge(trace,{
             "x": [0, log(pr2 / pr1)],
             "y": [0] * 2,
             "marker": {
                 "color": "#080808",
-            }
-            )
-        }
+            },
+        })
+        
     ]
 
     for ie in range(n_da):
@@ -73,7 +72,7 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
         )
 
         data.append(
-            merge(di, {
+            merge(trace,{
                 "x": [ra_.min(), ra_.max()],
                 "y": [1 + ie] * 2,
             })
