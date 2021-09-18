@@ -1,4 +1,4 @@
-from .ANN_KEY import ANN_KEY
+from .ANN import ANN
 from .COLUMN import COLUMN
 from .count_variant import count_variant
 from .read import read

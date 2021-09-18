@@ -1,3 +1,7 @@
+from .ANN import ANN
+from .COLUMN import COLUMN
+
+
 def _get_variant_start_and_end(po, re, al):
 
     if len(re) == len(al):
@@ -21,90 +25,90 @@ def _get_variant_start_and_end(po, re, al):
     return st, en
 
 
-def _extend(vd):
+def _get_genotype(re, al, gt):
 
-    re = vd["REF"]
+    return [
+        [re, *al.split(sep=",")][int(sp)] for sp in gt.replace("/", "|").split(sep="|")
+    ]
 
-    al = vd["ALT"]
 
-    st, en = _get_variant_start_and_end(int(vd["POS"]), re, al)
+def _extend(div):
 
-    vd["start_position"] = st
+    re = div["REF"]
 
-    vd["end_position"] = en
+    al = div["ALT"]
 
-    if "CAF" in vd:
+    st, en = _get_variant_start_and_end(int(div["POS"]), re, al)
 
-        vd["population_allelic_frequencies"] = [
-            float(ca) for ca in vd["CAF"].split(sep=",")
+    div["start_position"] = st
+
+    div["end_position"] = en
+
+    if "CAF" in div:
+
+        div["population_allelic_frequencies"] = [
+            float(ca) for ca in div["CAF"].split(sep=",")
         ]
 
-    for sa in vd["sample"].values():
+    for dis in div["sample"].values():
 
-        if "GT" in sa:
+        if "GT" in dis:
 
-            sa["genotype"] = _get_genotype(re, al, sa["GT"])
+            dis["genotype"] = _get_genotype(re, al, dis["GT"])
 
-        if "AD" in sa and "DP" in sa:
+        if "AD" in dis and "DP" in dis:
 
-            sa["allelic_frequency"] = [
-                int(ad) / int(sa["DP"]) for ad in sa["AD"].split(sep=",")
+            dis["allelic_frequency"] = [
+                int(ad) / int(dis["DP"]) for ad in dis["AD"].split(sep=",")
             ]
 
 
-from .ANN_KEY import ANN_KEY
-from .COLUMN import COLUMN
+def read_row(st_, n_an=None):
 
+    div = {co: st_[ie] for ie, co in enumerate(COLUMN[: COLUMN.index("FILTER") + 1])}
 
-def read_row(se, n_ioan=None):
+    no_ = []
 
-    vd = {co: se[ie] for ie, co in enumerate(COLUMN[: COLUMN.index("FILTER") + 1])}
-
-    inno_ = []
-
-    for io in se[COLUMN.index("INFO")].split(sep=";"):
+    for io in st_[COLUMN.index("INFO")].split(sep=";"):
 
         if "=" in io:
 
-            iofi, iova = io.split(sep="=")
+            kei, vai = io.split(sep="=")
 
-            if iofi == "ANN":
+            if kei == "ANN":
 
-                vd["ANN"] = {}
+                div["ANN"] = []
 
-                for iean, an in enumerate(iova.split(sep=",")[:n_ioan]):
+                for an in vai.split(sep=",")[:n_an]:
 
-                    anva_ = an.split(sep="|")
+                    an_ = an.split(sep="|")
 
-                    vd["ANN"][iean] = {
-                        anfi: anva_[ieanfi + 1]
-                        for ieanfi, anfi in enumerate(ANN_KEY[1:])
-                    }
+                    div["ANN"].append(
+                        {kea: an_[iea + 1] for iea, kea in enumerate(ANN[1:])}
+                    )
 
             else:
 
-                vd[iofi] = iova
+                div[kei] = vai
 
         else:
 
-            inno_.append(io)
+            no_.append(io)
 
-    if 0 < len(inno_):
+    if 0 < len(no_):
 
-        vd["info_without_field"] = ";".join(inno_)
+        div["info_without_field"] = ";".join(no_)
 
-    iefo = COLUMN.index("FORMAT")
+    ief = COLUMN.index("FORMAT")
 
-    fofi_ = se[iefo].split(sep=":")
+    fo_ = st_[ief].split(sep=":")
 
-    vd["sample"] = {}
+    div["sample"] = []
 
-    for iesa, sa in enumerate(se[iefo + 1 :]):
+    for ies, sa in enumerate(st_[ief + 1 :]):
 
-        vd["sample"][iesa] = {
-            fofi: sava for fofi, sava in zip(fofi_, sa.split(sep=":"))
-        }
+        div["sample"].append({fo: sav for fo, sav in zip(fo_, sa.split(sep=":"))})
 
-    _extend(vd)
+    _extend(div)
 
-    return vd
+    return div

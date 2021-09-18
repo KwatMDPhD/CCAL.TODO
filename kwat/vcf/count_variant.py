@@ -2,39 +2,39 @@ from numpy import apply_along_axis
 from pandas import value_counts
 
 from ..iterable import flatten
+from ..string import split_and_get
+from .ANN import ANN
 from .COLUMN import COLUMN
+from .read import read
 
 
-def _get_info(io, ke):
+def _get_info(io, ket):
 
-    for ios in io.split(sep=";"):
+    for sp in io.split(sep=";"):
 
-        if "=" in ios:
+        if "=" in sp:
 
-            ke2, va = ios.split(sep="=")
+            ke, va = sp.split(sep="=")
 
-            if ke2 == ke:
+            if ke == ket:
 
                 return va
 
 
-from .ANN_KEY import ANN_KEY
-
-
-def _get_info_ann(io, ke, n_an=None):
+def _get_info_ann(io, ket, n_an=None):
 
     an = _get_info(io, "ANN")
 
     if an is not None:
 
-        ie = ANN_KEY.index(ke)
+        ie = ANN.index(ket)
 
-        return [ans.split(sep="|")[ie] for ans in an.split(sep=",")[:n_an]]
+        return [split_and_get(sp, "|", ie) for sp in an.split(sep=",")[:n_an]]
 
 
-def list_variant(se):
+def _list_variant(st_):
 
-    io = se[COLUMN.index("INFO")]
+    io = st_[COLUMN.index("INFO")]
 
     return set(
         "{} ({})".format(ge, ef)
@@ -42,30 +42,27 @@ def list_variant(se):
     )
 
 
-from .read import read
-
-
 def count_variant(pa):
 
     da = read(pa)
 
-    fi = da.iloc[:, COLUMN.index("FILTER")].values
-
     print(da.shape)
 
-    if "PASS" in fi:
+    fi_ = da.iloc[:, COLUMN.index("FILTER")].values
 
-        print("Using only 'PASS'...")
+    if "PASS" in fi_:
 
-        da = da.loc[fi == "PASS", :]
+        print("Using only 'PASS'")
+
+        da = da.loc[fi_ == "PASS", :]
 
         print(da.shape)
 
     else:
 
-        print("There is no 'PASS' and using all...")
+        print("There is no 'PASS' and using all")
 
-    va_co = value_counts(flatten(apply_along_axis(list_variant, 1, da.values)))
+    va_co = value_counts(flatten(apply_along_axis(_list_variant, 1, da.values)))
 
     va_co.index.name = "Variant"
 

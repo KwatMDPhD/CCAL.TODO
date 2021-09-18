@@ -6,7 +6,7 @@ from ..dictionary import merge
 from ..geometry import make_convex_hull, make_delaunay_triangulation
 from ..plot import (
     CATEGORICAL_COLORSCALE,
-    COLORBAR_TEMPLATE,
+    COLORBAR,
     CONTINUOUS_COLORSCALE,
     get_color,
     plot_plotly,
@@ -258,7 +258,7 @@ def plot(
                         "color": sc_,
                         "colorscale": colorscales,
                         "colorbar": merge(
-                            COLORBAR_TEMPLATE,
+                            COLORBAR,
                             {
                                 "tickmode": "array",
                                 "tickvals": tickvals,

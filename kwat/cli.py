@@ -1,6 +1,6 @@
 from click import Path, argument, group
 
-from .workflow import run_nb as workflow_run_nb
+from .project import make as workflow_make, run_nb as workflow_run_nb
 
 
 @group()
@@ -16,3 +16,13 @@ def run_nb(path):
     """
 
     workflow_run_nb(path)
+
+
+@cli.command()
+@argument("name", required=True, nargs=1)
+def make(name):
+    """
+    Make a project.
+    """
+
+    workflow_make(name)

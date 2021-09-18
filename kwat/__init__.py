@@ -26,6 +26,7 @@ from . import (
     plot,
     point,
     probability,
+    project,
     python,
     series,
     shell,
@@ -33,5 +34,4 @@ from . import (
     string,
     vcf,
     vector_vector,
-    workflow,
 )

@@ -1,6 +1,6 @@
 from .BINARY_COLORSCALE import BINARY_COLORSCALE
 from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
-from .COLORBAR_TEMPLATE import COLORBAR_TEMPLATE
+from .COLORBAR import COLORBAR
 from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
 from .get_color import get_color
 from .plot_bubble_map import plot_bubble_map

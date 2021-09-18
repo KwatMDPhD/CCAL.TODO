@@ -1,4 +1,4 @@
-ANN_KEY = [
+ANN = [
     "ALT",
     "effect",
     "impact",
