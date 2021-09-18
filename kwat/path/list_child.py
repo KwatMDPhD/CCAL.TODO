@@ -1,11 +1,11 @@
 from os import walk
 
 
-def get_child(di):
+def list_child(pa):
 
     pa_ = []
 
-    for di, di_, fi_ in walk(di):
+    for di, di_, fi_ in walk(pa):
 
         te = "{}/{{}}".format(di)
 

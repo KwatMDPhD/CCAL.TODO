@@ -17,6 +17,8 @@ def get_color(colorscale, fr):
                 colortype="rgb",
             )
 
+            print(co)
+
             return "rgb({},{},{})".format(
-                *(int(float(it)) for it in co[4:-1].split(",", 2))
+                *(int(float(it)) for it in co[4:-1].split(sep=","))
             )
