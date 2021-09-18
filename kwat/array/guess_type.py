@@ -1,7 +1,9 @@
 from numpy import unique
 
+from ..constant import NUMBER_OF_CATEGORY
 
-def guess_type(nu___, n_ca=16):
+
+def guess_type(nu___, n_ca=NUMBER_OF_CATEGORY):
 
     if all(float(nu).is_integer() for nu in nu___.ravel()):
 

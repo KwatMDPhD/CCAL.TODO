@@ -11,14 +11,8 @@ def get_color(colorscale, fr):
 
         if fr1 <= fr <= fr2:
 
-            co = find_intermediate_color(
+            return find_intermediate_color(
                 *convert_colors_to_same_type([co1, co2])[0],
                 (fr - fr1) / (fr2 - fr1),
                 colortype="rgb",
-            )
-
-            print(co)
-
-            return "rgb({},{},{})".format(
-                *(int(float(it)) for it in co[4:-1].split(sep=","))
             )

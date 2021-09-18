@@ -8,15 +8,15 @@ from .plot_plotly import plot_plotly
 
 
 def plot_bubble_map(
-    si_an_an,
-    co_an_an=None,
+    das,
+    dac=None,
     ma=24,
     colorscale=CONTINUOUS_COLORSCALE,
     LAYOUT_TEMPLATE=None,
     pa="",
 ):
 
-    si1, si2 = si_an_an.shape
+    si1, si2 = das.shape
 
     co1_ = arange(si1)[::-1]
 
@@ -31,26 +31,26 @@ def plot_bubble_map(
             "height": max(480, si1 * 2 * ma),
             "width": max(480, si2 * 2 * ma),
             "yaxis": {
-                "title": "{} (n={})".format(si_an_an.index.name, si1),
+                "title": "{} (n={})".format(das.index.name, si1),
                 "tickvals": co1_,
-                "ticktext": si_an_an.index,
+                "ticktext": das.index,
             },
             "xaxis": {
-                "title": "{} (n={})".format(si_an_an.COLUMNS.name, si2),
+                "title": "{} (n={})".format(das.COLUMNS.name, si2),
                 "tickvals": co2_,
-                "ticktext": si_an_an.COLUMNS,
+                "ticktext": das.COLUMNS,
             },
         },
         LAYOUT_TEMPLATE,
     )
 
-    si_an_an = si_an_an.values
+    das = das.values
 
-    if co_an_an is None:
+    if dac is None:
 
-        co_an_an = si_an_an
+        dac = das
 
-    si2_an_an = apply(si_an_an, normalize, "0-1", up=True)
+    si2_an_an = apply(das, normalize, "0-1", up=True)
 
     si2_an_an[isnan(si2_an_an)] = 0.5
 
@@ -62,11 +62,11 @@ def plot_bubble_map(
                 {
                     "y": co1_an_an.ravel(),
                     "x": co2_an_an.ravel(),
-                    "text": si_an_an.ravel(),
+                    "text": das.ravel(),
                     "mode": "markers",
                     "marker": {
                         "size": si2_an_an.ravel() * ma,
-                        "color": co_an_an.ravel(),
+                        "color": dac.ravel(),
                         "colorscale": colorscale,
                         "colorbar": COLORBAR_TEMPLATE,
                     },
