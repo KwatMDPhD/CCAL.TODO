@@ -76,6 +76,7 @@ def plot_histogram(
 
         data.append(
             merge(
+                trace,
                 {
                     "yaxis": "y2",
                     "type": "histogram",
@@ -87,7 +88,6 @@ def plot_histogram(
                         "color": co,
                     },
                 },
-                trace,
             )
         )
 
@@ -95,6 +95,7 @@ def plot_histogram(
 
             data.append(
                 merge(
+                    trace,
                     {
                         "showlegend": False,
                         "y": [ie] * se.size,
@@ -106,7 +107,6 @@ def plot_histogram(
                         },
                         "hoverinfo": "x+text",
                     },
-                    trace,
                 )
             )
 

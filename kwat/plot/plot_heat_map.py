@@ -2,7 +2,7 @@ from numpy import argsort, nonzero, unique
 
 from ..dictionary import merge
 from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
-from .COLORBAR_TEMPLATE import COLORBAR_TEMPLATE
+from .COLORBAR import COLORBAR
 from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
 from .plot_plotly import plot_plotly
 
@@ -89,7 +89,7 @@ def plot_heat_map(
             "x": da.columns.values,
             "colorscale": colorscale,
             "colorbar": merge(
-                COLORBAR_TEMPLATE,
+                COLORBAR,
                 {
                     "x": colorbar_x,
                 },
@@ -100,7 +100,7 @@ def plot_heat_map(
     heatmap = {
         "type": "heatmap",
         "colorbar": merge(
-            COLORBAR_TEMPLATE,
+            COLORBAR,
             {
                 "dtick": 1,
             },

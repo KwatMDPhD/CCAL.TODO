@@ -29,14 +29,16 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
     }
 
     data = [
-        merge(trace,{
-            "x": [0, log(pr2 / pr1)],
-            "y": [0] * 2,
-            "marker": {
-                "color": "#080808",
+        merge(
+            trace,
+            {
+                "x": [0, log(pr2 / pr1)],
+                "y": [0] * 2,
+                "marker": {
+                    "color": "#080808",
+                },
             },
-        })
-        
+        )
     ]
 
     for ie in range(n_da):
@@ -72,10 +74,13 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
         )
 
         data.append(
-            merge(trace,{
-                "x": [ra_.min(), ra_.max()],
-                "y": [1 + ie] * 2,
-            })
+            merge(
+                trace,
+                {
+                    "x": [ra_.min(), ra_.max()],
+                    "y": [1 + ie] * 2,
+                },
+            )
         )
 
     plot_plotly(

@@ -2,7 +2,7 @@ from numpy import arange, isnan, meshgrid
 
 from ..array import apply, normalize
 from ..dictionary import merge
-from .COLORBAR_TEMPLATE import COLORBAR_TEMPLATE
+from .COLORBAR import COLORBAR
 from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
 from .plot_plotly import plot_plotly
 
@@ -68,7 +68,7 @@ def plot_bubble_map(
                         "size": mas.ravel() * si,
                         "color": mac.ravel(),
                         "colorscale": colorscale,
-                        "colorbar": COLORBAR_TEMPLATE,
+                        "colorbar": COLORBAR,
                     },
                 }
             ],
