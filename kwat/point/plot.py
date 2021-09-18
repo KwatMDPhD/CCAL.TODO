@@ -4,7 +4,12 @@ from plotly.colors import make_colorscale
 from ..array import get_not_nan_unique
 from ..dictionary import merge
 from ..geometry import make_convex_hull, make_delaunay_triangulation
-from ..plot import COLORBAR_TEMPLATE, CONTINUOUS_COLORSCALE, GROUP_COLOR, plot_plotly
+from ..plot import (
+    CATEGORICAL_COLORSCALE,
+    COLORBAR_TEMPLATE,
+    CONTINUOUS_COLORSCALE,
+    plot_plotly,
+)
 
 
 def plot(
@@ -14,7 +19,7 @@ def plot(
     ntrace=None,
     ptrace=None,
     gr_=None,
-    gr_co=GROUP_COLOR,
+    colorscaleg=CATEGORICAL_COLORSCALE,
     co_=None,
     bap_=None,
     bag_=None,
@@ -159,7 +164,9 @@ def plot(
                     "z": where(bag_ == gr, bap_, nan),
                     "y": co_,
                     "x": co_,
-                    "colorscale": make_colorscale(["rgb(255, 255, 255)", gr_co[gr]]),
+                    "colorscale": make_colorscale(
+                        ["rgb(255, 255, 255)", colorscaleg[gr]]
+                    ),
                     "showscale": False,
                     "hoverinfo": "none",
                 }
@@ -204,7 +211,7 @@ def plot(
                         "x": nu_po_di.values[:, 1],
                         "text": nu_po_di.index.values,
                         "marker": {
-                            "color": gr_co[gr],
+                            "color": colorscaleg[gr],
                         },
                     },
                 )

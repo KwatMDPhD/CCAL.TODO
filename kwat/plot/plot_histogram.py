@@ -9,19 +9,19 @@ def plot_histogram(
     no=None,
     xbins_size=None,
     colorscale=CATEGORICAL_COLORSCALE,
-    LAYOUT_TEMPLATE=None,
+    layout=None,
     pa="",
 ):
 
     ru = all(se.size <= 1e3 for se in se_)
 
-    n_tr = len(se_)
+    n_se = len(se_)
 
     if ru:
 
         he = 0.04
 
-        ma = n_tr * he
+        ma = n_se * he
 
         mi = ma + he
 
@@ -39,11 +39,11 @@ def plot_histogram(
 
         yaxis2_title = no.title()
 
-    if LAYOUT_TEMPLATE is None:
+    if layout is None:
 
-        LAYOUT_TEMPLATE = {}
+        layout = {}
 
-    LAYOUT_TEMPLATE = merge(
+    layout = merge(
         {
             "xaxis": {
                 "anchor": "y",
@@ -59,57 +59,61 @@ def plot_histogram(
                 "title": yaxis2_title,
             },
         },
-        LAYOUT_TEMPLATE,
+        layout,
     )
 
     data = []
 
     for ie, se in enumerate(se_):
 
-        co = get_color(colorscale, ie / max(1, (n_tr - 1)))
+        co = get_color(colorscale, ie, ex_=[0, n_se - 1])
 
-        trace = {
+        di = {
             "legendgroup": ie,
             "name": se.name,
             "x": se.values,
         }
 
         data.append(
-            {
-                "yaxis": "y2",
-                "type": "histogram",
-                "histnorm": no,
-                "xbins": {
-                    "size": xbins_size,
+            merge(
+                {
+                    "yaxis": "y2",
+                    "type": "histogram",
+                    "histnorm": no,
+                    "xbins": {
+                        "size": xbins_size,
+                    },
+                    "marker": {
+                        "color": co,
+                    },
                 },
-                "marker": {
-                    "color": co,
-                },
-                **trace,
-            }
+                di,
+            )
         )
 
         if ru:
 
             data.append(
-                {
-                    "showlegend": False,
-                    "y": [ie] * se.size,
-                    "text": se.index,
-                    "mode": "markers",
-                    "marker": {
-                        "symbol": "line-ns-open",
-                        "color": co,
+                merge(
+                    {
+                        "showlegend": False,
+                        "y": [ie] * se.size,
+                        "text": se.index.values,
+                        "mode": "markers",
+                        "marker": {
+                            "symbol": "line-ns-open",
+                            "color": co,
+                        },
+                        "hoverinfo": "x+text",
                     },
-                    "hoverinfo": "x+text",
-                    **trace,
-                }
+                    di,
+                )
             )
 
     plot_plotly(
         {
             "data": data,
-            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
+            "layout": layout,
         },
         pa=pa,
     )

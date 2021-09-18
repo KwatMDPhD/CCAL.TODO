@@ -9,70 +9,70 @@ from .plot_plotly import plot_plotly
 
 def plot_bubble_map(
     das,
-    dac=None,
-    ma=24,
+    mac=None,
+    si=24,
     colorscale=CONTINUOUS_COLORSCALE,
-    LAYOUT_TEMPLATE=None,
+    layout=None,
     pa="",
 ):
 
     si1, si2 = das.shape
 
-    co1_ = arange(si1)[::-1]
+    if layout is None:
 
-    co2_ = arange(si2)
+        layout = {}
 
-    if LAYOUT_TEMPLATE is None:
+    ti1_ = arange(si1)[::-1]
 
-        LAYOUT_TEMPLATE = {}
+    ti2_ = arange(si2)
 
-    LAYOUT_TEMPLATE = merge(
+    layout = merge(
         {
-            "height": max(480, si1 * 2 * ma),
-            "width": max(480, si2 * 2 * ma),
+            "height": max(480, si1 * 2 * si),
+            "width": max(480, si2 * 2 * si),
             "yaxis": {
                 "title": "{} (n={})".format(das.index.name, si1),
-                "tickvals": co1_,
-                "ticktext": das.index,
+                "tickvals": ti1_,
+                "ticktext": das.index.values,
             },
             "xaxis": {
-                "title": "{} (n={})".format(das.COLUMNS.name, si2),
-                "tickvals": co2_,
-                "ticktext": das.COLUMNS,
+                "title": "{} (n={})".format(das.columns.name, si2),
+                "tickvals": ti2_,
+                "ticktext": das.columns.values,
             },
         },
-        LAYOUT_TEMPLATE,
+        layout,
     )
 
-    das = das.values
+    co1_di1_di2, co2_di1_di2 = meshgrid(ti1_, ti2_, indexing="ij")
 
-    if dac is None:
+    mas = das.values
 
-        dac = das
+    if mac is None:
 
-    si2_an_an = apply(das, normalize, "0-1", up=True)
+        mac = mas
 
-    si2_an_an[isnan(si2_an_an)] = 0.5
+    mas = apply(mas, normalize, "0-1", up=True)
 
-    co1_an_an, co2_an_an = meshgrid(co1_, co2_, indexing="ij")
+    mas[isnan(mas)] = 0.5
 
     plot_plotly(
         {
             "data": [
                 {
-                    "y": co1_an_an.ravel(),
-                    "x": co2_an_an.ravel(),
-                    "text": das.ravel(),
+                    "y": co1_di1_di2.ravel(),
+                    "x": co2_di1_di2.ravel(),
+                    "text": mas.ravel(),
                     "mode": "markers",
                     "marker": {
-                        "size": si2_an_an.ravel() * ma,
-                        "color": dac.ravel(),
+                        "size": mas.ravel() * si,
+                        "color": mac.ravel(),
                         "colorscale": colorscale,
                         "colorbar": COLORBAR_TEMPLATE,
                     },
                 }
             ],
-            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
+            "layout": layout,
         },
         pa=pa,
     )

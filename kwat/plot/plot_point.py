@@ -1,19 +1,24 @@
+from ..dictionary import merge
 from .plot_plotly import plot_plotly
 
 
-def plot_point(an_po_pa, title="", pa=""):
+def plot_point(da, layout=None, pa=""):
+
+    co_ = da.columns.values
+
+    co1, co2 = co_[:2]
 
     data = [
         {
             "name": "Point",
-            "y": an_po_pa.iloc[:, 0],
-            "x": an_po_pa.iloc[:, 1],
-            "text": an_po_pa.index.values,
+            "y": da.loc[:, co1],
+            "x": da.loc[:, co2],
+            "text": da.index.values,
             "mode": "markers",
             "marker": {
-                "size": an_po_pa.loc[:, "Size"],
-                "color": an_po_pa.loc[:, "Color"],
-                "opacity": an_po_pa.loc[:, "Opacity"],
+                "size": da.loc[:, "Size"],
+                "color": da.loc[:, "Color"],
+                "opacity": da.loc[:, "Opacity"],
                 "line": {
                     "width": 0,
                 },
@@ -21,17 +26,13 @@ def plot_point(an_po_pa, title="", pa=""):
         }
     ]
 
-    co_ = an_po_pa.COLUMNS.values
-
-    ANNOTATION_TEMPLATEs = []
+    annotations = []
 
     if "Annotate" in co_:
 
-        for text, (y, x) in (
-            an_po_pa.iloc[:, :2].loc[an_po_pa.loc[:, "Annotate"], :].iterrows()
-        ):
+        for text, (y, x) in da.loc[da.loc[:, "Annotate"], [co1, co2]].iterrows():
 
-            ANNOTATION_TEMPLATEs.append(
+            annotations.append(
                 {
                     "y": y,
                     "x": x,
@@ -45,19 +46,28 @@ def plot_point(an_po_pa, title="", pa=""):
                 }
             )
 
+    if layout is None:
+
+        layout = {}
+
+    layout = merge(
+        {
+            "title": "Plot Point",
+            "yaxis": {
+                "title": co1,
+            },
+            "xaxis": {
+                "title": co2,
+            },
+            "annotations": annotations,
+        },
+        layout,
+    )
+
     plot_plotly(
         {
             "data": data,
-            "LAYOUT_TEMPLATE": {
-                "title": title,
-                "yaxis": {
-                    "title": co_[0],
-                },
-                "xaxis": {
-                    "title": co_[1],
-                },
-                "ANNOTATION_TEMPLATEs": ANNOTATION_TEMPLATEs,
-            },
+            "layout": layout,
         },
         pa=pa,
     )

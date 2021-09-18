@@ -15,12 +15,12 @@ def plot_plotly(figure, pa=""):
         figure,
     )
 
-    co = {
+    di = {
         "editable": True,
     }
 
-    show(figure, config=co)
+    show(figure, config=di)
 
     if pa != "":
 
-        write_html(figure, pa, config=co)
+        write_html(figure, pa, config=di)
