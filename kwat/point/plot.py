@@ -1,7 +1,7 @@
 from numpy import absolute, isnan, nan, where
 from plotly.colors import make_colorscale
 
-from ..array import get_not_nan_unique
+from ..array import get_not_nan_unique, guess_type
 from ..dictionary import merge
 from ..geometry import make_convex_hull, make_delaunay_triangulation
 from ..plot import (

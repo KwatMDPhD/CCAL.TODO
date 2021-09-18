@@ -1,4 +1,5 @@
 from ..array import log
+from ..dictionary import merge
 from ..plot import plot_plotly
 
 
@@ -6,7 +7,7 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
 
     n_da = len(na_)
 
-    LAYOUT_TEMPLATE = {
+    layout = {
         "title": {
             "text": "Nomogram",
         },
@@ -24,18 +25,18 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
         },
     }
 
-    trace = {
+    di = {
         "showlegend": False,
     }
 
-    data = [
+    data = [merge(di,
         {
             "x": [0, log(pr2 / pr1)],
             "y": [0] * 2,
             "marker": {
                 "color": "#080808",
-            },
-            **trace,
+            }
+            )
         }
     ]
 
@@ -63,7 +64,7 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
                         "y": ra_,
                     },
                 ],
-                "LAYOUT_TEMPLATE": {
+                "layout": {
                     "title": {
                         "text": na_[ie],
                     },
@@ -72,17 +73,16 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
         )
 
         data.append(
-            {
+            merge(di, {
                 "x": [ra_.min(), ra_.max()],
                 "y": [1 + ie] * 2,
-                **trace,
-            }
+            })
         )
 
     plot_plotly(
         {
             "data": data,
-            "LAYOUT_TEMPLATE": LAYOUT_TEMPLATE,
+            "layout": layout,
         },
         pa=pa,
     )

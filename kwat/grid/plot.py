@@ -4,27 +4,33 @@ from ..plot import plot_heat_map, plot_plotly
 from .get_1d_grid import get_1d_grid
 
 
-def plot(co_po_di, ve, nu="Number", na_=(), pa=""):
-
-    n_di = co_po_di.shape[1]
-
-    if len(na_) != n_di:
-
-        na_ = ["Dimension {}".format(ie) for ie in range(n_di)]
+def plot(co_po_di, ve, na_=(), pa=""):
 
     co__ = get_1d_grid(co_po_di)
 
-    for ie, co_ in enumerate(co__):
+    nu_po_di = ve.reshape([co_.size for co_ in co__])
+
+    n_di = co_po_di.shape[1]
+
+    if len(na_) == n_di + 1:
+
+        nav = na_.pop()
+
+    else:
+
+        na_ = ["Dimension {}".format(ie) for ie in range(n_di)]
+
+        nav = "Dimension {}".format(n_di + 1)
+
+    for na, co_ in zip(na_, co__):
 
         print(
-            "Dimension {} grid: size={} min={:.2e} max={:.2e}".format(
-                ie + 1, co_.size, co_.min(), co_.max()
+            "{} (grid): size={} min={:.2e} max={:.2e}".format(
+                na, co_.size, co_.min(), co_.max()
             )
         )
 
-    print("Number: min={:.2e} max={:.2e}".format(ve.min(), ve.max()))
-
-    nu_po_di = ve.reshape([co_.size for co_ in co__])
+    print("{}: min={:.2e} max={:.2e}".format(nav, ve.min(), ve.max()))
 
     if n_di == 1:
 
@@ -44,7 +50,7 @@ def plot(co_po_di, ve, nu="Number", na_=(), pa=""):
                     },
                     "yaxis": {
                         "title": {
-                            "text": nu,
+                            "text": nav,
                         },
                     },
                 },
@@ -66,7 +72,7 @@ def plot(co_po_di, ve, nu="Number", na_=(), pa=""):
             ),
             layout={
                 "title": {
-                    "text": nu,
+                    "text": nav,
                 },
             },
             pa=pa,

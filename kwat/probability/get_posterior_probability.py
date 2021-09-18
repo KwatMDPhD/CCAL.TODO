@@ -23,29 +23,35 @@ def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, na_=(), **ke_a
 
     if pl:
 
-        plot(co_po_di, po_, nu="Posterior Probability", na_=na_)
+        plot(co_po_di, po_, na_=na_ + ["Posterior Probability"])
 
     if isnan(ta):
 
         return co_po_di, po_
 
-    co_ = unique(cot_)
+    else:
 
-    ie = absolute(co_ - ta).argmin()
+        cotu_ = unique(cot_)
 
-    ie_ = s_[ie :: co_.size]
+        ie = absolute(cotu_ - ta).argmin()
 
-    co_po_dit = co_po_di[ie_, :-1]
+        ie_ = s_[ie :: cotu_.size]
 
-    pot_ = po_[ie_]
+        co_po_dit = co_po_di[ie_, :-1]
 
-    if pl:
+        pot_ = po_[ie_]
 
-        plot(
-            co_po_dit,
-            pot_,
-            nu="P({} = {:.2e} (~{}) | {})".format(na_[-1], co_[ie], ta, *na_[:-1]),
-            na_=na_[:-1],
-        )
+        if pl:
 
-    return co_po_dit, pot_
+            plot(
+                co_po_dit,
+                pot_,
+                na_=na_[:-1]
+                + [
+                    "P({} = {:.2e} (~{}) | {})".format(
+                        na_[-1], cotu_[ie], ta, *na_[:-1]
+                    )
+                ],
+            )
+
+        return co_po_dit, pot_
