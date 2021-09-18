@@ -74,7 +74,7 @@ def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e3)):
 
         if n_hi < si:
 
-            print("Choosing {} for histogram...".format(n_hi))
+            print("Choosing {} for histogram".format(n_hi))
 
             ie_ = concatenate(
                 [choice(go_.size, n_hi, False), [go_.argmin(), go_.argmax()]]

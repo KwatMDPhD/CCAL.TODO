@@ -21,7 +21,7 @@ def download(ur, pa, na=None, ov=True):
 
     if not exists(pa) or ov:
 
-        print("{} => {}...".format(ur, pa))
+        print("{} => {}".format(ur, pa))
 
         if search(r"^ftp", ur):
 
