@@ -1,4 +1,5 @@
 from ..string import trim
+from ..dictionary import merge
 from .ANNOTATION import ANNOTATION
 
 
@@ -16,13 +17,15 @@ def _make_data_annotation(y, la, he, ro_, st):
         for ie, text in enumerate(["Score (\u0394)", "P-Value", "Q-Value"]):
 
             annotations.append(
-                {
-                    "y": y,
-                    "x": _get_x(ie),
-                    "xanchor": "center",
-                    "text": "<b>{}</b>".format(text),
-                    **ANNOTATION,
-                }
+                merge(
+                    ANNOTATION,
+                    {
+                        "y": y,
+                        "x": _get_x(ie),
+                        "xanchor": "center",
+                        "text": "<b>{}</b>".format(text),
+                    },
+                )
             )
 
     y -= he
@@ -30,13 +33,15 @@ def _make_data_annotation(y, la, he, ro_, st):
     for iey in range(ro_.size):
 
         annotations.append(
-            {
-                "y": y,
-                "x": 0,
-                "xanchor": "right",
-                "text": "{}".format(trim(ro_[iey])),
-                **ANNOTATION,
-            }
+            merge(
+                ANNOTATION,
+                {
+                    "y": y,
+                    "x": 0,
+                    "xanchor": "right",
+                    "text": "{}".format(trim(ro_[iey])),
+                },
+            )
         )
 
         sc, ma, pv, qv = st[iey]
@@ -46,13 +51,10 @@ def _make_data_annotation(y, la, he, ro_, st):
         ):
 
             annotations.append(
-                {
-                    "y": y,
-                    "x": _get_x(iex),
-                    "xanchor": "center",
-                    "text": text,
-                    **ANNOTATION,
-                }
+                merge(
+                    ANNOTATION,
+                    {"y": y, "x": _get_x(iex), "xanchor": "center", "text": text},
+                )
             )
 
         y -= he

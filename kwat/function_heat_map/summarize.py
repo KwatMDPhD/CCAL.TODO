@@ -32,12 +32,12 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
 
     layout = merge(
         merge(
+            LAYOUT,
             {
                 "height": max(640, 24 * n_ro),
                 "title": {"text": "Function Heat Map Summary"},
                 "annotations": _make_target_annotation(1 - he / 2, ta.name),
             },
-            LAYOUT,
         ),
         layout,
     )
@@ -62,19 +62,21 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
 
     co_ = ta.index.values
 
-    heatmap = {"x": co_, **HEATMAP}
+    heatmap = merge(HEATMAP, {"x": co_})
 
     tavp, mit, mat = _process_target(ta.values, ty, st)
 
     data = [
-        {
-            "yaxis": sub(r"axis", "", yaxis),
-            "z": tavp.reshape([1, -1]),
-            "zmin": mit,
-            "zmax": mat,
-            "colorscale": TYPE_COLORSCALE[ty],
-            **heatmap,
-        }
+        merge(
+            heatmap,
+            {
+                "yaxis": sub(r"axis", "", yaxis),
+                "z": tavp.reshape([1, -1]),
+                "zmin": mit,
+                "zmax": mat,
+                "colorscale": TYPE_COLORSCALE[ty],
+            },
+        )
     ]
 
     for ie, bu in enumerate(bu_):
@@ -96,27 +98,31 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
         )
 
         data.append(
-            {
-                "yaxis": yaxis.replace("axis", ""),
-                "z": davp[::-1],
-                "y": ro_[::-1],
-                "zmin": mid,
-                "zmax": mad,
-                "colorscale": TYPE_COLORSCALE[bu["type"]],
-                **heatmap,
-            }
+            merge(
+                heatmap,
+                {
+                    "yaxis": yaxis.replace("axis", ""),
+                    "z": davp[::-1],
+                    "y": ro_[::-1],
+                    "zmin": mid,
+                    "zmax": mad,
+                    "colorscale": TYPE_COLORSCALE[bu["type"]],
+                },
+            )
         )
 
         y = domain[1] + he / 2
 
         layout["annotations"].append(
-            {
-                "y": y,
-                "x": 0.5,
-                "xanchor": "center",
-                "text": "<b>{}</b>".format(bu["name"]),
-                **ANNOTATION,
-            }
+            merge(
+                ANNOTATION,
+                {
+                    "y": y,
+                    "x": 0.5,
+                    "xanchor": "center",
+                    "text": "<b>{}</b>".format(bu["name"]),
+                },
+            )
         )
 
         layout["annotations"] += _make_data_annotation(y, ie == 0, he, ro_, fu.values)
