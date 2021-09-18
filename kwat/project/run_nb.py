@@ -9,5 +9,5 @@ def run_nb(pa):
         run(
             "jupyter nbconvert --execute --ExecutePreprocessor.timeout=-1 --inplace {}".format(
                 na
-            ),
+            )
         )

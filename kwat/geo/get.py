@@ -35,8 +35,7 @@ def _update_with_suffix(an_fe_sa):
 def _focus(an_fe_sa):
 
     an_fe_sa = an_fe_sa.loc[
-        [fe.startswith("Sample_characteristics") for fe in an_fe_sa.index.values],
-        :,
+        [fe.startswith("Sample_characteristics") for fe in an_fe_sa.index.values], :
     ]
 
     pr__ = [_get_prefix(an_) for an_ in an_fe_sa.values]

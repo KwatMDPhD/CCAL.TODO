@@ -5,11 +5,7 @@ from .shift import shift
 
 def log(nu___, ba=2, ab=False, sh=None):
 
-    lo = {
-        2: log2,
-        "e": loge,
-        10: log10,
-    }[ba]
+    lo = {2: log2, "e": loge, 10: log10}[ba]
 
     if ab:
 

@@ -32,21 +32,10 @@ def get_extreme(se, di, pa, size=2, **ke_ar):
         index=la_,
     )
 
-    da.loc[ex_, ["Size", "Color", "Opacity",]] = [
+    da.loc[ex_, ["Size", "Color", "Opacity"]] = [
         size * 2,
-        {
-            "<": "#1f4788",
-            ">": "#c3272b",
-        }[di],
+        {"<": "#1f4788", ">": "#c3272b"}[di],
         0.8,
     ]
 
-    plot_point(
-        da,
-        layout={
-            "title": {
-                "text": "Extreme",
-            },
-        },
-        pa="{}.html".format(pa),
-    )
+    plot_point(da, layout={"title": {"text": "Extreme"}}, pa="{}.html".format(pa))

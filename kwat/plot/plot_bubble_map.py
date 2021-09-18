@@ -8,12 +8,7 @@ from .plot_plotly import plot_plotly
 
 
 def plot_bubble_map(
-    das,
-    mac=None,
-    si=24,
-    colorscale=CONTINUOUS_COLORSCALE,
-    layout=None,
-    pa="",
+    das, mac=None, si=24, colorscale=CONTINUOUS_COLORSCALE, layout=None, pa=""
 ):
 
     si1, si2 = das.shape

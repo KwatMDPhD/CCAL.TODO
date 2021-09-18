@@ -5,19 +5,9 @@ from ..dictionary import merge
 
 def plot_plotly(figure, pa=""):
 
-    figure = merge(
-        {
-            "layout": {
-                "autosize": False,
-                "template": "plotly_white",
-            },
-        },
-        figure,
-    )
+    figure = merge({"layout": {"autosize": False, "template": "plotly_white"}}, figure)
 
-    config = {
-        "editable": True,
-    }
+    config = {"editable": True}
 
     show(figure, config=config)
 

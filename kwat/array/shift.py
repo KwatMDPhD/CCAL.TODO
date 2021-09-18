@@ -12,6 +12,6 @@ def shift(nu___, sh):
 
         sh = nu___[ab___].min()
 
-        print("Shifting the minimum to {}...".format(sh))
+        print("Shifting the minimum to {}".format(sh))
 
     return nu___ + sh - nu___.min()

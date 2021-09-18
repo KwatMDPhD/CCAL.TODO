@@ -77,9 +77,7 @@ def plot(
             "y": ti1_ + hu1_,
             "x": ti2_ + hu2_,
             "mode": "lines",
-            "line": {
-                "color": "#171412",
-            },
+            "line": {"color": "#171412"},
         }
     )
 
@@ -99,10 +97,7 @@ def plot(
                 "marker": {
                     "size": 20,
                     "color": "#23191e",
-                    "line": {
-                        "width": 1,
-                        "color": "#ebf6f7",
-                    },
+                    "line": {"width": 1, "color": "#ebf6f7"},
                 },
                 "hoverinfo": "text",
             },
@@ -147,9 +142,7 @@ def plot(
                 "x": co_,
                 "autocontour": False,
                 "ncontours": 24,
-                "contours": {
-                    "coloring": "none",
-                },
+                "contours": {"coloring": "none"},
             }
         )
 
@@ -186,10 +179,7 @@ def plot(
             "marker": {
                 "size": 16,
                 "color": "#20d9ba",
-                "line": {
-                    "width": 0.8,
-                    "color": "#000000",
-                },
+                "line": {"width": 0.8, "color": "#000000"},
             },
             "hoverinfo": "text",
         },
@@ -213,9 +203,7 @@ def plot(
                         "y": nu_po_di.values[:, 0],
                         "x": nu_po_di.values[:, 1],
                         "text": nu_po_di.index.values,
-                        "marker": {
-                            "color": get_color(colorscaleg, gr, [grf, grl]),
-                        },
+                        "marker": {"color": get_color(colorscaleg, gr, [grf, grl])},
                     },
                 )
             )
@@ -232,12 +220,7 @@ def plot(
 
         if guess_type(sc_) == "continuous":
 
-            tickvals = [
-                sc_.nanmin(),
-                sc_.nanmedian(),
-                sc_.nanmean(),
-                sc_.nanmax(),
-            ]
+            tickvals = [sc_.nanmin(), sc_.nanmedian(), sc_.nanmean(), sc_.nanmax()]
 
             ticktext = ["{:.2e}".format(ti) for ti in tickvals]
 
@@ -301,10 +284,4 @@ def plot(
             }
         )
 
-    plot_plotly(
-        {
-            "data": data,
-            "layout": layout,
-        },
-        pa=pa,
-    )
+    plot_plotly({"data": data, "layout": layout}, pa=pa)

@@ -7,37 +7,21 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
     n_da = len(na_)
 
     layout = {
-        "title": {
-            "text": "Nomogram",
-        },
-        "xaxis": {
-            "title": {
-                "text": "Log Odd Ratio",
-            },
-        },
+        "title": {"text": "Nomogram"},
+        "xaxis": {"title": {"text": "Log Odd Ratio"}},
         "yaxis": {
-            "title": {
-                "text": "Evidence",
-            },
+            "title": {"text": "Evidence"},
             "tickvals": list(range(1 + n_da)),
             "ticktext": ["Prior", *na_],
         },
     }
 
-    trace = {
-        "showlegend": False,
-    }
+    trace = {"showlegend": False}
 
     data = [
         merge(
             trace,
-            {
-                "x": [0, log(pr2 / pr1)],
-                "y": [0] * 2,
-                "marker": {
-                    "color": "#080808",
-                },
-            },
+            {"x": [0, log(pr2 / pr1)], "y": [0] * 2, "marker": {"color": "#080808"}},
         )
     ]
 
@@ -52,41 +36,14 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
         plot_plotly(
             {
                 "data": [
-                    {
-                        "name": "P(Target = 0)",
-                        "y": po1_,
-                    },
-                    {
-                        "name": "P(Target = 1)",
-                        "y": po2_,
-                    },
-                    {
-                        "name": "Log Odd Ratio",
-                        "y": ra_,
-                    },
+                    {"name": "P(Target = 0)", "y": po1_},
+                    {"name": "P(Target = 1)", "y": po2_},
+                    {"name": "Log Odd Ratio", "y": ra_},
                 ],
-                "layout": {
-                    "title": {
-                        "text": na_[ie],
-                    },
-                },
+                "layout": {"title": {"text": na_[ie]}},
             }
         )
 
-        data.append(
-            merge(
-                trace,
-                {
-                    "x": [ra_.min(), ra_.max()],
-                    "y": [1 + ie] * 2,
-                },
-            )
-        )
+        data.append(merge(trace, {"x": [ra_.min(), ra_.max()], "y": [1 + ie] * 2}))
 
-    plot_plotly(
-        {
-            "data": data,
-            "layout": layout,
-        },
-        pa=pa,
-    )
+    plot_plotly({"data": data, "layout": layout}, pa=pa)

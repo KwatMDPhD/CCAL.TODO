@@ -22,15 +22,7 @@ def _check_tolerable(er_it_ie, to):
     return ((er2_ - er1_) / er2_ <= to).all()
 
 
-def factorize(
-    ma_,
-    me,
-    re,
-    we_=None,
-    to=1e-6,
-    n_it=int(1e3),
-    ra=RANDOM_SEED,
-):
+def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
     n_ie = len(ma_)
 

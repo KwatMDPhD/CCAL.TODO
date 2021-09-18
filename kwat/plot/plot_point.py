@@ -19,9 +19,7 @@ def plot_point(da, layout=None, pa=""):
                 "size": da.loc[:, "Size"],
                 "color": da.loc[:, "Color"],
                 "opacity": da.loc[:, "Opacity"],
-                "line": {
-                    "width": 0,
-                },
+                "line": {"width": 0},
             },
         }
     ]
@@ -37,9 +35,7 @@ def plot_point(da, layout=None, pa=""):
                     "y": y,
                     "x": x,
                     "text": text,
-                    "font": {
-                        "size": 8,
-                    },
+                    "font": {"size": 8},
                     "arrowhead": 2,
                     "arrowsize": 1,
                     "clicktoshow": "onoff",
@@ -53,21 +49,11 @@ def plot_point(da, layout=None, pa=""):
     layout = merge(
         {
             "title": "Plot Point",
-            "yaxis": {
-                "title": co1,
-            },
-            "xaxis": {
-                "title": co2,
-            },
+            "yaxis": {"title": co1},
+            "xaxis": {"title": co2},
             "annotations": annotations,
         },
         layout,
     )
 
-    plot_plotly(
-        {
-            "data": data,
-            "layout": layout,
-        },
-        pa=pa,
-    )
+    plot_plotly({"data": data, "layout": layout}, pa=pa)

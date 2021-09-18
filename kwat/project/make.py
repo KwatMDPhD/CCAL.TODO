@@ -6,10 +6,6 @@ def make(ro):
 
     mkdir(ro)
 
-    for di in [
-        "input/",
-        "code/",
-        "output/",
-    ]:
+    for di in ["input/", "code/", "output/"]:
 
         mkdir(join(ro, di))

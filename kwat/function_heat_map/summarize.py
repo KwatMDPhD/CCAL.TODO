@@ -8,22 +8,13 @@ from ._make_data_annotation import _make_data_annotation
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
-from .ANNOTATION_TEMPLATE import ANNOTATION_TEMPLATE
-from .HEATMAP_TEMPLATE import HEATMAP_TEMPLATE
-from .LAYOUT_TEMPLATE import LAYOUT_TEMPLATE
+from .ANNOTATION import ANNOTATION
+from .HEATMAP import HEATMAP
+from .LAYOUT import LAYOUT
 from .TYPE_COLORSCALE import TYPE_COLORSCALE
 
 
-def summarize(
-    ta,
-    bu_,
-    it=True,
-    ac=True,
-    ty="continuous",
-    st=nan,
-    layout=None,
-    pa="",
-):
+def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, pa=""):
 
     n_ro = 1
 
@@ -43,12 +34,10 @@ def summarize(
         merge(
             {
                 "height": max(640, 24 * n_ro),
-                "title": {
-                    "text": "Function Heat Map Summary",
-                },
+                "title": {"text": "Function Heat Map Summary"},
                 "annotations": _make_target_annotation(1 - he / 2, ta.name),
             },
-            LAYOUT_TEMPLATE,
+            LAYOUT,
         ),
         layout,
     )
@@ -59,10 +48,7 @@ def summarize(
 
     domain = [1 - he, 1]
 
-    layout[yaxis] = {
-        "domain": domain,
-        "showticklabels": False,
-    }
+    layout[yaxis] = {"domain": domain, "showticklabels": False}
 
     if it:
 
@@ -76,10 +62,7 @@ def summarize(
 
     co_ = ta.index.values
 
-    heatmap_template = {
-        "x": co_,
-        **HEATMAP_TEMPLATE,
-    }
+    heatmap = {"x": co_, **HEATMAP}
 
     tavp, mit, mat = _process_target(ta.values, ty, st)
 
@@ -90,7 +73,7 @@ def summarize(
             "zmin": mit,
             "zmax": mat,
             "colorscale": TYPE_COLORSCALE[ty],
-            **heatmap_template,
+            **heatmap,
         }
     ]
 
@@ -104,15 +87,9 @@ def summarize(
 
         yaxis = "yaxis{}".format(n_bu - ie)
 
-        domain = [
-            max(0, domain[0] - he * (n_sp + ro_.size)),
-            domain[0] - he * n_sp,
-        ]
+        domain = [max(0, domain[0] - he * (n_sp + ro_.size)), domain[0] - he * n_sp]
 
-        layout[yaxis] = {
-            "domain": domain,
-            "showticklabels": False,
-        }
+        layout[yaxis] = {"domain": domain, "showticklabels": False}
 
         davp, mid, mad = _process_data(
             bu["data"].loc[ro_, :].reindex(labels=co_, axis=1).values, bu["type"], st
@@ -126,7 +103,7 @@ def summarize(
                 "zmin": mid,
                 "zmax": mad,
                 "colorscale": TYPE_COLORSCALE[bu["type"]],
-                **heatmap_template,
+                **heatmap,
             }
         )
 
@@ -138,16 +115,10 @@ def summarize(
                 "x": 0.5,
                 "xanchor": "center",
                 "text": "<b>{}</b>".format(bu["name"]),
-                **ANNOTATION_TEMPLATE,
+                **ANNOTATION,
             }
         )
 
         layout["annotations"] += _make_data_annotation(y, ie == 0, he, ro_, fu.values)
 
-    plot_plotly(
-        {
-            "data": data,
-            "layout": layout,
-        },
-        pa=pa,
-    )
+    plot_plotly({"data": data, "layout": layout}, pa=pa)

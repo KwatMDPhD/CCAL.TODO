@@ -1,11 +1,1 @@
-COLUMN = [
-    "CHROM",
-    "POS",
-    "ID",
-    "REF",
-    "ALT",
-    "QUAL",
-    "FILTER",
-    "INFO",
-    "FORMAT",
-]
+COLUMN = ["CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO", "FORMAT"]

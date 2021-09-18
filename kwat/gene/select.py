@@ -20,9 +20,7 @@ def select(
 
     if co_se is None:
 
-        co_se = {
-            "locus_group": ["protein-coding gene"],
-        }
+        co_se = {"locus_group": ["protein-coding gene"]}
 
     ge_ = _read(co_se).loc[:, "symbol"].values
 

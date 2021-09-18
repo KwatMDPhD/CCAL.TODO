@@ -11,13 +11,7 @@ from ..probability import get_probability
 
 
 class GPSMap:
-    def __init__(
-        self,
-        di_no_no,
-        nu_po_no,
-        node_marker_size=24,
-        ra=RANDOM_SEED,
-    ):
+    def __init__(self, di_no_no, nu_po_no, node_marker_size=24, ra=RANDOM_SEED):
 
         self.nu_no_di = scale(di_no_no, 2, ra=ra)
 
@@ -40,24 +34,14 @@ class GPSMap:
     def plot(self, **ke_ar):
 
         plot(
-            DataFrame(
-                data=self.nu_no_di,
-                index=self.nu_po_no.columns,
-            ),
-            DataFrame(
-                data=self.nu_po_di,
-                index=self.nu_po_no.index,
-            ),
+            DataFrame(data=self.nu_no_di, index=self.nu_po_no.columns),
+            DataFrame(data=self.nu_po_di, index=self.nu_po_no.index),
             gr_=self.gr_,
             gcolorscale=self.gcolorscale,
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            ntrace={
-                "marker": {
-                    "size": self.node_marker_size,
-                },
-            },
+            ntrace={"marker": {"size": self.node_marker_size}},
             **ke_ar,
         )
 
@@ -94,10 +78,7 @@ class GPSMap:
         for gr in unique(self.gr_):
 
             gr_bap_[gr] = get_probability(
-                self.nu_po_di[self.gr_ == gr],
-                co__=co__,
-                pl=False,
-                bw=ba,
+                self.nu_po_di[self.gr_ == gr], co__=co__, pl=False, bw=ba
             )[1].reshape(sh)
 
         self.bap_ = full(sh, nan)
@@ -132,30 +113,19 @@ class GPSMap:
             self.nu_po_no.T,
             gr2_=self.gr_,
             colorscale2=self.gcolorscale,
-            layout={
-                "yaxis": {
-                    "dtick": 1,
-                },
-            },
+            layout={"yaxis": {"dtick": 1}},
         )
 
     def predict(self, nap, po_, nu_po_no, **ke_ar):
 
         plot(
-            DataFrame(
-                data=self.nu_no_di,
-                index=self.nu_po_no.columns,
-            ),
+            DataFrame(data=self.nu_no_di, index=self.nu_po_no.columns),
             DataFrame(data=pull(self.nu_no_di, nu_po_no.values), index=nu_po_no.index),
             gr_=None,
             gcolorscale=self.gcolorscale,
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            ntrace={
-                "marker": {
-                    "size": self.node_marker_size,
-                },
-            },
+            ntrace={"marker": {"size": self.node_marker_size}},
             **ke_ar,
         )

@@ -36,23 +36,10 @@ def plot(co_po_di, ve, na_=(), pa=""):
 
         plot_plotly(
             {
-                "data": [
-                    {
-                        "x": co__[0],
-                        "y": nu_po_di,
-                    }
-                ],
+                "data": [{"x": co__[0], "y": nu_po_di}],
                 "layout": {
-                    "xaxis": {
-                        "title": {
-                            "text": na_[0],
-                        },
-                    },
-                    "yaxis": {
-                        "title": {
-                            "text": nav,
-                        },
-                    },
+                    "xaxis": {"title": {"text": na_[0]}},
+                    "yaxis": {"title": {"text": nav}},
                 },
             },
             pa=pa,
@@ -70,10 +57,6 @@ def plot(co_po_di, ve, na_=(), pa=""):
                     data=["* {:.2e}".format(co) for co in co__[1]], name=na_[1]
                 ),
             ),
-            layout={
-                "title": {
-                    "text": nav,
-                },
-            },
+            layout={"title": {"text": nav}},
             pa=pa,
         )

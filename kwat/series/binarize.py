@@ -17,7 +17,5 @@ def binarize(se):
             bi_an_ie[an_it[an] - 1, ie] = 1
 
     return DataFrame(
-        data=bi_an_ie,
-        index=Index(data=an_it, name=se.name),
-        columns=se.index,
+        data=bi_an_ie, index=Index(data=an_it, name=se.name), columns=se.index
     )

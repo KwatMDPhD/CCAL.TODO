@@ -1,9 +1,7 @@
-ANNOTATION_TEMPLATE = {
+ANNOTATION = {
     "xref": "paper",
     "yref": "paper",
     "yanchor": "middle",
-    "font": {
-        "size": 10,
-    },
+    "font": {"size": 10},
     "showarrow": False,
 }

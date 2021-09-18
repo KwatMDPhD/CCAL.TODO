@@ -20,7 +20,7 @@ def process(
     axn=None,
     mi=None,
     ma=None,
-    **ke_ar,
+    **ke_ar
 ):
 
     summarize(nu_fe_sa, title="Original", **ke_ar)
@@ -65,12 +65,7 @@ def process(
 
         be = nu_fe_sa.shape
 
-        nu_fe_sa = dr(
-            nu_fe_sa,
-            axd,
-            n_no=n_no,
-            n_un=n_un,
-        )
+        nu_fe_sa = dr(nu_fe_sa, axd, n_no=n_no, n_un=n_un)
 
         if be != nu_fe_sa.shape:
 
@@ -78,12 +73,12 @@ def process(
 
     if ba is not None:
 
-        print("Logging (ba={}, sh={})...".format(ba, sh))
+        print("Logging (ba={}, sh={})".format(ba, sh))
 
         nu_fe_sa = DataFrame(
             data=log(nu_fe_sa.values, ba=ba, sh=sh),
             index=nu_fe_sa.index,
-            columns=nu_fe_sa.COLUMNS,
+            columns=nu_fe_sa.columns,
         )
 
         summarize(nu_fe_sa, title="Logged", **ke_ar)
@@ -95,7 +90,7 @@ def process(
         nu_fe_sa = DataFrame(
             data=apply_along_axis(normalize, axn, nu_fe_sa.values, me),
             index=nu_fe_sa.index,
-            columns=nu_fe_sa.COLUMNS,
+            columns=nu_fe_sa.columns,
         )
 
         summarize(nu_fe_sa, title="Normalized", **ke_ar)

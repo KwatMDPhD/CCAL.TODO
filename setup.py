@@ -22,7 +22,5 @@ setup(
     ],
     packages=find_packages(),
     package_data={na: ["data/*"]},
-    entry_points={
-        "console_scripts": ["{0}={0}.{1}:{1}".format(na, "cli")],
-    },
+    entry_points={"console_scripts": ["{0}={0}.{1}:{1}".format(na, "cli")]},
 )

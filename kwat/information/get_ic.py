@@ -31,12 +31,7 @@ def get_ic(ve1, ve2):
 
     fa = 1 - abs(pe) * 2 / 3
 
-    pr_ = get_probability(
-        nu_po_di,
-        co__=[co1_, co2_],
-        pl=False,
-        bw=fa,
-    )[1]
+    pr_ = get_probability(nu_po_di, co__=[co1_, co2_], pl=False, bw=fa)[1]
 
     pr_di1_di2 = pr_.reshape([n_co] * 2)
 

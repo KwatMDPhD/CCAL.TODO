@@ -13,8 +13,8 @@ from ._make_data_annotation import _make_data_annotation
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
 from ._process_target import _process_target
-from .HEATMAP_TEMPLATE import HEATMAP_TEMPLATE
-from .LAYOUT_TEMPLATE import LAYOUT_TEMPLATE
+from .HEATMAP import HEATMAP
+from .LAYOUT import LAYOUT
 from .TYPE_COLORSCALE import TYPE_COLORSCALE
 
 
@@ -144,23 +144,15 @@ def make(
 
         layout = merge(
             merge(
+                LAYOUT,
                 {
                     "height": max(640, 24 * n_ro),
-                    "title": {
-                        "text": "Function Heat Map",
-                    },
-                    "yaxis2": {
-                        "domain": [1 - he, 1],
-                        "showticklabels": False,
-                    },
-                    "yaxis": {
-                        "domain": [0, 1 - he * 2],
-                        "showticklabels": False,
-                    },
+                    "title": {"text": "Function Heat Map"},
+                    "yaxis2": {"domain": [1 - he, 1], "showticklabels": False},
+                    "yaxis": {"domain": [0, 1 - he * 2], "showticklabels": False},
                     "annotations": _make_target_annotation(1 - he / 2, ta.name)
                     + _make_data_annotation(1 - he / 2 * 3, True, he, ro_, fu.values),
                 },
-                LAYOUT_TEMPLATE,
             ),
             layout,
         )
@@ -193,10 +185,7 @@ def make(
 
             pa = "{}function_heat_map.html".format(pa)
 
-        heatmap_template = {
-            "x": co_,
-            **HEATMAP_TEMPLATE,
-        }
+        heatmap = {"x": co_, **HEATMAP}
 
         plot_plotly(
             {
@@ -208,7 +197,7 @@ def make(
                         "zmin": mit,
                         "zmax": mat,
                         "colorscale": TYPE_COLORSCALE[tyt],
-                        **heatmap_template,
+                        **heatmap,
                     },
                     {
                         "yaxis": "y",
@@ -218,7 +207,7 @@ def make(
                         "zmin": mid,
                         "zmax": mad,
                         "colorscale": TYPE_COLORSCALE[tyd],
-                        **heatmap_template,
+                        **heatmap,
                     },
                 ],
                 "layout": layout,

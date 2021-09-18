@@ -5,12 +5,7 @@ from .plot_plotly import plot_plotly
 
 
 def plot_histogram(
-    se_,
-    no=None,
-    xbins_size=None,
-    colorscale=CATEGORICAL_COLORSCALE,
-    layout=None,
-    pa="",
+    se_, no=None, xbins_size=None, colorscale=CATEGORICAL_COLORSCALE, layout=None, pa=""
 ):
 
     ru = all(se.size <= 1e3 for se in se_)
@@ -45,19 +40,14 @@ def plot_histogram(
 
     layout = merge(
         {
-            "xaxis": {
-                "anchor": "y",
-            },
+            "xaxis": {"anchor": "y"},
             "yaxis": {
                 "domain": [0, ma],
                 "zeroline": False,
                 "dtick": 1,
                 "showticklabels": False,
             },
-            "yaxis2": {
-                "domain": [mi, 1],
-                "title": yaxis2_title,
-            },
+            "yaxis2": {"domain": [mi, 1], "title": yaxis2_title},
         },
         layout,
     )
@@ -68,11 +58,7 @@ def plot_histogram(
 
         co = get_color(colorscale, ie, ex_=[0, n_se - 1])
 
-        trace = {
-            "legendgroup": ie,
-            "name": se.name,
-            "x": se.values,
-        }
+        trace = {"legendgroup": ie, "name": se.name, "x": se.values}
 
         data.append(
             merge(
@@ -81,12 +67,8 @@ def plot_histogram(
                     "yaxis": "y2",
                     "type": "histogram",
                     "histnorm": no,
-                    "xbins": {
-                        "size": xbins_size,
-                    },
-                    "marker": {
-                        "color": co,
-                    },
+                    "xbins": {"size": xbins_size},
+                    "marker": {"color": co},
                 },
             )
         )
@@ -101,19 +83,10 @@ def plot_histogram(
                         "y": [ie] * se.size,
                         "text": se.index.values,
                         "mode": "markers",
-                        "marker": {
-                            "symbol": "line-ns-open",
-                            "color": co,
-                        },
+                        "marker": {"symbol": "line-ns-open", "color": co},
                         "hoverinfo": "x+text",
                     },
                 )
             )
 
-    plot_plotly(
-        {
-            "data": data,
-            "layout": layout,
-        },
-        pa=pa,
-    )
+    plot_plotly({"data": data, "layout": layout}, pa=pa)

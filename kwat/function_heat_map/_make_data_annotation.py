@@ -1,5 +1,5 @@
 from ..string import trim
-from .ANNOTATION_TEMPLATE import ANNOTATION_TEMPLATE
+from .ANNOTATION import ANNOTATION
 
 
 def _get_x(ie):
@@ -21,7 +21,7 @@ def _make_data_annotation(y, la, he, ro_, st):
                     "x": _get_x(ie),
                     "xanchor": "center",
                     "text": "<b>{}</b>".format(text),
-                    **ANNOTATION_TEMPLATE,
+                    **ANNOTATION,
                 }
             )
 
@@ -35,7 +35,7 @@ def _make_data_annotation(y, la, he, ro_, st):
                 "x": 0,
                 "xanchor": "right",
                 "text": "{}".format(trim(ro_[iey])),
-                **ANNOTATION_TEMPLATE,
+                **ANNOTATION,
             }
         )
 
@@ -51,7 +51,7 @@ def _make_data_annotation(y, la, he, ro_, st):
                     "x": _get_x(iex),
                     "xanchor": "center",
                     "text": text,
-                    **ANNOTATION_TEMPLATE,
+                    **ANNOTATION,
                 }
             )
 

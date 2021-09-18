@@ -61,9 +61,7 @@ def plot_heat_map(
 
     layout = merge(
         {
-            "title": {
-                "text": "Heat Map",
-            },
+            "title": {"text": "Heat Map"},
             "yaxis": {
                 "title": "{} (n={})".format(da.index.name, da.shape[0]),
                 "domain": domain,
@@ -88,28 +86,13 @@ def plot_heat_map(
             "y": da.index.values[::-1],
             "x": da.columns.values,
             "colorscale": colorscale,
-            "colorbar": merge(
-                COLORBAR,
-                {
-                    "x": colorbar_x,
-                },
-            ),
+            "colorbar": merge(COLORBAR, {"x": colorbar_x}),
         }
     ]
 
-    heatmap = {
-        "type": "heatmap",
-        "colorbar": merge(
-            COLORBAR,
-            {
-                "dtick": 1,
-            },
-        ),
-    }
+    heatmap = {"type": "heatmap", "colorbar": merge(COLORBAR, {"dtick": 1})}
 
-    annotation = {
-        "showarrow": False,
-    }
+    annotation = {"showarrow": False}
 
     if 0 < len(gr1_):
 
@@ -124,9 +107,7 @@ def plot_heat_map(
                     "xaxis": "x2",
                     "z": gr1_.reshape([-1, 1]),
                     "colorscale": colorscale1,
-                    "colorbar": {
-                        "x": colorbar_x,
-                    },
+                    "colorbar": {"x": colorbar_x},
                     "hoverinfo": "z+y",
                 },
             )
@@ -166,9 +147,7 @@ def plot_heat_map(
                     "yaxis": "y2",
                     "z": gr2_.reshape([1, -1]),
                     "colorscale": colorscale2,
-                    "colorbar": {
-                        "x": colorbar_x,
-                    },
+                    "colorbar": {"x": colorbar_x},
                     "hoverinfo": "z+x",
                 },
             )
@@ -198,10 +177,4 @@ def plot_heat_map(
                 for gr in unique(gr2_)
             ]
 
-    plot_plotly(
-        {
-            "data": data,
-            "layout": layout,
-        },
-        pa=pa,
-    )
+    plot_plotly({"data": data, "layout": layout}, pa=pa)

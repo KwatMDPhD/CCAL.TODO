@@ -14,19 +14,11 @@ def make_factor_label(re):
     return Index(data=("{} {} {}".format(na, re, ie + 1) for ie in range(re)), name=na)
 
 
-def plot(
-    maw_,
-    mah_,
-    er_ie_it=None,
-    si=640,
-    pa="",
-):
+def plot(maw_, mah_, er_ie_it=None, si=640, pa=""):
 
     sig = si * GOLDEN_RATIO
 
-    faxis = {
-        "dtick": 1,
-    }
+    faxis = {"dtick": 1}
 
     for ie, maw in enumerate(maw_):
 
@@ -49,9 +41,7 @@ def plot(
             layout={
                 "height": sig,
                 "width": si,
-                "title": {
-                    "text": "W {}".format(ie),
-                },
+                "title": {"text": "W {}".format(ie)},
                 "xaxis": faxis,
             },
             pa=pa2,
@@ -78,9 +68,7 @@ def plot(
             layout={
                 "height": si,
                 "width": sig,
-                "title": {
-                    "text": "H {}".format(ie),
-                },
+                "title": {"text": "H {}".format(ie)},
                 "yaxis": faxis,
             },
             pa=pa2,
@@ -98,20 +86,10 @@ def plot(
 
         plot_plotly(
             {
-                "data": [
-                    {
-                        "name": ie,
-                        "y": er_,
-                    }
-                    for ie, er_ in enumerate(er_ie_it)
-                ],
+                "data": [{"name": ie, "y": er_} for ie, er_ in enumerate(er_ie_it)],
                 "layout": {
-                    "xaxis": {
-                        "title": "Iteration",
-                    },
-                    "yaxis": {
-                        "title": "Error",
-                    },
+                    "xaxis": {"title": "Iteration"},
+                    "yaxis": {"title": "Error"},
                     "annotations": [
                         {
                             "x": er_.size - 1,

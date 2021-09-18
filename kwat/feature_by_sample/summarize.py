@@ -6,13 +6,7 @@ from ..grid import make_nd_grid
 from ..plot import plot_heat_map, plot_histogram
 
 
-def summarize(
-    nu_fe_sa,
-    pl=True,
-    title="Name",
-    n_he=int(1e6),
-    n_hi=int(1e3),
-):
+def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e3)):
 
     print(nu_fe_sa.shape)
 
@@ -30,12 +24,7 @@ def summarize(
 
     if pl and si <= n_he:
 
-        plot_heat_map(
-            nu_fe_sa,
-            layout={
-                "title": title,
-            },
-        )
+        plot_heat_map(nu_fe_sa, layout={"title": title})
 
     na_fe_sa = isnan(nua_fe_sa)
 
@@ -52,12 +41,7 @@ def summarize(
                     Series(data=na_fe_sa.sum(axis=1), index=ro_, name=ron),
                     Series(data=na_fe_sa.sum(axis=0), index=co_, name=con),
                 ],
-                layout={
-                    "title": title,
-                    "xaxis": {
-                        "title": "N NaN",
-                    },
-                },
+                layout={"title": title, "xaxis": {"title": "N NaN"}},
             )
 
     if pl:
@@ -67,12 +51,7 @@ def summarize(
                 Series(data=nanmedian(nua_fe_sa, axis=1), index=ro_, name=ron),
                 Series(data=nanmedian(nua_fe_sa, axis=0), index=co_, name=con),
             ],
-            layout={
-                "title": title,
-                "xaxis": {
-                    "title": "(Not-NaN) Median",
-                },
-            },
+            layout={"title": title, "xaxis": {"title": "(Not-NaN) Median"}},
         )
 
     go_fe_sa = logical_not(na_fe_sa)
@@ -98,10 +77,7 @@ def summarize(
             print("Choosing {} for histogram...".format(n_hi))
 
             ie_ = concatenate(
-                [
-                    choice(go_.size, n_hi, False),
-                    [go_.argmin(), go_.argmax()],
-                ]
+                [choice(go_.size, n_hi, False), [go_.argmin(), go_.argmax()]]
             )
 
             go_ = go_[ie_]
@@ -109,13 +85,6 @@ def summarize(
             la_ = la_[ie_]
 
         plot_histogram(
-            [
-                Series(data=go_, index=la_, name="All"),
-            ],
-            layout={
-                "title": title,
-                "xaxis": {
-                    "title": "(Not-NaN) Number",
-                },
-            },
+            [Series(data=go_, index=la_, name="All")],
+            layout={"title": title, "xaxis": {"title": "(Not-NaN) Number"}},
         )
