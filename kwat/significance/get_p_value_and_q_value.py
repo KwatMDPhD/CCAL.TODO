@@ -4,17 +4,17 @@ from .get_p_value import get_p_value
 from .get_q_value import get_q_value
 
 
-def get_p_value_and_q_value(nu_, ra_, di):
+def get_p_value_and_q_value(ve, ra_, di):
 
     if "<" in di:
 
-        pl_ = array([get_p_value(nu, ra_, "<") for nu in nu_])
+        pl_ = array([get_p_value(nu, ra_, "<") for nu in ve])
 
         ql_ = get_q_value(pl_)
 
     if ">" in di:
 
-        pr_ = array([get_p_value(nu, ra_, ">") for nu in nu_])
+        pr_ = array([get_p_value(nu, ra_, ">") for nu in ve])
 
         qr_ = get_q_value(pr_)
 

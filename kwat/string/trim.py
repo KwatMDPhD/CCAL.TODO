@@ -1,9 +1,9 @@
-def trim(text):
+def trim(st):
 
     n_ch = 24
 
-    if n_ch < len(text):
+    if n_ch < len(st):
 
-        text = "{}...".format(text[:n_ch])
+        st = "{}...".format(st[:n_ch])
 
-    return text
+    return st
