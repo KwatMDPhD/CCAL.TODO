@@ -4,32 +4,32 @@ from ..grid import get_1d_grid, get_1d_grid_resolution, plot
 from .get_probability import get_probability
 
 
-def _get_probability(ar):
+def _get_probability(nu___):
 
-    return ar / ar.sum()
+    return nu___ / nu___.sum()
 
 
-def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, di_=(), **ke):
+def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, na_=(), **ke_ar):
 
-    co_po_di, pr_ = get_probability(nu_po_di, co__=co__, pl=pl, di_=di_, **ke)
+    co_po_di, pr_ = get_probability(nu_po_di, co__=co__, pl=pl, na_=na_, **ke_ar)
 
-    ta_ = co_po_di[:, -1]
+    cot_ = co_po_di[:, -1]
 
     pr___ = pr_.reshape([co_.size for co_ in get_1d_grid(co_po_di)])
 
-    po___ = apply_along_axis(_get_probability, -1, pr___) * get_1d_grid_resolution(ta_)
+    po___ = apply_along_axis(_get_probability, -1, pr___) * get_1d_grid_resolution(cot_)
 
     po_ = po___.reshape(co_po_di.shape[0])
 
     if pl:
 
-        plot(co_po_di, po_, nu="Posterior Probability", di_=di_)
+        plot(co_po_di, po_, nu="Posterior Probability", na_=na_)
 
     if isnan(ta):
 
         return co_po_di, po_
 
-    co_ = unique(ta_)
+    co_ = unique(cot_)
 
     ie = absolute(co_ - ta).argmin()
 
@@ -44,8 +44,8 @@ def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, di_=(), **ke):
         plot(
             co_po_dit,
             pot_,
-            nu="P({} = {:.2e} (~{}) | {})".format(di_[-1], co_[ie], ta, *di_[:-1]),
-            di_=di_[:-1],
+            nu="P({} = {:.2e} (~{}) | {})".format(na_[-1], co_[ie], ta, *na_[:-1]),
+            na_=na_[:-1],
         )
 
     return co_po_dit, pot_

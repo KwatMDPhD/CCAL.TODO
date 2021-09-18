@@ -1,4 +1,4 @@
-from numpy import absolute, integer, isnan, nan, where
+from numpy import absolute, isnan, nan, where
 from plotly.colors import make_colorscale
 
 from ..array import get_not_nan_unique
@@ -8,6 +8,7 @@ from ..plot import (
     CATEGORICAL_COLORSCALE,
     COLORBAR_TEMPLATE,
     CONTINUOUS_COLORSCALE,
+    get_color,
     plot_plotly,
 )
 
@@ -16,17 +17,17 @@ def plot(
     nu_no_di,
     nu_po_di,
     sh=True,
-    ntrace=None,
-    ptrace=None,
+    tracen=None,
+    tracep=None,
     gr_=None,
     colorscaleg=CATEGORICAL_COLORSCALE,
     co_=None,
     bap_=None,
     bag_=None,
     po_sc=None,
-    scolorscale=CONTINUOUS_COLORSCALE,
-    sopacity=0.8,
-    snopacity=0.08,
+    colorscales=CONTINUOUS_COLORSCALE,
+    opacitys=0.8,
+    opacitysn=0.08,
     poh_=(),
     pa="",
 ):
@@ -82,9 +83,9 @@ def plot(
         }
     )
 
-    if ntrace is None:
+    if tracen is None:
 
-        ntrace = {}
+        tracen = {}
 
     data.append(
         merge(
@@ -105,7 +106,7 @@ def plot(
                 },
                 "hoverinfo": "text",
             },
-            ntrace,
+            tracen,
         )
     )
 
@@ -152,9 +153,11 @@ def plot(
             }
         )
 
-        gru_ = get_not_nan_unique(bag_)
+        grf = bag_.min()
 
-        n_gr = gru_.size
+        grl = bag_.max()
+
+        gru_ = list(range(grf, grl + 1))
 
         for gr in gru_:
 
@@ -165,18 +168,18 @@ def plot(
                     "y": co_,
                     "x": co_,
                     "colorscale": make_colorscale(
-                        ["rgb(255, 255, 255)", colorscaleg[gr]]
+                        ["rgb(255, 255, 255)", get_color(colorscaleg, gr, [grf, grl])]
                     ),
                     "showscale": False,
                     "hoverinfo": "none",
                 }
             )
 
-    if ptrace is None:
+    if tracep is None:
 
-        ptrace = {}
+        tracep = {}
 
-    ptrace = merge(
+    tracep = merge(
         {
             "name": nu_po_di.index.name,
             "mode": "markers",
@@ -190,12 +193,12 @@ def plot(
             },
             "hoverinfo": "text",
         },
-        ptrace,
+        tracep,
     )
 
     if gr_ is not None:
 
-        for gr in range(gru_):
+        for gr in gru_:
 
             name = "Group {}".format(gr)
 
@@ -203,7 +206,7 @@ def plot(
 
             data.append(
                 merge(
-                    ptrace,
+                    tracep,
                     {
                         "legendgroup": name,
                         "name": name,
@@ -211,7 +214,7 @@ def plot(
                         "x": nu_po_di.values[:, 1],
                         "text": nu_po_di.index.values,
                         "marker": {
-                            "color": colorscaleg[gr],
+                            "color": get_color(colorscaleg, gr, [grf, grl]),
                         },
                     },
                 )
@@ -219,7 +222,7 @@ def plot(
 
     elif po_sc is not None:
 
-        sc_ = po_sc.values
+        sc_ = po_sc.loc[nu_po_di.index].values
 
         ie_ = absolute(sc_).argsort()
 
@@ -227,42 +230,42 @@ def plot(
 
         nu_po_di = nu_po_di.iloc[ie_, :]
 
-        scn_ = get_not_nan_unique(sc_)
-
-        if all(isinstance(sc, integer) for sc in scn_):
-
-            tickvals = scn_
-
-            ticktext = tickvals
-
-        else:
+        if guess_type(sc_) == "continuous":
 
             tickvals = [
-                sc_.min(),
-                sc_.median(),
-                sc_.mean(),
-                sc_.max(),
+                sc_.nanmin(),
+                sc_.nanmedian(),
+                sc_.nanmean(),
+                sc_.nanmax(),
             ]
 
             ticktext = ["{:.2e}".format(ti) for ti in tickvals]
 
+        else:
+
+            tickvals = get_not_nan_unique(sc_)
+
+            ticktext = tickvals
+
         data.append(
             merge(
-                ptrace,
+                tracep,
                 {
                     "y": nu_po_di.values[:, 0],
                     "x": nu_po_di.values[:, 1],
                     "text": nu_po_di.index.values,
                     "marker": {
                         "color": sc_,
-                        "colorscale": scolorscale,
-                        "colorbar": {
-                            **COLORBAR_TEMPLATE,
-                            "tickmode": "array",
-                            "tickvals": tickvals,
-                            "ticktext": ticktext,
-                        },
-                        "opacity": where(isnan(sc_), snopacity, sopacity),
+                        "colorscale": colorscales,
+                        "colorbar": merge(
+                            COLORBAR_TEMPLATE,
+                            {
+                                "tickmode": "array",
+                                "tickvals": tickvals,
+                                "ticktext": ticktext,
+                            },
+                        ),
+                        "opacity": where(isnan(sc_), opacitysn, opacitys),
                     },
                 },
             )
@@ -272,7 +275,7 @@ def plot(
 
         data.append(
             merge(
-                ptrace,
+                tracep,
                 {
                     "y": nu_po_di.values[:, 0],
                     "x": nu_po_di.values[:, 1],
