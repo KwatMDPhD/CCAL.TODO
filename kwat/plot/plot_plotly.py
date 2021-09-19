@@ -5,7 +5,19 @@ from ..dictionary import merge
 
 def plot_plotly(figure, pa=""):
 
-    figure = merge({"layout": {"autosize": False, "template": "plotly_white"}}, figure)
+    axis = {"automargin": True}
+
+    figure = merge(
+        {
+            "layout": {
+                "autosize": False,
+                "template": "plotly_white",
+                "xaxis": axis,
+                "yaxis": axis,
+            }
+        },
+        figure,
+    )
 
     config = {"editable": True}
 
