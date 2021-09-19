@@ -1,5 +1,5 @@
-from ..string import trim
 from ..dictionary import merge
+from ..string import trim
 from .ANNOTATION import ANNOTATION
 
 
