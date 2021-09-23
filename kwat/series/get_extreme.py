@@ -5,7 +5,7 @@ from ..array import check_extreme
 from ..plot import plot_point
 
 
-def get_extreme(se, di, pa, size=2, **ke_ar):
+def get_extreme(se, di, size=2, pa="", **ke_ar):
 
     se = se.dropna().sort_values()
 
@@ -17,9 +17,11 @@ def get_extreme(se, di, pa, size=2, **ke_ar):
 
     lae_ = la_[ex_]
 
-    with open("{}.txt".format(pa), mode="w") as io:
+    if pa != "":
 
-        io.write("\n".join(lae_))
+        with open("{}.txt".format(pa), mode="w") as io:
+
+            io.write("\n".join(lae_))
 
     da = DataFrame(
         data={
@@ -38,4 +40,12 @@ def get_extreme(se, di, pa, size=2, **ke_ar):
         0.8,
     ]
 
-    plot_point(da, layout={"title": {"text": "Extreme"}}, pa="{}.html".format(pa))
+    if pa == "":
+
+        pap = ""
+
+    else:
+
+        pap = "{}.html".format(pa)
+
+    plot_point(da, layout={"title": {"text": "Extreme"}}, pa=pap)

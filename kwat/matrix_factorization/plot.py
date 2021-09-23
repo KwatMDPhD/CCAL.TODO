@@ -1,28 +1,18 @@
-from numpy import apply_along_axis
-from pandas import DataFrame, Index
-
 from ..array import normalize
 from ..cluster import cluster
 from ..constant import GOLDEN_RATIO
 from ..plot import plot_heat_map, plot_plotly
 
 
-def make_factor_label(re):
-
-    na = "Factor"
-
-    return Index(data=("{} {} {}".format(na, re, ie + 1) for ie in range(re)), name=na)
-
-
-def plot(maw_, mah_, er_ie_it=None, si=640, pa=""):
+def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
 
     sig = si * GOLDEN_RATIO
 
-    faxis = {"dtick": 1}
+    ar_ = ["-0-"]
 
-    for ie, maw in enumerate(maw_):
+    axisf = {"dtick": 1}
 
-        maw = apply_along_axis(normalize, 1, maw[cluster(maw)[0], :], "-0-")
+    for ie, daw in enumerate(daw_):
 
         if pa == "":
 
@@ -33,23 +23,17 @@ def plot(maw_, mah_, er_ie_it=None, si=640, pa=""):
             pa2 = "{}w_{}.html".format(pa, ie)
 
         plot_heat_map(
-            DataFrame(
-                data=maw,
-                # index=Index(data=ro__[ie], name=ron[ie]),
-                columns=make_factor_label(maw.shape[1]),
-            ),
+            daw.iloc[cluster(daw.values)[0], :].apply(normalize, axis=1, args=ar_),
             layout={
                 "height": sig,
                 "width": si,
                 "title": {"text": "W {}".format(ie)},
-                "xaxis": faxis,
+                "xaxis": axisf,
             },
             pa=pa2,
         )
 
-    for ie, mah in enumerate(mah_):
-
-        mah = apply_along_axis(normalize, 0, mah[:, cluster(mah.T)[0]], "-0-")
+    for ie, dah in enumerate(dah_):
 
         if pa == "":
 
@@ -60,16 +44,12 @@ def plot(maw_, mah_, er_ie_it=None, si=640, pa=""):
             pa2 = "{}h_{}.html".format(pa, ie)
 
         plot_heat_map(
-            DataFrame(
-                data=mah,
-                index=make_factor_label(mah.shape[0]),
-                # columns=Index(data=co__[ie], name=con[ie]),
-            ),
+            dah.iloc[:, cluster(dah.values.T)[0]].apply(normalize, axis=0, args=ar_),
             layout={
                 "height": si,
                 "width": sig,
                 "title": {"text": "H {}".format(ie)},
-                "yaxis": faxis,
+                "yaxis": axisf,
             },
             pa=pa2,
         )
@@ -88,12 +68,12 @@ def plot(maw_, mah_, er_ie_it=None, si=640, pa=""):
             {
                 "data": [{"name": ie, "y": er_} for ie, er_ in enumerate(er_ie_it)],
                 "layout": {
-                    "xaxis": {"title": "Iteration"},
                     "yaxis": {"title": "Error"},
+                    "xaxis": {"title": "Iteration"},
                     "annotations": [
                         {
-                            "x": er_.size - 1,
                             "y": er_[-1],
+                            "x": er_.size - 1,
                             "text": "{:.2e}".format(er_[-1]),
                         }
                         for er_ in er_ie_it
