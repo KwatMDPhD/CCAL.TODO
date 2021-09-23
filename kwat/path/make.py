@@ -4,9 +4,9 @@ from os.path import dirname, isdir
 
 def make(pa, pr=True):
 
-    di = dirname(pa)
-
     di_ = []
+
+    di = dirname(pa)
 
     while di != "" and not isdir(di):
 

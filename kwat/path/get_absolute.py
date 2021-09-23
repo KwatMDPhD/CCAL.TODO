@@ -1,11 +1,11 @@
-from os.path import abspath, expanduser, isdir
+from os.path import abspath, expanduser
 
 
 def get_absolute(pa):
 
     paa = abspath(expanduser(pa))
 
-    if isdir(pa):
+    if pa.endswith("/"):
 
         paa += "/"
 
