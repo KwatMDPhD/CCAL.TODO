@@ -12,7 +12,13 @@ def get_color(colorscale, nu, ex_=()):
 
         mi, ma = ex_
 
-        nu = _scale(mi, nu, ma)
+        if mi == nu == ma:
+
+            nu = 0
+
+        else:
+
+            nu = _scale(mi, nu, ma)
 
     for ie in range(len(colorscale) - 1):
 

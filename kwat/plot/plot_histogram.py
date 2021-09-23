@@ -16,15 +16,11 @@ def plot_histogram(
 
         he = 0.04
 
-        ma = n_se * he
-
-        mi = ma + he
+        fr = min(n_se * he, 0.5)
 
     else:
 
-        ma = 0
-
-        mi = 0
+        fr = 0
 
     if no is None:
 
@@ -42,12 +38,12 @@ def plot_histogram(
         {
             "xaxis": {"anchor": "y"},
             "yaxis": {
-                "domain": [0, ma],
+                "domain": [0, fr],
                 "zeroline": False,
                 "dtick": 1,
                 "showticklabels": False,
             },
-            "yaxis2": {"domain": [mi, 1], "title": yaxis2_title},
+            "yaxis2": {"domain": [fr, 1], "title": yaxis2_title},
         },
         layout,
     )
