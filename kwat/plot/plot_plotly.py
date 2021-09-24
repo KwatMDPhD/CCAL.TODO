@@ -19,7 +19,7 @@ def plot_plotly(figure, pa=""):
         figure,
     )
 
-    config = {"editable": True}
+    config = {"editable": False}
 
     show(figure, config=config)
 

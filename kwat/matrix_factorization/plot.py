@@ -20,7 +20,7 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
 
         else:
 
-            pa2 = "{}w_{}.html".format(pa, ie)
+            pa2 = "{}w{}.html".format(pa, ie + 1)
 
         plot_heat_map(
             daw.iloc[cluster(daw.values)[0], :].apply(normalize, axis=1, args=ar_),
@@ -41,7 +41,7 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
 
         else:
 
-            pa2 = "{}h_{}.html".format(pa, ie)
+            pa2 = "{}h{}.html".format(pa, ie + 1)
 
         plot_heat_map(
             dah.iloc[:, cluster(dah.values.T)[0]].apply(normalize, axis=0, args=ar_),

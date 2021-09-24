@@ -29,19 +29,27 @@ class GPSMap:
 
         self.bag_ = None
 
-        self.gcolorscale = None
+        self.colorscaleg = None
 
     def plot(self, **ke_ar):
+
+        if "po_sc" in ke_ar:
+
+            gr_ = None
+
+        else:
+
+            gr_ = self.gr_
 
         plot(
             DataFrame(data=self.nu_no_di, index=self.nu_po_no.columns),
             DataFrame(data=self.nu_po_di, index=self.nu_po_no.index),
-            gr_=self.gr_,
-            gcolorscale=self.gcolorscale,
+            gr_=gr_,
+            colorscaleg=self.colorscaleg,
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            ntrace={"marker": {"size": self.node_marker_size}},
+            tracen={"marker": {"size": self.node_marker_size}},
             **ke_ar,
         )
 
@@ -49,11 +57,11 @@ class GPSMap:
 
         if isinstance(gr_, str) and gr_ == "closest_node":
 
-            gr_ = self.nu_po_no.values.argmax(axis=1)
+            gr_ = self.nu_po_no.values.argmax(axis=1) + 1
 
         self.gr_ = gr_
 
-        self.gcolorscale = colorscale
+        self.colorscaleg = colorscale
 
         sh = [n_co] * 2
 
@@ -83,7 +91,7 @@ class GPSMap:
 
         self.bap_ = full(sh, nan)
 
-        self.bag_ = full(sh, nan)
+        self.bag_ = full(sh, 0, dtype=int)
 
         for ie1 in range(n_co):
 
@@ -91,9 +99,9 @@ class GPSMap:
 
                 if ma[ie1, ie2] != -1:
 
-                    prb = 0
+                    prb = 0.0
 
-                    grb = nan
+                    grb = 0
 
                     for gr, bap_ in gr_bap_.items():
 
@@ -112,7 +120,7 @@ class GPSMap:
         plot_heat_map(
             self.nu_po_no.T,
             gr2_=self.gr_,
-            colorscale2=self.gcolorscale,
+            colorscale2=self.colorscaleg,
             layout={"yaxis": {"dtick": 1}},
         )
 
@@ -122,10 +130,10 @@ class GPSMap:
             DataFrame(data=self.nu_no_di, index=self.nu_po_no.columns),
             DataFrame(data=pull(self.nu_no_di, nu_po_no.values), index=nu_po_no.index),
             gr_=None,
-            gcolorscale=self.gcolorscale,
+            colorscaleg=self.colorscaleg,
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            ntrace={"marker": {"size": self.node_marker_size}},
+            tracen={"marker": {"size": self.node_marker_size}},
             **ke_ar,
         )

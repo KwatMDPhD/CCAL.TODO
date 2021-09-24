@@ -1,4 +1,4 @@
-from numpy import absolute, isnan, nan, where
+from numpy import absolute, isnan, nan, nanmax, nanmean, nanmedian, nanmin, where
 from plotly.colors import make_colorscale
 
 from ..array import get_not_nan_unique, guess_type
@@ -72,8 +72,7 @@ def plot(
 
     data.append(
         {
-            "legendgroup": "Node",
-            "name": "Line",
+            "showlegend": False,
             "y": ti1_ + hu1_,
             "x": ti2_ + hu2_,
             "mode": "lines",
@@ -88,7 +87,6 @@ def plot(
     data.append(
         merge(
             {
-                "legendgroup": "Node",
                 "name": nu_no_di.index.name,
                 "y": nu_no_di.values[:, 0],
                 "x": nu_no_di.values[:, 1],
@@ -146,7 +144,7 @@ def plot(
             }
         )
 
-        grf = bag_.min()
+        grf = 1
 
         grl = bag_.max()
 
@@ -192,7 +190,7 @@ def plot(
 
             name = "Group {}".format(gr)
 
-            nu_po_di = nu_po_di.loc[gr_ == gr, :]
+            nug_po_di = nu_po_di.loc[gr_ == gr, :]
 
             data.append(
                 merge(
@@ -200,9 +198,9 @@ def plot(
                     {
                         "legendgroup": name,
                         "name": name,
-                        "y": nu_po_di.values[:, 0],
-                        "x": nu_po_di.values[:, 1],
-                        "text": nu_po_di.index.values,
+                        "y": nug_po_di.values[:, 0],
+                        "x": nug_po_di.values[:, 1],
+                        "text": nug_po_di.index.values,
                         "marker": {"color": get_color(colorscaleg, gr, [grf, grl])},
                     },
                 )
@@ -220,7 +218,7 @@ def plot(
 
         if guess_type(sc_) == "continuous":
 
-            tickvals = [sc_.nanmin(), sc_.nanmedian(), sc_.nanmean(), sc_.nanmax()]
+            tickvals = [nanmin(sc_), nanmedian(sc_), nanmean(sc_), nanmax(sc_)]
 
             ticktext = ["{:.2e}".format(ti) for ti in tickvals]
 
