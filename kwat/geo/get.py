@@ -208,7 +208,7 @@ def get(gs, *ar_, **ke_ar):
 
                 na = ke_va["Platform_geo_accession"]
 
-                ke_va["an__"] = []
+                ke_va["nu__"] = []
 
                 pl_[na] = ke_va
 

@@ -84,8 +84,14 @@ def rename(na_, **ke_ar):
         )
     )
 
-    return dictionary_rename(
-        [split_and_get(na, ".", 0) for na in na_ if search(r"^ENS[TG]", na)],
-        clean(na_re),
-        **ke_ar
-    )
+    nap_ = []
+
+    for na in na_:
+
+        if search(r"^ENS[TG]", na):
+
+            na = split_and_get(na, ".", 0)
+
+        nap_.append(na)
+
+    return dictionary_rename(nap_, clean(na_re), **ke_ar)
