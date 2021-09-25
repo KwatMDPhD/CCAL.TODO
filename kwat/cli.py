@@ -1,6 +1,6 @@
 from click import Path, argument, group
 
-from .project import make as workflow_make, run_nb as workflow_run_nb
+from .workflow import make as workflow_make, run as workflow_run
 
 
 @group()
@@ -9,20 +9,20 @@ def cli():
 
 
 @cli.command()
+@argument("name", required=True, nargs=1)
+def make(name):
+    """
+    Make a workflow.
+    """
+
+    workflow_make(name)
+
+
+@cli.command()
 @argument("path", type=Path(exists=True), required=True, nargs=1)
-def run_nb(path):
+def run(path):
     """
     Run all .ipynb in order.
     """
 
-    workflow_run_nb(path)
-
-
-@cli.command()
-@argument("name", required=True, nargs=1)
-def make(name):
-    """
-    Make a project.
-    """
-
-    workflow_make(name)
+    workflow_run(path)

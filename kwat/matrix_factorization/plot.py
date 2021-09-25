@@ -1,3 +1,5 @@
+from os.path import join
+
 from ..array import normalize
 from ..cluster import cluster
 from ..constant import GOLDEN_RATIO
@@ -16,11 +18,11 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
 
         if pa == "":
 
-            pa2 = pa
+            paw = pa
 
         else:
 
-            pa2 = "{}w{}.html".format(pa, ie + 1)
+            paw = join(pa, "w{}.html".format(ie + 1))
 
         plot_heat_map(
             daw.iloc[cluster(daw.values)[0], :].apply(normalize, axis=1, args=ar_),
@@ -30,18 +32,18 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
                 "title": {"text": "W {}".format(ie)},
                 "xaxis": axisf,
             },
-            pa=pa2,
+            pa=paw,
         )
 
     for ie, dah in enumerate(dah_):
 
         if pa == "":
 
-            pa2 = pa
+            pah = pa
 
         else:
 
-            pa2 = "{}h{}.html".format(pa, ie + 1)
+            pah = join(pa, "h{}.html".format(ie + 1))
 
         plot_heat_map(
             dah.iloc[:, cluster(dah.values.T)[0]].apply(normalize, axis=0, args=ar_),
@@ -51,18 +53,18 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
                 "title": {"text": "H {}".format(ie)},
                 "yaxis": axisf,
             },
-            pa=pa2,
+            pa=pah,
         )
 
     if er_ie_it is not None:
 
         if pa == "":
 
-            pa2 = pa
+            pae = pa
 
         else:
 
-            pa2 = "{}error.html".format(pa)
+            pae = join(pa, "error.html")
 
         plot_plotly(
             {
@@ -80,5 +82,5 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
                     ],
                 },
             },
-            pa=pa2,
+            pa=pae,
         )

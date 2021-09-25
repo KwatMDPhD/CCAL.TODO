@@ -1,3 +1,3 @@
-from os.path import dirname
+from os.path import dirname, join
 
-DATA_DIRECTORY_PATH = "{}/data/".format(dirname(dirname(__file__)))
+DATA_DIRECTORY_PATH = join(dirname(dirname(__file__)), "data", "")

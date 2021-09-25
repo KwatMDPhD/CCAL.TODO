@@ -33,6 +33,6 @@ def rename(na_, na_re, ke=True):
 
     fa_ = sort(unique(fa_))
 
-    print("Renamed {} ({:.2%}) (failed {})".format(n_su, n_su / n_na, fa_.size))
+    print("Renamed {} ({:.2%}) (failed {}).".format(n_su, n_su / n_na, fa_.size))
 
     return re_, fa_

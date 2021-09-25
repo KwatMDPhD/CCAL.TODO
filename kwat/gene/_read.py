@@ -1,3 +1,5 @@
+from os.path import join
+
 from numpy import array, full
 from pandas import read_csv
 
@@ -7,7 +9,7 @@ from ..constant import DATA_DIRECTORY_PATH
 def _read(co_se):
 
     da = read_csv(
-        "{}hgnc_complete_set.txt.gz".format(DATA_DIRECTORY_PATH),
+        join(DATA_DIRECTORY_PATH, "hgnc_complete_set.txt.gz"),
         sep="\t",
         low_memory=False,
     )

@@ -1,3 +1,4 @@
+from os.path import join
 from re import search
 
 from pandas import read_csv, read_excel
@@ -26,21 +27,22 @@ def rename(na_, **ke_ar):
 
     for cg_re in [
         read_excel(
-            "{}illumina_humanmethylation27_content.xlsx".format(DATA_DIRECTORY_PATH),
+            join(DATA_DIRECTORY_PATH, "illumina_humanmethylation27_content.xlsx"),
             usecols=[0, 10],
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}HumanMethylation450_15017482_v1-2.csv.gz".format(DATA_DIRECTORY_PATH),
+            join(DATA_DIRECTORY_PATH, "HumanMethylation450_15017482_v1-2.csv.gz"),
             skiprows=7,
             usecols=[0, 21],
             index_col=0,
             squeeze=True,
         ),
         read_csv(
-            "{}infinium-methylationepic-v-1-0-b5-manifest-file.csv.gz".format(
-                DATA_DIRECTORY_PATH
+            join(
+                DATA_DIRECTORY_PATH,
+                "infinium-methylationepic-v-1-0-b5-manifest-file.csv.gz",
             ),
             skiprows=7,
             usecols=[0, 15],
@@ -54,9 +56,7 @@ def rename(na_, **ke_ar):
             na_re[cg] = split_and_get(re, ";", 0)
 
     na_re.update(
-        map_to(
-            read_csv("{}ens.tsv.gz".format(DATA_DIRECTORY_PATH), sep="\t"), "Gene name"
-        )
+        map_to(read_csv(join(DATA_DIRECTORY_PATH, "ens.tsv.gz"), sep="\t"), "Gene name")
     )
 
     na_re.update(

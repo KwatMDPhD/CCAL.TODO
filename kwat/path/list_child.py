@@ -1,4 +1,5 @@
 from os import walk
+from os.path import join
 
 
 def list_child(pa):
@@ -7,7 +8,7 @@ def list_child(pa):
 
     for di, di_, fi_ in walk(pa):
 
-        te = "{}/{{}}".format(di)
+        te = join(di, "{}")
 
         for na in di_:
 

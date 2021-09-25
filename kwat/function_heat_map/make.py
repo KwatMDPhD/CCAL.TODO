@@ -1,3 +1,5 @@
+from os.path import join
+
 from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
@@ -118,7 +120,7 @@ def make(
 
     if pa != "":
 
-        fu.to_csv(path_or_buf="{}statistic.tsv".format(pa), sep="\t")
+        fu.to_csv(path_or_buf=join(pa, "statistic.tsv"), sep="\t")
 
     if pl:
 
@@ -183,7 +185,7 @@ def make(
 
         if pa != "":
 
-            pa = "{}function_heat_map.html".format(pa)
+            pa = join(pa, "plot.html")
 
         heatmap = merge(HEATMAP, {"x": co_})
 

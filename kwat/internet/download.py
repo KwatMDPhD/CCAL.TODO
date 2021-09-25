@@ -1,4 +1,4 @@
-from os.path import exists
+from os.path import exists, join
 from re import search
 from urllib.request import urlretrieve
 
@@ -13,24 +13,24 @@ def download(ur, pa, na=None, ov=True):
 
         na = get_name(ur)
 
-    pa = "{}{}".format(pa, na)
+    pan = join(pa, na)
 
-    if exists(pa):
+    if exists(pan):
 
-        print("{} exists.".format(pa))
+        print("{} exists.".format(pan))
 
-    if not exists(pa) or ov:
+    if not exists(pan) or ov:
 
-        print("{} => {}".format(ur, pa))
+        print("{} => {}".format(ur, pan))
 
         if search(r"^ftp", ur):
 
-            urlretrieve(ur, pa)
+            urlretrieve(ur, pan)
 
         else:
 
-            with open(pa, mode="wb") as io:
+            with open(pan, mode="wb") as io:
 
                 io.write(get(ur, allow_redirects=True).content)
 
-    return pa
+    return pan
