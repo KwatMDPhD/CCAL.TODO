@@ -8,14 +8,6 @@ def list_child(pa):
 
     for di, di_, fi_ in walk(pa):
 
-        te = join(di, "{}")
-
-        for na in di_:
-
-            pa_.append(te.format(na) + "/")
-
-        for na in fi_:
-
-            pa_.append(te.format(na))
+        pa_ += [join(di, na) for na in di_ + fi_]
 
     return sorted(pa_)

@@ -1,5 +1,5 @@
 from os import listdir
-from os.path import isdir
+from os.path import join
 from re import search
 
 
@@ -17,12 +17,6 @@ def select(pa, ig_=(r"^\.",), ke_=()):
 
             continue
 
-        paa = "{}{}".format(pa, na)
-
-        if isdir(paa):
-
-            paa += "/"
-
-        pa_.append(paa)
+        pa_.append(join(pa, na))
 
     return pa_

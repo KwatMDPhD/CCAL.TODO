@@ -1,5 +1,3 @@
-from os.path import join
-
 from numpy import array, full, nan, unique, where
 from numpy.random import choice, seed, shuffle
 from pandas import DataFrame
@@ -35,7 +33,7 @@ def make(
     tyd="continuous",
     st=nan,
     layout=None,
-    pa="",
+    pr="",
 ):
 
     ta = ta.loc[ta.index.intersection(da.columns)]
@@ -118,9 +116,9 @@ def make(
 
     fu.sort_values("Score", ascending=False, inplace=True)
 
-    if pa != "":
+    if pr != "":
 
-        fu.to_csv(path_or_buf=join(pa, "statistic.tsv"), sep="\t")
+        fu.to_csv(path_or_buf="{}.tsv".format(pr), sep="\t")
 
     if pl:
 
@@ -183,11 +181,11 @@ def make(
 
                     co_[ie_] = co_[iec_]
 
-        if pa != "":
-
-            pa = join(pa, "plot.html")
-
         heatmap = merge(HEATMAP, {"x": co_})
+
+        if pr != "":
+
+            pa = "{}.html".format(pr)
 
         plot_plotly(
             {

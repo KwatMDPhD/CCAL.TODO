@@ -20,4 +20,4 @@ def make(pa, pr=True):
 
         if pr:
 
-            print("Made {}/.".format(di))
+            print("Made {}.".format(di))

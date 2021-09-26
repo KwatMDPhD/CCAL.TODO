@@ -1,5 +1,5 @@
 from kwat.path import get_absolute, select
-from kwat.shell import shell_run
+from kwat.shell import run as shell_run
 
 
 def run(pa):
