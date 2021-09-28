@@ -37,9 +37,13 @@ def check_extreme(nu___, di, th_=(), n_ex=0, st=0.0):
 
         hi = me + st
 
-    lo___ = nu___ <= lo
+    if "<" in di:
 
-    hi___ = hi <= nu___
+        lo___ = nu___ <= lo
+
+    if ">" in di:
+
+        hi___ = hi <= nu___
 
     if di == "<>":
 
