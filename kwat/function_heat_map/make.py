@@ -108,31 +108,25 @@ def make(
             data=array([sc_, ma_, pv_, qv_]).T,
             index=da.index,
             columns=["Score", "Margin of Error", "P-Value", "Q-Value"],
-        )
+        ).sort_values("Score", ascending=False)
+
+        if pr != "":
+
+            fu.to_csv(path_or_buf="{}.tsv".format(pr), sep="\t")
 
     else:
 
-        fu = fu.loc[da.index, :]
-
-    fu.sort_values("Score", ascending=False, inplace=True)
-
-    if pr != "":
-
-        fu.to_csv(path_or_buf="{}.tsv".format(pr), sep="\t")
+        fu = fu.loc[da.index, :].sort_values("Score", ascending=False)
 
     if pl:
 
-        da = da.loc[fu.index, :]
+        fup = fu.copy()
 
         if 0 < n_pl < (n_ro / 2):
 
-            ex_ = check_extreme(fu.values[:, 0], "<>", n_ex=n_pl)
+            fup = fup.loc[check_extreme(fup.values[:, 0], "<>", n_ex=n_pl), :]
 
-            fu = fu.loc[ex_, :]
-
-            da = da.loc[fu.index, :]
-
-        ro_ = da.index.values
+        ro_ = fup.index.values
 
         n_ro = 2 + ro_.size
 
@@ -151,7 +145,7 @@ def make(
                     "yaxis2": {"domain": [1 - he, 1], "showticklabels": False},
                     "yaxis": {"domain": [0, 1 - he * 2], "showticklabels": False},
                     "annotations": _make_target_annotation(1 - he / 2, ta.name)
-                    + _make_data_annotation(1 - he / 2 * 3, True, he, ro_, fu.values),
+                    + _make_data_annotation(1 - he / 2 * 3, True, he, ro_, fup.values),
                 },
             ),
             layout,
@@ -159,7 +153,7 @@ def make(
 
         tavp, mit, mat = _process_target(tav, tyt, st)
 
-        davp, mid, mad = _process_data(da.values, tyd, st)
+        davp, mid, mad = _process_data(da.loc[ro_, :].values, tyd, st)
 
         co_ = da.columns.values
 
