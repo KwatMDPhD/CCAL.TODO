@@ -53,7 +53,7 @@ class GPSMap:
             **ke_ar,
         )
 
-    def set_group(self, gr_, colorscale=CATEGORICAL_COLORSCALE, n_co=64):
+    def set_group(self, gr_, colorscale=CATEGORICAL_COLORSCALE, n_co=128):
 
         if isinstance(gr_, str) and gr_ == "closest_node":
 

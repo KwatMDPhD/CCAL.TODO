@@ -1,6 +1,8 @@
-from plotly.io import show, write_html
+from plotly.io import renderers, show, write_html, write_image
 
 from ..dictionary import merge
+
+renderers.default
 
 
 def plot_plotly(figure, pa=""):
@@ -26,3 +28,5 @@ def plot_plotly(figure, pa=""):
     if pa != "":
 
         write_html(figure, pa, config=config)
+
+        write_image(figure, pa.replace(".html", ".png"))
