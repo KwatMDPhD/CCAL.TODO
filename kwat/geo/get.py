@@ -200,8 +200,6 @@ def get(gs, *ar_, **ke_ar):
 
         if ty in ["PLATFORM", "SAMPLE"]:
 
-            print(he)
-
             ke_va = _parse_block(bl)
 
             if ty == "PLATFORM":

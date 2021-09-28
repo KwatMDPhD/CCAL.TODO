@@ -1,6 +1,7 @@
 from os.path import join
 from re import search
 
+from numpy import logical_not
 from pandas import read_csv, read_excel
 
 from ..constant import DATA_DIRECTORY_PATH
@@ -21,9 +22,39 @@ def _split(an):
         return []
 
 
+def _update(da, di):
+
+    og_, sy_ = da.values.T
+
+    hu_ = og_ == "human"
+
+    if hu_.sum() == 1:
+
+        geh = sy_[hu_][0]
+
+        for gem in sy_[logical_not(hu_)]:
+
+            di[gem] = geh
+
+    else:
+
+        return
+
+        print("-" * 80)
+
+        print("\n".join("({}) {}".format(og, sy) for og, sy in zip(og_, sy_)))
+
+
 def rename(na_, **ke_ar):
 
     na_re = {}
+
+    read_csv(
+        join(DATA_DIRECTORY_PATH, "HOM_MouseHumanSequence.rpt.txt.gz"),
+        sep="\t",
+        usecols=[0, 1, 3],
+        index_col=0,
+    ).groupby(level=0).apply(_update, na_re)
 
     for cg_re in [
         read_excel(
