@@ -1,3 +1,5 @@
+from numpy import array
+
 from ..iterable import flatten
 from ._read import _read
 from .map_gene_to_family import map_gene_to_family
@@ -24,26 +26,32 @@ def select(
 
     ge_ = _read(co_se).loc[:, "symbol"].values
 
-    fa_ba_ = {}
+    if 0 < len(ba_):
 
-    for ge, fa in map_gene_to_family().items():
+        fa_ba_ = {}
 
-        if fa is not None and any(ba in fa.lower() for ba in ba_):
+        for ge, fa in map_gene_to_family().items():
 
-            if fa in fa_ba_:
+            if fa is not None and any(ba in fa.lower() for ba in ba_):
 
-                fa_ba_[fa].append(ge)
+                if fa in fa_ba_:
 
-            else:
+                    fa_ba_[fa].append(ge)
 
-                fa_ba_[fa] = [ge]
+                else:
 
-    print("Removing:")
+                    fa_ba_[fa] = [ge]
 
-    for fa, ba_ in sorted(fa_ba_.items(), key=_get_value_size, reverse=True):
+        print("Removing:")
 
-        print("{}\t{}".format(len(ba_), fa))
+        for fa, ba_ in sorted(fa_ba_.items(), key=_get_value_size, reverse=True):
 
-    ba_ = flatten(fa_ba_.values())
+            print("{}\t{}".format(len(ba_), fa))
 
-    return [ge for ge in ge_ if ge not in ba_]
+        ba_ = flatten(fa_ba_.values())
+
+        return array([ge for ge in ge_ if ge not in ba_])
+
+    else:
+
+        return ge_
