@@ -29,7 +29,7 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
             layout={
                 "height": sig,
                 "width": si,
-                "title": {"text": "W {}".format(ie)},
+                "title": {"text": "W {}".format(ie + 1)},
                 "xaxis": axisf,
             },
             pa=paw,
@@ -50,7 +50,7 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
             layout={
                 "height": si,
                 "width": sig,
-                "title": {"text": "H {}".format(ie)},
+                "title": {"text": "H {}".format(ie + 1)},
                 "yaxis": axisf,
             },
             pa=pah,

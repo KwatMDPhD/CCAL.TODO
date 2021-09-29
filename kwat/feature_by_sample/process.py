@@ -2,7 +2,7 @@ from numpy import apply_along_axis, nan
 from pandas import DataFrame
 
 from ..array import log, normalize
-from ..dataframe import drop, drop_while
+from ..dataframe import drop, drop_constant, drop_while
 from .summarize import summarize
 
 
@@ -10,6 +10,7 @@ def process(
     nu_fe_sa,
     fe_=(),
     sa_=(),
+    dr=False,
     na=None,
     axd=None,
     n_no=None,
@@ -43,6 +44,14 @@ def process(
 
         summarize(nu_fe_sa, title="Dropped Samples", **ke_ar)
 
+    if dr:
+
+        print("Dropping constant")
+
+        nu_fe_sa = drop_constant(nu_fe_sa)
+
+        summarize(nu_fe_sa, title="Dropped Constant", **ke_ar)
+
     if na is not None:
 
         print("NaNizing <= {}".format(na))
@@ -57,15 +66,15 @@ def process(
 
         if axd is None:
 
-            dr = drop_while
+            drn = drop_while
 
         else:
 
-            dr = drop
+            drn = drop
 
         be = nu_fe_sa.shape
 
-        nu_fe_sa = dr(nu_fe_sa, axd, n_no=n_no, n_un=n_un)
+        nu_fe_sa = drn(nu_fe_sa, axd, n_no=n_no, n_un=n_un)
 
         if be != nu_fe_sa.shape:
 
@@ -87,11 +96,21 @@ def process(
 
         print("Axis-{} {} normalizing".format(axn, me))
 
-        nu_fe_sa = DataFrame(
-            data=apply_along_axis(normalize, axn, nu_fe_sa.values, me),
-            index=nu_fe_sa.index,
-            columns=nu_fe_sa.columns,
-        )
+        if axn is None:
+
+            nu_fe_sa = DataFrame(
+                data=normalize(nu_fe_sa.values, me),
+                index=nu_fe_sa.index,
+                columns=nu_fe_sa.columns,
+            )
+
+        else:
+
+            nu_fe_sa = DataFrame(
+                data=apply_along_axis(normalize, axn, nu_fe_sa.values, me),
+                index=nu_fe_sa.index,
+                columns=nu_fe_sa.columns,
+            )
 
         summarize(nu_fe_sa, title="Normalized", **ke_ar)
 

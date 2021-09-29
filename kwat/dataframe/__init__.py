@@ -1,5 +1,6 @@
 from .count import count
 from .drop import drop
+from .drop_constant import drop_constant
 from .drop_while import drop_while
 from .error import error
 from .map_to import map_to

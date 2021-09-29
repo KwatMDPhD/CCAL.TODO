@@ -8,7 +8,7 @@ def plot_histogram(
     se_, no=None, xbins_size=None, colorscale=CATEGORICAL_COLORSCALE, layout=None, pa=""
 ):
 
-    ru = all(se.size <= 1e3 for se in se_)
+    ru = all(se.size <= 1e5 for se in se_)
 
     n_se = len(se_)
 

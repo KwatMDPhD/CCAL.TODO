@@ -6,9 +6,7 @@ from ..grid import make_nd_grid
 from ..plot import plot_heat_map, plot_histogram
 
 
-def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e3)):
-
-    print(nu_fe_sa.shape)
+def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e4)):
 
     nua_fe_sa = nu_fe_sa.values
 
@@ -22,15 +20,23 @@ def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e3)):
 
     si = nua_fe_sa.size
 
+    print("-" * 80)
+
     if pl and si <= n_he:
 
         plot_heat_map(nu_fe_sa, layout={"title": title})
+
+    else:
+
+        print(nu_fe_sa.shape)
 
     na_fe_sa = isnan(nua_fe_sa)
 
     n_na = na_fe_sa.sum()
 
     if 0 < n_na:
+
+        print("-" * 80)
 
         print("% NaN: {:.2%}".format(n_na / si))
 
@@ -46,6 +52,8 @@ def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e3)):
 
     if pl:
 
+        print("-" * 80)
+
         plot_histogram(
             [
                 Series(data=nanmedian(nua_fe_sa, axis=1), index=ro_, name=ron),
@@ -57,6 +65,8 @@ def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e3)):
     go_fe_sa = logical_not(na_fe_sa)
 
     go_ = nua_fe_sa[go_fe_sa]
+
+    print("-" * 80)
 
     print("(Not-NaN) min: {:.2e}".format(go_.min()))
 
@@ -73,6 +83,8 @@ def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e3)):
         )
 
         if n_hi < si:
+
+            print("-" * 80)
 
             print("Choosing {} for histogram".format(n_hi))
 

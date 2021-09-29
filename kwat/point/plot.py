@@ -208,7 +208,7 @@ def plot(
 
     elif po_sc is not None:
 
-        sc_ = po_sc.loc[nu_po_di.index].values
+        sc_ = po_sc.reindex(index=nu_po_di.index).values
 
         ie_ = absolute(sc_).argsort()
 
