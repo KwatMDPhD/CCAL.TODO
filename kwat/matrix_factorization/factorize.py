@@ -1,8 +1,21 @@
-from numpy import array, sum
+from numpy import absolute, array, sum
 from numpy.linalg import norm
-from numpy.random import random_sample, seed
+from numpy.random import default_rng
 
-from ..constant import RANDOM_SEED
+from ..constant import FLOAT_RESOLUTION, RANDOM_SEED
+
+
+def _initialize(sy, ma, re, rn):
+
+    if sy == "w":
+
+        si = [ma.shape[0], re]
+
+    elif sy == "h":
+
+        si = [re, ma.shape[1]]
+
+    return absolute(rn.standard_normal(size=si) * ma.mean() / re)
 
 
 def _update_w(ma, maw, mah):
@@ -22,27 +35,36 @@ def _check_tolerable(er_it_ie, to):
     return ((er2_ - er1_) / er2_ <= to).all()
 
 
+def _clip(ma):
+
+    return ma.clip(min=FLOAT_RESOLUTION)
+
+
 def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
+
+    for ma in ma_:
+
+        assert 0 <= ma.min()
 
     n_ie = len(ma_)
 
-    seed(seed=ra)
-
-    no = norm(ma_[0])
+    rn = default_rng(seed=ra)
 
     if we_ is None:
 
-        we_ = [no / norm(ma) for ma in ma_]
+        si = ma_[0].size
+
+        we_ = [si / ma.size for ma in ma_]
 
     if me == "w":
 
-        maw_ = [random_sample(size=[ma.shape[0], re]) for ma in ma_]
+        maw_ = [_initialize("w", ma, re, rn) for ma in ma_]
 
-        mah = random_sample(size=[re, ma_[0].shape[1]])
+        mah = _initialize("h", ma_[0], re, rn)
 
         er_it_ie = [[norm(ma_[ie] - maw_[ie] @ mah) for ie in range(n_ie)]]
 
-        for iei in range(n_it):
+        for _ in range(n_it):
 
             nu = sum([we_[ie] * maw_[ie].T @ ma_[ie] for ie in range(n_ie)], axis=0)
 
@@ -52,7 +74,11 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
             mah *= nu / de
 
+            mah = _clip(mah)
+
             maw_ = [_update_w(ma_[ie], maw_[ie], mah) for ie in range(n_ie)]
+
+            maw_ = [_clip(maw) for maw in maw_]
 
             er_it_ie.append([norm(ma_[ie] - maw_[ie] @ mah) for ie in range(n_ie)])
 
@@ -64,13 +90,13 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
     elif me == "h":
 
-        maw = random_sample(size=[ma_[0].shape[0], re])
+        maw = _initialize("w", ma_[0], re, rn)
 
-        mah_ = [random_sample(size=[re, ma.shape[1]]) for ma in ma_]
+        mah_ = [_initialize("h", ma, re, rn) for ma in ma_]
 
         er_it_ie = [[norm(ma_[ie] - maw @ mah_[ie]) for ie in range(n_ie)]]
 
-        for iei in range(n_it):
+        for _ in range(n_it):
 
             nu = sum([we_[ie] * ma_[ie] @ mah_[ie].T for ie in range(n_ie)], axis=0)
 
@@ -80,7 +106,11 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
             maw *= nu / de
 
+            maw = _clip(maw)
+
             mah_ = [_update_h(ma_[ie], maw, mah_[ie]) for ie in range(n_ie)]
+
+            mah_ = [_clip(mah) for mah in mah_]
 
             er_it_ie.append([norm(ma_[ie] - maw @ mah_[ie]) for ie in range(n_ie)])
 
