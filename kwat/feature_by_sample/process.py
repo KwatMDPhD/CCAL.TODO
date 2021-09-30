@@ -44,14 +44,6 @@ def process(
 
         summarize(nu_fe_sa, title="Dropped Samples", **ke_ar)
 
-    if dr:
-
-        print("Dropping constant")
-
-        nu_fe_sa = drop_constant(nu_fe_sa)
-
-        summarize(nu_fe_sa, title="Dropped Constant", **ke_ar)
-
     if na is not None:
 
         print("NaNizing <= {}".format(na))
@@ -59,6 +51,14 @@ def process(
         nu_fe_sa[nu_fe_sa <= na] = nan
 
         summarize(nu_fe_sa, title="NaNized", **ke_ar)
+
+    if dr:
+
+        print("Dropping constant")
+
+        nu_fe_sa = drop_constant(nu_fe_sa)
+
+        summarize(nu_fe_sa, title="Dropped Constant", **ke_ar)
 
     if n_no is not None or n_un is not None:
 
