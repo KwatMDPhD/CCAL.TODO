@@ -1,4 +1,4 @@
-from numpy import absolute, array, sum
+from numpy import absolute, array, sqrt, sum
 from numpy.linalg import norm
 from numpy.random import default_rng
 
@@ -15,7 +15,12 @@ def _initialize(sy, ma, re, rn):
 
         si = [re, ma.shape[1]]
 
-    return absolute(rn.standard_normal(size=si) * ma.mean() / re)
+    return absolute(rn.standard_normal(size=si)) * sqrt(ma.mean() / re)
+
+
+def _clip(ma):
+
+    ma[ma < FLOAT_RESOLUTION] = 0
 
 
 def _update_w(ma, maw, mah):
@@ -33,11 +38,6 @@ def _check_tolerable(er_it_ie, to):
     er2_, er1_ = array(er_it_ie)[-2:]
 
     return ((er2_ - er1_) / er2_ <= to).all()
-
-
-def _clip(ma):
-
-    return ma.clip(min=FLOAT_RESOLUTION)
 
 
 def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
@@ -74,11 +74,13 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
             mah *= nu / de
 
-            mah = _clip(mah)
+            _clip(mah)
 
             maw_ = [_update_w(ma_[ie], maw_[ie], mah) for ie in range(n_ie)]
 
-            maw_ = [_clip(maw) for maw in maw_]
+            for ma in maw_:
+
+                _clip(ma)
 
             er_it_ie.append([norm(ma_[ie] - maw_[ie] @ mah) for ie in range(n_ie)])
 
@@ -106,11 +108,13 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
             maw *= nu / de
 
-            maw = _clip(maw)
+            _clip(maw)
 
             mah_ = [_update_h(ma_[ie], maw, mah_[ie]) for ie in range(n_ie)]
 
-            mah_ = [_clip(mah) for mah in mah_]
+            for ma in mah_:
+
+                _clip(ma)
 
             er_it_ie.append([norm(ma_[ie] - maw @ mah_[ie]) for ie in range(n_ie)])
 
