@@ -1,4 +1,15 @@
+def _print_shape(na, da_):
+
+    print(na)
+
+    for da in da_:
+
+        print(da.shape)
+
+
 def sync(da_, ax):
+
+    _print_shape("Before:", da_)
 
     la_ = da_[0].axes[ax]
 
@@ -8,4 +19,8 @@ def sync(da_, ax):
 
     la_ = sorted(la_)
 
-    return [da.reindex(labels=la_, axis=ax) for da in da_]
+    das_ = [da.reindex(labels=la_, axis=ax) for da in da_]
+
+    _print_shape("After:", das_)
+
+    return das_

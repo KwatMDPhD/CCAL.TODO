@@ -25,6 +25,6 @@ def get_density(nu_po_di, co__=(), pl=True, na_=(), **ke_ar):
 
     if pl:
 
-        plot(co_po_di, de_, na_=na_ + ["Density"])
+        plot(co_po_di, de_, na_=list(na_) + ["Density"])
 
     return co_po_di, de_

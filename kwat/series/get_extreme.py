@@ -49,3 +49,5 @@ def get_extreme(se, di, size=2, pr="", **ke_ar):
         pa = "{}.html".format(pr)
 
     plot_point(da, layout={"title": {"text": "Extreme"}}, pa=pa)
+
+    return lae_

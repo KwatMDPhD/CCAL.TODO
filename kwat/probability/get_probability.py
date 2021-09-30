@@ -14,6 +14,6 @@ def get_probability(nu_po_di, co__=(), pl=True, na_=(), **ke_ar):
 
     if pl:
 
-        plot(co_po_di, pr_, na_=na_ + ["Probability"])
+        plot(co_po_di, pr_, na_=list(na_) + ["Probability"])
 
     return co_po_di, pr_
