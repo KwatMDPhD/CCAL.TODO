@@ -46,15 +46,15 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
         assert 0 <= ma.min()
 
-    n_ie = len(ma_)
-
-    rn = default_rng(seed=ra)
-
     if we_ is None:
 
         si = ma_[0].size
 
         we_ = [si / ma.size for ma in ma_]
+
+    n_ie = len(ma_)
+
+    rn = default_rng(seed=ra)
 
     if me == "w":
 
