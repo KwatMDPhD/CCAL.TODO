@@ -181,6 +181,10 @@ def make(
 
             pa = "{}.html".format(pr)
 
+        else:
+
+            pa = ""
+
         plot_plotly(
             {
                 "data": [
