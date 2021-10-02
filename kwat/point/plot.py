@@ -19,6 +19,7 @@ def plot(
     sh=True,
     tracen=None,
     tracep=None,
+    opacity=0.8,
     gr_=None,
     colorscaleg=CATEGORICAL_COLORSCALE,
     co_=None,
@@ -26,8 +27,7 @@ def plot(
     bag_=None,
     po_sc=None,
     colorscales=CONTINUOUS_COLORSCALE,
-    opacitys=0.8,
-    opacitysn=0.08,
+    opacityn=0.4,
     poh_=(),
     pa="",
 ):
@@ -177,7 +177,8 @@ def plot(
             "marker": {
                 "size": 16,
                 "color": "#20d9ba",
-                "line": {"width": 0.8, "color": "#000000"},
+                "line": {"width": 0.8, "color": "#898a74"},
+                "opacity": opacity,
             },
             "hoverinfo": "text",
         },
@@ -246,7 +247,7 @@ def plot(
                                 "ticktext": ticktext,
                             },
                         ),
-                        "opacity": where(isnan(sc_), opacitysn, opacitys),
+                        "opacity": where(isnan(sc_), opacityn, opacity),
                     },
                 },
             )

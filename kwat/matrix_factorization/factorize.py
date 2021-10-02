@@ -56,7 +56,7 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
     rn = default_rng(seed=ra)
 
-    if me == "w":
+    if me == "deep":
 
         maw_ = [_initialize("w", ma, re, rn) for ma in ma_]
 
@@ -90,7 +90,7 @@ def factorize(ma_, me, re, we_=None, to=1e-6, n_it=int(1e3), ra=RANDOM_SEED):
 
         mah_ = [mah]
 
-    elif me == "h":
+    elif me == "wide":
 
         maw = _initialize("w", ma_[0], re, rn)
 
