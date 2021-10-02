@@ -178,14 +178,14 @@ def _parse_block(bl):
     return ke_va
 
 
-def get(gs, *ar_, **ke_ar):
+def get(gs, pa, ov=True, pr=True):
 
     pa = download(
         "ftp://ftp.ncbi.nlm.nih.gov/geo/series/{0}nnn/{1}/soft/{1}_family.soft.gz".format(
             gs[:-3], gs
         ),
-        *ar_,
-        **ke_ar,
+        pa,
+        ov=ov,
     )
 
     pl_ = {}
@@ -236,7 +236,7 @@ def get(gs, *ar_, **ke_ar):
 
     an_fe_sa.index.name = "Feature"
 
-    an_fe_sa_ = [an_fe_sa, *separate(_focus(an_fe_sa))]
+    an_fe_sa_ = [an_fe_sa, *separate(_focus(an_fe_sa), pr=pr)]
 
     for an_fe_sa in an_fe_sa_:
 

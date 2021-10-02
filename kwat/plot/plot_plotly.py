@@ -1,8 +1,6 @@
-from plotly.io import renderers, show, write_html, write_image
+from plotly.io import show, write_html, write_image
 
 from ..dictionary import merge
-
-renderers.default
 
 
 def plot_plotly(figure, pa=""):
@@ -21,7 +19,11 @@ def plot_plotly(figure, pa=""):
         figure,
     )
 
-    config = {"editable": False}
+    config = {
+        "editable": False,
+        "modeBarButtonsToAdd": ["drawopenpath", "eraseshape"],
+        "displaylogo": False,
+    }
 
     show(figure, config=config)
 
