@@ -1,13 +1,14 @@
-from numpy import unique
-
 from ..constant import NUMBER_OF_CATEGORY
+from .get_not_nan_unique import get_not_nan_unique
 
 
 def guess_type(nu___, n_ca=NUMBER_OF_CATEGORY):
 
-    if all(float(nu).is_integer() for nu in nu___.ravel()):
+    un_ = get_not_nan_unique(nu___)
 
-        n_un = unique(nu___).size
+    if all(float(nu).is_integer() for nu in un_):
+
+        n_un = un_.size
 
         if n_un <= 2:
 

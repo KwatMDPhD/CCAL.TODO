@@ -3,7 +3,7 @@ from re import sub
 from numpy import nan
 
 from ..dictionary import merge
-from ..plot import plot_plotly
+from ..plot import NAME_COLORSCALE, plot_plotly
 from ._make_data_annotation import _make_data_annotation
 from ._make_target_annotation import _make_target_annotation
 from ._process_data import _process_data
@@ -11,7 +11,6 @@ from ._process_target import _process_target
 from .ANNOTATION import ANNOTATION
 from .HEATMAP import HEATMAP
 from .LAYOUT import LAYOUT
-from .TYPE_COLORSCALE import TYPE_COLORSCALE
 
 
 def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, pa=""):
@@ -74,7 +73,7 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
                 "z": tavp.reshape([1, -1]),
                 "zmin": mit,
                 "zmax": mat,
-                "colorscale": TYPE_COLORSCALE[ty],
+                "colorscale": NAME_COLORSCALE[ty],
             },
         )
     ]
@@ -106,7 +105,7 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
                     "y": ro_[::-1],
                     "zmin": mid,
                     "zmax": mad,
-                    "colorscale": TYPE_COLORSCALE[bu["type"]],
+                    "colorscale": NAME_COLORSCALE[bu["type"]],
                 },
             )
         )

@@ -4,12 +4,12 @@ def _print_shape(na, da_):
 
     for da in da_:
 
-        print(da.shape)
+        print("\t{}".format(da.shape))
 
 
 def sync(da_, ax):
 
-    _print_shape("Before:", da_)
+    _print_shape("Before syncing:", da_)
 
     la_ = da_[0].axes[ax]
 

@@ -55,7 +55,7 @@ def separate(nu_fe_sa, pr=True):
 
     if 0 < len(bi_fe_sa_):
 
-        bi_fe_sa = concat(bi_fe_sa_)
+        bi_fe_sa = concat(bi_fe_sa_, verify_integrity=True)
 
         bi_fe_sa.index.name = te.format("binary")
 

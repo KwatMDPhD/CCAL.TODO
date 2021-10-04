@@ -1,16 +1,21 @@
-from numpy import absolute, isnan, nan, nanmax, nanmean, nanmedian, nanmin, where
+from numpy import (
+    absolute,
+    inf,
+    isnan,
+    nan,
+    nan_to_num,
+    nanmax,
+    nanmean,
+    nanmedian,
+    nanmin,
+    where,
+)
 from plotly.colors import make_colorscale
 
 from ..array import get_not_nan_unique, guess_type
 from ..dictionary import merge
 from ..geometry import make_convex_hull, make_delaunay_triangulation
-from ..plot import (
-    CATEGORICAL_COLORSCALE,
-    COLORBAR,
-    CONTINUOUS_COLORSCALE,
-    get_color,
-    plot_plotly,
-)
+from ..plot import COLORBAR, NAME_COLORSCALE, get_color, plot_plotly
 
 
 def plot(
@@ -19,15 +24,15 @@ def plot(
     sh=True,
     tracen=None,
     tracep=None,
-    opacity=0.8,
     gr_=None,
-    colorscaleg=CATEGORICAL_COLORSCALE,
+    colorscaleg=NAME_COLORSCALE["categorical"],
     co_=None,
     bap_=None,
     bag_=None,
+    opacityb=0.5,
     po_sc=None,
-    colorscales=CONTINUOUS_COLORSCALE,
-    opacityn=0.4,
+    colorscales=NAME_COLORSCALE["continuous"],
+    opacityn=0.5,
     poh_=(),
     pa="",
 ):
@@ -84,6 +89,8 @@ def plot(
 
         tracen = {}
 
+    marker_size = 24
+
     data.append(
         merge(
             {
@@ -93,9 +100,10 @@ def plot(
                 "text": nu_no_di.index.values,
                 "mode": "markers",
                 "marker": {
-                    "size": 20,
+                    "size": marker_size,
                     "color": "#23191e",
-                    "line": {"width": 1, "color": "#ebf6f7"},
+                    "line": {"width": marker_size / 16, "color": "#ebf6f7"},
+                    "opacity": 1,
                 },
                 "hoverinfo": "text",
             },
@@ -161,6 +169,7 @@ def plot(
                     "colorscale": make_colorscale(
                         ["rgb(255, 255, 255)", get_color(colorscaleg, gr, [grf, grl])]
                     ),
+                    "opacity": opacityb,
                     "showscale": False,
                     "hoverinfo": "none",
                 }
@@ -170,15 +179,19 @@ def plot(
 
         tracep = {}
 
+    marker_size = 16
+
+    opacityp = 0.88
+
     tracep = merge(
         {
             "name": nu_po_di.index.name,
             "mode": "markers",
             "marker": {
-                "size": 16,
+                "size": marker_size,
                 "color": "#20d9ba",
-                "line": {"width": 0.8, "color": "#898a74"},
-                "opacity": opacity,
+                "line": {"width": marker_size / 16, "color": "#898a74"},
+                "opacity": opacityp,
             },
             "hoverinfo": "text",
         },
@@ -211,13 +224,15 @@ def plot(
 
         sc_ = po_sc.reindex(index=nu_po_di.index).values
 
-        ie_ = absolute(sc_).argsort()
+        ie_ = nan_to_num(absolute(sc_), nan=-inf).argsort()
 
         sc_ = sc_[ie_]
 
         nu_po_di = nu_po_di.iloc[ie_, :]
 
-        if guess_type(sc_) == "continuous":
+        ty = guess_type(sc_)
+
+        if ty == "continuous":
 
             tickvals = [nanmin(sc_), nanmedian(sc_), nanmean(sc_), nanmax(sc_)]
 
@@ -229,6 +244,17 @@ def plot(
 
             ticktext = tickvals
 
+        if ty == "binary":
+
+            colorbar = None
+
+        else:
+
+            colorbar = merge(
+                COLORBAR,
+                {"tickmode": "array", "tickvals": tickvals, "ticktext": ticktext},
+            )
+
         data.append(
             merge(
                 tracep,
@@ -239,15 +265,8 @@ def plot(
                     "marker": {
                         "color": sc_,
                         "colorscale": colorscales,
-                        "colorbar": merge(
-                            COLORBAR,
-                            {
-                                "tickmode": "array",
-                                "tickvals": tickvals,
-                                "ticktext": ticktext,
-                            },
-                        ),
-                        "opacity": where(isnan(sc_), opacityn, opacity),
+                        "colorbar": colorbar,
+                        "opacity": where(isnan(sc_), opacityn, opacityp),
                     },
                 },
             )

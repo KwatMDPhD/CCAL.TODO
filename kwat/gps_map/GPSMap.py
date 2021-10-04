@@ -5,21 +5,19 @@ from scipy.spatial import Delaunay
 from ..constant import RANDOM_SEED
 from ..density import get_bandwidth
 from ..grid import make_1d_grid
-from ..plot import CATEGORICAL_COLORSCALE, plot_heat_map
+from ..plot import NAME_COLORSCALE, plot_heat_map
 from ..point import plot, pull, scale
 from ..probability import get_probability
 
 
 class GPSMap:
-    def __init__(self, di_no_no, nu_po_no, node_marker_size=24, ra=RANDOM_SEED):
+    def __init__(self, di_no_no, nu_po_no, ra=RANDOM_SEED):
 
         self.nu_no_di = scale(di_no_no, 2, ra=ra)
 
         self.nu_po_no = nu_po_no
 
         self.nu_po_di = pull(self.nu_no_di, self.nu_po_no.values)
-
-        self.node_marker_size = node_marker_size
 
         self.gr_ = None
 
@@ -49,11 +47,10 @@ class GPSMap:
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            tracen={"marker": {"size": self.node_marker_size}},
             **ke_ar,
         )
 
-    def set_group(self, gr_, colorscale=CATEGORICAL_COLORSCALE, n_co=128):
+    def set_group(self, gr_, colorscale=NAME_COLORSCALE["categorical"], n_co=128):
 
         if isinstance(gr_, str) and gr_ == "closest_node":
 
@@ -134,6 +131,5 @@ class GPSMap:
             co_=self.co_,
             bap_=self.bap_,
             bag_=self.bag_,
-            tracen={"marker": {"size": self.node_marker_size}},
             **ke_ar,
         )

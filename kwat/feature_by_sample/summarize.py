@@ -102,3 +102,5 @@ def summarize(nu_fe_sa, pl=True, title="Name", n_he=int(1e6), n_hi=int(1e4)):
     print("(Not-NaN) mean: {:.2e}".format(go_.mean()))
 
     print("(Not-NaN) max: {:.2e}".format(go_.max()))
+
+    print("\n" + "^" * 80)

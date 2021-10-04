@@ -3,12 +3,12 @@ from numpy import arange, isnan, meshgrid
 from ..array import apply, normalize
 from ..dictionary import merge
 from .COLORBAR import COLORBAR
-from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
+from .NAME_COLORSCALE import NAME_COLORSCALE
 from .plot_plotly import plot_plotly
 
 
 def plot_bubble_map(
-    das, mac=None, si=24, colorscale=CONTINUOUS_COLORSCALE, layout=None, pa=""
+    das, mac=None, si=24, colorscale=NAME_COLORSCALE["continuous"], layout=None, pa=""
 ):
 
     si1, si2 = das.shape

@@ -7,7 +7,7 @@ from ..cluster import cluster
 from ..constant import RANDOM_SEED, SAMPLE_FRACTION
 from ..dictionary import merge
 from ..matrix import apply_with_vector
-from ..plot import plot_plotly
+from ..plot import NAME_COLORSCALE, plot_plotly
 from ..significance import get_margin_of_error, get_p_value_and_q_value
 from ._make_data_annotation import _make_data_annotation
 from ._make_target_annotation import _make_target_annotation
@@ -15,7 +15,6 @@ from ._process_data import _process_data
 from ._process_target import _process_target
 from .HEATMAP import HEATMAP
 from .LAYOUT import LAYOUT
-from .TYPE_COLORSCALE import TYPE_COLORSCALE
 
 
 def make(
@@ -196,7 +195,7 @@ def make(
                             "text": tav.reshape([1, -1]),
                             "zmin": mit,
                             "zmax": mat,
-                            "colorscale": TYPE_COLORSCALE[tyt],
+                            "colorscale": NAME_COLORSCALE[tyt],
                         },
                     ),
                     merge(
@@ -208,7 +207,7 @@ def make(
                             "y": ro_[::-1],
                             "zmin": mid,
                             "zmax": mad,
-                            "colorscale": TYPE_COLORSCALE[tyd],
+                            "colorscale": NAME_COLORSCALE[tyd],
                         },
                     ),
                 ],

@@ -1,11 +1,16 @@
 from ..dictionary import merge
-from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
 from .get_color import get_color
+from .NAME_COLORSCALE import NAME_COLORSCALE
 from .plot_plotly import plot_plotly
 
 
 def plot_histogram(
-    se_, no=None, xbins_size=None, colorscale=CATEGORICAL_COLORSCALE, layout=None, pa=""
+    se_,
+    no=None,
+    xbins_size=None,
+    colorscale=NAME_COLORSCALE["categorical"],
+    layout=None,
+    pa="",
 ):
 
     ru = all(se.size <= 1e5 for se in se_)

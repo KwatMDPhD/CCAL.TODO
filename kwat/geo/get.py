@@ -5,7 +5,7 @@ from pandas.api.types import is_numeric_dtype
 
 from ..dataframe import peek
 from ..dictionary import summarize
-from ..feature_by_sample import collapse, separate
+from ..feature_by_sample import separate
 from ..gene import rename
 from ..internet import download
 from ..python import cast
@@ -156,7 +156,6 @@ def _parse_block(bl):
 
         ma = bl
 
-    # TODO: check -1
     for li in ma.splitlines()[:-1]:
 
         ke, va = li[1:].split(sep=" = ", maxsplit=1)
@@ -258,8 +257,6 @@ def get(gs, pa, ov=True, pr=True):
                 ],
                 name="Gene",
             )
-
-            nu_fe_sa = collapse(nu_fe_sa)
 
             peek(nu_fe_sa)
 

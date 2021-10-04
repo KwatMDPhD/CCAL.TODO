@@ -1,9 +1,8 @@
 from numpy import argsort, nonzero, unique
 
 from ..dictionary import merge
-from .CATEGORICAL_COLORSCALE import CATEGORICAL_COLORSCALE
 from .COLORBAR import COLORBAR
-from .CONTINUOUS_COLORSCALE import CONTINUOUS_COLORSCALE
+from .NAME_COLORSCALE import NAME_COLORSCALE
 from .plot_plotly import plot_plotly
 
 
@@ -16,11 +15,11 @@ def _get_center_index(gr_, gr):
 
 def plot_heat_map(
     da,
-    colorscale=CONTINUOUS_COLORSCALE,
+    colorscale=NAME_COLORSCALE["continuous"],
     gr1_=(),
     gr2_=(),
-    colorscale1=CATEGORICAL_COLORSCALE,
-    colorscale2=CATEGORICAL_COLORSCALE,
+    colorscale1=NAME_COLORSCALE["categorical"],
+    colorscale2=NAME_COLORSCALE["categorical"],
     gr1_la=None,
     gr2_la=None,
     layout=None,
