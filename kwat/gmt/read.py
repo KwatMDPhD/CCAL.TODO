@@ -14,7 +14,7 @@ def _read(pa):
 
             if len(ge_) == 0:
 
-                print("{} has 0 genes.".format(se))
+                print("{} has 0 gene.".format(se))
 
             else:
 

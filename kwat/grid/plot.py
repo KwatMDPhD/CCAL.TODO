@@ -4,7 +4,7 @@ from ..plot import plot_heat_map, plot_plotly
 from .get_1d_grid import get_1d_grid
 
 
-def plot(co_po_di, ve, na_=(), pa=""):
+def plot(co_po_di, ve, na_=(), pr=""):
 
     co__ = get_1d_grid(co_po_di)
 
@@ -42,7 +42,7 @@ def plot(co_po_di, ve, na_=(), pa=""):
                     "yaxis": {"title": {"text": nav}},
                 },
             },
-            pa=pa,
+            pr=pr,
         )
 
     elif n_di == 2:
@@ -58,5 +58,5 @@ def plot(co_po_di, ve, na_=(), pa=""):
                 ),
             ),
             layout={"title": {"text": nav}},
-            pa=pa,
+            pr=pr,
         )

@@ -1,3 +1,5 @@
+from pandas import value_counts
+
 from .get_duplicate import get_duplicate
 
 
@@ -9,11 +11,9 @@ def warn(da):
 
             if pr_.any():
 
-                print(
-                    "Axis {} ({}) label has {}:\n{}".format(
-                        ax + 1, la_.name, pr, "\n".join(la_[pr_])
-                    )
-                )
+                print("Axis {} ({}) label has {}:".format(ax + 1, la_.name, pr))
+
+                print(value_counts(la_.values[pr_]))
 
     for ax, dad in [[0, da], [1, da.T]]:
 

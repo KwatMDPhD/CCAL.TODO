@@ -5,8 +5,8 @@ from kwat.path import make
 
 def path(pa, gs):
 
-    pag = join(pa, gs.lower(), "")
+    pa = join(pa, gs.lower(), "")
 
-    make(pag)
+    make(pa)
 
-    return pag, join(pag, "{}_{}_sa.tsv")
+    return pa, join(pa, "{}_{}_sa.tsv")

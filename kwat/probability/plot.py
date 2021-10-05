@@ -2,7 +2,7 @@ from ..array import log
 from ..plot import plot_plotly
 
 
-def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
+def plot(pr1, pr2, na_, TODO1, TODO2, pr=""):
 
     n_da = len(na_)
 
@@ -46,4 +46,4 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pa=""):
 
         data.append(merge(trace, {"x": [ra_.min(), ra_.max()], "y": [1 + ie] * 2}))
 
-    plot_plotly({"data": data, "layout": layout}, pa=pa)
+    plot_plotly({"data": data, "layout": layout}, pr=pr)

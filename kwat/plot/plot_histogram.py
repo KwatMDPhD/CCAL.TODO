@@ -10,7 +10,7 @@ def plot_histogram(
     xbins_size=None,
     colorscale=NAME_COLORSCALE["categorical"],
     layout=None,
-    pa="",
+    pr="",
 ):
 
     ru = all(se.size <= 1e5 for se in se_)
@@ -48,7 +48,7 @@ def plot_histogram(
                 "dtick": 1,
                 "showticklabels": False,
             },
-            "yaxis2": {"domain": [fr, 1], "title": yaxis2_title},
+            "yaxis2": {"domain": [fr, 1], "title": {"text": yaxis2_title}},
         },
         layout,
     )
@@ -90,4 +90,4 @@ def plot_histogram(
                 )
             )
 
-    plot_plotly({"data": data, "layout": layout}, pa=pa)
+    plot_plotly({"data": data, "layout": layout}, pr=pr)

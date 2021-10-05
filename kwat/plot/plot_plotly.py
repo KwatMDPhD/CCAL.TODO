@@ -3,7 +3,7 @@ from plotly.io import show, write_html, write_image
 from ..dictionary import merge
 
 
-def plot_plotly(figure, pa=""):
+def plot_plotly(figure, pr=""):
 
     axis = {"automargin": True}
 
@@ -20,15 +20,15 @@ def plot_plotly(figure, pa=""):
     )
 
     config = {
-        "editable": False,
-        "modeBarButtonsToAdd": ["drawopenpath", "eraseshape"],
-        "displaylogo": False,
+        # "editable": True,
+        # "modeBarButtonsToAdd": ["drawopenpath", "eraseshape"],
+        "displaylogo": False
     }
 
     show(figure, config=config)
 
-    if pa != "":
+    if pr != "":
 
-        write_html(figure, pa, config=config)
+        write_html(figure, "{}.html".format(pr), config=config)
 
-        write_image(figure, pa.replace(".html", ".png"))
+        write_image(figure, "{}.png".format(pr))

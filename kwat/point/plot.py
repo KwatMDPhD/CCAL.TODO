@@ -34,7 +34,7 @@ def plot(
     colorscales=NAME_COLORSCALE["continuous"],
     opacityn=0.5,
     poh_=(),
-    pa="",
+    pr="",
 ):
 
     title = "{} {} and {} {}".format(
@@ -302,4 +302,4 @@ def plot(
             }
         )
 
-    plot_plotly({"data": data, "layout": layout}, pa=pa)
+    plot_plotly({"data": data, "layout": layout}, pr=pr)

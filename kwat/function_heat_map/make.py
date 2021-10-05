@@ -176,13 +176,13 @@ def make(
 
         heatmap = merge(HEATMAP, {"x": co_})
 
-        if pr != "":
+        if pr == "":
 
-            pa = "{}.html".format(pr)
+            pr = ""
 
         else:
 
-            pa = ""
+            pr = "{}.html".format(pr)
 
         plot_plotly(
             {
@@ -213,7 +213,7 @@ def make(
                 ],
                 "layout": layout,
             },
-            pa=pa,
+            pr=pr,
         )
 
     return fu

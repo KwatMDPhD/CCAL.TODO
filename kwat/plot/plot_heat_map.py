@@ -25,7 +25,7 @@ def plot_heat_map(
     layout=None,
     annotation1=None,
     annotation2=None,
-    pa="",
+    pr="",
 ):
 
     if 0 < len(gr1_):
@@ -62,11 +62,11 @@ def plot_heat_map(
         {
             "title": {"text": "Heat Map"},
             "yaxis": {
-                "title": "{} (n={})".format(da.index.name, da.shape[0]),
+                "title": {"text": "{} (n={})".format(da.index.name, da.shape[0])},
                 "domain": domain,
             },
             "xaxis": {
-                "title": "{} (n={})".format(da.columns.name, da.shape[1]),
+                "title": {"text": "{} (n={})".format(da.columns.name, da.shape[1])},
                 "domain": domain,
             },
             "yaxis2": axis,
@@ -176,4 +176,4 @@ def plot_heat_map(
                 for gr in unique(gr2_)
             ]
 
-    plot_plotly({"data": data, "layout": layout}, pa=pa)
+    plot_plotly({"data": data, "layout": layout}, pr=pr)

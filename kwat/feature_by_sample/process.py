@@ -34,7 +34,7 @@ def process(
 
         nu_fe_sa = nu_fe_sa.drop(labels=fe_, errors="ignore")
 
-        summarize(nu_fe_sa, title="Dropped Features", **ke_ar)
+        summarize(nu_fe_sa, title="Dropped Feature", **ke_ar)
 
     if 0 < len(sa_):
 
@@ -42,7 +42,7 @@ def process(
 
         nu_fe_sa = nu_fe_sa.drop(labels=sa_, axis=1, errors="ignore")
 
-        summarize(nu_fe_sa, title="Dropped Samples", **ke_ar)
+        summarize(nu_fe_sa, title="Dropped Sample", **ke_ar)
 
     if na is not None:
 
@@ -78,7 +78,7 @@ def process(
 
         if be != nu_fe_sa.shape:
 
-            summarize(nu_fe_sa, title="Dropped", **ke_ar)
+            summarize(nu_fe_sa, title="Dropped NaN", **ke_ar)
 
     if ba is not None:
 

@@ -10,7 +10,7 @@ def get_density(nu_po_di, co__=(), pl=True, na_=(), **ke_ar):
 
     if len(co__) != n_di:
 
-        print("Making coordinates")
+        print("Making coordinate")
 
         co__ = [make_1d_grid(ve.min(), ve.max(), 1 / 3, 8) for ve in nu_po_di.T]
 

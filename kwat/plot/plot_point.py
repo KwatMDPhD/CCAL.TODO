@@ -2,7 +2,7 @@ from ..dictionary import merge
 from .plot_plotly import plot_plotly
 
 
-def plot_point(da, layout=None, pa=""):
+def plot_point(da, layout=None, pr=""):
 
     co_ = da.columns.values
 
@@ -48,12 +48,12 @@ def plot_point(da, layout=None, pa=""):
 
     layout = merge(
         {
-            "title": "Plot Point",
-            "yaxis": {"title": co1},
-            "xaxis": {"title": co2},
+            "title": {"text": "Plot Point"},
+            "yaxis": {"title": {"text": co1}},
+            "xaxis": {"title": {"text": co2}},
             "annotations": annotations,
         },
         layout,
     )
 
-    plot_plotly({"data": data, "layout": layout}, pa=pa)
+    plot_plotly({"data": data, "layout": layout}, pr=pr)

@@ -6,7 +6,7 @@ from ..constant import GOLDEN_RATIO
 from ..plot import plot_heat_map, plot_plotly
 
 
-def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
+def plot(daw_, dah_, er_ie_it=None, si=640, pr=""):
 
     sig = si * GOLDEN_RATIO
 
@@ -16,13 +16,13 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
 
     for ie, daw in enumerate(daw_):
 
-        if pa == "":
+        if pr == "":
 
-            paw = pa
+            prw = ""
 
         else:
 
-            paw = join(pa, "w{}.html".format(ie + 1))
+            prw = join(pr, "w{}".format(ie + 1))
 
         plot_heat_map(
             daw.iloc[cluster(daw.values)[0], :].apply(normalize, axis=1, args=ar_),
@@ -32,18 +32,18 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
                 "title": {"text": "W {}".format(ie + 1)},
                 "xaxis": axisf,
             },
-            pa=paw,
+            pr=prw,
         )
 
     for ie, dah in enumerate(dah_):
 
-        if pa == "":
+        if pr == "":
 
-            pah = pa
+            prh = ""
 
         else:
 
-            pah = join(pa, "h{}.html".format(ie + 1))
+            prh = join(pr, "h{}".format(ie + 1))
 
         plot_heat_map(
             dah.iloc[:, cluster(dah.values.T)[0]].apply(normalize, axis=0, args=ar_),
@@ -53,25 +53,25 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
                 "title": {"text": "H {}".format(ie + 1)},
                 "yaxis": axisf,
             },
-            pa=pah,
+            pr=prh,
         )
 
     if er_ie_it is not None:
 
-        if pa == "":
+        if pr == "":
 
-            pae = pa
+            pre = pr
 
         else:
 
-            pae = join(pa, "error.html")
+            pre = join(pr, "error")
 
         plot_plotly(
             {
                 "data": [{"name": ie, "y": er_} for ie, er_ in enumerate(er_ie_it)],
                 "layout": {
-                    "yaxis": {"title": "Error"},
-                    "xaxis": {"title": "Iteration"},
+                    "yaxis": {"title": {"text": "Error"}},
+                    "xaxis": {"title": {"text": "Iteration"}},
                     "annotations": [
                         {
                             "y": er_[-1],
@@ -82,5 +82,5 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pa=""):
                     ],
                 },
             },
-            pa=pae,
+            pr=pre,
         )

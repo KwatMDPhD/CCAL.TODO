@@ -8,7 +8,7 @@ from .plot_plotly import plot_plotly
 
 
 def plot_bubble_map(
-    das, mac=None, si=24, colorscale=NAME_COLORSCALE["continuous"], layout=None, pa=""
+    das, mac=None, si=24, colorscale=NAME_COLORSCALE["continuous"], layout=None, pr=""
 ):
 
     si1, si2 = das.shape
@@ -26,12 +26,12 @@ def plot_bubble_map(
             "height": max(480, si1 * 2 * si),
             "width": max(480, si2 * 2 * si),
             "yaxis": {
-                "title": "{} (n={})".format(das.index.name, si1),
+                "title": {"text", "{} (n={})".format(das.index.name, si1)},
                 "tickvals": ti1_,
                 "ticktext": das.index.values,
             },
             "xaxis": {
-                "title": "{} (n={})".format(das.columns.name, si2),
+                "title": {"text", "{} (n={})".format(das.columns.name, si2)},
                 "tickvals": ti2_,
                 "ticktext": das.columns.values,
             },
@@ -69,5 +69,5 @@ def plot_bubble_map(
             ],
             "layout": layout,
         },
-        pa=pa,
+        pr=pr,
     )
