@@ -302,4 +302,4 @@ def plot(
             }
         )
 
-    plot_plotly({"data": data, "layout": layout}, pr=pr)
+    plot_plotly(data, layout, pr=pr)

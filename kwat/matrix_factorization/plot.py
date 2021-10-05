@@ -67,20 +67,14 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pr=""):
             pre = join(pr, "error")
 
         plot_plotly(
+            [{"name": ie, "y": er_} for ie, er_ in enumerate(er_ie_it)],
             {
-                "data": [{"name": ie, "y": er_} for ie, er_ in enumerate(er_ie_it)],
-                "layout": {
-                    "yaxis": {"title": {"text": "Error"}},
-                    "xaxis": {"title": {"text": "Iteration"}},
-                    "annotations": [
-                        {
-                            "y": er_[-1],
-                            "x": er_.size - 1,
-                            "text": "{:.2e}".format(er_[-1]),
-                        }
-                        for er_ in er_ie_it
-                    ],
-                },
+                "yaxis": {"title": {"text": "Error"}},
+                "xaxis": {"title": {"text": "Iteration"}},
+                "annotations": [
+                    {"y": er_[-1], "x": er_.size - 1, "text": "{:.2e}".format(er_[-1])}
+                    for er_ in er_ie_it
+                ],
             },
             pr=pre,
         )

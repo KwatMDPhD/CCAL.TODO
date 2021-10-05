@@ -263,7 +263,7 @@ def plot_context(
     n_bin=None,
     plot_rug=True,
     LAYOUT_TEMPLATE=None,
-    html_file_path=None,
+    pr="",
     **compute_vector_context_keyword_arguments,
 ):
 
@@ -438,4 +438,4 @@ def plot_context(
             )
         )
 
-    plot_plotly({"LAYOUT_TEMPLATE": LAYOUT_TEMPLATE, "data": data}, html_file_path)
+    plot_plotly(data, layout, pr)

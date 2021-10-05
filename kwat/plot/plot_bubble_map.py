@@ -52,22 +52,20 @@ def plot_bubble_map(
     mas[isnan(mas)] = 0.5
 
     plot_plotly(
-        {
-            "data": [
-                {
-                    "y": co1_di1_di2.ravel(),
-                    "x": co2_di1_di2.ravel(),
-                    "text": mas.ravel(),
-                    "mode": "markers",
-                    "marker": {
-                        "size": mas.ravel() * si,
-                        "color": mac.ravel(),
-                        "colorscale": colorscale,
-                        "colorbar": COLORBAR,
-                    },
-                }
-            ],
-            "layout": layout,
-        },
+        [
+            {
+                "y": co1_di1_di2.ravel(),
+                "x": co2_di1_di2.ravel(),
+                "text": mas.ravel(),
+                "mode": "markers",
+                "marker": {
+                    "size": mas.ravel() * si,
+                    "color": mac.ravel(),
+                    "colorscale": colorscale,
+                    "colorbar": COLORBAR,
+                },
+            }
+        ],
+        layout,
         pr=pr,
     )

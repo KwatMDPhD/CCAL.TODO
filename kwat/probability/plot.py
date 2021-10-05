@@ -34,16 +34,14 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pr=""):
         ra_ = log((po2_ / po1_) / (pr2 / pr1))
 
         plot_plotly(
-            {
-                "data": [
-                    {"name": "P(Target = 0)", "y": po1_},
-                    {"name": "P(Target = 1)", "y": po2_},
-                    {"name": "Log Odd Ratio", "y": ra_},
-                ],
-                "layout": {"title": {"text": na_[ie]}},
-            }
+            [
+                {"name": "P(Target = 0)", "y": po1_},
+                {"name": "P(Target = 1)", "y": po2_},
+                {"name": "Log Odd Ratio", "y": ra_},
+            ],
+            {"title": {"text": na_[ie]}},
         )
 
         data.append(merge(trace, {"x": [ra_.min(), ra_.max()], "y": [1 + ie] * 2}))
 
-    plot_plotly({"data": data, "layout": layout}, pr=pr)
+    plot_plotly(data, layout, pr=pr)

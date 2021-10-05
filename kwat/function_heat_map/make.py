@@ -185,34 +185,32 @@ def make(
             pr = "{}.html".format(pr)
 
         plot_plotly(
-            {
-                "data": [
-                    merge(
-                        heatmap,
-                        {
-                            "yaxis": "y2",
-                            "z": tavp.reshape([1, -1]),
-                            "text": tav.reshape([1, -1]),
-                            "zmin": mit,
-                            "zmax": mat,
-                            "colorscale": NAME_COLORSCALE[tyt],
-                        },
-                    ),
-                    merge(
-                        heatmap,
-                        {
-                            "yaxis": "y",
-                            "z": davp[::-1],
-                            "text": dav[::-1],
-                            "y": ro_[::-1],
-                            "zmin": mid,
-                            "zmax": mad,
-                            "colorscale": NAME_COLORSCALE[tyd],
-                        },
-                    ),
-                ],
-                "layout": layout,
-            },
+            [
+                merge(
+                    heatmap,
+                    {
+                        "yaxis": "y2",
+                        "z": tavp.reshape([1, -1]),
+                        "text": tav.reshape([1, -1]),
+                        "zmin": mit,
+                        "zmax": mat,
+                        "colorscale": NAME_COLORSCALE[tyt],
+                    },
+                ),
+                merge(
+                    heatmap,
+                    {
+                        "yaxis": "y",
+                        "z": davp[::-1],
+                        "text": dav[::-1],
+                        "y": ro_[::-1],
+                        "zmin": mid,
+                        "zmax": mad,
+                        "colorscale": NAME_COLORSCALE[tyd],
+                    },
+                ),
+            ],
+            layout,
             pr=pr,
         )
 

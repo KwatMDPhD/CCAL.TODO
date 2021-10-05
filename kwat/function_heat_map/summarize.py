@@ -126,4 +126,4 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
 
         layout["annotations"] += _make_data_annotation(y, ie == 0, he, ro_, fu.values)
 
-    plot_plotly({"data": data, "layout": layout}, pr=pr)
+    plot_plotly(data, layout, pr=pr)

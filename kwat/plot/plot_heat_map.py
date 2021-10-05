@@ -176,4 +176,4 @@ def plot_heat_map(
                 for gr in unique(gr2_)
             ]
 
-    plot_plotly({"data": data, "layout": layout}, pr=pr)
+    plot_plotly(data, layout, pr=pr)

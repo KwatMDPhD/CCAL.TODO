@@ -3,21 +3,24 @@ from plotly.io import show, write_html, write_image
 from ..dictionary import merge
 
 
-def plot_plotly(figure, pr=""):
+def plot_plotly(data, layout, pr=""):
 
     axis = {"automargin": True}
 
-    figure = merge(
-        {
-            "layout": {
-                "autosize": False,
-                "template": "plotly_white",
-                "xaxis": axis,
-                "yaxis": axis,
-            }
-        },
-        figure,
-    )
+    figure = {
+        "data": data,
+        "layout": merge(
+            {
+                "layout": {
+                    "autosize": False,
+                    "template": "plotly_white",
+                    "xaxis": axis,
+                    "yaxis": axis,
+                }
+            },
+            layout,
+        ),
+    }
 
     config = {
         # "editable": True,

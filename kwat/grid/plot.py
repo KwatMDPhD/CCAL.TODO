@@ -35,13 +35,8 @@ def plot(co_po_di, ve, na_=(), pr=""):
     if n_di == 1:
 
         plot_plotly(
-            {
-                "data": [{"x": co__[0], "y": nu_po_di}],
-                "layout": {
-                    "xaxis": {"title": {"text": na_[0]}},
-                    "yaxis": {"title": {"text": nav}},
-                },
-            },
+            [{"x": co__[0], "y": nu_po_di}],
+            {"xaxis": {"title": {"text": na_[0]}}, "yaxis": {"title": {"text": nav}}},
             pr=pr,
         )
 
