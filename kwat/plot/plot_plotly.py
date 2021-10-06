@@ -11,12 +11,10 @@ def plot_plotly(data, layout, pr=""):
         "data": data,
         "layout": merge(
             {
-                "layout": {
-                    "autosize": False,
-                    "template": "plotly_white",
-                    "xaxis": axis,
-                    "yaxis": axis,
-                }
+                "autosize": False,
+                "template": "plotly_white",
+                "xaxis": axis,
+                "yaxis": axis,
             },
             layout,
         ),

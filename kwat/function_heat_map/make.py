@@ -176,14 +176,6 @@ def make(
 
         heatmap = merge(HEATMAP, {"x": co_})
 
-        if pr == "":
-
-            pr = ""
-
-        else:
-
-            pr = "{}.html".format(pr)
-
         plot_plotly(
             [
                 merge(
