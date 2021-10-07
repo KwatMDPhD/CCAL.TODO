@@ -1,11 +1,9 @@
-from os import mkdir
 from os.path import join
+from shutil import copytree
+
+from ..constant import DATA_DIRECTORY_PATH
 
 
-def make(ro):
+def make(na):
 
-    mkdir(ro)
-
-    for di in ["input", "code", "output"]:
-
-        mkdir(join(ro, di, ""))
+    copytree(join(DATA_DIRECTORY_PATH, "workflow", ""), na)
