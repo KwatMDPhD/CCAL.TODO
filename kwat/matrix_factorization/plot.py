@@ -6,7 +6,7 @@ from ..constant import GOLDEN_RATIO
 from ..plot import plot_heat_map, plot_plotly
 
 
-def plot(daw_, dah_, er_ie_it=None, si=640, pr=""):
+def plot(daw_, dah_, er_ie_it=None, si=640, di=""):
 
     sig = si * GOLDEN_RATIO
 
@@ -16,13 +16,13 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pr=""):
 
     for ie, daw in enumerate(daw_):
 
-        if pr == "":
+        if di == "":
 
             prw = ""
 
         else:
 
-            prw = join(pr, "w{}".format(ie + 1))
+            prw = join(di, "w{}".format(ie + 1))
 
         plot_heat_map(
             daw.iloc[cluster(daw.values)[0], :].apply(normalize, axis=1, args=ar_),
@@ -37,13 +37,13 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pr=""):
 
     for ie, dah in enumerate(dah_):
 
-        if pr == "":
+        if di == "":
 
             prh = ""
 
         else:
 
-            prh = join(pr, "h{}".format(ie + 1))
+            prh = join(di, "h{}".format(ie + 1))
 
         plot_heat_map(
             dah.iloc[:, cluster(dah.values.T)[0]].apply(normalize, axis=0, args=ar_),
@@ -58,13 +58,13 @@ def plot(daw_, dah_, er_ie_it=None, si=640, pr=""):
 
     if er_ie_it is not None:
 
-        if pr == "":
+        if di == "":
 
-            pre = pr
+            pre = di
 
         else:
 
-            pre = join(pr, "error")
+            pre = join(di, "error")
 
         plot_plotly(
             [{"name": ie, "y": er_} for ie, er_ in enumerate(er_ie_it)],
