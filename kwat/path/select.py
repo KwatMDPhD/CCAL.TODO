@@ -9,14 +9,10 @@ def select(pa, ig_=(r"^\.",), ke_=()):
 
     for na in sorted(listdir(path=pa)):
 
-        if 0 < len(ig_) and any(search(ig, na) for ig in ig_):
+        if not any(search(ig, na) for ig in ig_) and (
+            0 == len(ke_) or any(search(ke, na) for ke in ke_)
+        ):
 
-            continue
-
-        if 0 < len(ke_) and not any(search(ke, na) for ke in ke_):
-
-            continue
-
-        pa_.append(join(pa, na))
+            pa_.append(join(pa, na))
 
     return pa_
