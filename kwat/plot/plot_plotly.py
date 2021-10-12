@@ -22,7 +22,6 @@ def plot_plotly(data, layout, pr=""):
 
     config = {
         # "editable": True,
-        # "modeBarButtonsToAdd": ["drawopenpath", "eraseshape"],
         "displaylogo": False
     }
 
