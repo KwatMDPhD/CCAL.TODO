@@ -33,5 +33,4 @@ from . import (
     string,
     vcf,
     vector_vector,
-    workflow,
 )
