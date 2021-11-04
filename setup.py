@@ -5,7 +5,7 @@ na = "kwat"
 setup(
     name=na,
     version="0.6.0",
-    url="https://github.com/KwatME/kwat.py",
+    url="https://github.com/KwatPhD/kwat.py",
     python_requires=">=3.6.0",
     install_requires=[
         "numpy",
@@ -17,8 +17,10 @@ setup(
         "statsmodels",
         "KDEpy",
         "plotly",
+        "click",
         "requests",
     ],
     packages=find_packages(),
     package_data={na: ["data/*"]},
+    entry_points={"console_scripts": ["{0}={0}.{1}:{1}".format(na, "cli")]},
 )
