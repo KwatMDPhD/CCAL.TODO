@@ -80,6 +80,8 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
 
     for ie, bu in enumerate(bu_):
 
+        da = bu["data"]
+
         fu = bu["statistic"].loc[da.index, :]
 
         fu.sort_values("Score", ascending=False, inplace=True)
@@ -93,7 +95,7 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
         layout[yaxis] = {"domain": domain, "showticklabels": False}
 
         davp, mid, mad = _process_data(
-            bu["data"].loc[ro_, :].reindex(labels=co_, axis=1).values, bu["type"], st
+            da.loc[ro_, :].reindex(labels=co_, axis=1).values, bu["type"], st
         )
 
         data.append(
