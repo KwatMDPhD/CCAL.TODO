@@ -15,7 +15,7 @@ def process(
     axd=None,
     n_no=None,
     n_un=None,
-    ba=None,
+    lo=None,
     sh=None,
     me=None,
     axn=None,
@@ -80,12 +80,12 @@ def process(
 
             summarize(nu_fe_sa, title="Dropped NaN", **ke_ar)
 
-    if ba is not None:
+    if lo is not None:
 
-        print("Logging (ba={}, sh={})".format(ba, sh))
+        print("Logging (lo={}, sh={})".format(lo, sh))
 
         nu_fe_sa = DataFrame(
-            data=log(nu_fe_sa.values, ba=ba, sh=sh),
+            data=log(nu_fe_sa.values, ba=lo, sh=sh),
             index=nu_fe_sa.index,
             columns=nu_fe_sa.columns,
         )
