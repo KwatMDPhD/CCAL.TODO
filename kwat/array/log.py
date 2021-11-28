@@ -1,4 +1,6 @@
-from numpy import absolute, log as loge, log2, log10, sign
+from numpy import absolute
+from numpy import log as loge
+from numpy import log2, log10, sign
 
 from .shift import shift
 

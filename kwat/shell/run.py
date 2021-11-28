@@ -1,4 +1,5 @@
-from subprocess import PIPE, run as subprocess_run
+from subprocess import PIPE
+from subprocess import run as subprocess_run
 
 
 def run(co):

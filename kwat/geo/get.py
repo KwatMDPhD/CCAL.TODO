@@ -6,7 +6,6 @@ from pandas.api.types import is_numeric_dtype
 from ..dataframe import peek
 from ..dictionary import summarize
 from ..feature_by_sample import separate
-from ..gene import rename
 from ..internet import download
 from ..python import cast
 from ..string import split_and_get
@@ -252,9 +251,7 @@ def get(gs, pa, ov=True, pr=True):
             nu_fe_sa = DataFrame(data=nu__).T
 
             nu_fe_sa.index = Index(
-                data=rename(_name_feature(nu_fe_sa.index.values, pl, ke_va["table"]))[
-                    0
-                ],
+                data=_name_feature(nu_fe_sa.index.values, pl, ke_va["table"])[0],
                 name="Gene",
             )
 

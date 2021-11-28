@@ -1,10 +1,6 @@
-# kwat.py
+# kwat
 
 Do more with less :japanese_castle:
-
-## Use
-
-See [examples](nb).
 
 ## Install
 
@@ -15,13 +11,11 @@ git lfs install
 ```
 
 ```sh
-python -m pip install git+https://github.com/KwatMDPhD/kwat.py
+python -m pip install git+https://github.com/KwatMDPhD/kwat
 ```
-
-## Howdy :wave: :cowboy_hat_face:
-
-To report a bug, request a feature, or leave a comment (about anything related to this project), just [submit an issue](https://github.com/KwatMDPhD/Kwat.jl/issues/new/choose).
 
 ---
 
-Check out the [julia version](https://github.com/KwatMDPhD/Kwat.jl).
+## Howdy :wave: :cowboy_hat_face:
+
+To report a bug, request a feature, or leave a comment, just [submit an issue](https://github.com/KwatMDPhD/kwat/issues/new/choose).

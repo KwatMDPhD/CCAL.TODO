@@ -3,7 +3,8 @@ from os.path import join
 from pandas import read_csv
 
 from ..constant import DATA_DIRECTORY_PATH
-from ..dictionary import clean, rename as dictionary_rename
+from ..dictionary import clean
+from ..dictionary import rename as dictionary_rename
 
 
 def rename(na_, **ke_ar):

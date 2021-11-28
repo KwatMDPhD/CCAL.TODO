@@ -10,7 +10,6 @@ from . import (
     feature_by_sample,
     function_heat_map,
     gct,
-    gene,
     geo,
     geometry,
     gmt,
