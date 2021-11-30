@@ -1,4 +1,4 @@
-from julia import Gene
+# from julia import Gene
 from numpy import array
 
 
