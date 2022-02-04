@@ -1,6 +1,8 @@
-# kwat
+# one_piece.py
 
-Do more with less :japanese_castle:
+One for all :eagle:
+
+(Oda is a genius.)
 
 ## Install
 
@@ -11,11 +13,11 @@ git lfs install
 ```
 
 ```sh
-python -m pip install git+https://github.com/KwatMDPhD/kwat
+python -m pip install git+https://github.com/KwatMDPhD/one_piece.py
 ```
 
 ---
 
 ## Howdy :wave: :cowboy_hat_face:
 
-To report a bug, request a feature, or leave a comment, just [submit an issue](https://github.com/KwatMDPhD/kwat/issues/new/choose).
+To report a bug, request a feature, or leave a comment, just [submit an issue](https://github.com/KwatMDPhD/one_piece.py/issues/new/choose).
