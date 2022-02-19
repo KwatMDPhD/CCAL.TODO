@@ -19,6 +19,7 @@ setup(
         "plotly",
         "click",
         "requests",
+        "julia",
     ],
     packages=find_packages(),
     package_data={na: ["data/*"]},
