@@ -5,7 +5,7 @@ na = "kwat"
 setup(
     name=na,
     version="0.7.0",
-    url="https://github.com/KwatMDPhD/kwat",
+    url="https://github.com/KwatMDPhD/one_piece.py",
     python_requires=">=3.6.0",
     install_requires=[
         "numpy",
