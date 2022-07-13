@@ -6,7 +6,7 @@ def get_duplicate(da):
 
     da = da.loc[da.duplicated(keep=False), :]
 
-    for la, se in da.iterrows():
+    for layout, se in da.iterrows():
 
         if la not in du_no:
 
