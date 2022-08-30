@@ -34,9 +34,7 @@ def _update_with_suffix(an_fe_sa):
 
 def _focus(an_fe_sa):
 
-    an_fe_sa = an_fe_sa.loc[
-        [fe.startswith("Sample_characteristics") for fe in an_fe_sa.index.values], :
-    ]
+    an_fe_sa = an_fe_sa.loc[[fe.startswith("") for fe in an_fe_sa.index.values], :]
 
     pr__ = [_get_prefix(an_) for an_ in an_fe_sa.values]
 
@@ -231,7 +229,6 @@ def get(gs, pa, ov=True, pr=True):
 
                 sa_[na] = ke_va
 
-    ############
     an_fe_sa = DataFrame(data=sa_)
 
     an_fe_sa.index.name = "Feature"
@@ -244,7 +241,6 @@ def get(gs, pa, ov=True, pr=True):
 
             peek(an_fe_sa)
 
-    ############
     for pl, ke_va in pl_.items():
 
         nu__ = ke_va.pop("nu__")
