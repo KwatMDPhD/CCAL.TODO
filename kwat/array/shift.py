@@ -1,11 +1,8 @@
 def shift(nu___, sh):
-
     if sh == "+1":
-
         return nu___ + 1
 
     if isinstance(sh, str) and sh.endswith("<"):
-
         fl = float(sh[:-1])
 
         ab___ = fl < nu___

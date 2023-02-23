@@ -6,7 +6,6 @@ from ..plot import plot_point
 
 
 def get_extreme(se, di, size=2, pr="", **ke_ar):
-
     se = se.dropna().sort_values()
 
     sev = se.values
@@ -18,9 +17,7 @@ def get_extreme(se, di, size=2, pr="", **ke_ar):
     lae_ = la_[ex_]
 
     if pr != "":
-
         with open("{}.txt".format(pr), mode="w") as io:
-
             io.write("\n".join(lae_))
 
     da = DataFrame(

@@ -8,7 +8,6 @@ from ..dictionary import rename as dictionary_rename
 
 
 def rename(na_, **ke_ar):
-
     return dictionary_rename(
         [na.lower() for na in na_],
         clean(

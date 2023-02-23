@@ -5,12 +5,10 @@ from .get_probability import get_probability
 
 
 def _get_probability(nu___):
-
     return nu___ / nu___.sum()
 
 
 def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, na_=(), **ke_ar):
-
     co_po_di, pr_ = get_probability(nu_po_di, co__=co__, pl=pl, na_=na_, **ke_ar)
 
     cot_ = co_po_di[:, -1]
@@ -22,15 +20,12 @@ def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, na_=(), **ke_a
     po_ = po___.reshape(co_po_di.shape[0])
 
     if pl:
-
         plot(co_po_di, po_, na_=na_ + ["Posterior Probability"])
 
     if isnan(ta):
-
         return co_po_di, po_
 
     else:
-
         cotu_ = unique(cot_)
 
         ie = absolute(cotu_ - ta).argmin()
@@ -42,7 +37,6 @@ def get_posterior_probability(nu_po_di, ta=nan, co__=(), pl=True, na_=(), **ke_a
         pot_ = po_[ie_]
 
         if pl:
-
             plot(
                 co_po_dit,
                 pot_,

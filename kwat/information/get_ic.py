@@ -8,9 +8,7 @@ from .get_kld import get_kld
 
 
 def get_ic(ve1, ve2):
-
     if 1 in [unique(ve1).size, unique(ve2).size]:
-
         return nan
 
     ve1 = normalize(ve1, "-0-")

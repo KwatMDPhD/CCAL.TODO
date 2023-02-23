@@ -7,7 +7,6 @@ from .plot_plotly import plot_plotly
 
 
 def _get_center_index(gr_, gr):
-
     ie1, ie2 = nonzero(gr_ == gr)[0][[0, -1]]
 
     return ie1 + (ie2 - ie1) / 2
@@ -27,9 +26,7 @@ def plot_heat_map(
     annotation2=None,
     pr="",
 ):
-
     if 0 < len(gr1_):
-
         ie_ = argsort(gr1_)
 
         gr1_ = gr1_[ie_]
@@ -37,7 +34,6 @@ def plot_heat_map(
         da = da.iloc[ie_, :]
 
     if 0 < len(gr2_):
-
         ie_ = argsort(gr2_)
 
         gr2_ = gr2_[ie_]
@@ -47,7 +43,6 @@ def plot_heat_map(
     domain = [0, 0.95]
 
     if layout is None:
-
         layout = {}
 
     axis = {
@@ -94,7 +89,6 @@ def plot_heat_map(
     annotation = {"showarrow": False}
 
     if 0 < len(gr1_):
-
         gr1_ = gr1_[::-1]
 
         colorbar_x += 0.1
@@ -113,9 +107,7 @@ def plot_heat_map(
         )
 
         if gr1_la is not None:
-
             if annotation1 is None:
-
                 annotation1 = {}
 
             layout["annotations"] += [
@@ -136,7 +128,6 @@ def plot_heat_map(
             ]
 
     if 0 < len(gr2_):
-
         colorbar_x += 0.1
 
         data.append(
@@ -153,9 +144,7 @@ def plot_heat_map(
         )
 
         if gr2_la is not None:
-
             if annotation2 is None:
-
                 annotation2 = {}
 
             layout["annotations"] += [

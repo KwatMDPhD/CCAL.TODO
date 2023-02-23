@@ -2,7 +2,6 @@ from scipy.spatial import Delaunay
 
 
 def make_delaunay_triangulation(no_po_di):
-
     po1_ = []
 
     po2_ = []
@@ -10,7 +9,6 @@ def make_delaunay_triangulation(no_po_di):
     de = Delaunay(no_po_di)
 
     for ie1, ie2, ie3 in de.simplices:
-
         po1 = de.points[ie1]
 
         po2 = de.points[ie2]

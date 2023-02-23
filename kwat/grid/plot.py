@@ -5,7 +5,6 @@ from .get_1d_grid import get_1d_grid
 
 
 def plot(co_po_di, ve, na_=(), pr=""):
-
     co__ = get_1d_grid(co_po_di)
 
     nu_po_di = ve.reshape([co_.size for co_ in co__])
@@ -13,17 +12,14 @@ def plot(co_po_di, ve, na_=(), pr=""):
     n_di = co_po_di.shape[1]
 
     if len(na_) == n_di + 1:
-
         nav = na_.pop()
 
     else:
-
         na_ = ["Dimension {}".format(ie) for ie in range(n_di)]
 
         nav = "Dimension {}".format(n_di + 1)
 
     for na, co_ in zip(na_, co__):
-
         print(
             "{} (grid): size={} min={:.2e} max={:.2e}".format(
                 na, co_.size, co_.min(), co_.max()
@@ -33,7 +29,6 @@ def plot(co_po_di, ve, na_=(), pr=""):
     print("{}: min={:.2e} max={:.2e}".format(nav, ve.min(), ve.max()))
 
     if n_di == 1:
-
         plot_plotly(
             [{"x": co__[0], "y": nu_po_di}],
             {"xaxis": {"title": {"text": na_[0]}}, "yaxis": {"title": {"text": nav}}},
@@ -41,7 +36,6 @@ def plot(co_po_di, ve, na_=(), pr=""):
         )
 
     elif n_di == 2:
-
         plot_heat_map(
             DataFrame(
                 data=nu_po_di,

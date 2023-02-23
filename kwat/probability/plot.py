@@ -3,7 +3,6 @@ from ..plot import plot_plotly
 
 
 def plot(pr1, pr2, na_, TODO1, TODO2, pr=""):
-
     n_da = len(na_)
 
     layout = {
@@ -26,7 +25,6 @@ def plot(pr1, pr2, na_, TODO1, TODO2, pr=""):
     ]
 
     for ie in range(n_da):
-
         po1_ = TODO1[ie]
 
         po2_ = TODO2[ie]

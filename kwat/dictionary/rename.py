@@ -2,7 +2,6 @@ from numpy import full, sort, unique
 
 
 def rename(na_, na_re, ke=True):
-
     n_na = len(na_)
 
     fa_ = []
@@ -10,21 +9,16 @@ def rename(na_, na_re, ke=True):
     re_ = full(n_na, "", dtype=object)
 
     for ie, na in enumerate(na_):
-
         if na in na_re:
-
             re = na_re[na]
 
         else:
-
             fa_.append(na)
 
             if ke:
-
                 re = na
 
             else:
-
                 re = None
 
         re_[ie] = re

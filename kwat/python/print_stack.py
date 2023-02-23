@@ -2,7 +2,6 @@ from inspect import stack
 
 
 def print_stack():
-
     st = stack()[1]
 
     print(

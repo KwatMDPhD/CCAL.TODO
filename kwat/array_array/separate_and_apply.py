@@ -2,7 +2,6 @@ from numpy import logical_not
 
 
 def separate_and_apply(bi___, nu___, fu):
-
     bi0___ = bi___ == 0
 
     bi1___ = logical_not(bi0___)

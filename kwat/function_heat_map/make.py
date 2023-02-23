@@ -1,22 +1,3 @@
-from numpy import array, full, nan, unique, where
-from numpy.random import choice, seed, shuffle
-from pandas import DataFrame
-
-from ..array import apply, check_extreme
-from ..cluster import cluster
-from ..constant import RANDOM_SEED, SAMPLE_FRACTION
-from ..dictionary import merge
-from ..matrix import apply_with_vector
-from ..plot import NAME_COLORSCALE, plot_plotly
-from ..significance import get_margin_of_error, get_p_value_and_q_value
-from ._make_data_annotation import _make_data_annotation
-from ._make_target_annotation import _make_target_annotation
-from ._process_data import _process_data
-from ._process_target import _process_target
-from .HEATMAP import HEATMAP
-from .LAYOUT import LAYOUT
-
-
 def make(
     ta,
     da,
@@ -34,11 +15,9 @@ def make(
     layout=None,
     pr="",
 ):
-
     ta = ta.loc[ta.index.intersection(da.columns)]
 
     if ac is not None:
-
         ta.sort_values(ascending=ac, inplace=True)
 
     da = da.loc[:, ta.index]
@@ -52,7 +31,6 @@ def make(
     if callable(fu):
 
         def _apply_with_vector(tav, dav):
-
             return apply_with_vector(tav, dav, fu, n_jo=n_jo)
 
         print("Computing score with {}".format(fu.__name__))
@@ -62,7 +40,6 @@ def make(
         sc_ = _apply_with_vector(tav, dav)
 
         if 0 < n_sa:
-
             print("Computing margin of error with {} sampling".format(n_sa))
 
             scs_ro_sa = full([n_ro, n_sa], nan)
@@ -70,7 +47,6 @@ def make(
             n_ch = int(n_co * SAMPLE_FRACTION)
 
             for ie in range(n_sa):
-
                 ie_ = choice(n_co, size=n_ch, replace=False)
 
                 scs_ro_sa[:, ie] = _apply_with_vector(tav[ie_], dav[:, ie_])
@@ -78,11 +54,9 @@ def make(
             ma_ = array([apply(scs_, get_margin_of_error) for scs_ in scs_ro_sa])
 
         else:
-
             ma_ = full(sc_.size, nan)
 
         if 0 < n_sh:
-
             print("Computing p-value and q-value with {} shuffling".format(n_sh))
 
             scs_ro_sh = full([n_ro, n_sh], nan)
@@ -90,7 +64,6 @@ def make(
             tavc = tav.copy()
 
             for ie in range(n_sh):
-
                 shuffle(tavc)
 
                 scs_ro_sh[:, ie] = _apply_with_vector(tavc, dav)
@@ -98,7 +71,6 @@ def make(
             pv_, qv_ = get_p_value_and_q_value(sc_, scs_ro_sh.ravel(), "<>")
 
         else:
-
             pv_ = full(sc_.size, nan)
 
             qv_ = pv_.copy()
@@ -110,19 +82,15 @@ def make(
         ).sort_values("Score", ascending=False)
 
         if pr != "":
-
             fu.to_csv(path_or_buf="{}.tsv".format(pr), sep="\t")
 
     else:
-
         fu = fu.loc[da.index, :].sort_values("Score", ascending=False)
 
     if pl:
-
         fup = fu.copy()
 
         if 0 < n_pl < (n_ro / 2):
-
             fup = fup.loc[check_extreme(fup.values[:, 0], "<>", n_ex=n_pl), :]
 
         ro_ = fup.index.values
@@ -132,7 +100,6 @@ def make(
         he = 1 / n_ro
 
         if layout is None:
-
             layout = {}
 
         layout = merge(
@@ -157,11 +124,8 @@ def make(
         co_ = da.columns.values
 
         if tyt != "continuous":
-
             for gr, n_me in array(unique(tavp, return_counts=True)).T:
-
                 if 2 < n_me:
-
                     print("Clustering {}".format(gr))
 
                     ie_ = where(tavp == gr)[0]

@@ -4,7 +4,6 @@ from kwat.path import make
 
 
 def path(pa, gs):
-
     pa = join(pa, gs.lower(), "")
 
     make(pa)

@@ -3,7 +3,6 @@ from numpy import array
 
 
 def rename(na_):
-
     na_, ma_ = OnePiece.gene.rename(na_)
 
     na_ = array(na_)

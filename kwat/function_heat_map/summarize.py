@@ -14,19 +14,16 @@ from .LAYOUT import LAYOUT
 
 
 def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, pr=""):
-
     n_ro = 1
 
     n_sp = 2
 
     for bu in bu_:
-
         n_ro += n_sp + bu["data"].shape[0]
 
     he = 1 / n_ro
 
     if layout is None:
-
         layout = {}
 
     layout = merge(
@@ -50,13 +47,10 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
     layout[yaxis] = {"domain": domain, "showticklabels": False}
 
     if it:
-
         for bu in bu_:
-
             ta = ta.loc[ta.index.intersection(bu["data"].columns)]
 
     if ac is not None:
-
         ta.sort_values(ascending=ac, inplace=True)
 
     co_ = ta.index.values
@@ -79,7 +73,6 @@ def summarize(ta, bu_, it=True, ac=True, ty="continuous", st=nan, layout=None, p
     ]
 
     for ie, bu in enumerate(bu_):
-
         da = bu["data"]
 
         fu = bu["statistic"].loc[da.index, :]

@@ -12,31 +12,25 @@ def plot_histogram(
     layout=None,
     pr="",
 ):
-
     ru = all(se.size <= 1e5 for se in se_)
 
     n_se = len(se_)
 
     if ru:
-
         he = 0.04
 
         fr = min(n_se * he, 0.5)
 
     else:
-
         fr = 0
 
     if no is None:
-
         yaxis2_title = "N"
 
     else:
-
         yaxis2_title = no.title()
 
     if layout is None:
-
         layout = {}
 
     layout = merge(
@@ -56,7 +50,6 @@ def plot_histogram(
     data = []
 
     for ie, se in enumerate(se_):
-
         co = get_color(colorscale, ie, ex_=[0, n_se - 1])
 
         trace = {"legendgroup": ie, "name": se.name, "x": se.values}
@@ -75,7 +68,6 @@ def plot_histogram(
         )
 
         if ru:
-
             data.append(
                 merge(
                     trace,

@@ -4,7 +4,6 @@ from ..dictionary import merge
 
 
 def plot_plotly(data, layout, pr=""):
-
     axis = {"automargin": True}
 
     figure = {
@@ -28,7 +27,6 @@ def plot_plotly(data, layout, pr=""):
     show(figure, config=config)
 
     if pr != "":
-
         write_html(figure, "{}.html".format(pr), config=config)
 
         write_image(figure, "{}.png".format(pr))

@@ -22,7 +22,6 @@ from .plot import plot_plotly
 def compute_pdf_and_pdf_reference_context(
     grid, pdf, pdf_reference, multiply_distance_from_reference_argmax
 ):
-
     center = pdf_reference.argmax()
 
     left_kl = compute_kld(pdf[:center], pdf_reference[:center])
@@ -44,7 +43,6 @@ def compute_pdf_and_pdf_reference_context(
     context = concatenate((left_context, right_context))
 
     if multiply_distance_from_reference_argmax:
-
         context *= absolute(grid - grid[center])
 
     return context
@@ -67,7 +65,6 @@ def compute_vector_context(
     global_degree_of_freedom=None,
     global_shape=None,
 ):
-
     is_good = ~check_array_for_bad(vector, raise_for_bad=False)
 
     vector_good = vector[is_good]
@@ -76,7 +73,6 @@ def compute_vector_context(
         parameter is None
         for parameter in (n_data, location, scale, degree_of_freedom, shape)
     ):
-
         (n_data, location, scale, degree_of_freedom, shape) = fit_vector_to_skew_t_pdf(
             vector_good,
             fit_initial_location=fit_initial_location,
@@ -113,7 +109,6 @@ def compute_vector_context(
             global_shape,
         )
     ):
-
         location_pdf_reference = None
 
         location_context = None
@@ -121,7 +116,6 @@ def compute_vector_context(
         context = shape_context
 
     else:
-
         location_pdf_reference = minimum(
             pdf,
             skew_t_model.pdf(
@@ -171,7 +165,6 @@ def make_context_matrix(
     global_shape=None,
     tsv_file_path=None,
 ):
-
     context_matrix = concat(
         call_function_with_multiprocess(
             make_context_matrix_,
@@ -196,7 +189,6 @@ def make_context_matrix(
     )
 
     if tsv_file_path is not None:
-
         context_matrix.to_csv(tsv_file_path, "\t")
 
     return context_matrix
@@ -213,19 +205,15 @@ def make_context_matrix_(
     global_degree_of_freedom,
     global_shape,
 ):
-
     context_matrix = full(dataframe.shape, nan)
 
     n = dataframe.shape[0]
 
-    for (i, (index, series)) in enumerate(dataframe.iterrows()):
-
+    for i, (index, series) in enumerate(dataframe.iterrows()):
         if skew_t_pdf_fit_parameter is None:
-
             n_data = location = scale = degree_of_freedom = shape = None
 
         else:
-
             (
                 n_data,
                 location,
@@ -266,15 +254,12 @@ def plot_context(
     pr="",
     **compute_vector_context_keyword_arguments,
 ):
-
     if plot_rug:
-
         yaxis_domain = (0, 0.1)
 
         yaxis2_domain = (0.15, 1)
 
     else:
-
         yaxis_domain = (0, 0)
 
         yaxis2_domain = (0, 1)
@@ -288,18 +273,16 @@ def plot_context(
     }
 
     if LAYOUT_TEMPLATE is None:
-
         LAYOUT_TEMPLATE = base
 
     else:
-
         LAYOUT_TEMPLATE = merge(base, LAYOUT_TEMPLATE)
 
     context_dict = compute_vector_context(
         series.values, **compute_vector_context_keyword_arguments
     )
 
-    for (i, (format_, fit_parameter)) in enumerate(
+    for i, (format_, fit_parameter) in enumerate(
         zip(
             (
                 "N = {:.0f}",
@@ -311,7 +294,6 @@ def plot_context(
             context_dict["fit"],
         )
     ):
-
         LAYOUT_TEMPLATE["ANNOTATION_TEMPLATEs"].append(
             {
                 "xref": "paper",
@@ -349,7 +331,6 @@ def plot_context(
     ]
 
     if plot_rug:
-
         data.append(
             {
                 "type": "scatter",
@@ -365,7 +346,6 @@ def plot_context(
         )
 
     if n_bin is not None:
-
         series_min = series.min()
 
         series_max = series.max()
@@ -394,7 +374,6 @@ def plot_context(
     location_pdf_reference = context_dict["location_pdf_reference"]
 
     if location_pdf_reference is not None:
-
         location_pdf_reference[context_dict["pdf"] <= location_pdf_reference] = None
 
         data.append(
@@ -413,18 +392,15 @@ def plot_context(
     context_abs_max = nanmax(context_abs)
 
     if y_max_is_pdf_max:
-
         pdf_max = context_dict["pdf"].max()
 
         if pdf_max < context_abs_max:
-
             context_abs *= pdf_max / context_abs_max
 
-    for (name, indices, color) in (
+    for name, indices, color in (
         ("- Context", context_dict["context"] < 0, "#0088ff"),
         ("+ Context", 0 < context_dict["context"], "#ff1968"),
     ):
-
         data.append(
             merge(
                 base,

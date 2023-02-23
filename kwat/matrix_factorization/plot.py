@@ -7,7 +7,6 @@ from ..plot import plot_heat_map, plot_plotly
 
 
 def plot(daw_, dah_, er_ie_it=None, si=640, di=""):
-
     sig = si * GOLDEN_RATIO
 
     ar_ = ["-0-"]
@@ -15,13 +14,10 @@ def plot(daw_, dah_, er_ie_it=None, si=640, di=""):
     axisf = {"dtick": 1}
 
     for ie, daw in enumerate(daw_):
-
         if di == "":
-
             prw = ""
 
         else:
-
             prw = join(di, "w{}".format(ie + 1))
 
         plot_heat_map(
@@ -36,13 +32,10 @@ def plot(daw_, dah_, er_ie_it=None, si=640, di=""):
         )
 
     for ie, dah in enumerate(dah_):
-
         if di == "":
-
             prh = ""
 
         else:
-
             prh = join(di, "h{}".format(ie + 1))
 
         plot_heat_map(
@@ -57,13 +50,10 @@ def plot(daw_, dah_, er_ie_it=None, si=640, di=""):
         )
 
     if er_ie_it is not None:
-
         if di == "":
-
             pre = di
 
         else:
-
             pre = join(di, "error")
 
         plot_plotly(

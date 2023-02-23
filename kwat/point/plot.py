@@ -36,13 +36,11 @@ def plot(
     poh_=(),
     pr="",
 ):
-
     title = "{} {} and {} {}".format(
         nu_no_di.shape[0], nu_no_di.index.name, nu_po_di.shape[0], nu_po_di.index.name
     )
 
     if po_sc is not None:
-
         title = "{}<br>{}".format(title, po_sc.name)
 
     axis = {
@@ -86,7 +84,6 @@ def plot(
     )
 
     if tracen is None:
-
         tracen = {}
 
     marker_size = 24
@@ -112,7 +109,6 @@ def plot(
     )
 
     if sh:
-
         arrowwidth = 1.6
 
         arrowcolor = "#ebf6f7"
@@ -138,7 +134,6 @@ def plot(
         ]
 
     if bag_ is not None:
-
         data.append(
             {
                 "type": "contour",
@@ -159,7 +154,6 @@ def plot(
         gru_ = list(range(grf, grl + 1))
 
         for gr in gru_:
-
             data.append(
                 {
                     "type": "heatmap",
@@ -176,7 +170,6 @@ def plot(
             )
 
     if tracep is None:
-
         tracep = {}
 
     marker_size = 16
@@ -199,9 +192,7 @@ def plot(
     )
 
     if gr_ is not None:
-
         for gr in gru_:
-
             name = "Group {}".format(gr)
 
             nug_po_di = nu_po_di.loc[gr_ == gr, :]
@@ -221,7 +212,6 @@ def plot(
             )
 
     elif po_sc is not None:
-
         sc_ = po_sc.reindex(index=nu_po_di.index).values
 
         ie_ = nan_to_num(absolute(sc_), nan=-inf).argsort()
@@ -233,23 +223,19 @@ def plot(
         ty = guess_type(sc_)
 
         if ty == "continuous":
-
             tickvals = [nanmin(sc_), nanmedian(sc_), nanmean(sc_), nanmax(sc_)]
 
             ticktext = ["{:.2e}".format(ti) for ti in tickvals]
 
         else:
-
             tickvals = get_not_nan_unique(sc_)
 
             ticktext = tickvals
 
         if ty == "binary":
-
             colorbar = None
 
         else:
-
             colorbar = merge(
                 COLORBAR,
                 {"tickmode": "array", "tickvals": tickvals, "ticktext": ticktext},
@@ -273,7 +259,6 @@ def plot(
         )
 
     else:
-
         data.append(
             merge(
                 tracep,
@@ -286,7 +271,6 @@ def plot(
         )
 
     for po in poh_:
-
         co1, co2 = nu_po_di.loc[po, :]
 
         layout["annotations"].append(

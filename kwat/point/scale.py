@@ -6,7 +6,6 @@ from ..constant import RANDOM_SEED
 
 
 def scale(di_po_po, n_di, ra=RANDOM_SEED, **ke_ar):
-
     return apply_along_axis(
         normalize,
         0,

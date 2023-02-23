@@ -3,7 +3,6 @@ from .plot_plotly import plot_plotly
 
 
 def plot_point(da, layout=None, pr=""):
-
     co_ = da.columns.values
 
     co1, co2 = co_[:2]
@@ -27,9 +26,7 @@ def plot_point(da, layout=None, pr=""):
     annotations = []
 
     if "Annotate" in co_:
-
         for text, (y, x) in da.loc[da.loc[:, "Annotate"], [co1, co2]].iterrows():
-
             annotations.append(
                 {
                     "y": y,
@@ -43,7 +40,6 @@ def plot_point(da, layout=None, pr=""):
             )
 
     if layout is None:
-
         layout = {}
 
     layout = merge(

@@ -10,11 +10,9 @@ from .plot_plotly import plot_plotly
 def plot_bubble_map(
     das, mac=None, si=24, colorscale=NAME_COLORSCALE["continuous"], layout=None, pr=""
 ):
-
     si1, si2 = das.shape
 
     if layout is None:
-
         layout = {}
 
     ti1_ = arange(si1)[::-1]
@@ -44,7 +42,6 @@ def plot_bubble_map(
     mas = das.values
 
     if mac is None:
-
         mac = mas
 
     mas = apply(mas, normalize, "0-1", up=True)
