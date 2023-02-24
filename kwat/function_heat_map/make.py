@@ -108,8 +108,8 @@ def make(
                 {
                     "height": max(640, 24 * n_ro),
                     "title": {"text": "Function Heat Map"},
-                    "yaxis2": {"domain": [1 - he, 1], "showticklabels": False},
-                    "yaxis": {"domain": [0, 1 - he * 2], "showticklabels": False},
+                    "yaxis2": {"domain": (1 - he, 1), "showticklabels": False},
+                    "yaxis": {"domain": (0, 1 - he * 2), "showticklabels": False},
                     "annotations": _make_target_annotation(1 - he / 2, ta.name)
                     + _make_data_annotation(1 - he / 2 * 3, True, he, ro_, fup.values),
                 },
